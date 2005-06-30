@@ -8,5 +8,5 @@
 ##title=versioning config
 ##
 
-context.portal_versions.setVersionableContentType(new_content_types)
+context.portal_repository.setVersionableContentType(new_content_types)
 context.REQUEST.RESPONSE.redirect(context.absolute_url() + '/versioning_config_form')

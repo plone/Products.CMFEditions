@@ -51,13 +51,16 @@ from Products.CMFEditions.Permissions import CheckoutToLocation
 
 VERSIONABLE_CONTENT_TYPES = []
 
-class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem, ActionProviderBase):
+class CopyModifyMergeRepositoryTool(UniqueObject,
+                                    SimpleItem,
+                                    ActionProviderBase):
+
+    """See ICopyModifyMergeRepository
     """
-    """
-    __implements__ = (
-        SimpleItem.__implements__,
-        ICopyModifyMergeRepository,
-    )
+
+    __implements__ = (SimpleItem.__implements__,
+                      ICopyModifyMergeRepository,
+                      )
 
     id = 'portal_repository'
     alternative_id = 'portal_copymergerepository'
@@ -75,8 +78,95 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem, ActionProviderBase
     _versionable_content_types = VERSIONABLE_CONTENT_TYPES
 
     # -------------------------------------------------------------------
+    # methods implementing ICopyModifyMergeRepository
+    # -------------------------------------------------------------------
+
+    security.declarePublic('isVersionable')
+    def isVersionable(self, obj):
+        """See ICopyModifyMergeRepository.
+        """
+        return obj.portal_type in self.getVersionableContentTypes()
+
+    def getVersionableContentTypes(self):
+        return self._versionable_content_types
+
+    def setVersionableContentType(self, new_content_types):
+        self._versionable_content_types = new_content_types
+
+    security.declareProtected(ApplyVersionControl, 'setAutoApplyMode')
+    def setAutoApplyMode(self, autoapply):
+        """
+        """
+        self.autoapply = autoapply
+
+    security.declarePublic('ApplyVersionControl')
+    def applyVersionControl(self, obj, comment='', metadata={}):
+        """
+        """
+        self._assertAuthorized(obj, ApplyVersionControl, 'applyVersionControl')
+        self._recursiveSave(obj, metadata,
+                            self._prepareSysMetadata(comment),
+                            autoapply=True)
+
+    security.declarePublic('save')
+    def save(self, obj, comment='', metadata={}):
+        """
+        """
+        self._assertAuthorized(obj, SaveNewVersion, 'save')
+        self._recursiveSave(obj, metadata, 
+                            self._prepareSysMetadata(comment),
+                            autoapply=self.autoapply)
+
+    security.declarePublic('revert')
+    def revert(self, obj, selector=None):
+        """
+        """
+        original_id = obj.getId()
+        self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
+        parent = aq_parent(aq_inner(obj))
+        self._recursiveRetrieve(obj, parent, selector, preserve=(),
+                                inplace=True)
+        if obj.getId() != original_id:
+            obj._setId(original_id)
+            #parent.manage_renameObject(obj.getId(), original_id)
+            #parent._setObject(original_id, obj, set_owner=0)
+
+    security.declarePublic('retrieve')
+    def retrieve(self, obj, selector=None, preserve=()):
+        """
+        """
+        self._assertAuthorized(obj, AccessPreviousVersions, 'retrieve')
+        parent = aq_parent(aq_inner(obj))
+        vd = self._recursiveRetrieve(obj, parent, selector, preserve)
+
+        # The object needs to be contained in the correct folder as
+        # some calls (e.g. getToolByName) will insist on using containment
+        # rather than context.
+        wrapped = self._setContainment(vd.data.object, parent)
+
+        return VersionData(wrapped, vd.preserved_data,
+                           vd.sys_metadata, vd.app_metadata)
+
+    security.declarePublic('isUpToDate')
+    def isUpToDate(self, obj, selector=None):
+        """
+        """
+        portal_archivist = getToolByName(self, 'portal_archivist')
+        return portal_archivist.isUpToDate(obj, selector)
+
+    security.declarePublic('getHistory')
+    def getHistory(self, obj, preserve=()):
+        """
+        """
+        self._assertAuthorized(obj, AccessPreviousVersions, 'getHistory')
+        parent = aq_parent(aq_inner(obj))
+        return LazyHistory(self, obj, parent, preserve)
+
+
+    # -------------------------------------------------------------------
     # private helper methods
     # -------------------------------------------------------------------
+
 
     def _assertAuthorized(self, obj, permission, name=None):
         if not _checkPermission(permission, obj):
@@ -220,60 +310,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem, ActionProviderBase
 
         return vdata
 
-    # -------------------------------------------------------------------
-    # methods implementing ICopyModifyMergeRepository
-    # -------------------------------------------------------------------
-
-    security.declarePublic('isVersionable')
-    def isVersionable(self, obj):
-        """See IVersioning.
-        """
-        return obj.portal_type in self.getVersionableContentTypes()
-
-    def getVersionableContentTypes(self):
-        return self._versionable_content_types
-
-    def setVersionableContentType(self, new_content_types):
-        self._versionable_content_types = new_content_types
-
-    security.declareProtected(ApplyVersionControl, 'setAutoApplyMode')
-    def setAutoApplyMode(self, autoapply):
-        """
-        """
-        self.autoapply = autoapply
-
-    security.declarePublic('ApplyVersionControl')
-    def applyVersionControl(self, obj, comment='', metadata={}):
-        """
-        """
-        self._assertAuthorized(obj, ApplyVersionControl, 'applyVersionControl')
-        self._recursiveSave(obj, metadata,
-                            self._prepareSysMetadata(comment),
-                            autoapply=True)
-
-    security.declarePublic('save')
-    def save(self, obj, comment='', metadata={}):
-        """
-        """
-        self._assertAuthorized(obj, SaveNewVersion, 'save')
-        self._recursiveSave(obj, metadata, 
-                            self._prepareSysMetadata(comment),
-                            autoapply=self.autoapply)
-
-    security.declarePublic('revert')
-    def revert(self, obj, selector=None):
-        """
-        """
-        original_id = obj.getId()
-        self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
-        parent = aq_parent(aq_inner(obj))
-        self._recursiveRetrieve(obj, parent, selector, preserve=(),
-                                inplace=True)
-        if obj.getId() != original_id:
-            obj._setId(original_id)
-            #parent.manage_renameObject(obj.getId(), original_id)
-            #parent._setObject(original_id, obj, set_owner=0)
-
     security.declarePrivate('_setContainment')
     def _setContainment(self, obj, parent):
         """Make obj be contained within parent"""
@@ -286,53 +322,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem, ActionProviderBase
         delattr(parent, tempAttribute)
         parent._p_changed = changed
         return wrapped
-        
-    security.declarePublic('retrieve')
-    def retrieve(self, obj, selector=None, preserve=()):
-        """
-        """
-        self._assertAuthorized(obj, AccessPreviousVersions, 'retrieve')
-        parent = aq_parent(aq_inner(obj))
-        vd = self._recursiveRetrieve(obj, parent, selector, preserve)
-
-        # The object needs to be contained in the correct folder as
-        # some calls (e.g. getToolByName) will insist on using containment
-        # rather than context.
-        wrapped = self._setContainment(vd.data.object, parent)
-
-        return VersionData(wrapped, vd.preserved_data,
-                           vd.sys_metadata, vd.app_metadata)
-
-    security.declarePublic('isUpToDate')
-    def isUpToDate(self, obj, selector=None):
-        """
-        """
-        portal_archivist = getToolByName(self, 'portal_archivist')
-        return portal_archivist.isUpToDate(obj, selector)
-
-    security.declarePublic('getHistory')
-    def getHistory(self, obj, preserve=()):
-        """
-        """
-        self._assertAuthorized(obj, AccessPreviousVersions, 'getHistory')
-        parent = aq_parent(aq_inner(obj))
-        return LazyHistory(self, obj, parent, preserve)
-
-    security.declarePublic('checkout')
-    def checkout(self, history_id, container, version_id=None, preserve=()):
-        """
-        """
-        raise NotImplementedError(
-              "The repositories 'checkout' method is not yet implemented")
-        self._assertAuthorized(obj, CheckoutToLocation, 'checkout')
-
-    security.declarePublic('getHistoryById')
-    def getHistoryById(self, history_id):
-        """
-        """
-        raise NotImplementedError(
-              "The repositories 'getHistoryById' method is not yet implemented")
-        self._assertAuthorized(obj, AccessPreviousVersions, 'getHistoryById')
 
 
 class VersionData:
