@@ -21,7 +21,7 @@ PROJECTNAME = "FAQ"
 product_globals=globals()
 
 DirectoryView.registerDirectory('skins', product_globals)
-DirectoryView.registerDirectory('skins/FAQ', product_globals)
+DirectoryView.registerDirectory('skins/faq', product_globals)
 
 
 def initialize(context):
@@ -35,7 +35,7 @@ def initialize(context):
         listTypes(PROJECTNAME),
         PROJECTNAME)
 
-    
+
 
     utils.ContentInit(
         PROJECTNAME + ' Content',
@@ -45,7 +45,7 @@ def initialize(context):
         fti                = ftis,
         ).initialize(context)
 
-    
+
 
     if CustomizationPolicy and hasattr(CustomizationPolicy,'register'):
         CustomizationPolicy.register(context)
