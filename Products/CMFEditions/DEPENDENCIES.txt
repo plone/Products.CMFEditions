@@ -1,0 +1,43 @@
+============
+Dependencies
+============
+
+
+- ZopeVersionControl 0.3.1:
+  <http://cvs.zope.org/Products/ZopeVersionControl/?only_with_tag=ZopeVersionControl-0_3_1>
+
+
+Other dependencies related to the CMF version you work with.
+
+
+CMF 1.4.7 release
+-----------------
+
+- CMF 1.4.7 release
+- CMFUid-1.5.0.2 release from the collective
+    http://prdownloads.sourceforge.net/collective/CMFUid-1_5_0_2.tgz?download
+
+
+CMF 1.5.0 release
+-----------------
+
+- CMF 1.5.0 release
+- CMFUid from cvs.zope.org CMF-1_5-branch
+
+
+CMF 1.5 branch from CVS
+-----------------------
+
+- Whole CMF from the CMF-1_5-branch
+
+
+CMF 1.5.1 release
+-----------------
+
+- future CMF 1.5.1 (not yet released as of 2004-11-18)
+
+
+CMF HEAD from CVS
+-----------------
+
+- not yet ported to HEAD of CMF!!!

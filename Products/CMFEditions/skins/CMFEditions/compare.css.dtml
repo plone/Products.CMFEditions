@@ -1,0 +1,36 @@
+/*
+ *  This is the file where you put your CSS changes.
+ *  You should preferrably use this and override the
+ *  relevant properties you want to change here instead
+ *  of customizing plone.css to survive upgrades. Writing
+ *  your own plone.css only makes sense for very heavy
+ *  customizations. Useful variables from Plone are
+ *  documented at the bottom of this file.
+ *
+ *  -- Alexander Limi, http://www.plonesolutions.com
+ */
+
+
+
+
+/* <dtml-with base_properties> */
+
+#legend ul li {
+    margin: 0;
+    padding: 0.1em;
+}
+
+.visualDiffRemoved {
+    color: black;
+    background-color: orange;
+    text-decoration: line-through;
+}
+
+.visualDiffAdded {
+    color: black;
+    background-color: yellow;
+}
+
+
+
+/* </dtml-with> */

@@ -1,0 +1,89 @@
+<metal:page define-macro="master">
+  <metal:master use-macro="here/prefs_main_template/macros/master">
+
+    <metal:block metal:fill-slot="top_slot" define-slot="top_slot"
+		 tal:define="dummy python:request.set('disable_border',1)" />
+    <body>
+
+      <div metal:fill-slot="prefs_configlet_main" metal:define-slot="prefs_configlet_main"
+	   tal:define="errors python:request.get('errors', {});">
+
+	<div class="configlet">
+
+	  <div class="documentEditable">
+
+	    <!-- simulating views -->
+	    <ul class="contentViews"
+		tal:define="tabs python:(('Versioning properties','versioning_config_form'),);
+			    tabs python:[ {'label':label, 'name':name} for (label,name) in tabs ];">
+	      <li tal:repeat="tab tabs"
+		  class="selected" tal:attributes="class python:template.pt_source_file()==tab['name'] and 'selected' or ''">
+		<a href=""
+		   tal:attributes="href string:${here/absolute_url}/${tab/name}"
+		   i18n:translate="" tal:content="tab/label">Versioning</a>
+	      </li>
+	    </ul>
+
+	    <div class="contentActions">
+	      &nbsp;
+	    </div>
+	    <!-- End of tabs -->
+
+	    <div class="documentContent" metal:define-slot="multisite_content">
+	      <h3>Versioning Configuration</h3>
+	      <form action="."
+		    name="configure_multisite"
+		    method="post">
+
+		<fieldset>
+		  <legend>Versionable content types</legend>
+		  <div class="field">
+		    <div class="formHelp">
+		      Choose the versionable portal type.
+		    </div>
+		    <table>
+		      <tr>
+			<th>Portal Types</th>
+			<td>
+			  <select multiple  name="new_content_types:list">
+			    <tal:block
+				define="typelist here/portal_types/listTypeInfo;
+					versionablelist here/portal_versions/getVersionableContentTypes"
+				repeat="typeinfo typelist">
+			    <option tal:content="string:${typeinfo/Title}"
+				    tal:condition="python:typeinfo.Title() in versionablelist"
+				    tal:attributes="value typeinfo/getId;
+						    selected python: 1">
+			    </option>
+			    <option tal:content="string:${typeinfo/Title}"
+				    tal:condition="python:typeinfo.Title() not in versionablelist"
+				    tal:attributes="value typeinfo/getId">
+			    </option>
+			  </tal:block>
+			</select>
+			</td>
+		      </tr>
+		    </table>
+		  </div>
+		</fieldset>
+
+		<input
+		    class="context"
+		    type="submit"
+		    i18n:attributes="value"
+		    name="versioning_config:method"
+		    value="Save" />
+
+	      </form>
+
+	    </div>
+
+	  </div>
+
+	</div>
+
+      </div>
+
+    </body>
+  </metal:master>
+</metal:page>

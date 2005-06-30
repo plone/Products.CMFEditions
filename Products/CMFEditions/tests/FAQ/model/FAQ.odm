@@ -1,0 +1,542 @@
+ObjectDomain_Model 15
+{2sagef_mgc_dq7yq570_-p8o 0
+}[objectdomain.uml.core.TypeExpression $17
+objectdomain.uml.mechanisms.UmlPackage-owns $6
+objectdomain.uml.core.Projection $16
+objectdomain.uml.core.UmlAttribute-features $8
+objectdomain.uml.core.UmlAssociationEnd-connections $12
+objectdomain.uml.view.ClassView-owns $4
+objectdomain.uml.core.UmlTaggedValue-taggedValues $10
+objectdomain.uml.core.UmlAssociation-owns $11
+objectdomain.uml.view.Diagram-owns $3
+objectdomain.uml.core.UmlOperation-features $9
+objectdomain.domain.ModelEnvironment-owns $2
+objectdomain.uml.mechanisms.StylePackage-owns $15
+objectdomain.uml.mechanisms.StereotypePackage-owns $13
+objectdomain.uml.core.UmlMultiplicity $18
+objectdomain.uml.core.UmlClass-owns $7
+objectdomain.domain.DomainLockObject $19
+objectdomain.uml.view.AssociationView-owns $5
+objectdomain.uml.mechanisms.UmlModel-models $1
+objectdomain.uml.core.Stereotype-owns $14
+]
+($1 1 > 2sagef_mgc_dq7yq570_-p8o 0
+(name "Model"
+)
+(namespaceRoot true)
+(uid "2sagef_mgc_dq7yq570_-p8o"))
+($2 2 < 2sagef_mgc_dq7yq570_-p72 "ModelEnvironment" 1
+(uid "2sagef_mgc_dq7yq570_-p72"))
+($6 11 < 2sagef_mgc_dq7yq570_-p71 "Logical" 1
+(name "Logical"
+)
+(namespaceRoot true)
+(uid "2sagef_mgc_dq7yq570_-p71"))
+($3 3 < 2sagef_mgc_dq7yq570_-p70 "Class Diagram" 11
+(name "Class Diagram"
+)
+(uid "2sagef_mgc_dq7yq570_-p70")
+(diagramType "class"))
+($4 4 < 2sagef_mgc_dq7yq570_-p6z "FAQ" 3
+(uid "2sagef_mgc_dq7yq570_-p6z")
+(bbx 250 70 280 170))
+($4 5 < 2sagef_mgc_dq7yq570_-p6x "FAQQuestion" 3
+(uid "2sagef_mgc_dq7yq570_-p6x")
+(bbx 320 330 140 140))
+($5 6 < 2sagef_-gwv_dr381w03_-p85 "" 3
+(uid "2sagef_-gwv_dr381w03_-p85")
+(points 390 240 390 330)
+(lineStyle "oblique"))
+($4 7 < 2sageu_o5w_dsaejk6m_-p8j "PloneObject" 3
+(uid "2sageu_o5w_dsaejk6m_-p8j")
+(bbx 600 240 100 60))
+($5 8 < 2sageu_o5w_dsaejk6m_-p8i "links" 3
+(toMultiplicityPosition 560 255)
+(labelPosition 565 225)
+(toRolePosition 560 210)
+(uid "2sageu_o5w_dsaejk6m_-p8i")
+(points 530 217 600 248)
+(lineStyle "oblique"))
+($5 9 < 2sageu_o5w_dsaejk6m_-p8h "links" 3
+(toMultiplicityPosition 575 310)
+(labelPosition 535 335)
+(toRolePosition 535 310)
+(uid "2sageu_o5w_dsaejk6m_-p8h")
+(points 460 365 600 295)
+(lineStyle "oblique"))
+($5 10 < 2sageu_-5wj_dt9ufwna_-p7k "sectionLinks" 3
+(toMultiplicityPosition 620 215)
+(labelPosition 580 160)
+(toRolePosition 620 195)
+(uid "2sageu_-5wj_dt9ufwna_-p7k")
+(points 530 152 620 150 643 240)
+(lineStyle "oblique"))
+($7 12 < 2sagef_mgc_dq7yq570_-p6u "FAQ" 11
+(name "FAQ"
+)
+(uid "2sagef_mgc_dq7yq570_-p6u"))
+($8 13 < 2sagef_mgc_dq7yq570_-p6t "summary" 12
+(name "summary"
+)
+(uid "2sagef_mgc_dq7yq570_-p6t"))
+($8 14 < 2sagef_mgc_dq7yq570_-p6s "introduction" 12
+(name "introduction"
+)
+(uid "2sagef_mgc_dq7yq570_-p6s"))
+($9 15 < 2sagef_mgc_dq7yq570_-p48 "view" 12
+(name "view"
+)
+(uid "2sagef_mgc_dq7yq570_-p48"))
+($10 16 < 2sagef_mgc_dq7yq570_-p42 "view" 15
+(name "view"
+)
+(value "faq_view"
+)
+(uid "2sagef_mgc_dq7yq570_-p42"))
+($8 17 < 2sagef_-gwv_dr381w03_-p88 "sections" 12
+(name "sections"
+)
+(uid "2sagef_-gwv_dr381w03_-p88"))
+($11 18 < 2sagef_-gwv_dr381w03_-p86 "#<anon> (FAQ, FAQQuestion)" 12
+(name "")
+(uid "2sagef_-gwv_dr381w03_-p86"))
+($12 19 < 2sagef_-gwv_dr381w03_-p84 "#0" 18
+(aggregation "composite")
+(uid "2sagef_-gwv_dr381w03_-p84"))
+($12 20 < 2sagef_-gwv_dr381w03_-p83 "#1" 18
+(uid "2sagef_-gwv_dr381w03_-p83"))
+($11 21 < 2sageu_o5w_dsaejk6m_-p90 "links#links (FAQ, PloneObject)" 12
+(name "links"
+)
+(uid "2sageu_o5w_dsaejk6m_-p90"))
+($12 22 < 2sageu_o5w_dsaejk6m_-p8z "#0" 21
+(uid "2sageu_o5w_dsaejk6m_-p8z"))
+($12 23 < 2sageu_o5w_dsaejk6m_-p8y "links#1" 21
+(name "links"
+)
+(uid "2sageu_o5w_dsaejk6m_-p8y")
+(multiplicity "0..*"))
+($11 24 < 2sageu_-5wj_dt9ufwna_-p7w "sectionLinks#sectionLinks (FAQ, PloneObject)" 12
+(name "sectionLinks"
+)
+(uid "2sageu_-5wj_dt9ufwna_-p7w"))
+($12 25 < 2sageu_-5wj_dt9ufwna_-p7v "#0" 24
+(uid "2sageu_-5wj_dt9ufwna_-p7v"))
+($12 26 < 2sageu_-5wj_dt9ufwna_-p7u "sectionLinks#1" 24
+(name "sectionLinks"
+)
+(uid "2sageu_-5wj_dt9ufwna_-p7u")
+(multiplicity "*"))
+($10 27 < 2sagef_mgc_dq7yq570_-p6n "archetype_name" 12
+(name "archetype_name"
+)
+(value "FAQ"
+)
+(uid "2sagef_mgc_dq7yq570_-p6n"))
+($10 28 < 2sagef_mgc_dq7yq570_-p4b "folder_base_class" 12
+(name "folder_base_class"
+)
+(value "OrderedBaseFolder"
+)
+(uid "2sagef_mgc_dq7yq570_-p4b"))
+($10 29 < 2sage0_of7_dzgzbt8h_-p8w "licence" 12
+(name "licence"
+)
+(value "."
+)
+(uid "2sage0_of7_dzgzbt8h_-p8w"))
+($7 30 < 2sagef_mgc_dq7yq570_-p6g "FAQQuestion" 11
+(name "FAQQuestion"
+)
+(uid "2sagef_mgc_dq7yq570_-p6g"))
+($8 31 < 2sagef_-gwv_dr381w03_-p82 "section" 30
+(name "section"
+)
+(uid "2sagef_-gwv_dr381w03_-p82"))
+($8 32 < 2sagef_mgc_dq7yq570_-p6f "title" 30
+(name "title"
+)
+(uid "2sagef_mgc_dq7yq570_-p6f"))
+($8 33 < 2sagef_mgc_dq7yq570_-p6e "answer" 30
+(name "answer"
+)
+(uid "2sagef_mgc_dq7yq570_-p6e"))
+($9 34 < 2sagef_-gwv_dr381w03_-p7r "view" 30
+(name "view"
+)
+(uid "2sagef_-gwv_dr381w03_-p7r"))
+($11 35 < 2sageu_o5w_dsaejk6m_-p8v "links#links (FAQQuestion, PloneObject)" 30
+(name "links"
+)
+(uid "2sageu_o5w_dsaejk6m_-p8v"))
+($12 36 < 2sageu_o5w_dsaejk6m_-p8u "#0" 35
+(uid "2sageu_o5w_dsaejk6m_-p8u"))
+($12 37 < 2sageu_o5w_dsaejk6m_-p8t "links#1" 35
+(name "links"
+)
+(uid "2sageu_o5w_dsaejk6m_-p8t")
+(multiplicity "0..*"))
+($10 38 < 2sagef_mgc_dq7yq570_-p6c "archetype_name" 30
+(name "archetype_name"
+)
+(value "Question"
+)
+(uid "2sagef_mgc_dq7yq570_-p6c"))
+($10 39 < 2sage0_of7_dzgzbt8h_-p8s "licence" 30
+(name "licence"
+)
+(value "."
+)
+(uid "2sage0_of7_dzgzbt8h_-p8s"))
+($10 40 < 2sageu_-6q_e1z2bvtn_-p96 "archgenxml_options" 11
+(name "archgenxml_options"
+)
+(value "--actions"
+)
+(uid "2sageu_-6q_e1z2bvtn_-p96"))
+($13 41 < 2sagef_mgc_dq7yq570_-p6b "stereotypes" 1
+(uid "2sagef_mgc_dq7yq570_-p6b"))
+($14 42 < 2sagef_mgc_dq7yq570_-p6a "_odPackage" 41
+(name "_odPackage"
+)
+(uid "2sagef_mgc_dq7yq570_-p6a")
+(baseClass "Package"))
+($14 43 < 2sagef_mgc_dq7yq570_-p69 "odStub" 41
+(name "odStub"
+)
+(uid "2sagef_mgc_dq7yq570_-p69"))
+($14 44 < 2sagef_mgc_dq7yq570_-p68 "access" 41
+(name "access"
+)
+(uid "2sagef_mgc_dq7yq570_-p68")
+(baseClass "Dependency"))
+($14 45 < 2sagef_mgc_dq7yq570_-p67 "association" 41
+(name "association"
+)
+(uid "2sagef_mgc_dq7yq570_-p67")
+(baseClass "AssociationEnd"))
+($14 46 < 2sagef_mgc_dq7yq570_-p66 "create" 41
+(name "create"
+)
+(uid "2sagef_mgc_dq7yq570_-p66")
+(baseClass "BehavioralFeature"))
+($14 47 < 2sagef_mgc_dq7yq570_-p65 "destroy" 41
+(name "destroy"
+)
+(uid "2sagef_mgc_dq7yq570_-p65")
+(baseClass "BehavioralFeature"))
+($14 48 < 2sagef_mgc_dq7yq570_-p64 "document" 41
+(name "document"
+)
+(uid "2sagef_mgc_dq7yq570_-p64")
+(baseClass "Component"))
+($14 49 < 2sagef_mgc_dq7yq570_-p63 "executable" 41
+(name "executable"
+)
+(uid "2sagef_mgc_dq7yq570_-p63")
+(baseClass "Component"))
+($14 50 < 2sagef_mgc_dq7yq570_-p62 "extend" 41
+(name "extend"
+)
+(uid "2sagef_mgc_dq7yq570_-p62")
+(baseClass "Dependency"))
+($14 51 < 2sagef_mgc_dq7yq570_-p61 "facade" 41
+(name "facade"
+)
+(uid "2sagef_mgc_dq7yq570_-p61")
+(baseClass "Package"))
+($14 52 < 2sagef_mgc_dq7yq570_-p60 "file" 41
+(name "file"
+)
+(uid "2sagef_mgc_dq7yq570_-p60")
+(baseClass "Component"))
+($14 53 < 2sagef_mgc_dq7yq570_-p5z "framework" 41
+(name "framework"
+)
+(uid "2sagef_mgc_dq7yq570_-p5z")
+(baseClass "Package"))
+($14 54 < 2sagef_mgc_dq7yq570_-p5y "friend" 41
+(name "friend"
+)
+(uid "2sagef_mgc_dq7yq570_-p5y")
+(baseClass "Dependency"))
+($14 55 < 2sagef_mgc_dq7yq570_-p5x "global" 41
+(name "global"
+)
+(uid "2sagef_mgc_dq7yq570_-p5x")
+(baseClass "AssociationEnd"))
+($14 56 < 2sagef_mgc_dq7yq570_-p5w "implementation" 41
+(name "implementation"
+)
+(uid "2sagef_mgc_dq7yq570_-p5w")
+(baseClass "Generalization"))
+($14 57 < 2sagef_mgc_dq7yq570_-p5v "implementationClass" 41
+(name "implementationClass"
+)
+(uid "2sagef_mgc_dq7yq570_-p5v")
+(baseClass "Class"))
+($14 58 < 2sagef_mgc_dq7yq570_-p5u "import" 41
+(name "import"
+)
+(uid "2sagef_mgc_dq7yq570_-p5u")
+(baseClass "Dependency"))
+($14 59 < 2sagef_mgc_dq7yq570_-p5t "include" 41
+(name "include"
+)
+(uid "2sagef_mgc_dq7yq570_-p5t")
+(baseClass "Dependency"))
+($14 60 < 2sagef_mgc_dq7yq570_-p5s "invariant" 41
+(name "invariant"
+)
+(uid "2sagef_mgc_dq7yq570_-p5s")
+(baseClass "Constraint"))
+($14 61 < 2sagef_mgc_dq7yq570_-p5r "library" 41
+(name "library"
+)
+(uid "2sagef_mgc_dq7yq570_-p5r")
+(baseClass "Component"))
+($14 62 < 2sagef_mgc_dq7yq570_-p5q "local" 41
+(name "local"
+)
+(uid "2sagef_mgc_dq7yq570_-p5q")
+(baseClass "AssociationEnd"))
+($14 63 < 2sagef_mgc_dq7yq570_-p5p "metaclass" 41
+(name "metaclass"
+)
+(uid "2sagef_mgc_dq7yq570_-p5p")
+(baseClass "Classifier"))
+($14 64 < 2sagef_mgc_dq7yq570_-p5o "metamodel" 41
+(name "metamodel"
+)
+(uid "2sagef_mgc_dq7yq570_-p5o")
+(baseClass "Package"))
+($14 65 < 2sagef_mgc_dq7yq570_-p5n "parameter" 41
+(name "parameter"
+)
+(uid "2sagef_mgc_dq7yq570_-p5n")
+(baseClass "AssociationEnd"))
+($14 66 < 2sagef_mgc_dq7yq570_-p5m "postcondition" 41
+(name "postcondition"
+)
+(uid "2sagef_mgc_dq7yq570_-p5m")
+(baseClass "Constraint"))
+($14 67 < 2sagef_mgc_dq7yq570_-p5l "powertype" 41
+(name "powertype"
+)
+(uid "2sagef_mgc_dq7yq570_-p5l")
+(baseClass "Classifier"))
+($14 68 < 2sagef_mgc_dq7yq570_-p5k "precondition" 41
+(name "precondition"
+)
+(uid "2sagef_mgc_dq7yq570_-p5k")
+(baseClass "Constraint"))
+($14 69 < 2sagef_mgc_dq7yq570_-p5j "process" 41
+(name "process"
+)
+(uid "2sagef_mgc_dq7yq570_-p5j")
+(baseClass "Classifier"))
+($14 70 < 2sagef_mgc_dq7yq570_-p5i "requirement" 41
+(name "requirement"
+)
+(uid "2sagef_mgc_dq7yq570_-p5i")
+(baseClass "Comment"))
+($14 71 < 2sagef_mgc_dq7yq570_-p5h "responsibility" 41
+(name "responsibility"
+)
+(uid "2sagef_mgc_dq7yq570_-p5h")
+(baseClass "Comment"))
+($14 72 < 2sagef_mgc_dq7yq570_-p5g "self" 41
+(name "self"
+)
+(uid "2sagef_mgc_dq7yq570_-p5g")
+(baseClass "AssociationEnd"))
+($14 73 < 2sageu_-5wj_dt9ufwna_-p7q "stub" 41
+(name "stub"
+)
+(uid "2sageu_-5wj_dt9ufwna_-p7q")
+(baseClass "Package"))
+($14 74 < 2sagef_mgc_dq7yq570_-p5e "systemModel" 41
+(name "systemModel"
+)
+(uid "2sagef_mgc_dq7yq570_-p5e")
+(baseClass "Package"))
+($14 75 < 2sagef_mgc_dq7yq570_-p5d "table" 41
+(name "table"
+)
+(uid "2sagef_mgc_dq7yq570_-p5d")
+(baseClass "Component"))
+($14 76 < 2sagef_mgc_dq7yq570_-p5c "thread" 41
+(name "thread"
+)
+(uid "2sagef_mgc_dq7yq570_-p5c")
+(baseClass "Classifier"))
+($14 77 < 2sagef_mgc_dq7yq570_-p5b "topLevel" 41
+(name "topLevel"
+)
+(uid "2sagef_mgc_dq7yq570_-p5b")
+(baseClass "Package"))
+($14 78 < 2sagef_mgc_dq7yq570_-p5a "type" 41
+(name "type"
+)
+(uid "2sagef_mgc_dq7yq570_-p5a")
+(baseClass "Class"))
+($14 79 < 2sagef_mgc_dq7yq570_-p59 "utility" 41
+(name "utility"
+)
+(uid "2sagef_mgc_dq7yq570_-p59")
+(baseClass "Classifier"))
+($14 80 < 2sagef_mgc_dq7yq570_-p58 "boundary" 41
+(smallImageFile stereotype/image/small/boundary.gif)
+(name "boundary"
+)
+(defaultIconWidth 65)
+(iconFile stereotype/icon/boundary.wmf)
+(uid "2sagef_mgc_dq7yq570_-p58")
+(baseClass "Class"))
+($14 81 < 2sagef_mgc_dq7yq570_-p57 "entity" 41
+(smallImageFile stereotype/image/small/entity.gif)
+(name "entity"
+)
+(iconFile stereotype/icon/entity.wmf)
+(uid "2sagef_mgc_dq7yq570_-p57")
+(baseClass "Class"))
+($14 82 < 2sagef_mgc_dq7yq570_-p56 "control" 41
+(smallImageFile stereotype/image/small/control.gif)
+(name "control"
+)
+(defaultIconWidth 60)
+(iconFile stereotype/icon/control.wmf)
+(uid "2sagef_mgc_dq7yq570_-p56")
+(defaultIconHeight 60)
+(baseClass "Class"))
+($14 83 < 2sagef_mgc_dq7yq570_-p55 "interface" 41
+(name "interface"
+)
+(uid "2sagef_mgc_dq7yq570_-p55")
+(baseClass "Class"))
+($14 84 < 2sagef_mgc_dq7yq570_-p54 "body" 41
+(name "body"
+)
+(uid "2sagef_mgc_dq7yq570_-p54")
+(baseClass "Component"))
+($14 85 < 2sagef_mgc_dq7yq570_-p47 "view" 41
+(name "view"
+)
+(uid "2sagef_mgc_dq7yq570_-p47"))
+($14 86 < 2sagef_-gwv_dr381w03_-p8a "form" 41
+(name "form"
+)
+(uid "2sagef_-gwv_dr381w03_-p8a"))
+($14 87 < 2sagef_-gwv_dr381w03_-p7q "action" 41
+(name "action"
+)
+(uid "2sagef_-gwv_dr381w03_-p7q"))
+($15 88 < 2sagef_mgc_dq7yq570_-p53 "styles" 1
+(uid "2sagef_mgc_dq7yq570_-p53"))
+($6 89 < 2sagef_mgc_dq7yq570_-p52 "Component" 1
+(name "Component"
+)
+(namespaceRoot true)
+(uid "2sagef_mgc_dq7yq570_-p52"))
+($7 90 < 2sageu_o5w_dsaejk6m_-p91 "PloneObject" 89
+(name "PloneObject"
+)
+(uid "2sageu_o5w_dsaejk6m_-p91")
+(isAbstract true))
+($6 91 < 2sagef_mgc_dq7yq570_-p51 "Usecase" 1
+(name "Usecase"
+)
+(namespaceRoot true)
+(uid "2sagef_mgc_dq7yq570_-p51"))
+($6 92 < 2sagef_mgc_dq7yq570_-p50 "Deployment" 1
+(name "Deployment"
+)
+(namespaceRoot true)
+(uid "2sagef_mgc_dq7yq570_-p50"))
+($10 93 < 2sageu_3s2_dw2269ly_-p94 "archgenxml_options" 1
+(name "archgenxml_options"
+)
+(value "--actions"
+)
+(uid "2sageu_3s2_dw2269ly_-p94"))
+($16 94)
+($17 95
+(body "text"
+))
+($17 96
+(body "text"
+))
+($17 97
+(body "lines"
+))
+($17 98
+(body "string"
+))
+($17 99
+(body "string"
+))
+($17 100
+(body "text"
+))
+($16 101)
+($16 102)
+($16 103)
+($16 104)
+($16 105)
+($16 106)
+($19 107
+(name "DomainLockObject"
+))
+(typeAssn 19 12)
+(assocEndAssn 12 19)
+(typeAssn 22 12)
+(assocEndAssn 12 22)
+(typeAssn 25 12)
+(assocEndAssn 12 25)
+(typeExpression 13 95)
+(typeExpression 14 96)
+(stereotypeAssn 15 85)
+(typeExpression 17 97)
+(assocEndAssn 30 20)
+(typeAssn 36 30)
+(assocEndAssn 30 36)
+(typeExpression 31 98)
+(typeExpression 32 99)
+(typeExpression 33 100)
+(stereotypeAssn 34 87)
+(typeAssn 23 90)
+(assocEndAssn 90 23)
+(assocEndAssn 90 37)
+(typeAssn 26 90)
+(assocEndAssn 90 26)
+(stereotypeAssn 90 73)
+(typeAssn 37 90)
+(typeAssn 20 30)
+(projectionAssn 4 12 94)
+(projectionAssn 5 30 101)
+(to 6 5)
+(from 6 4)
+(projectionAssn 6 18 102)
+(projectionAssn 7 90 103)
+(to 8 7)
+(from 8 4)
+(projectionAssn 8 21 104)
+(to 9 7)
+(from 9 5)
+(projectionAssn 9 35 105)
+(to 10 7)
+(from 10 4)
+(projectionAssn 10 24 106)
+(openDiagrams 2 3)
+(lockedBy 42 107)
+(stereotypeAssn 11 42)
+(lockedBy 11 107)
+(lockedBy 41 107)
+(lockedBy 88 107)
+(stereotypeAssn 89 42)
+(lockedBy 89 107)
+(stereotypeAssn 91 42)
+(lockedBy 91 107)
+(stereotypeAssn 92 42)
+(lockedBy 92 107)
+(lockedBy 1 107)

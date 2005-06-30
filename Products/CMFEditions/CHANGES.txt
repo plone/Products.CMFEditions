@@ -1,0 +1,25 @@
+==================
+CMFEditons Changes
+==================
+
+This file contains change information for the CMFEditions releases.
+
+
+Current
+-------
+
+Bugs fixed
+
+- Corrected bugs in ``RetainWorkflowStateAndHistory`` modifier and the
+  modifier registry avoiding the review state and the workflow history 
+  from beeing retained on retrieve and revert. 
+
+Features added
+
+- 
+
+
+CMFEditions 1.0alpha2 (XXX date?)
+---------------------------------
+
+no changes recorded

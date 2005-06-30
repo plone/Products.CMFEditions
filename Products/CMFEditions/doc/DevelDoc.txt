@@ -1,0 +1,418 @@
+================================
+CMFEditions: Versioning in Plone
+================================
+
+-----------------------
+Developer Documentation
+-----------------------
+
+:Authors: Grégoire Weber (gregweb), ... (please fill in your name here)
+:Contact: gregweb@incept.ch
+:Date: $Date: 2005/03/22 22:41:31 $
+:Revision: $Revision: 1.5 $
+:Copyright: Grégoire Weber
+:License: GNU Free Documentation License
+:Status: Draft
+:Audience: Developers
+:Abstract: The CMFEditions architecture looks like beeing overly complex.
+  The complexity has it's reasons in Python itself but also in the goal
+  of CMFEditions not to rely on specific behaviour of content objects. 
+  This document shall help developers to grok the architecture and ideas 
+  behind CMFEditions by unfolding one aspect after the other.
+
+  This document emerged from the notes for a presentation for PyCon 2005
+  I (gregweb) couldn't hold because of a flu.
+
+.. contents:: Table of Contents
+
+
+About Versioning
+================
+
+Just some words about what we talk about when we're saying "versioning".
+
+  Versioning essentially means:
+
+  - save the state of an object for later retrieval
+  - retrieve a former state of an object
+  - do some management stuff like showing the history, if an object is up 
+    to date, etc.
+
+In this document we concentrate on the first two points (*save* and 
+*retreive* the state of something). But what does save *save the current 
+state* mean?
+
+Imagine you don't have access to a CVS or SVN repository but you're writing
+an article. What are you usually doing to preserve important milestones of
+your article? From time to time you make a copy of your document 
+(article.rst), append a number to it (article_003.rst) and move it 
+to an ``old_versions`` folder.
+
+Versioning just means that! The copy operation above is a deep copy as you 
+like to have preserved the whole state to be able to retrieve it entirely 
+later.
+
+
+What is a Python Object?
+========================
+
+First let's start with something well known:
+
+A python object is a dictionary::
+
+  >>> class A: pass
+  ...
+  >>> a = A()
+  >>> a.__dict__
+  {}
+
+The data the object carries need not be soley set by code of the class 
+implementation::
+
+  >>> a.x=5
+  >>> a.__dict__
+  {'x': 5}
+  >>>
+
+So there is in fact no control over who stores what for information in the 
+object. In Zope setting attributes at "foreign" objects is quite normal.
+A versioning solution has to handle that (by simply saving away a copy of
+the ``__dict__``).
+
+So let's have a look at real Zope (2.x) object. As expected, every data
+the object carries is found in the objects ``__dict__``::
+
+  >>> PrettyPrinter().pprint(doc.__dict__)
+  {
+    '_Access_contents_information_Permission': ['Anonymous',
+                                               'Manager',
+                                               'Reviewer'],
+    '_Change_portal_events_Permission': ('Manager', 'Owner'),
+    '_Modify_portal_content_Permission': ('Manager', 'Owner'),
+    '_View_Permission': ['Anonymous', 'Manager', 'Reviewer'],
+    '__ac_local_roles__': {'gregweb': ['Owner']},
+    '_last_safety_belt': '',
+    '_last_safety_belt_editor': 'gregweb',
+    '_safety_belt': 'None',
+    'contributors': (),
+    'cooked_text': '',
+    'creation_date': DateTime('2005/02/14 20:03:37.234 GMT+1'),
+    'description': '',
+    'effective_date': None,
+    'expiration_date': None,
+    'id': 'index_html',
+    'language': '',
+    'modification_date': DateTime('2005/02/14 20:03:37.265 GMT+1'),
+    'portal_type': 'Document',
+    'rights': '',
+    'subject': (),
+    'text': '',
+    'text_format': 'structured-text',
+    'title': 'Home page for gregweb',
+    'workflow_history': {'plone_workflow': ({'action': None, 
+      'review_state': 'visible', 'comments': '', 'actor': 'gregweb', 
+      'time': DateTime('2005/02/14 20:03:37.250 GMT+1')},)}
+  }
+
+Looks quite meaningfull! To store a version just make a (deep) copy of 
+``doc`` and store the copy away for later retrieval.
+
+
+Folderish Objects: Folder
+=========================
+
+No let us have a look at a folderish object::
+
+  >>> from pprint import PrettyPrinter
+  >>> PrettyPrinter().pprint(folder.__dict__)
+  {
+    '_Access_contents_information_Permission': ['Anonymous',
+                                                'Manager',
+                                                'Reviewer'],
+    '_List_folder_contents_Permission': ('Manager', 'Owner', 'Member'),
+    '_Modify_portal_content_Permission': ('Manager', 'Owner'),
+    '_View_Permission': ['Anonymous', 'Manager', 'Reviewer'],
+    '__ac_local_roles__': {'gregweb': ['Owner']},
+    '_objects': ({'meta_type': 'Document', 'id': 'doc1'},
+                 {'meta_type': 'Document', 'id': 'doc2'}),
+    'contributors': (),
+    'creation_date': DateTime('2005/02/14 20:03:37.171 GMT+1'),
+    'description': 'Dies ist der Mitglieder-Ordner.',
+    'doc1': <Document at doc1>,
+    'doc2': <Document at doc2>,
+    'effective_date': None,
+    'expiration_date': None,
+    'format': 'text/html',
+    'id': 'folder',
+    'language': '',
+    'modification_date': DateTime('2005/02/14 20:03:37.203 GMT+1'),
+    'portal_type': 'Folder',
+    'rights': '',
+    'subject': (),
+    'title': "Documents",
+    'workflow_history': {'folder_workflow': ({'action': None, 
+      'review_state': 'visible', 'comments': '', 'actor': 'gregweb', 
+      'time': DateTime('2005/02/14 20:03:37.187 GMT+1')},)}
+  }
+
+It looks a little unclear what some of the stuff here is for! Ok as Zope 
+geek you know what's interesting and what isn't. Let's just strip away the 
+unimportant stuff::
+
+  >>> from pprint import PrettyPrinter
+  >>> PrettyPrinter().pprint(folder.__dict__)
+  {
+    'title': "gregweb's Home",
+    'doc1': <Document at doc1>,
+    'doc2': <Document at doc1>,
+    '_objects': ({'meta_type': 'Document', 'id': 'doc1'},
+                 {'meta_type': 'Document', 'id': 'doc2'}),
+    ...
+  }
+
+From the ``_objects`` attribute we conclude it is an ObjectManager (the 
+Zope base class for folderish content types).
+
+So lets just make a deep copy of everything. **Stop!** What if a folder 
+would conaitn another folder and this subfolder will contain a whole site 
+with hundreds of folders?
+
+We just would version the whole subtree! Ok, we have to copy deeply but
+have to stop at some point!
+
+Ok, it looks like the ``_objects`` contains the ids of the subobjects of
+the folder. So let's write down what has to be done:
+
+- deep copy all the stuff except the ``doc1`` and the ``doc2`` attribute.
+- recurse into the subobjects and version them separately. 
+  **Stop!** The same problem as before arrises. We just version the whole 
+  subtree!
+- And we forgot to think about how to track the subobjects from the 
+  viewpoint of the folder.
+
+Ok, the solution is:
+
+1. Replace the hard python references to the subobjects 
+   (``<Document at doc1>`` and ``<Document at doc2>``) by a version aware 
+   week reference. In CMFEditions this is done by replacing the ``doc1`` 
+   resp. the ``doc2`` attribute by an object holding the so called 
+   ``history_id`` (a unique id within at least the portal) and 
+   ``version_id`` (another unique id within the subobjects history)::
+
+     >>> from pprint import PrettyPrinter
+     >>> PrettyPrinter().pprint(folder.__dict__)
+     {
+       'title': "gregweb's Home",
+       'doc1': <VersionAwareRef history_id=5, version_id=2>,
+       'doc2': <VersionAwareRef history_id=7, version_id=4>,
+       '_objects': ({'meta_type': 'Document', 'id': 'doc1'},
+                    {'meta_type': 'Document', 'id': 'doc2'}),
+       ...
+     }
+
+2. We just assume the subobjects got already versioned before. For the 
+   moment let us assume that just to make life simpler. So ``doc1`` looks
+   like this::
+
+     >>> PrettyPrinter().pprint(doc1.__dict__)
+     {
+       'title': "Document 1",
+       'history_id': 5,
+       'version_id': 2,
+       ...
+     }
+
+3. Save the object.
+
+Ok, that's quite right but not 100%. There is a problem remaining:
+
+- We can not replace the python references to the subobjects on the 
+  original (and changing the working copy in the Zope tree).
+- But we can't first copy and then replace the subobjects neither.
+
+The solution:
+
+- Replace the python reference to the subobjects during the copy 
+  mechanism. Let's have a look at this later at `The Copy Mechanism`_.
+
+
+Folderish Objects: F.A.Q.-Page
+==============================
+
+Now let's assume we customized the ``Folder`` content type in a way we 
+can use it for F.A.Q.-Page (this is a commonly used pattern in CMF/Plone 
+sites, it's just done by defining that the ``title`` and the 
+``description`` of a document are the question part and the ``body`` is 
+the answer part. Additionaly a template ``faq_view`` showing all 
+questions at once has to be added).
+
+In step 2. above we assumed the subobjects don't get saved on a save 
+operation of the folder. This assumption is now wrong for the F.A.Q.-Page. 
+We wan't the subobjects be saved in case we save the whole F.A.Q.-Page. 
+But how to distinguish the F.A.Q.-Page form a normal folder? The 
+F.A.Q.-Page uses the same underlying code as the ``Folder``. Ok, the 
+``portal_type`` attribute has a different value (e.g. ``FAQPage``), so
+the F.A.Q.-Page is distinguishable from a normal folder by the 
+versioning system.
+
+
+Object Attributes and Inside and Outside References
+===================================================
+
+In CMFEditions there are three "areas" where information may live in 
+an object:
+
+a) in the *core* of the object like e.g. the ``title`` attributes 
+   (usually everything except content objects)
+b) outside of the core of the object but nevertheless *closely related* 
+   to the object. We gave them the name *inside references*. In the 
+   examples above the document subobjects in a F.A.Q.-Page are of such 
+   type.
+c) outside of the core of the object and *loosely related* to the object.
+   We gave them the name *outside references*. In the examples
+   above the document subobjects in a folder are of such type.
+
+.. image:: img/areas.gif
+   :width: 138
+   :height: 132
+   :scale: 100
+   :alt: The different areas where information can live.
+
+We didn't talk about the criterias that decide to what onionskin an 
+attribute belongs. See `Modifers`_ for this.
+
+
+The Copy Mechanism
+==================
+
+Just to remember:
+
+  We can not deeply copy an object and then cut at the necessary places as
+  the deepcopy operation could be very costy (probably cloning a whole 
+  subsite). We can't cut before the copy operation neither as this would
+  change the original.
+
+So we need to intercept the copy mechanism!
+
+This can be done by using one of Pythons serializer: ``pickle``
+
+Before continueing please read the `chapter about pickling`_ in the python 
+documentation. For those who like to have a look at the "real code" see
+``class OMBaseModifier`` in `StandardModifier.py`_.
+
+.. _`chapter about pickling`: http://python.org/doc/2.4/lib/module-pickle.html
+.. _`StandardModifier.py`: http://cvs.sourceforge.net/viewcvs.py/collective/CMFEditions/StandardModifiers.py?rev=1.4&view=auto
+
+Just a short resume about pickling:
+
+- There is a hook called ``persistent_id`` that get's called upon every
+  object during the serialization process. 
+- In this hook you can decide if the object just has to be serialized as 
+  usual or you may return your own serialization of it.
+- There is another hook ``persistent_load`` that get's called upon every
+  custom serialized object during the deserialization process.
+
+In case of a folder we know which of the attributes are the subobjects.
+We just keep their python id [1]_ in "mind". In the ``persistent_id`` hook 
+the currently passed objects ``id`` get checked if it is one of the
+memorized ``id``\ s. In that case just nothing get's serialized and all the 
+subobjects information will be lost (which is by intention).
+
+During the deserializing process the ``persistent_load`` hook get's called
+upon every subobject. We just return an empty version aware weak reference
+that will be initialized correctly later [2]_.
+
+.. [1] ``id(<object>)`` returns the python identity of ``<object>``. 
+   ``id()`` had to be used as types like dicts can not be used as hash keys.
+.. [2] this is actually an implementation detail and isn't of any 
+   importance here.
+
+As a result the original object and the clone object look the following 
+(non interesting parts are just removed)::
+
+  >>> from pprint import PrettyPrinter
+  >>> PrettyPrinter().pprint(folder_original.__dict__)
+  {
+    'title': "gregweb's Home",
+    'doc1': <Document at doc1>,
+    'doc2': <Document at doc1>,
+    '_objects': ({'meta_type': 'Document', 'id': 'doc1'},
+                 {'meta_type': 'Document', 'id': 'doc2'}),
+    ...
+  }
+  >>> PrettyPrinter().pprint(folder_clone.__dict__)
+  {
+    'title': "gregweb's Home",
+    'doc1': <VersionAwareRef history_id=5, version_id=2>,
+    'doc2': <VersionAwareRef history_id=7, version_id=4>,
+    '_objects': ({'meta_type': 'Document', 'id': 'doc1'},
+                 {'meta_type': 'Document', 'id': 'doc2'}),
+    ...
+  }
+
+
+Modifers
+--------
+
+The above job about deciding what attributes belong to the *core* and what 
+attributes are *inside* or *outside references* is done by the so called
+``Modifiers``. ``Modifiers`` are plug ins and thus replaceable. This way 
+everything application/use case specific can be hold outside of the core
+versioning framework.
+
+
+Overwiew over the Architecture
+==============================
+
+CMFEditions make heavily usage of the CMF(-Framework). The functionality 
+is split into four tools to allow easy future replacement of the individual
+tools:
+
+``portal_repository``/``IRepository.py`` implemented by ``CopyModifyMergeRepositoryTool.py``
+  This is the main API for doing versioning. The implementation depends
+  heavyly on the **applications use cases/policies**.
+
+``portal_archivist``/``IArchivist.py`` implemented by ``ArchivistTool.py``
+  The ``Archivist`` **knows how to copy** a python object. It needs the 
+  help of the ``portal_modifier`` to find the boundaries of an object. 
+  This is an internal API. 
+
+``portal_modifier``/``IModifier.py`` implemented by ``ModifierRegistryTool.py``
+  This is a registry for ``modifier`` plug ins. The modifiers themselves
+  **know how to handle different aspects of objects** during the versioning
+  process. This is an internal API.
+
+``portal_historiesstorage``/``IStorage.py`` implemented by ``ZVCStorage.py``
+  This is the storage layer. The passed copies of the individualized 
+  objects may just be stored. Handling references between objects is 
+  already done and the storage doesn't have to care about it anymore.
+  The goal was that the storage layer just has to **handle storage related 
+  stuff** like accessing a possibly external data base, doing XML 
+  marshalling, etc. ``ZVCStorage.py`` is currently the default storage 
+  using ``ZopeVersionControl`` to store data [3]_. This is an internal API.
+
+.. image:: img/architecture.gif
+   :width: 781
+   :height: 508
+   :scale: 100
+   :alt: Overview over the architecture and flow of information on save.
+
+Have also a look at the `high resolution version`_ of the architecture.
+
+.. [3] This isn't the most efficient and simple way of a ZODB storage.
+   If somebody is interested in replacing this with a simple ZODB storage
+   just show up on the `Versioning Mailing-List`_.
+
+.. _`Versioning Mailing-List`: mailto:collective-versioning@lists.sourceforge.net
+.. _`high resolution version`: architecture.pdf
+
+
+Further Reading
+===============
+
+For more information please consult:
+
+- the interfaces
+- the unit tests
+- the code :-)
+
