@@ -48,7 +48,7 @@
 			  <select multiple  name="new_content_types:list">
 			    <tal:block
 				define="typelist here/portal_types/listTypeInfo;
-					versionablelist here/portal_versions/getVersionableContentTypes"
+					versionablelist here/portal_repository/getVersionableContentTypes"
 				repeat="typeinfo typelist">
 			    <option tal:content="string:${typeinfo/Title}"
 				    tal:condition="python:typeinfo.Title() in versionablelist"

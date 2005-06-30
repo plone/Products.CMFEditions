@@ -85,7 +85,7 @@ def Install(self, tools=tools):
     portal_repository.setVersionableContentType(VERSIONING_ACTIONS.keys())
     setup_permissions(self, write)
     setup_skins(self, write)
-    setup_actions(self, write)
+    setup_content_actions(self, write)
     setup_cpanel(self, write)
     #install_customisation(self, write)
     return '\n'.join(out)
@@ -129,28 +129,15 @@ def setup_skins(self, write):
         path=','.join(path)
         st.addSkinSelection(skinname, path)
 
-def setup_actions(self, write):
+def setup_content_actions(self, write):
     at = getToolByName(self, 'portal_actions')
+    pt = getToolByName(self, 'portal_types')
     vt = getToolByName(self, 'portal_repository')
     vt.addAction('Versions',
                  'Versions',
                  'string:${object_url}/versions_history_form',
-<<<<<<< Install.py
-                 'python:portal.portal_repository.isVersionable(object)',
-                 'Modify portal content',
-                 'object', )
-    at.addActionProvider('portal_repository')
-    write("added versions tab")
-
-def setup_content_actions(self, write):
-    pt = getToolByName(self, 'portal_types')
-    vt.addAction('Versions',
-                 'Versions',
-                 'string:${object_url}/versions_history_form',
                  'python:1 or portal.portal_repository.isVersionable(object)',
-=======
                  'python:portal.portal_repository.isVersionable(object)',
->>>>>>> 1.20
                  'Modify portal content',
                  'object', )
     at.addActionProvider('portal_repository')

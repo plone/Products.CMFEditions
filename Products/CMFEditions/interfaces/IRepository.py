@@ -1,9 +1,9 @@
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber. 
 # All Rights Reserved.
-# 
+#
 # This file is part of CMFEditions.
-# 
+#
 # CMFEditions is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -66,10 +66,10 @@ class ICopyModifyMergeRepository(Interface):
         versioned or not"""
 
     def setAutoApplyMode(autoapply):
-        """Sets the autoapply mde.
+        """Sets the autoapply mode.
         
         If True the first 'save' operation also applies version control.
-        The default value is False.
+        The default value is True.
         """
     
     def applyVersionControl(obj, comment='', metadata={}):

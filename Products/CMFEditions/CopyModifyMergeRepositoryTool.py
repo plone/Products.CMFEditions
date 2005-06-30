@@ -64,7 +64,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem, ActionProviderBase
 
     meta_type = 'CMFEditions Standard Copy Modify Merge Repository'
 
-    autoapply = False
+    autoapply = True
 
     security = ClassSecurityInfo()
 
@@ -221,7 +221,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem, ActionProviderBase
         return vdata
 
     # -------------------------------------------------------------------
-    # methods implementing IArchivist
+    # methods implementing ICopyModifyMergeRepository
     # -------------------------------------------------------------------
 
     security.declarePublic('isVersionable')
