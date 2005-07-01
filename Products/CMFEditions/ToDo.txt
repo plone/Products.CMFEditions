@@ -4,7 +4,7 @@ ToDos
 
 Numbers don't indicate any importance and order in implementation.
 
-next number: 51
+next number: 53
 
 Inbox
 =====
@@ -46,8 +46,8 @@ Inbox
     at an old version but continueing working on teh current one.
     --> ``ZVCStorageTool.py`` should not strip the ``__vc_info__`` away.
     Argghhh: We really should replace the ``ZVCStorageTool`` by a simpler
-    ZODB based one. We have to write a test showing the problem and then 
-    correct it.
+    ZODB based one. In the short term we have to write a test showing the 
+    problem and then correct it if there is really one.
     
     > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\zvcstoragetool.py(121)_saveZVCInfo()
     (Pdb) l
@@ -69,6 +69,20 @@ Inbox
 
 50. Add tests for object managers trating subobjects as inside references.
     Also add tests for a mixed behaviour.
+
+51. ``_recursiveRetrieve``: There is currently a problem with inside_references 
+    beeing moved to outside: What do on revert when reverting an inside_reference 
+    that has previously been moved to outside (no control over it anymore)? We 
+    may end in two object having the same ``history_id`` which is **REALLY** bad. 
+    The reverted inside_reference should be attached a new history!!!
+    Just take into account: the operation of moving away and object and the 
+    reverting it is in fact a copy operation.
+    
+52. ``_recursiveRetrieve``: Rewrapping in revert shall not be done with the 
+    parent but with the current objects wrapper.
+
+        # rewrap (XXX is this the correct place here in case of inplace?)
+        vdata.data.object = vdata.data.object.__of__(parent)
 
 
 CMFEditions 1.0beta1
