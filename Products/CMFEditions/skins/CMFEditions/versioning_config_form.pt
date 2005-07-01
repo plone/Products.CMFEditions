@@ -51,7 +51,7 @@
 					versionablelist here/portal_repository/getVersionableContentTypes"
 				repeat="typeinfo typelist">
 			    <option tal:content="string:${typeinfo/Title}"
-				    tal:condition="python:typeinfo.Title() in versionablelist"
+				    tal:condition="python:typeinfo.getId() in versionablelist"
 				    tal:attributes="value typeinfo/getId;
 						    selected python: 1">
 			    </option>

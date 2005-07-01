@@ -41,6 +41,8 @@ from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
 # install additional products
+#CMFTestCase.installProduct('Zelenium')
+#CMFTestCase.installProduct('PloneSelenium')
 CMFTestCase.installProduct('CMFUid')
 CMFTestCase.installProduct('CMFEditions')
 

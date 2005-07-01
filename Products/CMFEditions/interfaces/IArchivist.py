@@ -20,7 +20,6 @@
 #########################################################################
 """Intercepts/modifies saving/retrieving of versions to/from the repository.
 
-XXX
 
 $Id: IArchivist.py,v 1.3 2005/02/23 00:29:02 gregweb Exp $
 """

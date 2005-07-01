@@ -88,7 +88,8 @@ def Install(self, tools=tools):
     setup_content_actions(self, write)
     setup_cpanel(self, write)
     #install_customisation(self, write)
-    return '\n'.join(out)
+    return "\n".join(out)
+
 
 def renameTool(portal, old_id, new_id):
     """Renames the uid handler to a history id handler.
@@ -136,7 +137,6 @@ def setup_content_actions(self, write):
     vt.addAction('Versions',
                  'Versions',
                  'string:${object_url}/versions_history_form',
-                 'python:1 or portal.portal_repository.isVersionable(object)',
                  'python:portal.portal_repository.isVersionable(object)',
                  'Modify portal content',
                  'object', )
@@ -180,6 +180,25 @@ def setup_cpanel(self, write):
     except AttributeError:
         write("no control panel found")
 
+def setup_selenium(self, write):
+    # PloneSelenium 
+    suites = ['CMFEditions',]
+    provider = getToolByName(self, 'portal_selenium')
+    if provider:
+        for suite in suites:
+            # Functional Tests
+            action = {'id':suite.lower(),
+                      'name':suite,
+                      'action':'string:here/get_%s_ftests'%suite.lower(),
+                      'condition': '',
+                      'permission': 'View',
+                      'category':'ftests',
+                      'visible': 1}
+            provider.addAction(**action)
+            write("Action '%s' added to '%s' action provider"
+                  % (str(action['id']), 'portal_selenium'))
+
+
 def uninstall(self, tools=tools):
     at = getToolByName(self, 'portal_actions')
     at.deleteActionProvider('portal_repository')
@@ -204,3 +223,4 @@ def install_customisation(self, write):
         write(cpscript())
     else:
         write("No customisation policy")
+

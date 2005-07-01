@@ -40,7 +40,8 @@ from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 
-from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
+from Products.CMFEditions.interfaces.IRepository import \
+     ICopyModifyMergeRepository, IContentTypeVersionSupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData, IHistory
 
 from Products.CMFEditions.Permissions import ApplyVersionControl
@@ -60,6 +61,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     __implements__ = (SimpleItem.__implements__,
                       ICopyModifyMergeRepository,
+                      IContentTypeVersionSupport,
                       )
 
     id = 'portal_repository'
@@ -77,21 +79,31 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     _versionable_content_types = VERSIONABLE_CONTENT_TYPES
 
+    
+    # -------------------------------------------------------------------
+    # methods implementing IContentTypeVersionSupport
+    # -------------------------------------------------------------------
+
+
+    security.declarePublic('isVersionable')
+    def isVersionable(self, obj):
+        """See interface.
+        """
+        return obj.portal_type in self.getVersionableContentTypes()
+
+    security.declarePublic('getVersionableContentTypes')
+    def getVersionableContentTypes(self):
+        return self._versionable_content_types
+
+    security.declarePublic('setVersionableContentType')
+    def setVersionableContentType(self, new_content_types):
+        self._versionable_content_types = new_content_types
+
+
     # -------------------------------------------------------------------
     # methods implementing ICopyModifyMergeRepository
     # -------------------------------------------------------------------
 
-    security.declarePublic('isVersionable')
-    def isVersionable(self, obj):
-        """See ICopyModifyMergeRepository.
-        """
-        return obj.portal_type in self.getVersionableContentTypes()
-
-    def getVersionableContentTypes(self):
-        return self._versionable_content_types
-
-    def setVersionableContentType(self, new_content_types):
-        self._versionable_content_types = new_content_types
 
     security.declareProtected(ApplyVersionControl, 'setAutoApplyMode')
     def setAutoApplyMode(self, autoapply):
@@ -101,7 +113,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     security.declarePublic('ApplyVersionControl')
     def applyVersionControl(self, obj, comment='', metadata={}):
-        """
+        """See interface.
         """
         self._assertAuthorized(obj, ApplyVersionControl, 'applyVersionControl')
         self._recursiveSave(obj, metadata,
@@ -110,7 +122,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     security.declarePublic('save')
     def save(self, obj, comment='', metadata={}):
-        """
+        """See interface.
         """
         self._assertAuthorized(obj, SaveNewVersion, 'save')
         self._recursiveSave(obj, metadata, 
@@ -119,7 +131,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     security.declarePublic('revert')
     def revert(self, obj, selector=None):
-        """
+        """See interface.
         """
         original_id = obj.getId()
         self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
@@ -133,7 +145,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     security.declarePublic('retrieve')
     def retrieve(self, obj, selector=None, preserve=()):
-        """
+        """See interface.
         """
         self._assertAuthorized(obj, AccessPreviousVersions, 'retrieve')
         parent = aq_parent(aq_inner(obj))
@@ -149,14 +161,14 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     security.declarePublic('isUpToDate')
     def isUpToDate(self, obj, selector=None):
-        """
+        """See interface.
         """
         portal_archivist = getToolByName(self, 'portal_archivist')
         return portal_archivist.isUpToDate(obj, selector)
 
     security.declarePublic('getHistory')
     def getHistory(self, obj, preserve=()):
-        """
+        """See interface.
         """
         self._assertAuthorized(obj, AccessPreviousVersions, 'getHistory')
         parent = aq_parent(aq_inner(obj))
@@ -169,6 +181,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
 
     def _assertAuthorized(self, obj, permission, name=None):
+        #We need to provide access to the repository upon the object
+        #permissions istead of repository permissions so the repository is
+        #public and the access is check on the object when need.
         if not _checkPermission(permission, obj):
             raise Unauthorized(name)
 
@@ -203,7 +218,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         #   reference
         # - on outside references only set a version aware reference
         #   (if under version control)
-        inside_refs = map(lambda oref, cref: (oref, cref.getAttribute()),
+        inside_refs = map(lambda original_refs, clone_refs:
+                          (original_refs, clone_refs.getAttribute()),
                           prep.original.inside_refs, prep.clone.inside_refs)
         for orig_ref, clone_ref in inside_refs:
             self._recursiveSave(orig_ref, app_metadata, sys_metadata,
@@ -215,7 +231,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         for orig_ref, clone_ref in outside_refs:
             clone_ref.setReference(orig_ref, remove_info=True)
 
-        # save the originating working copy
         portal_archivist.save(prep, autoregister=autoapply)
 
     def _recursiveRetrieve(self, obj, parent, selector, preserve=(),

@@ -16,6 +16,8 @@ ZopeTestCase.installProduct('Archetypes')
 ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
 ZopeTestCase.installProduct('CMFUid')
+#ZopeTestCase.installProduct('Zelenium')
+#ZopeTestCase.installProduct('PloneSelenium')
 ZopeTestCase.installProduct('CMFEditions')
 ZopeTestCase.installProduct('ATContentTypes')
 
@@ -36,6 +38,8 @@ def setupCMFEditions(app, portal_name, quiet):
     # Add PortalTransform
     #if not hasattr(aq_base(portal), 'portal_transforms'):
     portal.portal_quickinstaller.installProduct('PortalTransforms')
+    # Add PloneSelenium
+    #portal.portal_quickinstaller.installProduct('PloneSelenium')
     # Add CMFEdtitions
     portal.portal_quickinstaller.installProduct('CMFEditions')
     if not quiet: ZopeTestCase._print('Adding ATContentTypes ... ')

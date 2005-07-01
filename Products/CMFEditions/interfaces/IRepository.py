@@ -43,6 +43,29 @@ $Id: IRepository.py,v 1.8 2005/04/01 17:41:56 disommav Exp $
 
 from Interface import Interface, Attribute
 
+
+class IVersionSupport(Interface):
+    """Check if versioning is supported for a specific content.
+    """
+
+    def isVersionable(obj):
+        """Returns True if the object is versionable
+        """
+
+        
+class IContentTypeVersionSupport(IVersionSupport):
+    """Registry for versionable content types
+    """
+
+    def getVersionableContentTypes():
+        """Returns a list of Versionable content types
+        """
+
+    def setVersionableContentTypes():
+        """Set the list of Versionable content types
+        """
+
+
 class ICopyModifyMergeRepository(Interface):
     """The simplest repository possible.
 

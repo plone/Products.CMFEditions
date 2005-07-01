@@ -51,6 +51,8 @@ from DummyTools import MemoryStorage
 from DummyTools import Dummy as Dummy 
 
 # install additional products
+#CMFTestCase.installProduct('Zelenium')
+#CMFTestCase.installProduct('PloneSelenium')
 CMFTestCase.installProduct('CMFUid')
 CMFTestCase.installProduct('CMFEditions')
 
