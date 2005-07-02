@@ -81,8 +81,9 @@ class VersionData:
     """
     __implements__ = (IVersionData, )
     
-    def __init__(self, data, preserved_data, metadata):
+    def __init__(self, data, refs_to_be_deleted, preserved_data, metadata):
         self.data = data
+        self.refs_to_be_deleted = refs_to_be_deleted
         self.preserved_data = preserved_data
         self.sys_metadata = metadata['sys_metadata']
         self.app_metadata = metadata['app_metadata']
@@ -325,6 +326,17 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         except StorageUnregisteredError:
             return default
 
+    # XXX 1. make a retrieveByHistoryId?, 2. we don't have a test, 
+    #     3. selector as parameter, 4. Do we have to let modifers intercept?
+    security.declarePrivate('getObjectType')
+    def getObjectType(self, history_id):
+        """
+        """
+        portal_storage = getToolByName(self, 'portal_historiesstorage')
+        vdata = portal_storage.retrieve(history_id) # XXX use selector here?
+        return vdata.object.object.portal_type
+
+
 
 InitializeClass(ArchivistTool)
 
@@ -415,13 +427,15 @@ class LazyHistory:
         metadata = deepcopy(vdata.metadata)
         
         # 5. reattach the separately saved attributes
-        self._modifier.reattachReferencedAttributes(repo_clone, referenced_data)
+        self._modifier.reattachReferencedAttributes(repo_clone, 
+                                                    referenced_data)
         
         # 6. call the after retrieve modifier
-        preserved_data = self._modifier.afterRetrieveModifier(
-                         self._obj, repo_clone, self._preserve)
+        refs_to_be_deleted, preserved_data = \
+            self._modifier.afterRetrieveModifier(self._obj, repo_clone, 
+                                                 self._preserve)
         
-        return VersionData(data, preserved_data, metadata)
+        return VersionData(data, refs_to_be_deleted, preserved_data, metadata)
         
     def __iter__(self):
         return GetItemIterator(self.__getitem__, StorageRetrieveError)

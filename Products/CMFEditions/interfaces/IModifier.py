@@ -121,11 +121,24 @@ class ISaveRetrieveModifier(Interface):
 
         'obj' may be None. This signifies there is no "target" object.
 
-        Returns a dictionary of the data beeing preserved from beeing
-        overwritten.
+        Returns a list of references to be deleted on revert 
+        (``IReferenceAdapter``) and a dictionary of the data having been 
+        preserved from beeing overwritten.
 
         Usually this method does the inverse of method 'beforeSaveHook'.
         """
+
+class IReferenceAdapter(Interface):
+    """Adapts to a references.
+    
+    Currently used to be able to remove a reference without having to
+    know how.
+    """
+    
+    def remove():
+        """Removes the refrence adapted to.
+        """
+
 
 class IModifierRegistrySet(Interface):
     """Registring and editing a modifier registry.

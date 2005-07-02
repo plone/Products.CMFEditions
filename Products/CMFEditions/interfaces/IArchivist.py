@@ -175,6 +175,13 @@ class IVersionData(Interface):
         This is a 'IObjectData' object.
         """)
     
+    refs_to_be_deleted = Attribute(
+        """List of references to be deleted on revert.
+        
+        The items (containing the reference informations) are of 
+        ``IReferenceAdapter``.
+        """)
+    
     preserved_data = Attribute(
         """Returns data beeing preserved from beeing overwritten by modifiers.
         

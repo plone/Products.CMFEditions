@@ -38,6 +38,7 @@ from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
+from Products.CMFEditions.interfaces.IModifier import IReferenceAdapter
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 from Products.CMFEditions.Modifiers import manage_addModifierForm
@@ -188,8 +189,8 @@ class OMOutsideChildrensModifier(OMBaseModifier):
         outside_refs = self._beforeSaveModifier(obj, clone)
         return [], outside_refs
 
-    def afterRetrieveModifier(self, obj, repo_clone):
-        return {}
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        return [], {}
 
 InitializeClass(OMOutsideChildrensModifier)
 
@@ -218,7 +219,7 @@ class OMInsideChildrensModifier(OMBaseModifier):
         return inside_refs, []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        hidhandler = getToolByName(target_obj, 'portal_historyidhandler')
+        hidhandler = getToolByName(obj, 'portal_historyidhandler')
         queryUid = hidhandler.queryUid
 
         # Inside refs from the original object that have no corresponding
@@ -227,31 +228,53 @@ class OMInsideChildrensModifier(OMBaseModifier):
         # 
         # 1. list all inside references of the original
         # 2. remove from the list the inside references that just will be 
-        #    received
-        # 3. Remove the remaining inside objects from the original.
+        #    reverted from the repository
+        # 3. Return the remaining inside objects that have to be removed 
+        #    from the original.
         
         # (1) list originals inside references
         orig_histids = {}
         for id, o in obj.objectItems():
             histid = queryUid(o, None)
             orig_histids[histid] = id
-        # there may be objects without 
+        # there may be objects without history_id
         if None in orig_histids:
             del orig_histids[None]
         
-        # (2) evaluate the refs that get replaces anyway
+        # (2) evaluate the refs that get replaced anyway
         for varef in repo_clone.objectValues():
             histid = varef.history_id
             if histid in orig_histids:
                 del orig_histids[histid]
         
         # (3) remove: XXX arghh, we can't do this here
-        obj.manage_delObjects(ids=orig_histid.values())
-        
-        return {}
-
+        ############## make a list of OMSubobjectsAdapter here instead of 
+        ############## deleting here
+        refs_to_be_deleted = \
+            [OMSubObjectAdapter(obj, name) for name in orig_histids.values()]
+        return refs_to_be_deleted, {}
 
 InitializeClass(OMOutsideChildrensModifier)
+
+class OMSubObjectAdapter:
+    """Adapter to an object manager children.
+    """
+    
+    __implements__ = (IReferenceAdapter, )
+
+    def __init__(self, objectManager, name):
+        """Initialize the adapter.
+        """
+        self._objectManager = objectManager
+        self._name = name
+
+    def remove(self):
+        """See interface.
+        """
+        # XXX do we want there is the ``manage_afterDelete`` hook called?
+        # The decision has to go into the interface documentation.
+        self.objectManager.manage_delObjects(ids=[self._name])
+
 
 _marker = []
 
@@ -266,7 +289,7 @@ class RetainWorkflowStateAndHistory:
     def beforeSaveModifier(self, obj, clone):
         return [], []
 
-    def afterRetrieveModifier(self, obj, repo_clone, preserve=[]):
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         # replace the workflow stuff of the repository clone by the
         # one of the working copy or delete it
         if getattr(aq_base(obj), 'review_state', _marker) is not _marker:
@@ -281,7 +304,7 @@ class RetainWorkflowStateAndHistory:
               is not _marker):
             del repo_clone.workflow_history
 
-        return {}
+        return [], {}
 
 InitializeClass(RetainWorkflowStateAndHistory)
 

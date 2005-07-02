@@ -175,6 +175,7 @@ class DummyArchivist:
 
         # save in the format the data needs to be retrieved
         svdata = VersionData(prepared_obj.clone, 
+                             [],
                              prepared_obj.referenced_data,
                              prepared_obj.metadata)
         # storage simulation
@@ -209,7 +210,10 @@ class DummyArchivist:
     def isUpToDate(self, object, selector=None):
         mem = self.retrieve(object, selector)
         return mem.data.object.ModificationDate() == object.ModificationDate()
-        
+    
+    def getObjectType(self, history_id):
+#        import pdb; pdb.set_trace()
+        return self._archive[history_id][-1].data.object.portal_type
 
 class VersionAwareReference:
     def __init__(self, **info):
@@ -239,7 +243,7 @@ class DummyModifier(DummyBaseTool):
         # just a dead simple test implementation
         for key in preserve:
             preserved[key] = key
-        return preserved
+        return [], preserved
     
     def getReferencedAttributes(self, obj):
         return {}
@@ -339,7 +343,7 @@ class FolderishContentObjectModifier(DummyBaseTool):
         # just a dead simple test implementation
         for key in preserve:
             preserved[key] = key
-        return preserved
+        return [], preserved
     
     def reattachReferencedAttributes(self, object, referenced_data):
         # just a dead simple test implementation

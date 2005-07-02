@@ -248,10 +248,12 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder, ActionProviderBase):
                 preserved[key] = v
         
         # just loop over all modifiers in reverse order
+        refs_to_be_deleted = []
         for ignored_id, mod in self._collectModifiers(obj, ISaveRetrieveModifier, reversed=True):
-            mod.afterRetrieveModifier(obj, repo_clone)
-    
-        return preserved
+            current_refs = mod.afterRetrieveModifier(obj, repo_clone)[0]
+            refs_to_be_deleted.extend(current_refs)
+        
+        return refs_to_be_deleted, preserved
     
     # -------------------------------------------------------------------
     # methods implementing IModifierRegistrySet and IModifierRegistryQuery

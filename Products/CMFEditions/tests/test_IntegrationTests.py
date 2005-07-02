@@ -70,7 +70,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.portal.invokeFactory('Document', 'doc')
 
         # add a folder with two documents in it
-
         self.portal.invokeFactory('Folder', 'fol')
         self.portal.fol.invokeFactory('Document', 'doc1')
         self.portal.fol.invokeFactory('Document', 'doc2')
@@ -298,6 +297,53 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(doc1.title, "v3 of doc1")
         self.assertEqual(doc2.title, "v3 of doc2")
 
+
+    def test11_versionAFolderishObjectThatTreatsChildrensAsInsideRefs(self):
+        portal_repo = self.portal.portal_repository
+        fol = self.portal.fol
+        doc1 = fol.doc1
+        doc2 = fol.doc2
+
+        # just configure the standard folder to treat the childrens as
+        # inside refrences. For this we reconfigure the standard modifiers.
+        portal_modifier = self.portal.portal_modifier
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+                             condition="python: False")
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+                             condition="python: portal_type=='Folder'")
+
+        # save change no 1
+        fol.title = 'v1 of fol'
+        doc1.title = "v1 of doc1"
+        doc2.title = "v1 of doc2"
+
+        portal_repo.applyVersionControl(fol, comment='first save')
+
+        # save change no 2
+        fol.title = 'v2 of fol'
+        doc1.title = "v2 of doc1"
+        fol.manage_delObjects(ids=['doc2'])
+        portal_repo.save(fol, comment='second save after we deleted doc2')
+
+        # save change no 3
+        fol.title = 'v3 of fol'
+        doc1.title = "v3 of doc1"
+        fol.invokeFactory('Document', 'doc3')
+        doc1.title = "v1 of doc3"
+        portal_repo.save(fol, comment='second save with new doc3')
+
+        # revert to change no 1 (version idexes start with index 0)
+        portal_repo.revert(fol, selector=0)
+
+        # check if revertion worked correctly
+        fol = self.portal.fol
+        doc1 = fol.doc1
+        self.failUnless('doc2' in fol.objectIds())
+        self.failIf('doc3' in fol.objectIds())
+        doc2 = fol.doc2
+        self.assertEqual(fol.title, "v1 of fol")
+        self.assertEqual(doc1.title, "v1 of doc1")
+        self.assertEqual(doc2.title, "v1 of doc2")
 
 
 if __name__ == '__main__':

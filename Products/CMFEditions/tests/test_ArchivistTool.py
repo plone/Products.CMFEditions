@@ -85,7 +85,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         for tool in tools:
             self._setDummyTool(tool)
 
-	self.installStorageTool()
+        self.installStorageTool()
 
     def installStorageTool(self):
         self._setDummyTool(MemoryStorage())
@@ -361,5 +361,5 @@ else:
     def test_suite():
         suite = TestSuite()
         suite.addTest(makeSuite(TestArchivistToolMemoryStorage))
-	suite.addTest(makeSuite(TestArchivistToolZStorage))
+        suite.addTest(makeSuite(TestArchivistToolZStorage))
         return suite

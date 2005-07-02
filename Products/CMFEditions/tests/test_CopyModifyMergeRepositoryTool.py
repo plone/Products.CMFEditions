@@ -77,6 +77,7 @@ class TestCopyModifyMergeRepositoryTool(PloneTestCase.PloneTestCase):
         self.portal.portal_quickinstaller.installProduct('PloneSelenium')
         self.portal.portal_quickinstaller.installProduct('CMFEditions')
         self.portal.invokeFactory('Document', 'doc')
+        self.portal.invokeFactory('Link', 'link')
         self.portal.invokeFactory('Folder', 'fol')
         self.portal.fol.invokeFactory('Document', 'doc1_inside')
         self.portal.fol.invokeFactory('Document', 'doc2_inside')
@@ -190,6 +191,50 @@ class TestCopyModifyMergeRepositoryTool(PloneTestCase.PloneTestCase):
         hist = portal_repository.getHistory(doc)
         self.assertEqual(hist._obj.text, 'text v2')
         self.assertEqual(len(hist), 2)
+
+    def test06_getObjectType(self):
+        portal_repository = self.portal.portal_repository
+        portal_hidhandler = self.portal.portal_historyidhandler
+        
+        doc = self.portal.doc
+        portal_repository.applyVersionControl(doc, comment='save no 1')
+        history_id = portal_hidhandler.queryUid(doc)
+        content_type = portal_repository.getObjectType(history_id)
+        self.assertEqual(content_type, 'Document')
+
+        link = self.portal.link
+        portal_repository.applyVersionControl(link, comment='save no 1')
+        history_id = portal_hidhandler.queryUid(link)
+        content_type = portal_repository.getObjectType(history_id)
+        self.assertEqual(content_type, 'Link')
+
+    def test07_retrieveWithNoMoreExistentObject(self):
+        portal_repository = self.portal.portal_repository
+        portal_archivist = self.portal.portal_archivist
+        portal_hidhandler = self.portal.portal_historyidhandler
+        doc = self.portal.doc
+        
+        doc.text = 'text v1'
+        portal_repository.applyVersionControl(doc, comment='save no 1')
+        doc.text = 'text v2'
+        portal_repository.save(doc, comment='save no 2')
+
+        # save the ``history_id`` to be able to retrieve the object after
+        # it's deletion
+        history_id = portal_hidhandler.queryUid(doc)
+        
+        # delete the object we want to retrieve later
+        self.portal.manage_delObjects(ids=['doc'])
+        doc_type = portal_repository.getObjectType(history_id)
+        self.portal.invokeFactory(doc_type, 'XXX')
+        doc = self.portal.XXX
+        portal_hidhandler.setUid(doc, history_id, check_uniqueness=True)
+        vdata = portal_repository.retrieve(doc, selector=0)
+        verifyObject(IVersionData, vdata)
+        self.assertEqual(vdata.object.text, 'text v1')
+        vdata = portal_repository.retrieve(doc, selector=1)
+        self.assertEqual(vdata.object.text, 'text v2')
+        
 
 
 class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryTool):

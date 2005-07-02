@@ -175,6 +175,13 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         return LazyHistory(self, obj, parent, preserve)
 
 
+    security.declarePublic('getObjectType') # XXX
+    def getObjectType(self, history_id):
+        """
+        """
+        portal_archivist = getToolByName(self, 'portal_archivist')
+        return portal_archivist.getObjectType(history_id)
+
     # -------------------------------------------------------------------
     # private helper methods
     # -------------------------------------------------------------------
@@ -262,6 +269,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # --> The archivist API has to be extended
 
         # retrieve all inside refs
+        
         for attr_ref in vdata.data.inside_refs:
             # get the referenced working copy
             # XXX if the working copy we're searching for was moved to
@@ -272,6 +280,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             va_ref = attr_ref.getAttribute()
             ref = portal_hidhandler.queryObject(va_ref.history_id, None)
             if ref is None:
+                import pdb; pdb.set_trace()
+        
                 # there is no working copy for the referenced version, so
                 # create an empty object of the same type (it's only
                 # temporary if not inplace).
