@@ -1,3 +1,29 @@
+#########################################################################
+# Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber,
+# Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
+# All Rights Reserved.
+#
+# This file is part of CMFEditions.
+#
+# CMFEditions is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# CMFEditions is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with CMFEditions; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#########################################################################
+"""Test the ATContentTypes content
+
+$Id:$
+"""
+
 import os, sys, time
 
 if __name__ == '__main__':
@@ -16,8 +42,8 @@ ZopeTestCase.installProduct('Archetypes')
 ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
 ZopeTestCase.installProduct('CMFUid')
-#ZopeTestCase.installProduct('Zelenium')
-#ZopeTestCase.installProduct('PloneSelenium')
+ZopeTestCase.installProduct('Zelenium')
+ZopeTestCase.installProduct('PloneSelenium')
 ZopeTestCase.installProduct('CMFEditions')
 ZopeTestCase.installProduct('ATContentTypes')
 
@@ -32,18 +58,12 @@ def setupCMFEditions(app, portal_name, quiet):
     # Login as portal owner
     user = app.acl_users.getUserById(portal_owner).__of__(app.acl_users)
     newSecurityManager(None, user)
-    # Add Archetypes
     if not hasattr(aq_base(portal), 'archetype_tool'):
         portal.portal_quickinstaller.installProduct('Archetypes')
-    # Add PortalTransform
-    #if not hasattr(aq_base(portal), 'portal_transforms'):
     portal.portal_quickinstaller.installProduct('PortalTransforms')
-    # Add PloneSelenium
-    #portal.portal_quickinstaller.installProduct('PloneSelenium')
-    # Add CMFEdtitions
+    portal.portal_quickinstaller.installProduct('PloneSelenium')
     portal.portal_quickinstaller.installProduct('CMFEditions')
     if not quiet: ZopeTestCase._print('Adding ATContentTypes ... ')
-    # Add ATContentTypes
     portal.portal_quickinstaller.installProduct('ATContentTypes')
     # Log out
     noSecurityManager()

@@ -1,5 +1,6 @@
 #########################################################################
-# Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
+# Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber,
+# Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
 # All Rights Reserved.
 # 
 # This file is part of CMFEditions.
@@ -28,8 +29,7 @@ import time
 
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
-from Testing.ZopeTestCase import ZopeTestCase
-from Products.CMFTestCase import CMFTestCase
+from Testing import ZopeTestCase
 
 from Interface.Verify import verifyObject
 from Acquisition import aq_base
@@ -48,31 +48,39 @@ from Products.CMFEditions.ArchivistTool import ObjectData
 from Products.CMFEditions import ZVCStorageTool
 from Products.CMFEditions import CopyModifyMergeRepositoryTool
 from DummyTools import MemoryStorage
-from DummyTools import Dummy as Dummy 
+from DummyTools import Dummy as Dummy
+from Products.PloneTestCase import PloneTestCase
 
-# install additional products
-#CMFTestCase.installProduct('Zelenium')
-#CMFTestCase.installProduct('PloneSelenium')
-CMFTestCase.installProduct('CMFUid')
-CMFTestCase.installProduct('CMFEditions')
+PloneTestCase.setupPloneSite()
+ZopeTestCase.installProduct('Archetypes')
+ZopeTestCase.installProduct('PortalTransforms')
+ZopeTestCase.installProduct('MimetypesRegistry')
+ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('Zelenium')
+ZopeTestCase.installProduct('PloneSelenium')
+ZopeTestCase.installProduct('CMFEditions')
+ZopeTestCase.installProduct('ATContentTypes')
 
-# Create a CMF site in the test (demo-) storage
-CMFTestCase.setupCMFSite()
+portal_owner = PloneTestCase.portal_owner
+portal_name = PloneTestCase.portal_name
+default_user = PloneTestCase.default_user
 
 class DummyOM(ObjectManager):
     pass
 
-class TestZVCStorageTool(CMFTestCase.CMFTestCase):
+class TestZVCStorageTool(PloneTestCase.PloneTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
+        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
+        self.portal.portal_quickinstaller.installProduct('CMFEditions')
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
-        
+
         # add the Editions Tool (this way we test the 'Install' script!)
 	tools = (
 	    UniqueIdHandlerTool.UniqueIdHandlerTool,
@@ -80,11 +88,6 @@ class TestZVCStorageTool(CMFTestCase.CMFTestCase):
 	    ArchivistTool.ArchivistTool,
 	    CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool,
 	)
-				
-        Install.Install(self.portal, tools=tools)
-	
-	#install storage tool you want to install
-        self.installStorageTool()
 
     def installStorageTool(self):
         """Install your storage tool at this point"""
@@ -93,7 +96,7 @@ class TestZVCStorageTool(CMFTestCase.CMFTestCase):
 
     def buildMetadata(self, comment):
         return {'sys_metadata': {'comment': comment}}
-    
+
     def getComment(self, metadata):
         return metadata['sys_metadata']['comment']
 
@@ -106,25 +109,25 @@ class TestZVCStorageTool(CMFTestCase.CMFTestCase):
     def test01_saveAfterRegisteringDoesNotRaiseException(self):
         portal_storage = self.portal.portal_historiesstorage
         obj = Dummy()
-        
+
         portal_storage.register(1, ObjectData(obj), metadata=self.buildMetadata('saved'))
         portal_storage.save(1, ObjectData(obj), metadata=self.buildMetadata('saved'))
 
     def test02_saveUnregisteredObjectRaisesException(self):
         portal_storage = self.portal.portal_historiesstorage
         obj = Dummy()
-        
+
         self.assertRaises(StorageUnregisteredError,
-                          portal_storage.save, 
+                          portal_storage.save,
                           1, ObjectData(obj), metadata=self.buildMetadata('saved'))
 
     def test03_saveAndRetrieve(self):
         portal_storage = self.portal.portal_historiesstorage
-        
+
         obj1 = Dummy()
         obj1.text = 'v1 of text'
         portal_storage.register(1, ObjectData(obj1), metadata=self.buildMetadata('saved v1'))
-        
+
         obj2 = Dummy()
         obj2.text = 'v2 of text'
         portal_storage.save(1, ObjectData(obj2), metadata=self.buildMetadata('saved v2'))

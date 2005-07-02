@@ -2,19 +2,19 @@
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
 # All Rights Reserved.
-# 
+#
 # This file is part of CMFEditions.
-# 
+#
 # CMFEditions is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # CMFEditions is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -34,7 +34,7 @@ from pickle import dumps, loads
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-from Testing.ZopeTestCase import ZopeTestCase
+from Testing import ZopeTestCase
 from Products.CMFTestCase import CMFTestCase
 
 from Interface.Verify import verifyObject
@@ -48,38 +48,42 @@ from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.interfaces.IArchivist import ArchivistError
+from Products.PloneTestCase import PloneTestCase
 
-# install additional products
-CMFTestCase.installProduct('CMFUid')
-CMFTestCase.installProduct('CMFEditions')
+PloneTestCase.setupPloneSite()
+ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('Zelenium')
+ZopeTestCase.installProduct('PloneSelenium')
+ZopeTestCase.installProduct('CMFEditions')
 
-# Create a CMF site in the test (demo-) storage
-CMFTestCase.setupCMFSite()
+portal_owner = PloneTestCase.portal_owner
+portal_name = PloneTestCase.portal_name
+default_user = PloneTestCase.default_user
 
 from DummyTools import DummyArchivist
 
-class TestCopyModifyMergeRepositoryTool(CMFTestCase.CMFTestCase):
+class TestCopyModifyMergeRepositoryTool(PloneTestCase.PloneTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
-        
+
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
-        
+
         # add test data
+        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
+        self.portal.portal_quickinstaller.installProduct('CMFEditions')
         self.portal.invokeFactory('Document', 'doc')
         self.portal.invokeFactory('Folder', 'fol')
         self.portal.fol.invokeFactory('Document', 'doc1_inside')
         self.portal.fol.invokeFactory('Document', 'doc2_inside')
         self.portal.fol.invokeFactory('Document', 'doc3_outside')
-        
-        # add the Editions Tool (this way we test the 'Install' script!)
-        Install.Install(self.portal)
+
         self._setupArchivist()
-    
+
     def _setupArchivist(self):
         # override this to install a different than the "official" tools
         pass
@@ -88,7 +92,7 @@ class TestCopyModifyMergeRepositoryTool(CMFTestCase.CMFTestCase):
         portal_repository = self.portal.portal_repository
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
-        
+
         # test the tools interface conformance
         verifyObject(ICopyModifyMergeRepository, portal_repository)
 
@@ -239,57 +243,53 @@ save    fol: hid=1, irefs=({hid:2, vid:1}, {hid:3, vid:1}), orefs=({hid:None, vi
         fol.doc2_inside.title = 'doc2_inside title text v1'
         fol.doc3_outside.title = 'doc3_outside title text v1'
         portal_repository.applyVersionControl(fol, comment='save no 1')
-        
+
         fol.title = 'fol title v2'
         fol.doc1_inside.title = 'doc1_inside title text v2'
         fol.doc2_inside.title = 'doc2_inside title text v2'
         fol.doc3_outside.title = 'doc3_outside title text v2'
         portal_repository.save(fol, comment='save no 2')
-        
+
         portal_archivist.reset_log()
-       
+
         retr = portal_repository.retrieve(fol, 0)
-        
+
         # check recursive retrieve
         alog_str = portal_archivist.get_log()
-        
+
         expected = """retrieve fol: hid=1, selector=0
 retrieve doc1_inside: hid=2, selector=0
 retrieve doc2_inside: hid=3, selector=0"""
         self.assertEqual(alog_str, expected)
-        
+
         # check result
         self.assertEqual(retr.object.title, 'fol title v1')
-        self.assertEqual(retr.object.doc1_inside.title, 
+        self.assertEqual(retr.object.doc1_inside.title,
                         'doc1_inside title text v1')
-        self.assertEqual(retr.object.doc2_inside.title, 
+        self.assertEqual(retr.object.doc2_inside.title,
                         'doc2_inside title text v1')
-        self.assertEqual(retr.object.doc3_outside.title, 
+        self.assertEqual(retr.object.doc3_outside.title,
                         'doc3_outside title text v2')
 
 
-class TestRegressionTests(CMFTestCase.CMFTestCase):
+class TestRegressionTests(PloneTestCase.PloneTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
-        
-        # add an additional user
+        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
+        self.portal.portal_quickinstaller.installProduct('CMFEditions')
+
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
-        
-        # add test data
+
         self.portal.invokeFactory('Document', 'doc')
         self.portal.invokeFactory('Folder', 'fol')
-        #self.portal.fol.invokeFactory('Document', 'doc1_inside')
-        #self.portal.fol.invokeFactory('Document', 'doc2_inside')
-        #self.portal.fol.invokeFactory('Document', 'doc3_outside')
-        
+
         # add the Editions Tool (this way we test the 'Install' script!)
-        Install.Install(self.portal)
         self._setupArchivist()
-    
+
     def _setupArchivist(self):
         # override this to install a different than the "official" tools
         pass
@@ -307,7 +307,7 @@ class TestRegressionTests(CMFTestCase.CMFTestCase):
         portal_repository.revert(doc, 0)
         self.assertEqual(doc.getId(), 'newdoc')
         self.failUnless('newdoc' in self.portal.objectIds())
-        
+
 
 if __name__ == '__main__':
     framework()

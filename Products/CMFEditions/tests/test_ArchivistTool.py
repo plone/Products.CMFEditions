@@ -1,19 +1,20 @@
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
+# Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
 # All Rights Reserved.
-# 
+#
 # This file is part of CMFEditions.
-# 
+#
 # CMFEditions is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # CMFEditions is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -22,32 +23,40 @@
 
 $Id: test_ArchivistTool.py,v 1.10 2005/02/25 22:04:00 tomek1024 Exp $
 """
+
 import types
 import os, sys
 import time
 
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
-from Testing.ZopeTestCase import ZopeTestCase
+from Testing import ZopeTestCase
 from Products.CMFTestCase import CMFTestCase
+from Products.PloneTestCase import PloneTestCase
 
 from Interface.Verify import verifyObject
 
 from Products.CMFCore.utils import getToolByName
 
-from Products.CMFEditions.Extensions import Install
+#from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
-# install additional products
-#CMFTestCase.installProduct('Zelenium')
-#CMFTestCase.installProduct('PloneSelenium')
-CMFTestCase.installProduct('CMFUid')
-CMFTestCase.installProduct('CMFEditions')
+PloneTestCase.setupPloneSite()
+ZopeTestCase.installProduct('Archetypes')
+ZopeTestCase.installProduct('PortalTransforms')
+ZopeTestCase.installProduct('MimetypesRegistry')
+ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('Zelenium')
+ZopeTestCase.installProduct('PloneSelenium')
+ZopeTestCase.installProduct('CMFEditions')
+ZopeTestCase.installProduct('ATContentTypes')
 
-# Create a CMF site in the test (demo-) storage
-CMFTestCase.setupCMFSite()
+portal_owner = PloneTestCase.portal_owner
+portal_name = PloneTestCase.portal_name
+default_user = PloneTestCase.default_user
+
 
 from DummyTools import DummyModifier
 from DummyTools import DummyHistoryIdHandler
@@ -55,31 +64,23 @@ from DummyTools import MemoryStorage
 from DummyTools import FolderishContentObjectModifier
 
 
-class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
+class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
 
     def afterSetUp(self):
-        # we need to have the Manager role to be able to add things
-        # to the portal root
+        start = time.time()
         self.setRoles(['Manager',])
-
-        # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
-        
-        # add test data
+        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
+        self.portal.portal_quickinstaller.installProduct('CMFEditions')
         self.portal.invokeFactory('Document', 'doc')
         self.portal.invokeFactory('Folder', 'fol')
         self.portal.fol.invokeFactory('Document', 'doc1_inside')
         self.portal.fol.invokeFactory('Document', 'doc2_inside')
         self.portal.fol.invokeFactory('Document', 'doc3_outside')
-        
-        # add the Editions Tool (this way we test the 'Install' script!)
-        Install.Install(self.portal)
-        
-        # add a dummy tools
         tools = (
-            DummyModifier(), 
-            DummyHistoryIdHandler(), 
+            DummyModifier(),
+            DummyHistoryIdHandler(),
             )
         for tool in tools:
             self._setDummyTool(tool)
@@ -94,8 +95,6 @@ class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
 
     def test00_interface(self):
         portal_archivist = self.portal.portal_archivist
-
-        # test interface conformance
         verifyObject(IArchivist, portal_archivist)
 
     def test01_registerAttachesAHistoryId(self):
@@ -103,39 +102,28 @@ class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
         portal_historyidhandler = self.portal.portal_historyidhandler
         portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
-        
-        # does a save also
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         portal_archivist.register(prep)
-        
-        # check if a unique history id was attached
         history_id = portal_historyidhandler.queryUid(doc)
         self.failUnless(history_id)
-        
+
     def test02_retrieve(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
         portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
-        
         doc.text = 'text v1'
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         portal_archivist.register(prep)
-        
         doc.text = 'text v2'
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
-        
         vdata = portal_archivist.retrieve(doc, 0, preserve=('gaga', 'gugus'))
         old_doc = vdata.data.object
         old_meta = vdata.app_metadata
-        
-        # check if a unique history id was attached
         head_histid = portal_historyidhandler.queryUid(doc)
         old_histid = portal_historyidhandler.queryUid(old_doc)
-        
         self.assertEqual(head_histid, old_histid)
-        
         # check if correct version retrieved and working object unchanged
         self.assertEqual(old_doc.text , 'text v1')
         self.assertEqual(old_meta , 'save number 1')
@@ -144,31 +132,31 @@ class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
         self.assertEqual(vdata.preserved_data['gaga'], 'gaga')
         self.assertEqual(vdata.preserved_data['gugus'], 'gugus')
 
-    # XXX no inplcae anymore!!!
-    def XXX_test03_retrieveInplace(self):
+    # XXX no inplace anymore!!!
+    def disabled_test03_retrieveInplace(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
         portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
-        
+
         doc.text = 'text v1'
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         portal_archivist.register(prep)
-        
+
         doc.text = 'text v2'
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
-        
+
         before_histid = portal_historyidhandler.queryUid(doc)
-        
+
         portal_archivist.retrieve(doc, 0, inplace=True)
-        
+
         # check if the rolled back doc has the same identity as before
         self.assertEqual(doc, self.portal.doc)
-        
+
         # check if rolled back the working copy to the old version
         self.assertEqual(doc.text , 'text v1')
-        
+
         # check if a unique history id was attached
         after_histid = portal_historyidhandler.queryUid(doc)
         self.assertEqual(after_histid, before_histid)
@@ -178,17 +166,17 @@ class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
         portal_historyidhandler = self.portal.portal_historyidhandler
         portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
-        
+
         doc.text = 'text v1'
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         portal_archivist.register(prep)
-        
+
         doc.text = 'text v2'
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
-        
+
         history = portal_archivist.getHistory(doc)
-        
+
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
         self.failUnless(history[0].sys_metadata['timestamp'])
@@ -202,19 +190,19 @@ class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
     def test05_iterateOverHistory(self):
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
-        
+
         doc.text = 'text v1'
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         portal_archivist.register(prep)
-        
+
         doc.text = 'text v2'
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
-        
+
         doc.text = 'text v3'
         prep = portal_archivist.prepare(doc, app_metadata='save number 3')
         portal_archivist.save(prep)
-        
+
         counter = 0
         for vdata in portal_archivist.getHistory(doc):
             counter += 1
@@ -224,7 +212,7 @@ class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
     def test06_prepareObjectWithReferences(self):
         # test with a different modifier
         self._setDummyTool(FolderishContentObjectModifier())
-        
+
         portal_archivist = self.portal.portal_archivist
         portal_hidhandler = self.portal.portal_historyidhandler
         IVersionAwareReference = portal_archivist.interfaces.IVersionAwareReference
@@ -233,17 +221,17 @@ class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
         doc1_inside = fol.doc1_inside
         doc2_inside = fol.doc2_inside
         doc3_outside = fol.doc3_outside
-        
+
         doc1_inside.text = 'doc1_inside: inside reference'
         doc2_inside.text = 'doc2_inside: inside reference'
         doc3_outside.text = 'doc3_outside: outside reference'
-        
+
         prep = portal_archivist.prepare(fol, app_metadata='save number 1')
-        
+
         self.assertEqual(fol, prep.original.object)
-        
+
         # it is important that the clones returned reference info contain
-        # references to the outgoing references and the python refs are 
+        # references to the outgoing references and the python refs are
         # replaced by 'IVersionAwareRefrence' objects
         inside_refs = prep.clone.inside_refs
         outside_refs = prep.clone.outside_refs
@@ -255,8 +243,8 @@ class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
         cloneValues = prep.clone.object.objectValues()
         for sub in cloneValues:
             self.failUnless(sub in refs)
-            
-        # it is important that the originals returned reference info contain 
+
+        # it is important that the originals returned reference info contain
         # references to the outgoing references
         inside_orefs = prep.original.inside_refs
         outside_orefs = prep.original.outside_refs
@@ -264,15 +252,15 @@ class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
         self.assertEqual(len(outside_orefs), 1)
         refs = inside_orefs+outside_orefs
         originalValues = prep.original.object.objectValues()
-        
+
         for sub in originalValues:
             self.failUnless(sub in refs)
-        
+
         # the clones and the originals refs must also reference the
         # "same" object
-        self.assertEqual(prep.clone.object.objectIds(), 
+        self.assertEqual(prep.clone.object.objectIds(),
                          prep.original.object.objectIds())
-        
+
         self.assertEqual(len(prep.referenced_data), 1)
         self.failUnless(prep.referenced_data['title'] is fol.title)
         
@@ -355,8 +343,16 @@ class TestArchivistToolMemoryStorage(CMFTestCase.CMFTestCase):
 
 class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):
 
-   def installStorageTool(self): #ZStorage ist already installed
-     pass
+   def installStorageTool(self):
+       """Test with a real ZODB storage overriding the storage installation
+          in the super class.
+
+          XXX we should approach this the opposite way round making the super
+          class using the ZODB storage and this make this class working on the
+          dummy storage.
+       """
+       pass
+
 
 if __name__ == '__main__':
     framework()

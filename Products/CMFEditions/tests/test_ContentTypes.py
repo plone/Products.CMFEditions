@@ -14,8 +14,8 @@ ZopeTestCase.installProduct('Archetypes')
 ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
 ZopeTestCase.installProduct('CMFUid')
-#ZopeTestCase.installProduct('Zelenium')
-#ZopeTestCase.installProduct('PloneSelenium')
+ZopeTestCase.installProduct('Zelenium')
+ZopeTestCase.installProduct('PloneSelenium')
 ZopeTestCase.installProduct('CMFEditions')
 
 portal_owner = PloneTestCase.portal_owner
@@ -29,12 +29,9 @@ def setupCMFEditions(app, portal_name, quiet):
     # Login as portal owner
     user = app.acl_users.getUserById(portal_owner).__of__(app.acl_users)
     newSecurityManager(None, user)
-    # Add Archetypes
     if not hasattr(aq_base(portal), 'archetype_tool'):
         portal.portal_quickinstaller.installProduct('Archetypes')
-    # Add PloneSelenium
-    #portal.portal_quickinstaller.installProduct('PloneSelenium')
-    # Add CMFEdtitions
+    portal.portal_quickinstaller.installProduct('PloneSelenium')
     portal.portal_quickinstaller.installProduct('CMFEditions')
     # Log out
     noSecurityManager()

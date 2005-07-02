@@ -1,5 +1,6 @@
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
+# Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
 # All Rights Reserved.
 # 
 # This file is part of CMFEditions.
@@ -37,8 +38,7 @@ except ImportError:
     # XXX not sure if 'objectImplements' is correct
     from Interface import objectImplements as verifyObject
 
-from Testing.ZopeTestCase import ZopeTestCase
-from Products.CMFTestCase import CMFTestCase
+from Testing import ZopeTestCase
 
 from Acquisition import aq_base
 from OFS.ObjectManager import BadRequestException
@@ -50,20 +50,23 @@ from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import IModifierRegistryQuery
-from Products.CMFEditions.interfaces.IModifier import IBulkEditableModifierRegistry
+from Products.CMFEditions.interfaces.IModifier \
+     import IBulkEditableModifierRegistry
+from Products.PloneTestCase import PloneTestCase
 
-from Products.CMFEditions.Extensions import Install
+PloneTestCase.setupPloneSite()
+ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('Zelenium')
+ZopeTestCase.installProduct('PloneSelenium')
+ZopeTestCase.installProduct('CMFEditions')
 
-# install additional products
-CMFTestCase.installProduct('CMFUid')
-CMFTestCase.installProduct('CMFEditions')
-
-# Create a CMF site in the test (demo-) storage
-CMFTestCase.setupCMFSite()
+portal_owner = PloneTestCase.portal_owner
+portal_name = PloneTestCase.portal_name
+default_user = PloneTestCase.default_user
 
 # provoke the warning messages before the first test
 from OFS.SimpleItem import SimpleItem
-class Dummy(SimpleItem): 
+class Dummy(SimpleItem):
     pass
 def deepcopy(obj):
     return loads(dumps(obj, HIGHEST_PROTOCOL))
@@ -71,9 +74,9 @@ deepcopy(Dummy())
 
 
 class SimpleModifierBase:
-  
+
     __implements__ = (ISaveRetrieveModifier,)
-    
+
     def beforeSaveModifier(self, obj, copy_obj):
         try:
             bsm = getattr(copy_obj, self.beforeSaveModifierAttribute)
@@ -161,29 +164,28 @@ class LoggingModifier_D(LoggingModifierBase):
     pass
 
 loggingModifiers = (
-    LoggingModifier_A(), 
-    LoggingModifier_B(), 
-    LoggingModifier_C(), 
-    LoggingModifier_D(), 
+    LoggingModifier_A(),
+    LoggingModifier_B(),
+    LoggingModifier_C(),
+    LoggingModifier_D(),
 )
 
-class TestModifierRegistryTool(CMFTestCase.CMFTestCase):
+class TestModifierRegistryTool(PloneTestCase.PloneTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
 
+        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
+        self.portal.portal_quickinstaller.installProduct('CMFEditions')
+
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
-        
         # add a document
         self.portal.invokeFactory('Document', 'doc')
-        
-        # add the Editions Tool (this way we test the 'Install' script!)
-        Install.Install(self.portal)
-        
+
         # just unregister the standard modifiers for the unit tests
         portal_modifier = getToolByName(self.portal, 'portal_modifier')
         modifiers = portal_modifier.modules.StandardModifiers.modifiers
@@ -203,33 +205,33 @@ class TestModifierRegistryTool(CMFTestCase.CMFTestCase):
         portal_modifier = self.portal.portal_modifier
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
-        
+
         portal_modifier.register('1', SimpleModifier1())
         portal_modifier.edit('1', condition='python:True')
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
         self.assertRaises(AttributeError, getattr, doc_copy, 'beforeSave1')
         self.assertRaises(AttributeError, getattr, doc_copy, 'afterRetrieve1')
-        
+
     def test02_enabledModifierCalled(self):
         portal_modifier = self.portal.portal_modifier
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
-        
+
         portal_modifier.register('1', SimpleModifier1())
         portal_modifier.edit('1', enabled=True, condition='python:True')
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
-        
+
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         self.assertEqual(doc_copy.beforeSave1, 2)
         self.assertEqual(doc_copy.afterRetrieve1, 1)
-        
+
     def test03_unregisteredModifiersNotCalled(self):
         portal_modifier = self.portal.portal_modifier
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
-        
+
         portal_modifier.register('1', SimpleModifier1())
         portal_modifier.edit('1', enabled=True, condition='python:True')
         portal_modifier.beforeSaveModifier(doc, doc_copy)
@@ -239,55 +241,55 @@ class TestModifierRegistryTool(CMFTestCase.CMFTestCase):
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         self.assertEqual(doc_copy.beforeSave1, 1)
         self.assertRaises(AttributeError, getattr, doc_copy, 'afterRetrieve1')
-    
+
     def test04_conditionEvaluated(self):
         portal_modifier = self.portal.portal_modifier
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
-        
+
         portal_modifier.register('1', SimpleModifier1())
         portal_modifier.edit('1', enabled=True, condition='python:False')
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
         self.assertRaises(AttributeError, getattr, doc_copy, 'beforeSave1')
         self.assertRaises(AttributeError, getattr, doc_copy, 'afterRetrieve1')
-        
+
     def test05_registerANonModifier(self):
         portal_modifier = self.portal.portal_modifier
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
-        
+
         portal_modifier._setObject('doc', NonModifier())
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
         self.assertRaises(AttributeError, getattr, doc_copy, 'beforeSave1')
         self.assertRaises(AttributeError, getattr, doc_copy, 'afterRetrieve1')
-    
+
     def test06_modifierAddedToTheCorrectPosition(self):
         portal_modifier = self.portal.portal_modifier
-        
+
         m1 = SimpleModifier1()
         m2 = SimpleModifier2()
         m3 = SimpleModifier3()
-        
+
         portal_modifier.register('1', m1)
         portal_modifier.register('2', m2)
         portal_modifier.register('3', m3, pos=0)
-        
+
         modifiers = [m.getModifier() for m in portal_modifier.objectValues()]
         self.assertEqual(modifiers, [m3, m1, m2])
-        
+
     def test07_unregisterModifer(self):
         portal_modifier = self.portal.portal_modifier
-        
+
         m1 = SimpleModifier1()
         m2 = SimpleModifier2()
         m3 = SimpleModifier3()
-        
+
         portal_modifier.register('1', m1)
         portal_modifier.register('2', m2)
         portal_modifier.register('3', m3, pos=0)
-        
+
         portal_modifier.unregister('1')
 
         modifiers = [m.getModifier() for m in portal_modifier.objectValues()]
@@ -295,17 +297,17 @@ class TestModifierRegistryTool(CMFTestCase.CMFTestCase):
 
     def test08_getModifiers(self):
         portal_modifier = self.portal.portal_modifier
-        
+
         m1 = SimpleModifier1()
         m2 = SimpleModifier2()
         m3 = SimpleModifier3()
-        
+
         portal_modifier.register('1', m1)
         portal_modifier.register('2', m2)
         portal_modifier.register('3', m3, pos=0)
-        
+
         portal_modifier.unregister('1')
-        
+
         self.assertEqual(portal_modifier.get('2').getModifier(), m2)
         self.assertEqual(portal_modifier.query('2').getModifier(), m2)
         self.assertRaises(AttributeError, portal_modifier.get, '1')
@@ -315,7 +317,7 @@ class TestModifierRegistryTool(CMFTestCase.CMFTestCase):
         portal_modifier = self.portal.portal_modifier
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
-        
+
         # just check if variables got defined
         condition = 'python:"%s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s" % (' \
                     'object_url, ' \
@@ -331,7 +333,7 @@ class TestModifierRegistryTool(CMFTestCase.CMFTestCase):
                     ')'
         portal_modifier.register('1', SimpleModifier1())
         portal_modifier.edit('1', enabled=True, condition=condition)
-        
+
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
         self.assertEqual(doc_copy.beforeSave1, 1)
@@ -342,23 +344,25 @@ class TestModifierRegistryTool(CMFTestCase.CMFTestCase):
         portal_modifier = self.portal.portal_modifier
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
-        
+
         mlog = []
         counter = 0
         for m in loggingModifiers:
             counter += 1
             portal_modifier.register(str(counter), m)
-            portal_modifier.edit(str(counter), enabled=True, condition='python:True')
-        
+            portal_modifier.edit(str(counter),
+                                 enabled=True,
+                                 condition='python:True')
+
         mlog.append('<save>')
         referenced_data = portal_modifier.getReferencedAttributes(doc)
         portal_modifier.getOnCloneModifiers(doc)
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         mlog.append('<retrieve>')
-        
+
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
         mlog.append('<end>')
-        
+
         mlog_str = '\n'.join(mlog).replace('__main__', 'test_ModifierRegistryTool')
         expected_result = \
 """<save>
