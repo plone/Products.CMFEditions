@@ -85,7 +85,7 @@ class SimpleModifierBase:
             bsm = 1
         setattr(copy_obj, self.beforeSaveModifierAttribute, bsm)
         return [], []
-            
+
     def afterRetrieveModifier(self, obj, repo_obj):
         try:
             arm = getattr(repo_obj, self.afterRetrieveModifierAttribute)
@@ -93,6 +93,7 @@ class SimpleModifierBase:
         except AttributeError:
             arm = 1
         setattr(repo_obj, self.afterRetrieveModifierAttribute, arm)
+        return [], {}
 
 class SimpleModifier1(SimpleModifierBase):
     beforeSaveModifierAttribute = 'beforeSave1'
@@ -125,15 +126,15 @@ class LoggingModifierBase:
 
     def getReferencedAttributes(self, obj):
         referenced_data = {
-            'k1': 'v1:'+str(self.__class__), 
-            'k2': 'v2:'+str(self.__class__), 
+            'k1': 'v1:'+str(self.__class__.__name__), 
+            'k2': 'v2:'+str(self.__class__.__name__), 
         }
         mlog.append("%s.getReferencedAttributes: %s" % 
-                    (self.__class__, dictToString(referenced_data)))
+                    (self.__class__.__name__, dictToString(referenced_data)))
         return referenced_data
         
     def getOnCloneModifiers(self, obj):
-        mlog.append("%s.getOnCloneModifiers" % (self.__class__))
+        mlog.append("%s.getOnCloneModifiers" % (self.__class__.__name__))
         
         def persistent_id(obj):
             return None
@@ -145,11 +146,12 @@ class LoggingModifierBase:
         return persistent_id, persistent_load, [], [], ''
 
     def beforeSaveModifier(self, obj, obj_clone):
-        mlog.append("%s.beforeSaveModifier" % (self.__class__))
+        mlog.append("%s.beforeSaveModifier" % (self.__class__.__name__))
         return [], []
         
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        mlog.append("%s.afterRetrieveModifier" % (self.__class__))
+        mlog.append("%s.afterRetrieveModifier" % (self.__class__.__name__))
+        return [], {}
 
 class LoggingModifier_A(LoggingModifierBase):
     pass
@@ -363,27 +365,27 @@ class TestModifierRegistryTool(PloneTestCase.PloneTestCase):
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
         mlog.append('<end>')
 
-        mlog_str = '\n'.join(mlog).replace('__main__', 'test_ModifierRegistryTool')
+        mlog_str = '\n'.join(mlog).replace('__main__', 'CMFEditions.tests.test_ModifierRegistryTool')
         expected_result = \
 """<save>
-test_ModifierRegistryTool.LoggingModifier_A.getReferencedAttributes: k1 = v1:test_ModifierRegistryTool.LoggingModifier_A, k2 = v2:test_ModifierRegistryTool.LoggingModifier_A
-test_ModifierRegistryTool.LoggingModifier_B.getReferencedAttributes: k1 = v1:test_ModifierRegistryTool.LoggingModifier_B, k2 = v2:test_ModifierRegistryTool.LoggingModifier_B
-test_ModifierRegistryTool.LoggingModifier_C.getReferencedAttributes: k1 = v1:test_ModifierRegistryTool.LoggingModifier_C, k2 = v2:test_ModifierRegistryTool.LoggingModifier_C
-test_ModifierRegistryTool.LoggingModifier_D.getReferencedAttributes: k1 = v1:test_ModifierRegistryTool.LoggingModifier_D, k2 = v2:test_ModifierRegistryTool.LoggingModifier_D
-test_ModifierRegistryTool.LoggingModifier_A.getOnCloneModifiers
-test_ModifierRegistryTool.LoggingModifier_B.getOnCloneModifiers
-test_ModifierRegistryTool.LoggingModifier_C.getOnCloneModifiers
-test_ModifierRegistryTool.LoggingModifier_D.getOnCloneModifiers
-test_ModifierRegistryTool.LoggingModifier_A.beforeSaveModifier
-test_ModifierRegistryTool.LoggingModifier_B.beforeSaveModifier
-test_ModifierRegistryTool.LoggingModifier_C.beforeSaveModifier
-test_ModifierRegistryTool.LoggingModifier_D.beforeSaveModifier
+%(class)s_A.getReferencedAttributes: k1 = v1:%(class)s_A, k2 = v2:%(class)s_A
+%(class)s_B.getReferencedAttributes: k1 = v1:%(class)s_B, k2 = v2:%(class)s_B
+%(class)s_C.getReferencedAttributes: k1 = v1:%(class)s_C, k2 = v2:%(class)s_C
+%(class)s_D.getReferencedAttributes: k1 = v1:%(class)s_D, k2 = v2:%(class)s_D
+%(class)s_A.getOnCloneModifiers
+%(class)s_B.getOnCloneModifiers
+%(class)s_C.getOnCloneModifiers
+%(class)s_D.getOnCloneModifiers
+%(class)s_A.beforeSaveModifier
+%(class)s_B.beforeSaveModifier
+%(class)s_C.beforeSaveModifier
+%(class)s_D.beforeSaveModifier
 <retrieve>
-test_ModifierRegistryTool.LoggingModifier_D.afterRetrieveModifier
-test_ModifierRegistryTool.LoggingModifier_C.afterRetrieveModifier
-test_ModifierRegistryTool.LoggingModifier_B.afterRetrieveModifier
-test_ModifierRegistryTool.LoggingModifier_A.afterRetrieveModifier
-<end>"""
+%(class)s_D.afterRetrieveModifier
+%(class)s_C.afterRetrieveModifier
+%(class)s_B.afterRetrieveModifier
+%(class)s_A.afterRetrieveModifier
+<end>"""%{'class':'LoggingModifier'}
         self.assertEqual(mlog_str, expected_result)
 
 

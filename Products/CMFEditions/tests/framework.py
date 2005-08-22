@@ -104,7 +104,3 @@ if 1:   # Create a new scope
 print 'SOFTWARE_HOME: %s' % os.environ.get('SOFTWARE_HOME', 'Not set')
 print 'INSTANCE_HOME: %s' % os.environ.get('INSTANCE_HOME', 'Not set')
 sys.stdout.flush()
-
-# Patch up Products path so we can install our dummy content type
-import Products
-Products.__path__.insert(0, os.path.dirname(os.path.abspath(__file__)))

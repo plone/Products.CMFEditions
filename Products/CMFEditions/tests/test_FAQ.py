@@ -6,6 +6,10 @@ import os, sys, time
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
+# Nastily patch Products to get FAQ accepted
+import Products
+Products.__path__.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from DateTime import DateTime
@@ -13,6 +17,8 @@ from Acquisition import aq_base
 from DateTime import DateTime
 from Testing import ZopeTestCase
 from Products.PloneTestCase import PloneTestCase
+from Products.PloneTestCase.setup import PLONE21
+from Products.CMFEditions import PACKAGE_HOME
 
 PloneTestCase.setupPloneSite()
 ZopeTestCase.installProduct('Archetypes')
@@ -26,6 +32,20 @@ ZopeTestCase.installProduct('FAQ')
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
 default_user = PloneTestCase.default_user
+
+types = {'image':'Image',
+         'document':'Document',
+         'file':'File',
+         'news':'News Item',
+         'folder':'Folder'}
+at_types = types.copy()
+cmf_types = types.copy()
+if not PLONE21:
+    for id in at_types.keys():
+        at_types[id] = 'AT'+types[id].replace(' ','')
+if PLONE21:
+    for id in cmf_types.keys():
+        cmf_types[id] = 'CMF '+types[id]
 
 def setupCMFEditions(app, portal_name, quiet):
     portal = app[portal_name]
@@ -166,8 +186,8 @@ class TestATContents(PloneTestCase.PloneTestCase):
             self.verifyQuestion(question, id+' v1')
 
     def createImage(self, id='image'):
-        self.folder.invokeFactory('ATImage', id=id)
-        img1 = open('img1.png', 'rb').read()
+        self.folder.invokeFactory(at_types['image'], id=id)
+        img1 = open(os.path.join(PACKAGE_HOME, 'tests/img1.png'), 'rb').read()
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = getattr(self.folder, id)

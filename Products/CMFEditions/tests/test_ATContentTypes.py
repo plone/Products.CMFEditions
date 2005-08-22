@@ -36,20 +36,32 @@ from Acquisition import aq_base
 from DateTime import DateTime
 from Testing import ZopeTestCase
 from Products.PloneTestCase import PloneTestCase
+from Products.PloneTestCase.setup import PLONE21
+from Products.CMFEditions import PACKAGE_HOME
 
 PloneTestCase.setupPloneSite()
 ZopeTestCase.installProduct('Archetypes')
 ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
 ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('ATContentTypes')
 ZopeTestCase.installProduct('Zelenium')
 ZopeTestCase.installProduct('PloneSelenium')
 ZopeTestCase.installProduct('CMFEditions')
-ZopeTestCase.installProduct('ATContentTypes')
+
+types = {'image':'Image',
+         'document':'Document',
+         'file':'File',
+         'news':'News Item',
+         'folder':'Folder'}
+if not PLONE21:
+    for id in types.keys():
+        types[id] = 'AT'+types[id].replace(' ','')
 
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
 default_user = PloneTestCase.default_user
+
 
 def setupCMFEditions(app, portal_name, quiet):
     portal = app[portal_name]
@@ -58,13 +70,15 @@ def setupCMFEditions(app, portal_name, quiet):
     # Login as portal owner
     user = app.acl_users.getUserById(portal_owner).__of__(app.acl_users)
     newSecurityManager(None, user)
-    if not hasattr(aq_base(portal), 'archetype_tool'):
-        portal.portal_quickinstaller.installProduct('Archetypes')
-    portal.portal_quickinstaller.installProduct('PortalTransforms')
+    if not PLONE21:
+        if not hasattr(aq_base(portal), 'archetype_tool'):
+            portal.portal_quickinstaller.installProduct('Archetypes')
+            portal.portal_quickinstaller.installProduct('PortalTransforms')
+            ZopeTestCase.installProduct('MimetypesRegistry')
+        if not quiet: ZopeTestCase._print('Adding ATContentTypes ... ')
+        portal.portal_quickinstaller.installProduct('ATContentTypes')
     portal.portal_quickinstaller.installProduct('PloneSelenium')
     portal.portal_quickinstaller.installProduct('CMFEditions')
-    if not quiet: ZopeTestCase._print('Adding ATContentTypes ... ')
-    portal.portal_quickinstaller.installProduct('ATContentTypes')
     # Log out
     noSecurityManager()
     get_transaction().commit()
@@ -104,7 +118,7 @@ class TestATContents(PloneTestCase.PloneTestCase):
         return [p['name'] for p in perms if p['selected']]
 
     def testATDocument(self):
-        self.folder.invokeFactory('ATDocument', id='doc')
+        self.folder.invokeFactory(types['document'], id='doc')
         portal_repository = self.portal_repository
         content = self.folder.doc
         content.text = 'text v1'
@@ -126,7 +140,7 @@ class TestATContents(PloneTestCase.PloneTestCase):
         self.metadata_test(content, 'content')
 
     def testNewsItem(self):
-        self.folder.invokeFactory('ATNewsItem', id='news_one')
+        self.folder.invokeFactory(types['news'], id='news_one')
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = self.folder.news_one
@@ -144,9 +158,9 @@ class TestATContents(PloneTestCase.PloneTestCase):
         self.assertEqual(content.text, 'text v1')
 
     def testImage(self):
-        self.folder.invokeFactory('ATImage', id='image')
-        img1 = open('img1.png', 'rb').read()
-        img2 = open('img2.png', 'rb').read()
+        self.folder.invokeFactory(types['image'], id='image')
+        img1 = open(os.path.join(PACKAGE_HOME, 'tests/img1.png'), 'rb').read()
+        img2 = open(os.path.join(PACKAGE_HOME, 'tests/img2.png'), 'rb').read()
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = self.folder.image
@@ -164,9 +178,9 @@ class TestATContents(PloneTestCase.PloneTestCase):
         self.assertEqual(content.data, img1)
 
     def testFile(self):
-        self.folder.invokeFactory('ATFile', id='file')
-        file1 = open('img1.png', 'rb').read()
-        file2 = open('img2.png', 'rb').read()
+        self.folder.invokeFactory(types['file'], id='file')
+        file1 = open(os.path.join(PACKAGE_HOME, 'tests/img1.png'), 'rb').read()
+        file2 = open(os.path.join(PACKAGE_HOME, 'tests/img2.png'), 'rb').read()
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = self.folder.file
@@ -184,7 +198,7 @@ class TestATContents(PloneTestCase.PloneTestCase):
         self.assertEqual(content.data, file1)
 
     def testFolder(self):
-        self.folder.invokeFactory('ATFolder', id='folder')
+        self.folder.invokeFactory(types['folder'], id='folder')
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = self.folder.folder

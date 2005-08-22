@@ -96,7 +96,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder, ActionProviderBase):
         """
         if interfaces is None:
             interfaces = (IConditionalModifier, )
-        return ObjectManager.all_meta_types(self, interfaces)
+        return OrderedFolder.all_meta_types(self, interfaces)
     
     # be aware that the tool implements also the OrderedObjectManager API
     

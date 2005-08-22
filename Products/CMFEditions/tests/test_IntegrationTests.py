@@ -78,7 +78,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         portal_repo = self.portal.portal_repository
         doc = self.portal.doc
 
-        doc.title = 'doc title v1'
+        doc.setTitle('doc title v1')
         portal_repo.applyVersionControl(doc, comment='First version')
 
         # there should be only one history entry and not two or more
@@ -88,54 +88,54 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         portal_repo = self.portal.portal_repository
         doc = self.portal.doc
 
-        doc.title = "v1"
+        doc.setTitle("v1")
         portal_repo.applyVersionControl(doc)
-        doc.title = "v2"
+        doc.setTitle("v2")
         portal_repo.save(doc)
-        doc.title = "v3"
+        doc.setTitle("v3")
 
-        self.assertEqual(doc.title, "v3")
+        self.assertEqual(doc.Title(), "v3")
 
         portal_repo.revert(doc)
         # just a remark: we don't do "doc = self.portal.doc" to check for
         # inplace replacement
-        self.assertEqual(doc.title, "v2")
+        self.assertEqual(doc.Title(), "v2")
 
     def test03_revertToSpecificVersion(self):
         portal_repo = self.portal.portal_repository
         doc = self.portal.doc
 
         # store the work edition two times
-        doc.title = "v1"
+        doc.setTitle("v1")
         portal_repo.applyVersionControl(doc)
-        doc.title = "v2"
+        doc.setTitle("v2")
         portal_repo.save(doc)
-        doc.title = "v3"
+        doc.setTitle("v3")
         portal_repo.save(doc)
-        doc.title = "v4"
-        self.assertEqual(doc.title, "v4")
+        doc.setTitle("v4")
+        self.assertEqual(doc.Title(), "v4")
 
         # revert to the the last but one version
         portal_repo.revert(doc, 1)
-        self.assertEqual(doc.title, "v2")
+        self.assertEqual(doc.Title(), "v2")
 
     def test04_storeAndRevertToPreviousVersionAndStoreAgain(self):
         portal_repo = self.portal.portal_repository
         doc = self.portal.doc
 
-        doc.title = "v1"
+        doc.setTitle("v1")
         portal_repo.applyVersionControl(doc)
-        doc.title = "v2"
+        doc.setTitle("v2")
         portal_repo.save(doc)
-        doc.title = "v3"
-        self.assertEqual(doc.title, "v3")
+        doc.setTitle("v3")
+        self.assertEqual(doc.Title(), "v3")
 
         portal_repo.revert(doc, 0)
         doc = self.portal.doc
-        self.assertEqual(doc.title, "v1")
-        doc.title = "v4"
+        self.assertEqual(doc.Title(), "v1")
+        doc.setTitle("v4")
         portal_repo.save(doc)
-        self.assertEqual(doc.title, "v4")
+        self.assertEqual(doc.Title(), "v4")
 
     def test05_getHistory(self):
         portal_repo = self.portal.portal_repository
@@ -168,20 +168,20 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         doc = self.portal.doc
 
         # store the work edition two times
-        doc.title = "v1"
+        doc.setTitle("v1")
         portal_repo.applyVersionControl(doc)
-        doc.title = "v2"
+        doc.setTitle("v2")
         portal_repo.save(doc)
-        doc.title = "v3"
+        doc.setTitle("v3")
         portal_repo.save(doc)
-        doc.title = "v4"
-        self.assertEqual(doc.title, "v4")
+        doc.setTitle("v4")
+        self.assertEqual(doc.Title(), "v4")
 
         retrieved_doc = portal_repo.retrieve(doc, 1)
 
-        self.assertEqual(retrieved_doc.object.title, "v2")
-        self.assertEqual(doc.title, "v4")
-        self.assertEqual(self.portal.doc.title, "v4")
+        self.assertEqual(retrieved_doc.object.Title(), "v2")
+        self.assertEqual(doc.Title(), "v4")
+        self.assertEqual(self.portal.doc.Title(), "v4")
 
     def test07_cloneObjectUnderVersionControlRemovesOriginalsHistory(self):
         portal_repo = self.portal.portal_repository
@@ -195,6 +195,11 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # copy
         self.portal.manage_pasteObjects(self.portal.manage_copyObjects(ids=['doc']))
         copy = self.portal.copy_of_doc
+        copy.manage_afterClone(copy)
+
+        # XXX: This fails with AT objects as the default AT manage_afterClone
+        # methods don't recurse through subobjects (opaque or otherwise) as
+        # the CMFCatalogAwareOne does
 
         # the copy shall not have a history yet: that's correct
         self.failIf(portal_repo.getHistory(copy))
@@ -269,22 +274,22 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         doc2 = fol.doc2
 
         # save change no 1
-        fol.title = 'v1 of fol'
-        doc1.title = "v1 of doc1"
-        doc2.title = "v1 of doc2"
+        fol.setTitle('v1 of fol')
+        doc1.setTitle("v1 of doc1")
+        doc2.setTitle("v1 of doc2")
 
         portal_repo.applyVersionControl(fol, comment='first save')
 
         # save change no 2
-        fol.title = 'v2 of fol'
-        doc1.title = "v2 of doc1"
-        doc2.title = "v2 of doc2"
+        fol.setTitle('v2 of fol')
+        doc1.setTitle("v2 of doc1")
+        doc2.setTitle("v2 of doc2")
         portal_repo.save(fol, comment='second save')
 
         # change no 3 (without saving)
-        fol.title = 'v3 of fol'
-        doc1.title = "v3 of doc1"
-        doc2.title = "v3 of doc2"
+        fol.setTitle('v3 of fol')
+        doc1.setTitle("v3 of doc1")
+        doc2.setTitle("v3 of doc2")
 
         # revert to change no 2
         portal_repo.revert(fol)
@@ -293,9 +298,9 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         fol = self.portal.fol
         doc1 = fol.doc1
         doc2 = fol.doc2
-        self.assertEqual(fol.title, "v2 of fol")
-        self.assertEqual(doc1.title, "v3 of doc1")
-        self.assertEqual(doc2.title, "v3 of doc2")
+        self.assertEqual(fol.Title(), "v2 of fol")
+        self.assertEqual(doc1.Title(), "v3 of doc1")
+        self.assertEqual(doc2.Title(), "v3 of doc2")
 
 
     def test11_versionAFolderishObjectThatTreatsChildrensAsInsideRefs(self):
@@ -313,23 +318,23 @@ class TestIntegration(PloneTestCase.PloneTestCase):
                              condition="python: portal_type=='Folder'")
 
         # save change no 1
-        fol.title = 'v1 of fol'
-        doc1.title = "v1 of doc1"
-        doc2.title = "v1 of doc2"
+        fol.setTitle('v1 of fol')
+        doc1.setTitle("v1 of doc1")
+        doc2.setTitle("v1 of doc2")
 
         portal_repo.applyVersionControl(fol, comment='first save')
 
         # save change no 2
-        fol.title = 'v2 of fol'
-        doc1.title = "v2 of doc1"
+        fol.setTitle('v2 of fol')
+        doc1.setTitle("v2 of doc1")
         fol.manage_delObjects(ids=['doc2'])
         portal_repo.save(fol, comment='second save after we deleted doc2')
 
         # save change no 3
-        fol.title = 'v3 of fol'
-        doc1.title = "v3 of doc1"
+        fol.setTitle('v3 of fol')
+        doc1.setTitle("v3 of doc1")
         fol.invokeFactory('Document', 'doc3')
-        doc1.title = "v1 of doc3"
+        doc1.setTitle("v1 of doc3")
         portal_repo.save(fol, comment='second save with new doc3')
 
         # revert to change no 1 (version idexes start with index 0)
@@ -341,9 +346,9 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.failUnless('doc2' in fol.objectIds())
         self.failIf('doc3' in fol.objectIds())
         doc2 = fol.doc2
-        self.assertEqual(fol.title, "v1 of fol")
-        self.assertEqual(doc1.title, "v1 of doc1")
-        self.assertEqual(doc2.title, "v1 of doc2")
+        self.assertEqual(fol.Title(), "v1 of fol")
+        self.assertEqual(doc1.Title(), "v1 of doc1")
+        self.assertEqual(doc2.Title(), "v1 of doc2")
 
 
 if __name__ == '__main__':

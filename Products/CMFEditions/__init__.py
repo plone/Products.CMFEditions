@@ -25,6 +25,7 @@ $Id: __init__.py,v 1.17 2005/02/07 22:09:08 gregweb Exp $
 __version__ = "$Revision: 1.17 $"
 
 import sys
+from Globals import package_home
 
 from Products.CMFCore import utils, CMFCorePermissions, DirectoryView
 from Products.CMFCore.DirectoryView import registerFileExtension, registerDirectory
@@ -35,6 +36,8 @@ from Products.CMFEditions import ArchivistTool
 from Products.CMFEditions import ZVCStorageTool
 from Products.CMFEditions import CopyModifyMergeRepositoryTool
 from Products.CMFEditions import StandardModifiers
+
+PACKAGE_HOME = package_home(globals())
 
 tools = (
     UniqueIdHandlerTool.UniqueIdHandlerTool,
