@@ -70,7 +70,10 @@ FC_ACTION_LIST = ({'template': 'validate_integrity',
                    'context':None,
                    'button':None},)
 
-DEF_POLICIES = (('at_edit_autoversion', 'Create version on edit (AT objects only)'), )
+DEF_POLICIES = (('at_edit_autoversion',
+                    'Create version on edit (AT objects only)'),
+                 ('version_on_rollback',
+                    'Create version on version rollback'),   )
 
 
 def Install(self, tools=tools):
@@ -150,30 +153,32 @@ def setup_skins(self, write):
 
 def setup_content_actions(self, write):
     at = getToolByName(self, 'portal_actions')
-    pt = getToolByName(self, 'portal_types')
-    vt = getToolByName(self, 'portal_repository')
-    vt.addAction('Versions',
-                 'Versions',
-                 'string:${object_url}/versions_history_form',
-                 'python:portal.portal_repository.isVersionable(object)',
-                 'Modify portal content',
-                 'object', )
-    at.addActionProvider('portal_repository')
-    write("added versions tab")
     tt = getToolByName(self, 'portal_types')
-    ftis = tt.listTypeInfo()
-    targets = filter(lambda a : a.getId() in VERSIONING_ACTIONS,
-                     ftis)
-    for fti in targets:
-        url = VERSIONING_ACTIONS[fti.getId()]
-        fti.addAction('version_view',
-                       'version_view',
-                       'string:${object_url}/' + url,
-                       '',
-                       'Modify portal content',
-                       'object',
-                       None)
-        write("added version view for " + fti.content_meta_type)
+    vt = getToolByName(self, 'portal_repository')
+    if 'Versions' not in [a.getId() for a in vt.listActions()]:
+        vt.addAction('Versions',
+                     'Versions',
+                     'string:${object_url}/versions_history_form',
+                     'python:portal.portal_repository.isVersionable(object)',
+                     'Modify portal content',
+                     'object', )
+        write("added versions tab")
+    if 'portal_repository' not in at.listActionProviders():
+        at.addActionProvider('portal_repository')
+    # XXX is this view override stuff really necessary?
+#     ftis = tt.listTypeInfo()
+#     targets = filter(lambda a : a.getId() in VERSIONING_ACTIONS,
+#                      ftis)
+#     for fti in targets:
+#         url = VERSIONING_ACTIONS[fti.getId()]
+#         fti.addAction('version_view',
+#                        'version_view',
+#                        'string:${object_url}/' + url,
+#                        '',
+#                        'Modify portal content',
+#                        'object',
+#                        None)
+#         write("added version view for " + fti.content_meta_type)
 
 def setup_cpanel(self, write):
     try:
