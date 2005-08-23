@@ -1,7 +1,6 @@
 <html metal:use-macro="here/main_template/macros/master" i18n:domain="plone">
 
   <tal:block metal:fill-slot="head_slot">
-        <tal:block tal:define="dummy python:request.set('disable_border',1)" />
         <link rel="stylesheet" type="text/css" href="compare.css" />
   </tal:block>
 
@@ -23,14 +22,11 @@
         </span>
     </div>
 
-    <p tal:content="python: len(history)"/>
-
     <form action="."
         method="post"
-        tal:condition="python: history is not None"
+        tal:condition="python: history"
         tal:attributes="action string:$here_url/versions_history">
 
-<!--
         <table id="sortable"
                 class="listing"
                 summary="Content history"
@@ -58,14 +54,14 @@
             <tbody>
                 <tr tal:repeat="vdata history">
                   <td>
-                    <span tal:content="vdata/object/version_id">1</span>
                     <a href="#"
+                       class="version-table-version"
                        tal:attributes="href string:$here_url/versions_history_form?version_id=${vdata/object/version_id}">
-                         View
+                        <span tal:content="vdata/object/version_id">1</span>
                     </a>
                   </td>
                   <td class="huhu">
-                    <span tal:content="python:here.toLocalizedTime(modules['DateTime'].DateTime(vdata.sys_metadata['timestamp']),long_format=1)">2004/10/21 03:15 PM</span>
+                    <span tal:content="python:here.toLocalizedTime(vdata.sys_metadata['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
                   </td>
                   <td>
                     <span tal:content="vdata/sys_metadata/principal">fciriaci</span>
@@ -87,7 +83,7 @@
                 </tr>
             </tbody>
           </table>
--->
+
     </form>
 
     <form action="#"

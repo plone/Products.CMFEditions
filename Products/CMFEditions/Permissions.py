@@ -40,3 +40,6 @@ setDefaultRoles(RevertToPreviousVersions, ('Manager',))
 CheckoutToLocation = 'Checkout to location'
 setDefaultRoles(CheckoutToLocation, ('Manager',))
 
+ManageVersioningPolicies = 'Manage versioning policies'
+setDefaultRoles(ManageVersioningPolicies, ('Manager',))
+

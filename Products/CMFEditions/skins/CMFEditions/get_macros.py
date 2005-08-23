@@ -9,9 +9,9 @@
 
 
 type_info = context.portal_types.getTypeInfo(context)
-action = type_info.getActionById('view') 
+action = type_info.getActionById('view')
 
-version_view = getattr(context, action) 
+version_view = getattr(context, action, None)
 
 if hasattr(version_view, 'macros'):
   context.plone_log('ramo if')

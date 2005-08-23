@@ -1,0 +1,45 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+      <metal:header define-macro="header"
+                    tal:define="edit_macros here/portal_skins/archetypes/edit_macros/macros">
+        <div metal:use-macro="edit_macros/header" />
+      </metal:header>
+      <metal:typedesc define-macro="typedescription"
+                    tal:define="edit_macros here/portal_skins/archetypes/edit_macros/macros">
+        <div metal:use-macro="edit_macros/typedescription" />
+      </metal:typedesc>
+      <metal:footer define-macro="footer"
+                    tal:define="edit_macros here/portal_skins/archetypes/edit_macros/macros">
+        <div metal:use-macro="edit_macros/footer" />
+      </metal:footer>
+      <metal:body define-macro="body"
+                    tal:define="edit_macros here/portal_skins/archetypes/edit_macros/macros">
+        <div metal:use-macro="edit_macros/body">
+          <metal:block fill-slot="extra_bottom">
+            <div class="field editionComment"
+                 tal:define="pr nocall:here/portal_repository"
+                 tal:condition="python: pr.isVersionable(here) and  pr.supportsPolicy(here,'at_edit_autoversion') and fieldsets.index(fieldset) &gt;= len(fieldsets) - 1">
+              <label><span i18n:translate="label_version_comment">Version Comment</span></label>
+                <div class="formHelp"
+                     id="cmfeditions_version_comment_help"
+                     i18n:translate="help_version_comment">
+                    Each time you save an item a new version is created. Enter a comment below to describe the changes you've made.
+                </div>
+                <textarea tabindex="#"
+                          name="cmfeditions_version_comment"
+                          id="cmfeditions_version_comment"
+                          rows="4"
+                          tal:attributes="tabindex tabindex/next;"></textarea>
+            </div>
+          </metal:block>
+        </div>
+      </metal:body>
+  </body>
+</html>

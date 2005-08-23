@@ -64,6 +64,8 @@ def install(portal_modifier):
     """
     for m in modifiers:
         id = m['id']
+        if id in portal_modifier.objectIds():
+            continue
         title = m['title']
         modifier = m['modifier']()
         wrapper = m['wrapper'](id, modifier, title)

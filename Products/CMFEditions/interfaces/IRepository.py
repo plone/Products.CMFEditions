@@ -52,7 +52,7 @@ class IVersionSupport(Interface):
         """Returns True if the object is versionable
         """
 
-        
+
 class IContentTypeVersionSupport(IVersionSupport):
     """Registry for versionable content types
     """
@@ -61,10 +61,50 @@ class IContentTypeVersionSupport(IVersionSupport):
         """Returns a list of Versionable content types
         """
 
-    def setVersionableContentTypes():
+    def setVersionableContentTypes(new_content_types):
         """Set the list of Versionable content types
         """
 
+class IContentTypeVersionPolicySupport(IContentTypeVersionSupport):
+    """Determine if a type supports a particular versioning method, the policy
+       parameter is simply a string representing the policy"""
+
+    def addPolicyForContentType(content_type, policy):
+        """Sets a content type to use a specific policy"""
+
+    def removePolicyFromContentType(content_type, policy):
+        """Sets a content type to use a specific policy"""
+
+    def supportsPolicy(obj, policy):
+        """Determine if an object is set to use a specific versioning policy
+        """
+
+    def hasPolicy(obj):
+        """Determine if an object has any assigned versioning policies"""
+
+    def manage_setTypePolicies(policy_map):
+        """Set the policy_mapping for all types from a dict of
+        content_type : policy list mappings {content_type: [policy1, policy2]}
+        """
+
+    def listPolicies():
+        """Return a sequence of all defined VersionPolicy objects"""
+
+    def addPolicy(policy_id, policy_title):
+        """Add a new versioning policy and friendly name for that policy,
+           will update the title of an existing policy."""
+
+    def removePolicy(policy_id):
+        """Removes a versioning policy from the tool and all types which
+           support it"""
+
+    def manage_changePolicyDefs(policy_list):
+        """Update the policy structure with a list of tuples [(id, title),...]
+        """
+
+    def getPolicyMap():
+        """Return a mapping of types to the lists of policies they support,
+           for use in config screen."""
 
 class ICopyModifyMergeRepository(Interface):
     """The simplest repository possible.
@@ -183,3 +223,7 @@ class IHistory(Interface):
         """ Returns an iterator returning 'IVersionData' object.
         """
 
+class IVersionPolicy(Interface):
+    """A version policy object, currently just a title and an Id"""
+    def Title():
+        """Returns a nice name for the policy"""

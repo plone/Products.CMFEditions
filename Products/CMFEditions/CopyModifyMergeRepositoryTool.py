@@ -32,6 +32,7 @@ from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem
 from OFS.ObjectManager import ObjectManager
+from BTrees.OOBTree import OOBTree
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
@@ -40,17 +41,38 @@ from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 
-from Products.CMFEditions.interfaces.IRepository import \
-     ICopyModifyMergeRepository, IContentTypeVersionSupport
-from Products.CMFEditions.interfaces.IRepository import IVersionData, IHistory
+from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
+from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
+from Products.CMFEditions.interfaces.IRepository import IVersionData
+from Products.CMFEditions.interfaces.IRepository import IHistory
+from Products.CMFEditions.interfaces.IRepository import IVersionPolicy
 
 from Products.CMFEditions.Permissions import ApplyVersionControl
 from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.CMFEditions.Permissions import RevertToPreviousVersions
 from Products.CMFEditions.Permissions import CheckoutToLocation
+from Products.CMFEditions.Permissions import ManageVersioningPolicies
 
 VERSIONABLE_CONTENT_TYPES = []
+VERSION_POLICY_MAPPING = {}
+VERSION_POLICY_DEFS = {}
+
+class VersionPolicy(SimpleItem):
+    """A simple class for storing version policy information"""
+
+    __implements__ = (SimpleItem.__implements__,
+                      IVersionPolicy
+                      )
+    security = ClassSecurityInfo()
+
+    def __init__(self, obj_id, title, **kw):
+        self.id = obj_id
+        self.title = title
+
+    security.declarePublic('Title')
+    def Title(self):
+        return self.title
 
 class CopyModifyMergeRepositoryTool(UniqueObject,
                                     SimpleItem,
@@ -61,7 +83,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     __implements__ = (SimpleItem.__implements__,
                       ICopyModifyMergeRepository,
-                      IContentTypeVersionSupport,
+                      IContentTypeVersionPolicySupport,
                       )
 
     id = 'portal_repository'
@@ -78,10 +100,20 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                      )
 
     _versionable_content_types = VERSIONABLE_CONTENT_TYPES
+    _version_policy_mapping = VERSION_POLICY_MAPPING
+    _policy_defs = VERSION_POLICY_DEFS
 
-    
+    # Method for migrating the default dict to a per instance OOBTree,
+    # performed on product install.
+    def _migrateVersionPolicies(self):
+        if not isinstance(self._policy_defs, OOBTree):
+            btree_defs = OOBTree()
+            for obj_id, title in self._policy_defs.items():
+                btree_defs[obj_id]=VersionPolicy(obj_id, title)
+            self._policy_defs = btree_defs
+
     # -------------------------------------------------------------------
-    # methods implementing IContentTypeVersionSupport
+    # methods implementing IContentTypeVersionPolicySupport
     # -------------------------------------------------------------------
 
 
@@ -95,10 +127,96 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     def getVersionableContentTypes(self):
         return self._versionable_content_types
 
-    security.declarePublic('setVersionableContentType')
-    def setVersionableContentType(self, new_content_types):
+    security.declareProtected(ManageVersioningPolicies, 'setVersionableContentTypes')
+    def setVersionableContentTypes(self, new_content_types):
         self._versionable_content_types = new_content_types
 
+    # XXX: There was a typo which mismatched the interface def, preserve it
+    # for backwards compatibility
+    security.declareProtected(ManageVersioningPolicies, 'setVersionableContentType')
+    setVersionableContentType = setVersionableContentTypes
+
+    security.declareProtected(ManageVersioningPolicies, 'addPolicyForContentType')
+    def addPolicyForContentType(self, content_type, policy):
+        assert self._policy_defs.has_key(policy), "Unknown policy %s"%policy
+        policies = self._version_policy_mapping.copy()
+        cur_policy = policies.setdefault(content_type, [])
+        if policy not in cur_policy:
+            cur_policy.append(policy)
+        self._version_policy_mapping = policies
+
+    security.declareProtected(ManageVersioningPolicies, 'removePolicyFromContentType')
+    def removePolicyFromContentType(self, content_type, policy):
+        policies = self._version_policy_mapping.copy()
+        cur_policy = policies.setdefault(content_type, [])
+        if policy in cur_policy:
+            cur_policy.remove(policy)
+        self._version_policy_mapping = policies
+
+    security.declarePublic('supportsPolicy')
+    def supportsPolicy(self, obj, policy):
+        content_type = obj.portal_type
+        return policy in self._version_policy_mapping.get(content_type, [])
+
+    security.declarePublic('hasPolicy')
+    def hasPolicy(self, obj):
+        content_type = obj.portal_type
+        return bool(self._version_policy_mapping.get(content_type, None))
+
+    security.declareProtected(ManageVersioningPolicies, 'manage_setPolicies')
+    def manage_setTypePolicies(self, policy_map):
+        assert isinstance(policy_map, dict)
+        for p_type, policies in policy_map.items():
+            assert isinstance(policies, list), \
+                            "Policy list for %s must be a list"%str(p_type)
+            for policy in policies:
+                assert self._policy_defs.has_key(policy), \
+                                  "Policy %s is unknown"%policy
+        self._version_policy_mapping = policy_map
+
+    security.declarePublic('listPolicies')
+    def listPolicies(self):
+        # convert the internal dict into a sequence of tuples
+        # sort on title
+        policy_list = [(p.Title(), p) for p in self._policy_defs.values()]
+        policy_list.sort()
+        policy_list = [p for (title, p) in policy_list]
+        return policy_list
+
+    security.declareProtected(ManageVersioningPolicies, 'addPolicy')
+    def addPolicy(self, policy_id, policy_title):
+        self._policy_defs[policy_id]=VersionPolicy(policy_id,policy_title)
+        self._p_changed = 1
+
+    security.declareProtected(ManageVersioningPolicies, 'removePolicy')
+    def removePolicy(self, policy_id):
+        del self._policy_defs[policy_id]
+        for policies in self._version_policy_mapping.values():
+            if policy_id in policies:
+                policies.remove(policy_id)
+        self._p_changed = 1
+
+    security.declareProtected(ManageVersioningPolicies, 'manage_changePolicyDefs')
+    def manage_changePolicyDefs(self, policy_list):
+        # Verify proper input formatting
+        policy_def_mapping = OOBTree()
+        assert isinstance(policy_list, list) or isinstance(policy_list, tuple)
+        for item in policy_list:
+            assert isinstance(item, tuple), \
+                        "List items must be tuples: %s"%str(item)
+            assert len(item)==2, \
+            "Each policy definition must contain a title and id: %s"%str(item)
+            assert isinstance(item[0], basestring), \
+                        "Policy id must be a string: %s"%str(item[0])
+            assert isinstance(item[1], basestring), \
+                        "Policy title must be a string: %s"%str(item[1])
+            policy_def_mapping[item[0]] = VersionPolicy(item[0],item[1])
+
+        self._policy_defs = policy_def_mapping
+
+    security.declareProtected(ManageVersioningPolicies, 'getPolicyMap')
+    def getPolicyMap(self):
+        return dict(self._version_policy_mapping)
 
     # -------------------------------------------------------------------
     # methods implementing ICopyModifyMergeRepository
@@ -269,7 +387,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # --> The archivist API has to be extended
 
         # retrieve all inside refs
-        
+
         for attr_ref in vdata.data.inside_refs:
             # get the referenced working copy
             # XXX if the working copy we're searching for was moved to
@@ -280,8 +398,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             va_ref = attr_ref.getAttribute()
             ref = portal_hidhandler.queryObject(va_ref.history_id, None)
             if ref is None:
-                import pdb; pdb.set_trace()
-        
+                #import pdb; pdb.set_trace()
                 # there is no working copy for the referenced version, so
                 # create an empty object of the same type (it's only
                 # temporary if not inplace).

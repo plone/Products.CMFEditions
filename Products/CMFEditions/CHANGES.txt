@@ -10,13 +10,28 @@ Current
 
 Bugs fixed
 
+- Made quickinstalled product reinstall/uninstall work without issue.  Fixed
+  unit tests for Plone 2.1.  Use mutators in templates and tests where
+  applicable rather than direct attribute access.
+  [alecm]
+
 - Corrected bugs in ``RetainWorkflowStateAndHistory`` modifier and the
   modifier registry avoiding the review state and the workflow history 
   from beeing retained on retrieve and revert. 
 
 Features added
 
-- 
+- Added a versioning policy (at_edit_autoversion) which automatically creates
+  new versions on edit for AT types which are configured to support the policy
+  in the configlet.  This is implemented using a simple macro override on
+  AT's edit_macros, and a new entry in the AT edit form controller chain.
+  [alecm]
+
+- Added new interface IContentTypeVersionPolicySupport and implemented it in
+  portal_repository.  It allows products to register versioning policies
+  (currently just a title and id), and to associate those policies with
+  specific portal types.
+  [alecm]
 
 
 CMFEditions 1.0alpha2 (XXX date?)

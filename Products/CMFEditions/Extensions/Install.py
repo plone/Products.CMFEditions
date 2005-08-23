@@ -48,6 +48,10 @@ from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.CMFEditions.Permissions import CheckoutToLocation
 from Products.CMFEditions.Permissions import RevertToPreviousVersions
 
+class DummyRequest(dict):
+    def __init__(self):
+        self.form = {}
+
 
 PROJECTNAME = 'CMFEditions'
 SKINS = ('CMFEditions', 'cmfeditions_views')
@@ -59,6 +63,14 @@ VERSIONING_ACTIONS = {'Document':'version_document_view',
                       'ATFile':'version_atfile_view',
                       'ATImage':'version_atimage_view',
                       'ATNewsItem':'version_atnews_item_view',}
+FC_ACTION_LIST = ({'template': 'validate_integrity',
+                   'status': 'success',
+                   'action': 'traverse_to',
+                   'expression': 'string:update_version_on_edit',
+                   'context':None,
+                   'button':None},)
+
+DEF_POLICIES = (('at_edit_autoversion', 'Create version on edit (AT objects only)'), )
 
 
 def Install(self, tools=tools):
@@ -66,27 +78,32 @@ def Install(self, tools=tools):
     portal = getToolByName(self, 'portal_url').getPortalObject()
     out =  []
     write = out.append
-    if getToolByName(portal, 'portal_uidhandler', None) is None:
-        from Products.CMFUid.Extensions import Install as CMFUid_Install
-        CMFUid_Install.Install(portal)
-    renameTool(portal, 'portal_uidhandler', 'portal_historyidhandler')
+    if getToolByName(portal, 'portal_historyidhandler', None) is None:
+        if getToolByName(portal, 'portal_uidhandler', None) is None:
+            from Products.CMFUid.Extensions import Install as CMFUid_Install
+            CMFUid_Install.Install(portal)
+        renameTool(portal, 'portal_uidhandler', 'portal_historyidhandler')
     CMFEditions = portal.manage_addProduct['CMFEditions']
     for tool in tools:
-        try:
-            CMFEditions.manage_addTool(tool.meta_type)
-            write("added '%s' to portal" % tool.id)
-        except BadRequestException:
-            write("could not add '%s' to portal (possibly because it already\
-            exists)" % tool.id)
+        if getToolByName(portal, tool.id, None) is None:
+            try:
+                CMFEditions.manage_addTool(tool.meta_type)
+                write("added '%s' to portal" % tool.id)
+            except BadRequestException:
+                write("could not add '%s' to portal (possibly because it \
+                        already exists)" % tool.id)
     portal_modifier = getToolByName(self, 'portal_modifier')
     StandardModifiers.install(portal_modifier)
     portal_repository = getToolByName(self, 'portal_repository')
     portal_repository.setAutoApplyMode(True)
-    portal_repository.setVersionableContentType(VERSIONING_ACTIONS.keys())
+    portal_repository.setVersionableContentTypes(VERSIONING_ACTIONS.keys())
+    portal_repository._migrateVersionPolicies()
     setup_permissions(self, write)
     setup_skins(self, write)
     setup_content_actions(self, write)
     setup_cpanel(self, write)
+    add_form_controller_overrides(self, write)
+    add_versioning_policies(self, write)
     #install_customisation(self, write)
     return "\n".join(out)
 
@@ -125,7 +142,8 @@ def setup_skins(self, write):
         path = [elem.strip() for elem in path.split(',')]
         for fsdv in SKINS:
             if not fsdv in path:
-                path.append(fsdv)
+                # Insert after custom so that we can override at skins
+                path.insert(1,fsdv)
                 write("added folder %r to skin %r" % (fsdv, skinname))
         path=','.join(path)
         st.addSkinSelection(skinname, path)
@@ -198,13 +216,62 @@ def setup_selenium(self, write):
             write("Action '%s' added to '%s' action provider"
                   % (str(action['id']), 'portal_selenium'))
 
+def add_form_controller_overrides(self, write):
+    fc = getToolByName(self, 'portal_form_controller', None)
+    if fc is not None:
+        for action in FC_ACTION_LIST:
+            fc.addFormAction(action['template'],
+                         action['status'],
+                         action['context'],
+                         action['button'],
+                         action['action'],
+                         action['expression'])
 
-def uninstall(self, tools=tools):
-    at = getToolByName(self, 'portal_actions')
+    write("portal_form_controller: customized AT action .")
+
+def remove_form_controller_overrides(self):
+    fc = getToolByName(self, 'portal_form_controller', None)
+    # Fake a request because form controller needs one to delete actions
+    fake_req = DummyRequest()
+    i = 0
+    for fc_act in fc.listFormActions(1):
+        for action in FC_ACTION_LIST:
+            if (action['template'] == fc_act.getObjectId() and
+                    action['status'] == fc_act.getStatus() and
+                    action['context'] == fc_act.getContextType() and
+                    action['button'] == fc_act.getButton() and
+                    action['action'] == fc_act.getActionType() and
+                    action['expression'] == fc_act.getActionArg()):
+                fake_req.form['del_id_%s'%i]=True
+                fake_req.form['old_object_id_%s'%i]=action['template'] or ''
+                fake_req.form['old_context_type_%s'%i]=action['context'] or ''
+                fake_req.form['old_button_%s'%i]=action['button'] or ''
+                fake_req.form['old_status_%s'%i]=action['status'] or ''
+        i = i+1
+    # Use the private method because the public one does a redirect
+    fc._delFormActions(fc.actions,fake_req)
+
+def add_versioning_policies(self, write):
+    pr = getToolByName(self, 'portal_repository', None)
+    if pr is not None:
+        pr.manage_changePolicyDefs(DEF_POLICIES)
+
+
+def uninstall(self, tools=tools, reinstall=False):
+    portal = getToolByName(self, 'portal_url').getPortalObject()
+    at = getToolByName(portal, 'portal_actions')
     at.deleteActionProvider('portal_repository')
+    # rename our uid tool back to the original name if the new tool was
+    # removed
+    if not reinstall and \
+           getToolByName(portal, 'portal_historyidhandler', None) is not None:
+        if getToolByName(portal, 'portal_uidhandler', None) is not None:
+            portal.manage_delObjects(['portal_uidhandler'])
+            renameTool(portal, 'portal_historyidhandler', 'portal_uidhandler')
     # FIX-ME remove also version_view actions from the single FTI
     portal_conf = getToolByName(self, 'portal_controlpanel')
     portal_conf.unregisterConfiglet(id)
+    remove_form_controller_overrides(self)
 
 def install_customisation(self, write):
     """Default settings may be stored in a customisation policy script so

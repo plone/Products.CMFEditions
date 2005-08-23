@@ -7,7 +7,7 @@
 
 <div metal:fill-slot="main">
     <tal:main-macro metal:define-macro="main"
-               tal:define="len_text python:len(here.text);">
+               tal:define="len_text python:len(here.getText());">
 
         <h1 tal:content="here/title_or_id" class="documentFirstHeading">
           Title or id
