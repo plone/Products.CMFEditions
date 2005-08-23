@@ -14,14 +14,10 @@ action = type_info.getActionById('view')
 version_view = getattr(context, action, None)
 
 if hasattr(version_view, 'macros'):
-  context.plone_log('ramo if')
-  context.plone_log(version_view.macros['main'])
-
   return version_view.macros['main']
 else:
+  # XXX This is a misuse of immediate view, also this needs to optionally
+  # support the new plone 2.1 default view machanisms.
   version_view = context.restrictedTraverse(context.immediate_view)
-  context.plone_log('ramo else')
-  context.plone_log(version_view.macros['main'])
-
 
   return version_view.macros['main']

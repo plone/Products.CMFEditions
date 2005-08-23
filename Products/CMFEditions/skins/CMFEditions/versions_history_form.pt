@@ -5,7 +5,8 @@
   </tal:block>
 
   <div metal:fill-slot="main"
-       tal:define="history python:here.portal_repository.getHistory(here)">
+       tal:define="pr nocall:here/portal_repository;
+                   history python:pr.getHistory(here)">
 
 
     <h1>History of
@@ -42,8 +43,6 @@
                       >date time</tal:title>&nbsp;</th>
                   <th>&nbsp;<tal:title i18n:translate="listingheader_user"
                       >user</tal:title>&nbsp;</th>
-                  <th>&nbsp;<tal:title i18n:translate="listingheader_status"
-                      >status</tal:title>&nbsp;</th>
                   <th>&nbsp;<tal:title i18n:translate="listingheader_comment"
                       >comment</tal:title>&nbsp;</th>
                   <th>&nbsp;<tal:title i18n:translate="listingheader_actions"
@@ -52,21 +51,21 @@
             </thead>
 
             <tbody>
-                <tr tal:repeat="vdata history">
+                <tal:block repeat="vdata history">
+                <tr tal:define="id string:${vdata/object/version_id};
+                                current python:pr.isUpToDate(here,id);">
                   <td>
                     <a href="#"
                        class="version-table-version"
-                       tal:attributes="href string:$here_url/versions_history_form?version_id=${vdata/object/version_id}">
-                        <span tal:content="vdata/object/version_id">1</span>
+                       tal:attributes="href string:$here_url/versions_history_form?version_id=${id}">
+                        <span tal:content="id">1</span>
                     </a>
                   </td>
-                  <td class="huhu">
+                  <td>
                     <span tal:content="python:here.toLocalizedTime(vdata.sys_metadata['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
                   </td>
                   <td>
                     <span tal:content="vdata/sys_metadata/principal">fciriaci</span>
-                  </td>
-                  <td><span tal:content="python:wtool.getInfoFor(vdata, 'review_state' , '-')">visible</span>
                   </td>
                   <td><span tal:content="vdata/comment">Draft version ready for comments from the group.</span>
                   </td>
@@ -74,13 +73,13 @@
                     <input type="hidden" name="" value=""/>
                     <a href=""
                       style="text-decoration: none"
-                      tal:define="id string:${vdata/object/version_id}"
-                      xtal:condition="python:here.portal_repository.isUpToDate(here,id)==False"
-                      tal:attributes="href string:$here_url/rollbackversion?version_id=${vdata/object/version_id}">
+                      tal:condition="not:current"
+                      tal:attributes="href string:$here_url/rollbackversion?version_id=${id}">
                         rollback
                     </a>
                   </td>
                 </tr>
+                </tal:block>
             </tbody>
           </table>
 
@@ -121,7 +120,7 @@
     <div style="border:solid 1px gray"
          tal:define="version_id python:request.get('version_id', None);"
          tal:condition="version_id">
-      <tal:block define="vdata python:here.portal_repository.retrieve(here,version_id);
+      <tal:block define="vdata python:pr.retrieve(here,version_id);
                          version_view_macro python: here.get_macros(version_id);"
 >
 
