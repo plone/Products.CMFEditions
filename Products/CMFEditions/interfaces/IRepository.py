@@ -90,9 +90,9 @@ class IContentTypeVersionPolicySupport(IContentTypeVersionSupport):
     def listPolicies():
         """Return a sequence of all defined VersionPolicy objects"""
 
-    def addPolicy(policy_id, policy_title):
-        """Add a new versioning policy and friendly name for that policy,
-           will update the title of an existing policy."""
+    def addPolicy(policy_id, policy_title, policy_class):
+        """Add a new versioning policy, can optionally use an alternate
+           policy class."""
 
     def removePolicy(policy_id):
         """Removes a versioning policy from the tool and all types which
@@ -100,6 +100,9 @@ class IContentTypeVersionPolicySupport(IContentTypeVersionSupport):
 
     def manage_changePolicyDefs(policy_list):
         """Update the policy structure with a list of tuples [(id, title),...]
+           The tuples may optionally contain a policy class and a dict of
+           kwargs to pass to the policy add hook. e.g.:
+          [(id, title, klass, {'arg1': val1}), ...]
         """
 
     def getPolicyMap():
@@ -222,8 +225,3 @@ class IHistory(Interface):
     def __iter__():
         """ Returns an iterator returning 'IVersionData' object.
         """
-
-class IVersionPolicy(Interface):
-    """A version policy object, currently just a title and an Id"""
-    def Title():
-        """Returns a nice name for the policy"""

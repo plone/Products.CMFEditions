@@ -29,8 +29,12 @@ Features added
 
 - Added new interface IContentTypeVersionPolicySupport and implemented it in
   portal_repository.  It allows products to register versioning policies
-  (currently just a title and id), and to associate those policies with
-  specific portal types.
+  (classes which implement IVersionPolicy), and to associate those policies
+  with specific portal types.  IVersionPolicy objects may define methods
+  (setupPolicyHook, removePolicyHook, enablePolicyOnTypeHook,
+  disablePolicyOnTypeHook) which can be used to install/uninstall policy
+  specific behavior in the portal, on adding/removing the policy, or enabling/
+  disabling the policy on a specific type.
   [alecm]
 
 

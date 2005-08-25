@@ -47,10 +47,7 @@ from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.CMFEditions.Permissions import CheckoutToLocation
 from Products.CMFEditions.Permissions import RevertToPreviousVersions
-
-class DummyRequest(dict):
-    def __init__(self):
-        self.form = {}
+from Products.CMFEditions.VersionPolicies import ATVersionOnEditPolicy
 
 
 PROJECTNAME = 'CMFEditions'
@@ -63,15 +60,10 @@ VERSIONING_ACTIONS = {'Document':'version_document_view',
                       'ATFile':'version_atfile_view',
                       'ATImage':'version_atimage_view',
                       'ATNewsItem':'version_atnews_item_view',}
-FC_ACTION_LIST = ({'template': 'validate_integrity',
-                   'status': 'success',
-                   'action': 'traverse_to',
-                   'expression': 'string:update_version_on_edit',
-                   'context':None,
-                   'button':None},)
 
 DEF_POLICIES = (('at_edit_autoversion',
-                    'Create version on edit (AT objects only)'),
+                    'Create version on edit (AT objects only)',
+                     ATVersionOnEditPolicy),
                  ('version_on_rollback',
                     'Create version on version rollback'),   )
 
@@ -105,7 +97,6 @@ def Install(self, tools=tools):
     setup_skins(self, write)
     setup_content_actions(self, write)
     setup_cpanel(self, write)
-    add_form_controller_overrides(self, write)
     add_versioning_policies(self, write)
     #install_customisation(self, write)
     return "\n".join(out)
@@ -221,40 +212,6 @@ def setup_selenium(self, write):
             write("Action '%s' added to '%s' action provider"
                   % (str(action['id']), 'portal_selenium'))
 
-def add_form_controller_overrides(self, write):
-    fc = getToolByName(self, 'portal_form_controller', None)
-    if fc is not None:
-        for action in FC_ACTION_LIST:
-            fc.addFormAction(action['template'],
-                         action['status'],
-                         action['context'],
-                         action['button'],
-                         action['action'],
-                         action['expression'])
-
-    write("portal_form_controller: customized AT action .")
-
-def remove_form_controller_overrides(self):
-    fc = getToolByName(self, 'portal_form_controller', None)
-    # Fake a request because form controller needs one to delete actions
-    fake_req = DummyRequest()
-    i = 0
-    for fc_act in fc.listFormActions(1):
-        for action in FC_ACTION_LIST:
-            if (action['template'] == fc_act.getObjectId() and
-                    action['status'] == fc_act.getStatus() and
-                    action['context'] == fc_act.getContextType() and
-                    action['button'] == fc_act.getButton() and
-                    action['action'] == fc_act.getActionType() and
-                    action['expression'] == fc_act.getActionArg()):
-                fake_req.form['del_id_%s'%i]=True
-                fake_req.form['old_object_id_%s'%i]=action['template'] or ''
-                fake_req.form['old_context_type_%s'%i]=action['context'] or ''
-                fake_req.form['old_button_%s'%i]=action['button'] or ''
-                fake_req.form['old_status_%s'%i]=action['status'] or ''
-        i = i+1
-    # Use the private method because the public one does a redirect
-    fc._delFormActions(fc.actions,fake_req)
 
 def add_versioning_policies(self, write):
     pr = getToolByName(self, 'portal_repository', None)
@@ -276,7 +233,6 @@ def uninstall(self, tools=tools, reinstall=False):
     # FIX-ME remove also version_view actions from the single FTI
     portal_conf = getToolByName(self, 'portal_controlpanel')
     portal_conf.unregisterConfiglet(id)
-    remove_form_controller_overrides(self)
 
 def install_customisation(self, write):
     """Default settings may be stored in a customisation policy script so
