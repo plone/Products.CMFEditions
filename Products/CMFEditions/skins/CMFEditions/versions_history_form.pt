@@ -37,16 +37,16 @@
             <thead>
 
                 <tr>
-                  <th>&nbsp;<tal:title i18n:translate="listingheader_key"
-                      >version</tal:title>&nbsp;</th>
-                  <th>&nbsp;<tal:title i18n:translate="listingheader_datetime"
-                      >date time</tal:title>&nbsp;</th>
-                  <th>&nbsp;<tal:title i18n:translate="listingheader_user"
-                      >user</tal:title>&nbsp;</th>
-                  <th>&nbsp;<tal:title i18n:translate="listingheader_comment"
-                      >comment</tal:title>&nbsp;</th>
-                  <th>&nbsp;<tal:title i18n:translate="listingheader_actions"
-                      ></tal:title>&nbsp;</th>
+                  <th><tal:title i18n:translate="listingheader_key"
+                      >version</tal:title></th>
+                  <th><tal:title i18n:translate="listingheader_datetime"
+                      >created</tal:title></th>
+                  <th><tal:title i18n:translate="listingheader_user"
+                      >user</tal:title></th>
+                  <th><tal:title i18n:translate="listingheader_comment"
+                      >comment</tal:title></th>
+                  <th><tal:title i18n:translate="listingheader_actions"
+                      >actions</tal:title></th>
                 </tr>
             </thead>
 
@@ -55,11 +55,12 @@
                 <tr tal:define="id string:${vdata/object/version_id};
                                 current python:pr.isUpToDate(here,id);">
                   <td>
+                    <span tal:content="id">1</span>
                     <a href="#"
                        class="version-table-version"
+                       tal:condition="not:current"
                        tal:attributes="href string:$here_url/versions_history_form?version_id=${id}">
-                        <span tal:content="id">1</span>
-                    </a>
+                       (show)</a>
                   </td>
                   <td>
                     <span tal:content="python:here.toLocalizedTime(vdata.sys_metadata['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
@@ -70,13 +71,22 @@
                   <td><span tal:content="vdata/comment">Draft version ready for comments from the group.</span>
                   </td>
                   <td>
-                    <input type="hidden" name="" value=""/>
-                    <a href=""
-                      style="text-decoration: none"
-                      tal:condition="not:current"
-                      tal:attributes="href string:$here_url/rollbackversion?version_id=${id}">
+                    <ul tal:condition="not:current">
+                        <li tal:condition="exists:here/portal_diff">
+                            <a href=""
+                               style="text-decoration: none"
+                               tal:attributes="href string:$here_url/version_diff?version_id1=current&version_id2=${id}">
+                            Diff to current
+                            </a>
+                        </li>
+                        <li>
+                            <a href=""
+                               style="text-decoration: none"
+                               tal:attributes="href string:$here_url/rollbackversion?version_id=${id}">
                         rollback
-                    </a>
+                            </a>
+                        </li>
+                    </ul>
                   </td>
                 </tr>
                 </tal:block>

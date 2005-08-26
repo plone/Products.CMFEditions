@@ -21,6 +21,13 @@ Bugs fixed
 
 Features added
 
+- Added optional CMFDiffTool support for generating diffs between object
+  versions.  For this to work you need to setup the diffable fields on each
+  type in portal_diff.  In the 'alecm-at-schema-diffs' branch of CMFDiffTool
+  there is a diff type that can be applied to any AT object which will
+  automatically setup diffs for all fields in the schema (when using this
+  any value can be entered for the field in portal_diff).
+
 - Added a versioning policy (at_edit_autoversion) which automatically creates
   new versions on edit for AT types which are configured to support the policy
   in the configlet.  This is implemented using a simple macro override on
