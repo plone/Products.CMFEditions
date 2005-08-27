@@ -49,17 +49,21 @@ from Products.CMFEditions import ZVCStorageTool
 from Products.CMFEditions import CopyModifyMergeRepositoryTool
 from DummyTools import MemoryStorage
 from DummyTools import Dummy as Dummy
+
 from Products.PloneTestCase import PloneTestCase
+from Products.CMFEditions.tests import installProduct
 
 PloneTestCase.setupPloneSite()
+ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('CMFEditions')
+
 ZopeTestCase.installProduct('Archetypes')
 ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
-ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('ATContentTypes')
+
 ZopeTestCase.installProduct('Zelenium')
 ZopeTestCase.installProduct('PloneSelenium')
-ZopeTestCase.installProduct('CMFEditions')
-ZopeTestCase.installProduct('ATContentTypes')
 
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
@@ -74,25 +78,25 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
-        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
-        self.portal.portal_quickinstaller.installProduct('CMFEditions')
+        installProduct(self.portal, 'CMFEditions')
+        installProduct(self.portal, 'PloneSelenium', optional=True)
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
 
         # add the Editions Tool (this way we test the 'Install' script!)
-	tools = (
-	    UniqueIdHandlerTool.UniqueIdHandlerTool,
-	    ModifierRegistryTool.ModifierRegistryTool,
-	    ArchivistTool.ArchivistTool,
-	    CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool,
-	)
+        tools = (
+            UniqueIdHandlerTool.UniqueIdHandlerTool,
+            ModifierRegistryTool.ModifierRegistryTool,
+            ArchivistTool.ArchivistTool,
+            CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool,
+        )
 
     def installStorageTool(self):
         """Install your storage tool at this point"""
         CMFEditions = self.portal.manage_addProduct['CMFEditions']
-	CMFEditions.manage_addTool(ZVCStorageTool.ZVCStorageTool.meta_type)
+        CMFEditions.manage_addTool(ZVCStorageTool.ZVCStorageTool.meta_type)
 
     def buildMetadata(self, comment):
         return {'sys_metadata': {'comment': comment}}

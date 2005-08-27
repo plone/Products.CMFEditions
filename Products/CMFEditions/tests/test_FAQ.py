@@ -6,6 +6,12 @@ import os, sys, time
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
+# BBB
+try:
+    import transaction
+except ImportError:
+    from Products.CMFEditions.bbb import transaction
+
 # Nastily patch Products to get FAQ accepted
 import Products
 Products.__path__.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -18,14 +24,16 @@ from DateTime import DateTime
 from Testing import ZopeTestCase
 from Products.PloneTestCase import PloneTestCase
 from Products.PloneTestCase.setup import PLONE21
+from Products.CMFEditions.tests import installProduct
 from Products.CMFEditions import PACKAGE_HOME
 
 PloneTestCase.setupPloneSite()
+ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('CMFEditions')
+
 ZopeTestCase.installProduct('Archetypes')
 ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
-ZopeTestCase.installProduct('CMFUid')
-ZopeTestCase.installProduct('CMFEditions')
 ZopeTestCase.installProduct('ATContentTypes')
 ZopeTestCase.installProduct('FAQ')
 
@@ -54,22 +62,16 @@ def setupCMFEditions(app, portal_name, quiet):
     # Login as portal owner
     user = app.acl_users.getUserById(portal_owner).__of__(app.acl_users)
     newSecurityManager(None, user)
-    # Add Archetypes
-    if not hasattr(aq_base(portal), 'archetype_tool'):
-        portal.portal_quickinstaller.installProduct('Archetypes')
-    # Add PortalTransform
+    installProduct(portal, 'CMFEditions')
+    installProduct(portal, 'Archetypes', optional=True)
     #if not hasattr(aq_base(portal), 'portal_transforms'):
-    portal.portal_quickinstaller.installProduct('PortalTransforms')
-    # Add CMFEdtitions
-    portal.portal_quickinstaller.installProduct('CMFEditions')
+    installProduct(portal, 'PortalTransforms')
     if not quiet: ZopeTestCase._print('Adding ATContentTypes ... ')
-    # Add ATContentTypes
-    portal.portal_quickinstaller.installProduct('ATContentTypes')
-    # Add FAQ
-    portal.portal_quickinstaller.installProduct('FAQ')
+    installProduct(portal, 'ATContentTypes')
+    installProduct(portal, 'FAQ')
     # Log out
     noSecurityManager()
-    get_transaction().commit()
+    transaction.commit()
     if not quiet: ZopeTestCase._print('done (%.3fs)\n' % (time.time()-start,))
 
 

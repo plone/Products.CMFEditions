@@ -34,6 +34,12 @@ from pickle import dumps, loads
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
+# BBB
+try:
+    import transaction
+except ImportError:
+    from Products.CMFEditions.bbb import transaction
+
 from Testing import ZopeTestCase
 from Products.CMFTestCase import CMFTestCase
 
@@ -48,13 +54,16 @@ from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.interfaces.IArchivist import ArchivistError
+
 from Products.PloneTestCase import PloneTestCase
+from Products.CMFEditions.tests import installProduct
 
 PloneTestCase.setupPloneSite()
 ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('CMFEditions')
+
 ZopeTestCase.installProduct('Zelenium')
 ZopeTestCase.installProduct('PloneSelenium')
-ZopeTestCase.installProduct('CMFEditions')
 
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
@@ -74,8 +83,9 @@ class TestCopyModifyMergeRepositoryTool(PloneTestCase.PloneTestCase):
                                                 ['Manager'], '')
 
         # add test data
-        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
-        self.portal.portal_quickinstaller.installProduct('CMFEditions')
+        installProduct(self.portal, 'CMFEditions')
+        installProduct(self.portal, 'PloneSelenium', optional=True)
+        
         self.portal.invokeFactory('Document', 'doc')
         self.portal.invokeFactory('Link', 'link')
         self.portal.invokeFactory('Folder', 'fol')
@@ -323,8 +333,8 @@ class TestRegressionTests(PloneTestCase.PloneTestCase):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
-        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
-        self.portal.portal_quickinstaller.installProduct('CMFEditions')
+        installProduct(self.portal, 'CMFEditions')
+        installProduct(self.portal, 'PloneSelenium', optional=True)
 
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
@@ -346,7 +356,7 @@ class TestRegressionTests(PloneTestCase.PloneTestCase):
         doc.text = 'text v1'
         portal_repository.applyVersionControl(doc, comment='save no 1')
         doc.text = 'text v2'
-        get_transaction().commit(1)
+        transaction.commit(1)
         self.portal.manage_renameObject(doc.getId(), 'newdoc',)
         portal_repository.save(doc, comment='save no 2')
         portal_repository.revert(doc, 0)

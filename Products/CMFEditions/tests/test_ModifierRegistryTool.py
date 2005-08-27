@@ -52,13 +52,16 @@ from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import IModifierRegistryQuery
 from Products.CMFEditions.interfaces.IModifier \
      import IBulkEditableModifierRegistry
+
 from Products.PloneTestCase import PloneTestCase
+from Products.CMFEditions.tests import installProduct
 
 PloneTestCase.setupPloneSite()
 ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('CMFEditions')
+
 ZopeTestCase.installProduct('Zelenium')
 ZopeTestCase.installProduct('PloneSelenium')
-ZopeTestCase.installProduct('CMFEditions')
 
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
@@ -179,8 +182,8 @@ class TestModifierRegistryTool(PloneTestCase.PloneTestCase):
         # to the portal root
         self.setRoles(['Manager',])
 
-        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
-        self.portal.portal_quickinstaller.installProduct('CMFEditions')
+        installProduct(self.portal, 'CMFEditions')
+        installProduct(self.portal, 'PloneSelenium', optional=True)
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',

@@ -38,17 +38,21 @@ from OFS.ObjectManager import UNIQUE, REPLACEABLE
 
 from Products.CMFEditions.interfaces.IRepository \
      import ICopyModifyMergeRepository
+
 from Products.PloneTestCase import PloneTestCase
+from Products.CMFEditions.tests import installProduct
 
 PloneTestCase.setupPloneSite()
+ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('CMFEditions')
+
 ZopeTestCase.installProduct('Archetypes')
 ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
-ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('ATContentTypes')
+
 ZopeTestCase.installProduct('Zelenium')
 ZopeTestCase.installProduct('PloneSelenium')
-ZopeTestCase.installProduct('CMFEditions')
-ZopeTestCase.installProduct('ATContentTypes')
 
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
@@ -60,8 +64,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
-        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
-        self.portal.portal_quickinstaller.installProduct('CMFEditions')
+        installProduct(self.portal, 'PloneSelenium', optional=True)
+        installProduct(self.portal, 'CMFEditions')
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',

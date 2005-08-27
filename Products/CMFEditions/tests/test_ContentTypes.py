@@ -3,13 +3,21 @@ import os, sys, time
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
+# BBB
+try:
+    import transaction
+except ImportError:
+    from Products.CMFEditions.bbb import transaction
+
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_base
 from Testing import ZopeTestCase
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions import PACKAGE_HOME
+
 from Products.PloneTestCase.setup import PLONE21
+from Products.CMFEditions.tests import installProduct
 
 types = {'image':'Image',
          'document':'Document',
@@ -21,13 +29,15 @@ if PLONE21:
         types[id] = 'CMF '+types[id]
 
 PloneTestCase.setupPloneSite()
+ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('CMFEditions')
+
 ZopeTestCase.installProduct('Archetypes')
 ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
-ZopeTestCase.installProduct('CMFUid')
+
 ZopeTestCase.installProduct('Zelenium')
 ZopeTestCase.installProduct('PloneSelenium')
-ZopeTestCase.installProduct('CMFEditions')
 
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
@@ -41,15 +51,14 @@ def setupCMFEditions(app, portal_name, quiet):
     # Login as portal owner
     user = app.acl_users.getUserById(portal_owner).__of__(app.acl_users)
     newSecurityManager(None, user)
-    if not hasattr(aq_base(portal), 'archetype_tool'):
-        portal.portal_quickinstaller.installProduct('Archetypes')
-    portal.portal_quickinstaller.installProduct('PortalTransforms')
-    portal.portal_quickinstaller.installProduct('MimetypesRegistry')
-    portal.portal_quickinstaller.installProduct('PloneSelenium')
-    portal.portal_quickinstaller.installProduct('CMFEditions')
+    installProduct(portal, 'CMFEditions')
+    installProduct(portal, 'Archetypes', optional=True)
+    installProduct(portal, 'PortalTransforms')
+    installProduct(portal, 'MimetypesRegistry', optional=True)
+    installProduct(portal, 'PloneSelenium', optional=True)
     # Log out
     noSecurityManager()
-    get_transaction().commit()
+    transaction.commit()
     if not quiet: ZopeTestCase._print('done (%.3fs)\n' % (time.time()-start,))
 
 

@@ -33,6 +33,7 @@ if __name__ == '__main__':
 from Testing import ZopeTestCase
 from Products.CMFTestCase import CMFTestCase
 from Products.PloneTestCase import PloneTestCase
+from Products.CMFEditions.tests import installProduct
 
 from Interface.Verify import verifyObject
 
@@ -44,14 +45,16 @@ from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
 PloneTestCase.setupPloneSite()
+ZopeTestCase.installProduct('CMFUid')
+ZopeTestCase.installProduct('CMFEditions')
+
 ZopeTestCase.installProduct('Archetypes')
 ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
-ZopeTestCase.installProduct('CMFUid')
-ZopeTestCase.installProduct('Zelenium')
-ZopeTestCase.installProduct('PloneSelenium')
-ZopeTestCase.installProduct('CMFEditions')
 ZopeTestCase.installProduct('ATContentTypes')
+
+ZopeTestCase.installProduct('PloneSelenium')
+ZopeTestCase.installProduct('Zelenium')
 
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
@@ -71,8 +74,8 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.setRoles(['Manager',])
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
-        self.portal.portal_quickinstaller.installProduct('PloneSelenium')
-        self.portal.portal_quickinstaller.installProduct('CMFEditions')
+        installProduct(self.portal, 'CMFEditions')
+        installProduct(self.portal, 'PloneSelenium', optional=True)
         self.portal.invokeFactory('Document', 'doc')
         self.portal.invokeFactory('Folder', 'fol')
         self.portal.fol.invokeFactory('Document', 'doc1_inside')
