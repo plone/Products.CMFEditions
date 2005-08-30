@@ -71,15 +71,25 @@
                   <td><span tal:content="vdata/comment">Draft version ready for comments from the group.</span>
                   </td>
                   <td>
-                    <ul tal:condition="not:current">
-                        <li tal:condition="exists:here/portal_diff">
+                    <ul>
+                        <tal:diffs condition="exists:here/portal_diff">
+                        <li tal:condition="not:current">
                             <a href=""
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/version_diff?version_id1=current&version_id2=${id}">
                             Diff to current
                             </a>
                         </li>
-                        <li>
+                        <li tal:condition="not:repeat/vdata/start">
+                            <a href=""
+                               style="text-decoration: none"
+                               tal:define="prev_ver python:str(int(id)-1)"
+                               tal:attributes="href string:$here_url/version_diff?version_id1=${id}&version_id2=${prev_ver}">
+                            Diff from last
+                            </a>
+                        </li>
+                        </tal:diffs>
+                        <li tal:condition="not:current">
                             <a href=""
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/rollbackversion?version_id=${id}">
