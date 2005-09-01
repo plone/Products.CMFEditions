@@ -494,6 +494,10 @@ class VersionData:
         self.comment = sys_metadata.get('comment', '')
         self.metadata = app_metadata
         self.sys_metadata = sys_metadata
+        # If access contents information is disabled for anonymous on the object,
+        # then a problem arises when trying to access its attributes.  So we
+        # need to make version_id available (if only this were Zope 3) ;)
+        self.version_id = object.version_id
 
 
 class LazyHistory:

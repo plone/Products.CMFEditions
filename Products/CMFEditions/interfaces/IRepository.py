@@ -207,6 +207,11 @@ class IVersionData(Interface):
         - principal: the actor that did the save
         """)
 
+    version_id = Attribute(
+        """The version_id of the object in case it is inaccessible on the
+           object itself.
+        """)
+
 
 class IHistory(Interface):
     """Iterable version history.

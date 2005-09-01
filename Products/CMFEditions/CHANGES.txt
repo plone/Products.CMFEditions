@@ -10,6 +10,12 @@ Current
 
 Bugs fixed
 
+- Fixed a permissions bug which made the versions_history_form inaccessible if
+  any of the versions were saved while private (or otherwise had
+  'Access contents information' disabled).
+  [alecm]
+
+
 - Made quickinstalled product reinstall/uninstall work without issue.  Fixed
   unit tests for Plone 2.1.  Use mutators in templates and tests where
   applicable rather than direct attribute access.
