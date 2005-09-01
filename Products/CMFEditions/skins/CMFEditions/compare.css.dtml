@@ -1,36 +1,68 @@
-/*
- *  This is the file where you put your CSS changes.
- *  You should preferrably use this and override the
- *  relevant properties you want to change here instead
- *  of customizing plone.css to survive upgrades. Writing
- *  your own plone.css only makes sense for very heavy
- *  customizations. Useful variables from Plone are
- *  documented at the bottom of this file.
- *
- *  -- Alexander Limi, http://www.plonesolutions.com
- */
-
-
-
-
 /* <dtml-with base_properties> */
 
-#legend ul li {
-    margin: 0;
-    padding: 0.1em;
+.inline-diff {
+    font-size: 100%;
+    padding: 1em;
+    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+    color: &dtml-fontColor;;
+    background-color: &dtml-globalBackgroundColor;;
 }
 
-.visualDiffRemoved {
-    color: black;
-    background-color: orange;
-    text-decoration: line-through;
+/* CSS for htmldiff.py inline diff view */
+
+/* FIXME this could be better */
+.diff-legend {
+    position: relative;
+    text-align: left;
+    width: 13%;
+    left: 87%;
+    top-padding: 0 px;
+    bottom-padding: 0 px;
+    top-margin: 0 px;
+    bottom-margin: 0 px;
+    font-size: 75%;
 }
 
-.visualDiffAdded {
-    color: black;
-    background-color: yellow;
+.delete {
+    background-color: #ffaaaa;
 }
 
+.insert {
+    background-color: #aaffaa;
+}
 
+.tagInsert {
+    background-color: #007700;
+    color: #ffffff
+}
 
+.tagDelete {
+    background-color: #770000;
+    color: #ffffff
+}
+
+/* CSS for Python 2.4 HtmlDiff classes */
+
+.diff_header {
+    background-color:#e0e0e0;
+}
+
+td.diff_header {
+    text-align:right;
+}
+.diff_next {
+    background-color:#c0c0c0;
+}
+
+.diff_add {
+    background-color:#aaffaa;
+}
+
+.diff_chg {
+    background-color:#ffff77;
+}
+
+.diff_sub {
+    background-color:#ffaaaa;
+}
 /* </dtml-with> */

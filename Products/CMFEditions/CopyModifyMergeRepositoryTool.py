@@ -32,6 +32,7 @@ from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem
 from OFS.ObjectManager import ObjectManager
+from BTrees.OOBTree import OOBTree
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
@@ -40,17 +41,26 @@ from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 
-from Products.CMFEditions.interfaces.IRepository import \
-     ICopyModifyMergeRepository, IContentTypeVersionSupport
-from Products.CMFEditions.interfaces.IRepository import IVersionData, IHistory
+from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
+from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
+from Products.CMFEditions.interfaces.IRepository import IVersionData
+from Products.CMFEditions.interfaces.IRepository import IHistory
 
 from Products.CMFEditions.Permissions import ApplyVersionControl
 from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.CMFEditions.Permissions import RevertToPreviousVersions
 from Products.CMFEditions.Permissions import CheckoutToLocation
+from Products.CMFEditions.Permissions import ManageVersioningPolicies
+from Products.CMFEditions.VersionPolicies import VersionPolicy
 
 VERSIONABLE_CONTENT_TYPES = []
+VERSION_POLICY_MAPPING = {}
+VERSION_POLICY_DEFS = {}
+HOOKS = {'add': 'setupPolicyHook',
+         'remove': 'removePolicyHook',
+         'enable': 'enablePolicyOnTypeHook',
+         'disable': 'disablePolicyOnTypeHook'}
 
 class CopyModifyMergeRepositoryTool(UniqueObject,
                                     SimpleItem,
@@ -61,7 +71,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     __implements__ = (SimpleItem.__implements__,
                       ICopyModifyMergeRepository,
-                      IContentTypeVersionSupport,
+                      IContentTypeVersionPolicySupport,
                       )
 
     id = 'portal_repository'
@@ -78,10 +88,20 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                      )
 
     _versionable_content_types = VERSIONABLE_CONTENT_TYPES
+    _version_policy_mapping = VERSION_POLICY_MAPPING
+    _policy_defs = VERSION_POLICY_DEFS
 
-    
+    # Method for migrating the default dict to a per instance OOBTree,
+    # performed on product install.
+    def _migrateVersionPolicies(self):
+        if not isinstance(self._policy_defs, OOBTree):
+            btree_defs = OOBTree()
+            for obj_id, title in self._policy_defs.items():
+                btree_defs[obj_id]=VersionPolicy(obj_id, title)
+            self._policy_defs = btree_defs
+
     # -------------------------------------------------------------------
-    # methods implementing IContentTypeVersionSupport
+    # methods implementing IContentTypeVersionPolicySupport
     # -------------------------------------------------------------------
 
 
@@ -95,10 +115,120 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     def getVersionableContentTypes(self):
         return self._versionable_content_types
 
-    security.declarePublic('setVersionableContentType')
-    def setVersionableContentType(self, new_content_types):
+    security.declareProtected(ManageVersioningPolicies, 'setVersionableContentTypes')
+    def setVersionableContentTypes(self, new_content_types):
         self._versionable_content_types = new_content_types
 
+    # XXX: There was a typo which mismatched the interface def, preserve it
+    # for backwards compatibility
+    security.declareProtected(ManageVersioningPolicies, 'setVersionableContentType')
+    setVersionableContentType = setVersionableContentTypes
+
+    security.declareProtected(ManageVersioningPolicies, 'addPolicyForContentType')
+    def addPolicyForContentType(self, content_type, policy_id, **kw):
+        assert self._policy_defs.has_key(policy_id), "Unknown policy %s"%policy_id
+        policies = self._version_policy_mapping.copy()
+        cur_policy = policies.setdefault(content_type, [])
+        if policy_id not in cur_policy:
+            cur_policy.append(policy_id)
+            self._callPolicyHook('enable', policy_id, content_type, **kw)
+        self._version_policy_mapping = policies
+
+    security.declareProtected(ManageVersioningPolicies, 'removePolicyFromContentType')
+    def removePolicyFromContentType(self, content_type, policy_id, **kw):
+        policies = self._version_policy_mapping.copy()
+        cur_policy = policies.setdefault(content_type, [])
+        if policy_id in cur_policy:
+            cur_policy.remove(policy_id)
+            self._callPolicyHook('disable', policy_id, content_type, **kw)
+        self._version_policy_mapping = policies
+
+    security.declarePublic('supportsPolicy')
+    def supportsPolicy(self, obj, policy):
+        content_type = obj.portal_type
+        return policy in self._version_policy_mapping.get(content_type, [])
+
+    security.declarePublic('hasPolicy')
+    def hasPolicy(self, obj):
+        content_type = obj.portal_type
+        return bool(self._version_policy_mapping.get(content_type, None))
+
+    security.declareProtected(ManageVersioningPolicies, 'manage_setPolicies')
+    def manage_setTypePolicies(self, policy_map, **kw):
+        assert isinstance(policy_map, dict)
+        for p_type, policies in self._version_policy_mapping.items():
+            for policy_id in policies:
+                self.removePolicyFromContentType(p_type, policy_id, **kw)
+        for p_type, policies in policy_map.items():
+            assert isinstance(policies, list), \
+                            "Policy list for %s must be a list"%str(p_type)
+            for policy_id in policies:
+                assert self._policy_defs.has_key(policy_id), \
+                                  "Policy %s is unknown"%policy_id
+                self.addPolicyForContentType(p_type, policy_id, **kw)
+
+    security.declarePublic('listPolicies')
+    def listPolicies(self):
+        # convert the internal dict into a sequence of tuples
+        # sort on title
+        policy_list = [(p.Title(), p) for p in self._policy_defs.values()]
+        policy_list.sort()
+        policy_list = [p for (title, p) in policy_list]
+        return policy_list
+
+    security.declareProtected(ManageVersioningPolicies, 'addPolicy')
+    def addPolicy(self, policy_id, policy_title, policy_class=VersionPolicy,
+                                                                        **kw):
+        self._policy_defs[policy_id]=policy_class(policy_id,policy_title)
+        self._callPolicyHook('add', policy_id, **kw)
+
+    security.declareProtected(ManageVersioningPolicies, 'removePolicy')
+    def removePolicy(self, policy_id, **kw):
+        for p_type in self._version_policy_mapping.keys():
+            self.removePolicyFromContentType(p_type, policy_id, **kw)
+        self._callPolicyHook('remove', policy_id, **kw)
+        del self._policy_defs[policy_id]
+
+    security.declareProtected(ManageVersioningPolicies, 'manage_changePolicyDefs')
+    def manage_changePolicyDefs(self, policy_list, **kwargs):
+        # Call remove hooks for existing policies
+        p_defs = self._policy_defs
+        for policy_id in list(p_defs.keys()):
+            self.removePolicy(policy_id, **kwargs)
+        # Verify proper input formatting
+        assert isinstance(policy_list, list) or isinstance(policy_list, tuple)
+        for item in policy_list:
+            assert isinstance(item, tuple), \
+                        "List items must be tuples: %s"%str(item)
+            assert len(item) in (2,3,4), \
+            "Each policy definition must contain a title and id: %s"%str(item)
+            assert isinstance(item[0], basestring), \
+                        "Policy id must be a string: %s"%str(item[0])
+            assert isinstance(item[1], basestring), \
+                        "Policy title must be a string: %s"%str(item[1])
+            # Get optional Policy class and kwargs.
+            if len(item)>=3:
+                policy_class = item[2]
+            else:
+                policy_class = VersionPolicy
+            if len(item)==4:
+                assert isinstance(item[3], dict), \
+                                "Extra args for %s must be a dict"%item[0]
+                kw = item[3]
+            else:
+                kw = kwargs
+            # Add new policy
+            self.addPolicy(item[0],item[1],policy_class,**kw)
+
+    security.declareProtected(ManageVersioningPolicies, 'getPolicyMap')
+    def getPolicyMap(self):
+        return dict(self._version_policy_mapping)
+
+    def _callPolicyHook(self, action, policy_id, *args, **kw):
+        hook = getattr(self._policy_defs[policy_id], HOOKS[action], None)
+        if hook is not None and callable(hook):
+            portal = getToolByName(self, 'portal_url').getPortalObject()
+            hook(portal, *args, **kw)
 
     # -------------------------------------------------------------------
     # methods implementing ICopyModifyMergeRepository
@@ -269,7 +399,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # --> The archivist API has to be extended
 
         # retrieve all inside refs
-        
+
         for attr_ref in vdata.data.inside_refs:
             # get the referenced working copy
             # XXX if the working copy we're searching for was moved to
@@ -280,8 +410,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             va_ref = attr_ref.getAttribute()
             ref = portal_hidhandler.queryObject(va_ref.history_id, None)
             if ref is None:
-                import pdb; pdb.set_trace()
-        
+                #import pdb; pdb.set_trace()
                 # there is no working copy for the referenced version, so
                 # create an empty object of the same type (it's only
                 # temporary if not inplace).
