@@ -106,6 +106,16 @@ def manage_addRetainWorkflowStateAndHistory(self, id, title=None,
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
+def manage_addRetainPermissionsSettings(self, id, title=None,
+                                            REQUEST=None):
+    """Add a modifier retaining permissions upon retrieve.
+    """
+    modifier = RetainPermissionsSettings()
+    self._setObject(id, ConditionalModifier(id, modifier, title))
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
 def manage_addSaveFileDataInFileTypeByReference(self, id, title=None,
                                                 REQUEST=None):
     """Add a modifier avoiding unnecessary cloning of file data.
@@ -310,6 +320,29 @@ class RetainWorkflowStateAndHistory:
 
 InitializeClass(RetainWorkflowStateAndHistory)
 
+class RetainPermissionsSettings:
+    """Standard modifier retaining permissions settings
+
+    This is nearly essential if we are going to be retaining workflow.
+    """
+
+    __implements__ = (ISaveRetrieveModifier, )
+
+    def beforeSaveModifier(self, obj, clone):
+        return [], []
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        # replace the permission stuff of the repository clone by the
+        # one of the working copy or delete it
+        for key, val in obj.__dict__.items():
+            # Find permission settings
+            if key.startswith('_') and key.endswith('_Permission'):
+                setattr(repo_clone, key, val)
+
+        return [], {}
+
+InitializeClass(RetainPermissionsSettings)
+
 
 class SaveFileDataInFileTypeByReference:
     """Standard modifier avoiding unnecessary cloning of the file data.
@@ -367,6 +400,16 @@ modifiers = (
         'modifier': RetainWorkflowStateAndHistory,
         'form': manage_addModifierForm,
         'factory': manage_addRetainWorkflowStateAndHistory,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'RetainPermissionsSettings',
+        'title': "Retains the permission settings upon retrieval/revertion.",
+        'enabled': True,
+        'wrapper': ConditionalModifier,
+        'modifier': RetainPermissionsSettings,
+        'form': manage_addModifierForm,
+        'factory': manage_addRetainPermissionsSettings,
         'icon': 'www/modifier.gif',
     },
     {

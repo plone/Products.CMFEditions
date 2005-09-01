@@ -354,6 +354,63 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(doc1.Title(), "v1 of doc1")
         self.assertEqual(doc2.Title(), "v1 of doc2")
 
+    def test12_retrieveAndRevertRetainWorkingCopiesPermissions(self):
+        portal_repo = self.portal.portal_repository
+        doc = self.portal.doc
+        perm = 'Access contents information'
+        roles = list(doc.valid_roles())
+        member_role = 'p1r%s'%roles.index('Member')
+        manager_role = 'p1r%s'%roles.index('Manager')
+
+        def settingsFor(obj,perm):
+            for l in obj.permission_settings():
+                if l['name'] == perm:
+                    return l
+
+        doc.manage_permission(perm, ('Manager',), 0)
+
+        portal_repo.applyVersionControl(doc)
+
+        doc.manage_permission(perm, ('Manager', 'Member'), 1)
+        portal_repo.save(doc)
+
+        # just check the original is unchanged
+        settings = settingsFor(doc, perm)
+        self.failUnless(settings['acquire'])
+        role_enabled = [r for r in settings['roles']
+                                        if r['name'] == member_role][0]
+        self.failUnless(role_enabled['checked'])
+
+        # ----- retrieve
+        # check if retrieved object carries the working copy's permissions
+        retrieved_data = portal_repo.retrieve(doc, 0,
+                        preserve=['_Access_contents_information_Permission'])
+        settings = settingsFor(retrieved_data.object, perm)
+        self.failUnless(settings['acquire'])
+        role_enabled = [r for r in settings['roles']
+                                        if r['name'] == member_role][0]
+        self.failUnless(role_enabled['checked'])
+
+        # check that the working copy's permissions are unchanged
+        settings = settingsFor(doc, perm)
+        self.failUnless(settings['acquire'])
+        role_enabled = [r for r in settings['roles']
+                                        if r['name'] == member_role][0]
+        self.failUnless(role_enabled['checked'])
+
+        # check if the preserved data is returned correctly
+        preserved = retrieved_data.preserved_data['_Access_contents_information_Permission']
+        self.assertEqual(preserved, ('Manager',))
+
+        # ----- revert
+        # check that the working copies permissions are unchanged after revert
+        portal_repo.revert(doc, 0)
+        settings = settingsFor(doc, perm)
+        self.failUnless(settings['acquire'])
+        role_enabled = [r for r in settings['roles']
+                                        if r['name'] == member_role][0]
+        self.failUnless(role_enabled['checked'])
+
 
 if __name__ == '__main__':
     framework()
