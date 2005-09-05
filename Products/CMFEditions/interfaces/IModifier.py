@@ -119,13 +119,19 @@ class ISaveRetrieveModifier(Interface):
             - manipulate data before it get restored
             - return data that gets overwritte in this process
 
-        'obj' may be None. This signifies there is no "target" object.
+        It does kind of the inverse of the method ``beforeSaveModifier``.
 
-        Returns a list of references to be deleted on revert 
-        (``IReferenceAdapter``) and a dictionary of the data having been 
-        preserved from beeing overwritten.
+        'obj' may be None. This signifies there is no working copy object.
 
-        Usually this method does the inverse of method 'beforeSaveHook'.
+        Returns:
+        
+        - a list of references to be deleted on revert (providing
+          ``IReferenceAdapter``) 
+        - a list of attribute names beeing in charge of holding reference
+          information (e.g. an ObjectManager with ``doc1`` and ``doc2`` 
+          as childrens: ['_objects', 'doc1', 'doc2'])
+        - a dictionary of the data having been preserved from beeing 
+          overwritten.
         """
 
 class IReferenceAdapter(Interface):

@@ -193,6 +193,16 @@ def createExpressionContext(obj, portal=None, **more_symbols):
     else:
         member = pm.getAuthenticatedMember()
     
+    try:
+        meta_type = obj.meta_type
+    except AttributeError:
+        meta_type = None
+        
+    try:
+        portal_type = obj.getPortalTypeName()
+    except AttributeError:
+        portal_type  = None
+    
     data = {
         'object_url':   obj_url,
         'folder_url':   folder is not None and folder.absolute_url() or '',
@@ -204,8 +214,8 @@ def createExpressionContext(obj, portal=None, **more_symbols):
         'request':      getattr(obj, 'REQUEST', None),
         'modules':      SecureModuleImporter,
         'member':       member,
-        'meta_type':    obj.meta_type,
-        'portal_type':  obj.getPortalTypeName(),
+        'meta_type':    meta_type,
+        'portal_type':  portal_type,
         }
     data.update(more_symbols)
     return getEngine().getContext(data)

@@ -4,7 +4,7 @@ ToDos
 
 Numbers don't indicate any importance and order in implementation.
 
-next number: 53
+next number: 54
 
 Inbox
 =====
@@ -83,6 +83,8 @@ Inbox
 
         # rewrap (XXX is this the correct place here in case of inplace?)
         vdata.data.object = vdata.data.object.__of__(parent)
+
+53. Write test suite for ``STandardModifiers``.
 
 
 CMFEditions 1.0beta1

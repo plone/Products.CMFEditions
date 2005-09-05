@@ -33,6 +33,10 @@ class IArchivist(Interface):
     
     It decides which aspects to save to a histories storage and which
     aspects have to be overridden by the working copies ones on retrieve.
+    
+    As object ``obj`` may be passed a python reference to the object or
+    any other kind of reference that allows the archivist dereferencing
+    the object meant.
     """
 
     def prepare(obj, app_metadata=None, sys_metadata={}):
@@ -62,6 +66,15 @@ class IArchivist(Interface):
         
         Prior to a save the object has to be prepared. Pass the
         return value of the 'prepare' method to 'prepared_obj'.
+        """
+
+    def isUpToDate(obj, selector=None):
+        """Returns True if the working copy has changed since the last save
+           or revert compared to the selected version. If selector is None,
+           the comparison is done with the HEAD.
+                                                                                                                             
+        The working copy is up to date if the modification date is the
+        identical to the selected version.
         """
 
     def retrieve(obj, selector=None, preserve=()):
@@ -96,16 +109,6 @@ class IArchivist(Interface):
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
 
-    def isUpToDate(obj, selector=None):
-        """Returns True if the working copy has changed since the last save
-           or revert compared to the selected version. If selector is None,
-           the comparison is done with the HEAD.
-                                                                                                                             
-        The working copy is up to date if the modification date is the
-        identical to the selected version.
-        """
-
-
     def queryHistory(obj, preserve=(), default=[]):
         """Returns the history of an object.
         
@@ -122,8 +125,9 @@ class IArchivist(Interface):
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
 
+
 class IPreparedObject(Interface):
-    """
+    """Contains data prepared for save or register.
     """
 
     history_id = Attribute(
@@ -182,6 +186,10 @@ class IVersionData(Interface):
         ``IReferenceAdapter``.
         """)
     
+    attr_handling_references = Attribute(
+        """List of names of attributes handling references.
+        """)
+        
     preserved_data = Attribute(
         """Returns data beeing preserved from beeing overwritten by modifiers.
         
@@ -254,9 +262,12 @@ class IObjectData(Interface):
 
 class IAttributeAdapter(Interface):
     """Adapter allowing setting and getting an attribute.
+    
+    TODO: use ``Attribute`` instead of explicit setters/getters.
+    TODO: remove ``__init__`` from signature.
     """
     
-    def __init__(parent, attr_name):
+    def __init__(parent, attr_name, type=None):
         """Store the attributes "coordinates".
         """
         
@@ -264,12 +275,16 @@ class IAttributeAdapter(Interface):
         """Sets the given object as attribute.
         """
         
-    def getAttribute(self):
+    def getAttribute():
         """Returns the current attribute.
         """
         
-    def getAttributeName(self):
-        """Returns the attributes name
+    def getAttributeName():
+        """Returns the attributes name.
+        """
+    
+    def getType():
+        """Returns the attributes type.
         """
 
 

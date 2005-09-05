@@ -25,10 +25,10 @@ $Id: test_ZVCStorageTool.py,v 1.12 2005/02/24 21:53:44 tomek1024 Exp $
 """
 
 import os, sys
-import time
 
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
+
 from Testing import ZopeTestCase
 
 from Interface.Verify import verifyObject
@@ -49,6 +49,7 @@ from Products.CMFEditions import ZVCStorageTool
 from Products.CMFEditions import CopyModifyMergeRepositoryTool
 from DummyTools import MemoryStorage
 from DummyTools import Dummy as Dummy
+from DummyTools import notifyModified
 
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions.tests import installProduct
@@ -210,23 +211,23 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
     def test07_getModificationDate(self):
         portal_storage = self.portal.portal_historiesstorage
         obj = Dummy()
-	v1_modified = obj.ModificationDate()
+        v1_modified = obj.modified()
         v1 = portal_storage.register(history_id=1, object=ObjectData(obj), metadata=self.buildMetadata('saved v1'))
         self.assertEqual(v1_modified, portal_storage.getModificationDate(history_id=1))
         self.assertEqual(v1_modified, portal_storage.getModificationDate(history_id=1, selector=v1))
 
-	#storage never gets the same object twice, because the archivist always generates another copy on save,
-	#which then have a diffrent python id.
+        #storage never gets the same object twice, because the archivist always generates another copy on save,
+        #which then have a diffrent python id.
 
-	#simulate object copy
-	time.sleep(2) #make the modification date different
-	obj = Dummy()
-	v2_modified = obj.ModificationDate()
-	v2 = portal_storage.save(history_id=1, object=ObjectData(obj), metadata=self.buildMetadata('saved v2'))
-	self.assertNotEquals(v1, v2)
+        #simulate object copy
+        notifyModified(obj)
+        obj = Dummy()
+        v2_modified = obj.modified()
+        v2 = portal_storage.save(history_id=1, object=ObjectData(obj), metadata=self.buildMetadata('saved v2'))
+        self.assertNotEquals(v1, v2)
         self.assertEqual(v2_modified, portal_storage.getModificationDate(history_id=1))
-	self.assertEqual(v2_modified, portal_storage.getModificationDate(history_id=1, selector=v2))
-	self.assertEqual(v1_modified, portal_storage.getModificationDate(history_id=1, selector=v1))
+        self.assertEqual(v2_modified, portal_storage.getModificationDate(history_id=1, selector=v2))
+        self.assertEqual(v1_modified, portal_storage.getModificationDate(history_id=1, selector=v1))
 
 
 class TestMemoryStorage(TestZVCStorageTool):

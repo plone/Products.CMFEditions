@@ -199,11 +199,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # copy
         self.portal.manage_pasteObjects(self.portal.manage_copyObjects(ids=['doc']))
         copy = self.portal.copy_of_doc
-        copy.manage_afterClone(copy)
-
-        # XXX: This fails with AT objects as the default AT manage_afterClone
-        # methods don't recurse through subobjects (opaque or otherwise) as
-        # the CMFCatalogAwareOne does
 
         # the copy shall not have a history yet: that's correct
         self.failIf(portal_repo.getHistory(copy))
@@ -325,7 +320,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         fol.setTitle('v1 of fol')
         doc1.setTitle("v1 of doc1")
         doc2.setTitle("v1 of doc2")
-
         portal_repo.applyVersionControl(fol, comment='first save')
 
         # save change no 2
@@ -359,13 +353,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         doc = self.portal.doc
         perm = 'Access contents information'
         roles = list(doc.valid_roles())
-        member_role = 'p1r%s'%roles.index('Member')
-        manager_role = 'p1r%s'%roles.index('Manager')
-
-        def settingsFor(obj,perm):
-            for l in obj.permission_settings():
-                if l['name'] == perm:
-                    return l
+        member_role = 'p0r%s' % roles.index('Member')
+        manager_role = 'p0r%s' % roles.index('Manager')
 
         doc.manage_permission(perm, ('Manager',), 0)
 
@@ -375,7 +364,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         portal_repo.save(doc)
 
         # just check the original is unchanged
-        settings = settingsFor(doc, perm)
+        settings = doc.permission_settings(perm)[0]
         self.failUnless(settings['acquire'])
         role_enabled = [r for r in settings['roles']
                                         if r['name'] == member_role][0]
@@ -385,14 +374,14 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # check if retrieved object carries the working copy's permissions
         retrieved_data = portal_repo.retrieve(doc, 0,
                         preserve=['_Access_contents_information_Permission'])
-        settings = settingsFor(retrieved_data.object, perm)
+        settings = retrieved_data.object.permission_settings(perm)[0]
         self.failUnless(settings['acquire'])
         role_enabled = [r for r in settings['roles']
                                         if r['name'] == member_role][0]
         self.failUnless(role_enabled['checked'])
 
         # check that the working copy's permissions are unchanged
-        settings = settingsFor(doc, perm)
+        settings = doc.permission_settings(perm)[0]
         self.failUnless(settings['acquire'])
         role_enabled = [r for r in settings['roles']
                                         if r['name'] == member_role][0]
@@ -405,7 +394,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # ----- revert
         # check that the working copies permissions are unchanged after revert
         portal_repo.revert(doc, 0)
-        settings = settingsFor(doc, perm)
+        settings = doc.permission_settings(perm)[0]
         self.failUnless(settings['acquire'])
         role_enabled = [r for r in settings['roles']
                                         if r['name'] == member_role][0]

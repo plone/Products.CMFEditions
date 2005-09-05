@@ -2,6 +2,7 @@ from Acquisition import aq_base
 from copy import deepcopy
 from StringIO import StringIO
 from OFS.SimpleItem import SimpleItem
+from OFS.CopySupport import CopySource
 from Products.CMFDefault.DublinCore import DefaultDublinCoreImpl
 from Products.CMFEditions.ArchivistTool import ObjectData
 from Products.CMFEditions.ArchivistTool import PreparedObject
@@ -15,7 +16,7 @@ from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFCore.utils import getToolByName
 from cPickle import Pickler, Unpickler
 from pickle import dumps, loads
-import time
+from DateTime import DateTime
 import types
 
 
@@ -37,7 +38,50 @@ def deepCopy(obj):
     u = Unpickler(stream)
     return u.load()
 
-class DummyArchivist:
+def notifyModified(obj):
+    """Notify the object as modified.
+    
+    Sleeps as long as DateTime delivers a different time then 
+    notifies the object as modified (faster than time.sleep(2)).
+    """
+    t = obj.modified()
+    while t == DateTime(): pass
+    obj.notifyModified()
+
+def dereference(reference, zodb_hook=None):
+    """Dereference an object.
+    
+    The passed ``reference`` may be an object or a unique id.
+    
+    Returns a tuple consisting of the derefrenced object and 
+    the unique id of the object: ``(obj, uid)``
+    
+    If the object could not be dereferenced ``obj`` is None.
+    If the object is not yet registered with the uid handler 
+    ``uid`` is None.
+    """
+    if zodb_hook is None:
+        # try to use the reference as zodb hook
+        zodb_hook = reference
+
+    portal_hidhandler = getToolByName(zodb_hook, 'portal_historyidhandler')
+    
+    # eek: ``CopySource^` is used by CMFContentTypes and Archetypes based 
+    # content types
+    if isinstance(reference, CopySource):
+        # The object passed is already a python reference to a content object
+        obj = reference
+        uid = portal_hidhandler.queryUid(obj, None)
+    else:
+        # Currently as multiple locations are not yet supported the object
+        # is all-embracing dereferenceable by the history id.
+        uid = reference
+        obj = portal_hidhandler.queryObject(uid, None)
+    
+    return obj, uid
+
+
+class DummyArchivist(SimpleItem):
     """Archivist simulating modifiers and history storage.
     """
     id = 'portal_archivist'
@@ -48,12 +92,12 @@ class DummyArchivist:
     def __init__(self):
         self._archive = {}
         self._counter = 0
-	self.alog = []
-	self.alog_indent = ''
-   
+        self.alog = []
+        self.alog_indent = ''
+
     def log(self, msg):
         self.alog.append(msg)
-	
+
     def get_log(self):
         return "\n".join(self.alog)
 
@@ -61,16 +105,15 @@ class DummyArchivist:
         self.alog = []
 
     def prepare(self, obj, app_metadata=None, sys_metadata={}):
-        portal_hidhandler = getToolByName(obj, 'portal_historyidhandler')
-        try:
-            history_id = portal_hidhandler.getUid(obj)
-        except portal_hidhandler.UniqueIdError:
+        obj, history_id = dereference(obj)
+        if history_id is None:
             # object isn't under version control yet
             # An working copy beeing under version control needs to have
             # a history_id, version_id (starts with 0) and a location_id
             # (the current implementation isn't able yet to handle multiple
             # locations. Nevertheless lets set the location id to a well
             # known default value)
+            portal_hidhandler = getToolByName(obj, 'portal_historyidhandler')
             history_id = portal_hidhandler.register(obj)
             version_id = obj.version_id = 0
             obj.location_id = 0
@@ -174,28 +217,36 @@ class DummyArchivist:
                        autoregister))
 
         # save in the format the data needs to be retrieved
-        svdata = VersionData(prepared_obj.clone, 
-                             [],
-                             prepared_obj.referenced_data,
-                             prepared_obj.metadata)
+        svdata = {
+            'clone': prepared_obj.clone,
+            'referenced_data': prepared_obj.referenced_data,
+            'metadata': prepared_obj.metadata,
+        }
         # storage simulation
         self._archive[prepared_obj.history_id].append(svdata)
     
     def retrieve(self, obj, selector=None, preserve=()):
-        portal_hidhandler = getToolByName(obj, 'portal_historyidhandler')
-        history_id = portal_hidhandler.queryUid(obj)
+        obj, history_id = dereference(obj, self)
         if selector is None:
             selector = len(self._archive[history_id]) - 1  #HEAD
 
-        # log
         self.log("%sretrieve %s: hid=%s, selector=%s" 
                     % (self.alog_indent, obj.getId(), history_id, selector))
         
-        return deepCopy(self._archive[history_id][selector])
+        data = self._archive[history_id][selector]
+        attr_handling_references = ['_objects']
+        attr_handling_references.extend(data['clone'].object.objectIds())
+        attr_handling_references.extend(obj.objectIds())
+        vdata = VersionData(data['clone'], 
+                    [],
+                    attr_handling_references,
+                    data['referenced_data'],
+                    data['metadata'])
+
+        return deepCopy(vdata)
     
     def getHistory(self, obj, preserve=()):
-        portal_hidhandler = getToolByName(obj, 'portal_historyidhandler')
-        history_id = portal_hidhandler.queryUid(obj)
+        obj, history_id = dereference(obj, self)
         return [deepCopy(obj) for obj in self._archive[history_id]]
 
     def queryHistory(self, obj, preserve=(), default=[]):
@@ -207,13 +258,12 @@ class DummyArchivist:
             return history
         return default
 
-    def isUpToDate(self, object, selector=None):
-        mem = self.retrieve(object, selector)
-        return mem.data.object.ModificationDate() == object.ModificationDate()
-    
-    def getObjectType(self, history_id):
-#        import pdb; pdb.set_trace()
-        return self._archive[history_id][-1].data.object.portal_type
+    def isUpToDate(self, obj, selector=None):
+        obj = dereference(obj, self)[0]
+        mem = self.retrieve(obj, selector)
+#        return mem.data.object.ModificationDate() == obj.ModificationDate()
+        return mem.data.object.modified() == obj.modified()
+
 
 class VersionAwareReference:
     def __init__(self, **info):
@@ -243,7 +293,7 @@ class DummyModifier(DummyBaseTool):
         # just a dead simple test implementation
         for key in preserve:
             preserved[key] = key
-        return [], preserved
+        return [], [], preserved
     
     def getReferencedAttributes(self, obj):
         return {}
@@ -343,13 +393,18 @@ class FolderishContentObjectModifier(DummyBaseTool):
         # just a dead simple test implementation
         for key in preserve:
             preserved[key] = key
-        return [], preserved
+        
+        ref_names = self._getAttributeNamesHandlingSubObjects(obj)
+        return [], ref_names, {}
     
     def reattachReferencedAttributes(self, object, referenced_data):
         # just a dead simple test implementation
         for key, value in referenced_data.items():
             setattr(object, key, value)
     
+    def _getAttributeNamesHandlingSubObjects(self, obj):
+        return ['_objects'].extend(obj.objectIds())
+
 
 class DummyHistoryIdHandler(DummyBaseTool):
     id = 'portal_historyidhandler'
@@ -360,12 +415,15 @@ class DummyHistoryIdHandler(DummyBaseTool):
     
     UniqueIdError = UniqueIdError
     
+    objectRegistry = {}
+    
     def register(self, obj):
         uhid = self.queryUid(obj)
         if uhid is None:
             self.uhid_counter += 1
             uhid = self.uhid_counter
             setattr(obj, self.UID_ATTRIBUTE_NAME, uhid)
+            self.objectRegistry[uhid] = obj
         return uhid
    
     def queryUid(self, obj, default=None):
@@ -376,6 +434,12 @@ class DummyHistoryIdHandler(DummyBaseTool):
         if uid is None:
             raise UniqueIdError("'%s' has no unique id attached." % obj)
         return uid
+        
+    def queryObject(self, uid, default=None):
+        try:
+            return self.objectRegistry[uid]
+        except KeyError:
+            return default
         
 #    def setUid(self, obj, uid, check_uniqueness=True):
 #        setattr(obj, self.UID_ATTRIBUTE_NAME, uid)
@@ -395,10 +459,9 @@ class HistoryList(types.ListType):
         try:
            return types.ListType.__getitem__(self, selector)
         except IndexError:
-	   raise StorageRetrieveError("Retrieving non existing version %s" % selector)
-			   
-	
-        
+            raise StorageRetrieveError("Retrieving non existing version %s" % selector)
+
+
 class MemoryStorage(DummyBaseTool):
 
     __implements__ = IStorage
@@ -415,12 +478,12 @@ class MemoryStorage(DummyBaseTool):
 
     def save(self, history_id, object, referenced_data={}, metadata=None):
         if not self._histories.has_key(history_id):
-	   raise StorageUnregisteredError(
-	      "Saving or retrieving an unregistered object is not "
-	      "possible. Register the object with history id '%s' first. "
-	       % history_id)
-	
-	return self._save(history_id, object, referenced_data, metadata)
+            raise StorageUnregisteredError(
+                "Saving or retrieving an unregistered object is not "
+                "possible. Register the object with history id '%s' first. "
+                % history_id)
+
+        return self._save(history_id, object, referenced_data, metadata)
 
 
     def _save(self, history_id, object, referenced_data={}, metadata=None):
@@ -470,5 +533,6 @@ class MemoryStorage(DummyBaseTool):
 
     def getModificationDate(self, history_id, selector=None):
         vdata = self.retrieve(history_id, selector)
-        return vdata.object.object.ModificationDate()
+#        return vdata.object.object.ModificationDate()
+        return vdata.object.object.modified()
 

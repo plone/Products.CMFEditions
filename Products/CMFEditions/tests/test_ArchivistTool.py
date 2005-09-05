@@ -26,7 +26,6 @@ $Id: test_ArchivistTool.py,v 1.10 2005/02/25 22:04:00 tomek1024 Exp $
 
 import types
 import os, sys
-import time
 
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
@@ -43,6 +42,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
+
+from DummyTools import notifyModified
 
 PloneTestCase.setupPloneSite()
 ZopeTestCase.installProduct('CMFUid')
@@ -70,7 +71,6 @@ from DummyTools import FolderishContentObjectModifier
 class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
 
     def afterSetUp(self):
-        start = time.time()
         self.setRoles(['Manager',])
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
@@ -122,47 +122,42 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
         vdata = portal_archivist.retrieve(doc, 0, preserve=('gaga', 'gugus'))
-        old_doc = vdata.data.object
-        old_meta = vdata.app_metadata
-        head_histid = portal_historyidhandler.queryUid(doc)
-        old_histid = portal_historyidhandler.queryUid(old_doc)
-        self.assertEqual(head_histid, old_histid)
+        retr_doc = vdata.data.object
+        retr_meta = vdata.app_metadata
+        doc_histid = portal_historyidhandler.queryUid(doc)
+        retr_histid = portal_historyidhandler.queryUid(retr_doc)
+        self.assertEqual(doc_histid, retr_histid)
         # check if correct version retrieved and working object unchanged
-        self.assertEqual(old_doc.text , 'text v1')
-        self.assertEqual(old_meta , 'save number 1')
+        self.assertEqual(retr_doc.text , 'text v1')
+        self.assertEqual(retr_meta , 'save number 1')
         self.assertEqual(doc.text , 'text v2')
         self.assertEqual(len(vdata.preserved_data), 2)
         self.assertEqual(vdata.preserved_data['gaga'], 'gaga')
         self.assertEqual(vdata.preserved_data['gugus'], 'gugus')
 
-    # XXX no inplace anymore!!!
-    def disabled_test03_retrieveInplace(self):
+    def test03_retrieveById(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
         portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
-
         doc.text = 'text v1'
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         portal_archivist.register(prep)
-
         doc.text = 'text v2'
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
-
-        before_histid = portal_historyidhandler.queryUid(doc)
-
-        portal_archivist.retrieve(doc, 0, inplace=True)
-
-        # check if the rolled back doc has the same identity as before
-        self.assertEqual(doc, self.portal.doc)
-
-        # check if rolled back the working copy to the old version
-        self.assertEqual(doc.text , 'text v1')
-
-        # check if a unique history id was attached
-        after_histid = portal_historyidhandler.queryUid(doc)
-        self.assertEqual(after_histid, before_histid)
+        doc_histid = portal_historyidhandler.queryUid(doc)
+        vdata = portal_archivist.retrieve(doc_histid, 0, 
+                                          preserve=('gaga', 'gugus'))
+        retr_doc = vdata.data.object
+        retr_meta = vdata.app_metadata
+        # check if correct version retrieved and working object unchanged
+        self.assertEqual(retr_doc.text , 'text v1')
+        self.assertEqual(retr_meta , 'save number 1')
+        self.assertEqual(doc.text , 'text v2')
+        self.assertEqual(len(vdata.preserved_data), 2)
+        self.assertEqual(vdata.preserved_data['gaga'], 'gaga')
+        self.assertEqual(vdata.preserved_data['gugus'], 'gugus')
 
     def test04_getHistory(self):
         portal_archivist = self.portal.portal_archivist
@@ -212,7 +207,34 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
             self.assertEqual(vdata.data.object.text, 'text v%s' % counter)
             self.assertEqual(vdata.app_metadata, 'save number %s' % counter)
 
-    def test06_prepareObjectWithReferences(self):
+    def test06_getHistoryById(self):
+        portal_archivist = self.portal.portal_archivist
+        portal_historyidhandler = self.portal.portal_historyidhandler
+        portal_historiesstorage = self.portal.portal_historiesstorage
+        doc = self.portal.doc
+
+        doc.text = 'text v1'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        portal_archivist.register(prep)
+
+        doc.text = 'text v2'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        portal_archivist.save(prep)
+
+        doc_histid = portal_historyidhandler.queryUid(doc)
+        history = portal_archivist.getHistory(doc_histid)
+
+        self.assertEqual(len(history), 2)
+        # check if timestamp and principal available
+        self.failUnless(history[0].sys_metadata['timestamp'])
+        self.failUnless(history[0].sys_metadata['principal'])
+        # check if correct data and metadata retrieved
+        self.assertEqual(history[0].data.object.text, 'text v1')
+        self.assertEqual(history[0].app_metadata, 'save number 1')
+        self.assertEqual(history[1].data.object.text, 'text v2')
+        self.assertEqual(history[1].app_metadata, 'save number 2')
+
+    def test07_prepareObjectWithReferences(self):
         # test with a different modifier
         self._setDummyTool(FolderishContentObjectModifier())
 
@@ -274,7 +296,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         # XXX necessary?
         self._setDummyTool(DummyModifier())
 
-    def test07_retrieveWithReferences(self):
+    def test08_retrieveWithReferences(self):
         # test with a different modifier
         self._setDummyTool(FolderishContentObjectModifier())
         
@@ -321,7 +343,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
             # check info value (see note above)
             self.assertEquals(ref.info, refs.index(ref))
 
-    def test08_isUpToDate(self):
+    def test09_isUpToDate(self):
         doc = self.portal.doc
         portal_archivist = self.portal.portal_archivist
         doc.text = 'text v1'
@@ -332,8 +354,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.failUnless(portal_archivist.isUpToDate(doc, v1))
 
         doc.text = 'text v2'
-        time.sleep(2)
-        doc.notifyModified()
+        notifyModified(doc)
         self.failIf(portal_archivist.isUpToDate(doc))
 
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')

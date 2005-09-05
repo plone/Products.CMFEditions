@@ -39,6 +39,7 @@ from Products.CMFCore.utils import _checkPermission
 from Products.CMFCore.CMFCorePermissions import ModifyPortalContent
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
+from Products.CMFEditions.utilities import dereference, wrap
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
@@ -263,11 +264,13 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     def revert(self, obj, selector=None):
         """See interface.
         """
+        # XXX this should go away if _recursiveRetrieve is correctly implemented
         original_id = obj.getId()
+
         self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
-        parent = aq_parent(aq_inner(obj))
-        self._recursiveRetrieve(obj, parent, selector, preserve=(),
-                                inplace=True)
+        self._recursiveRetrieve(obj, selector=selector, inplace=True)
+
+        # XXX this should go away if _recursiveRetrieve is correctly implemented
         if obj.getId() != original_id:
             obj._setId(original_id)
             #parent.manage_renameObject(obj.getId(), original_id)
@@ -278,16 +281,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """See interface.
         """
         self._assertAuthorized(obj, AccessPreviousVersions, 'retrieve')
-        parent = aq_parent(aq_inner(obj))
-        vd = self._recursiveRetrieve(obj, parent, selector, preserve)
-
-        # The object needs to be contained in the correct folder as
-        # some calls (e.g. getToolByName) will insist on using containment
-        # rather than context.
-        wrapped = self._setContainment(vd.data.object, parent)
-
-        return VersionData(wrapped, vd.preserved_data,
-                           vd.sys_metadata, vd.app_metadata)
+        return self._retrieve(obj, selector, preserve)
 
     security.declarePublic('isUpToDate')
     def isUpToDate(self, obj, selector=None):
@@ -301,26 +295,18 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """See interface.
         """
         self._assertAuthorized(obj, AccessPreviousVersions, 'getHistory')
-        parent = aq_parent(aq_inner(obj))
-        return LazyHistory(self, obj, parent, preserve)
+        return LazyHistory(self, obj, preserve)
 
-
-    security.declarePublic('getObjectType') # XXX
-    def getObjectType(self, history_id):
-        """
-        """
-        portal_archivist = getToolByName(self, 'portal_archivist')
-        return portal_archivist.getObjectType(history_id)
 
     # -------------------------------------------------------------------
     # private helper methods
     # -------------------------------------------------------------------
 
-
     def _assertAuthorized(self, obj, permission, name=None):
-        #We need to provide access to the repository upon the object
-        #permissions istead of repository permissions so the repository is
-        #public and the access is check on the object when need.
+        # We need to provide access to the repository upon the object
+        # permissions istead of repositories method permissions. 
+        # So the repository method access is set to public and the 
+        # access is check on the object when needed.
         if not _checkPermission(permission, obj):
             raise Unauthorized(name)
 
@@ -370,36 +356,79 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
         portal_archivist.save(prep, autoregister=autoapply)
 
-    def _recursiveRetrieve(self, obj, parent, selector, preserve=(),
-                           inplace=False):
-        portal_archivist = getToolByName(self, 'portal_archivist')
-        portal_hidhandler = getToolByName(self, 'portal_historyidhandler')
+    def _retrieve(self, obj, selector=None, preserve=()):
+        """Retrieve a former state.
+        
+        Puts the returned version into same context as the working copy is
+        (to make attribute access acquirable).
+        """
+        vd = self._recursiveRetrieve(obj, selector, preserve, inplace=False)
+        wrapped = wrap(vd.data.object, aq_parent(aq_inner(obj)))
+        return VersionData(wrapped, vd.preserved_data,
+                           vd.sys_metadata, vd.app_metadata)
 
-        # The current policy implemented by the following lines of code is:
-        #
-        # - inside references were restored to what they referenced at
-        #   save time
-        # - inside referenced objects beeing moved to outside the object
-        #   cause double objects with the same history_id (see XXX below,
-        #   THIS IS BAD AND MUST BE SOLVED BEFORE A 1.0)
-        # - outside references were restored to the current working copy
-        # - this currently works only for objects implementing a
-        #   'invokeFactory' method (XXX THIS IS ALSO BAD)
+    def _recursiveRetrieve(self, obj, selector=None, preserve=(), 
+                           inplace=False, source=None):
+        """This is the real workhorse pulling objects out recursively.
+        """
+        portal_archivist = getToolByName(self, 'portal_archivist')
+        portal_reffactories = getToolByName(self, 'portal_referencefactories')
+        
         vdata = portal_archivist.retrieve(obj, selector, preserve)
 
-        # rewrap (XXX is this the correct place here in case of inplace?)
-        vdata.data.object = vdata.data.object.__of__(parent)
-
-        # -------------
-        # XXX The problem here is that the following two loops 'know'
-        # how to rebuild the references. Planed was that the modifiers
-        # know how to rebuild the references. This layer has to know
-        # about the rebuild policy only and communicate that properly
-        # to the modifiers.
-        # --> The archivist API has to be extended
-
+        obj, history_id = dereference(obj, self)
+        hasBeenDeleted = obj is None
+        
+        # CMF's invokeFactory needs the added object be traversable from 
+        # itself to the root and from the root to the itself. This is the 
+        # reason why it is necessary to replace the working copies current 
+        # state with the one of the versions state retrieved. If the 
+        # operation is not an inplace operation (retrieve instead of 
+        # revert) this has to be reversed after having recursed into the
+        # tree.
+        if hasBeenDeleted:
+            # if the object to retreive doesn't have a counterpart in the tree
+            # build a new one before retrieving an old state
+            repo_clone = vdata.data.object
+            obj = portal_reffactories.invokeFactory(repo_clone, source)
+            hasBeenMoved = False
+        else:
+            if source is None:
+                ##### the source has to be stored with the object at save time
+                # I(gregweb)'m pretty sure the whole source stuff here gets 
+                # obsolete as soon as a va_ref to the source is stored also
+                # XXX for now let's stick with this:
+                source = aq_parent(aq_inner(obj))
+        
+            # in the special case the object has been moved the retrieved 
+            # object has to get a new history (it's like copying back back
+            # the object and then retrieve an old state)
+            hasBeenMoved = portal_reffactories.hasBeenMoved(obj, source)
+        
+        saved_p_changed = obj._p_changed
+        saved_attrs = {}
+        keys_to_delete = []
+        
+        # Replace the objects attributes retaining identity and save the 
+        # replaced attributes for the case the operation is not inplace.
+        _missing = object()
+        attrs_to_leave = vdata.attr_handling_references
+        for key, val in vdata.data.object.__dict__.items():
+            if key in attrs_to_leave:
+                continue
+            obj_val = getattr(aq_base(obj), key, _missing)
+            # XXX just also mark missing values to be able to delete them later
+            if obj_val is not _missing:
+                saved_attrs[key] = obj_val
+            setattr(obj, key, val)
+        
+        # Delete reference attributes and save the replaced attributes 
+        # for the case the operation is not inplace.
+        for ref in vdata.refs_to_be_deleted:
+            ref.save(saved_attrs)
+            ref.remove()
+        
         # retrieve all inside refs
-
         for attr_ref in vdata.data.inside_refs:
             # get the referenced working copy
             # XXX if the working copy we're searching for was moved to
@@ -408,31 +437,15 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # this correctly before multi location stuff is implemented.
             # XXX Perhaps there is a need for a workaround!
             va_ref = attr_ref.getAttribute()
-            ref = portal_hidhandler.queryObject(va_ref.history_id, None)
-            if ref is None:
-                #import pdb; pdb.set_trace()
-                # there is no working copy for the referenced version, so
-                # create an empty object of the same type (it's only
-                # temporary if not inplace).
-                repo_obj = portal_archivist.getRepoObject(va_ref.history_id)
-                # XXX make that more intelligent
-                ref_id = "%s_CMFEDITIONSTMPIDSUFFIX" % repo_obj.getId()
-                obj.invokeFactory(repo_obj.portal_type, ref_id)
-                ref = getattr(obj, ref_id)
-                # XXX see note above
-                portal_hidhandler.setUid(ref, va_ref.history_id)
-                deleteRefFromContainer = not inplace # True if not inplace
-            else:
-                deleteRefFromContainer = False
-
+            history_id = va_ref.history_id
+            
             # retrieve the referenced version
-            ref_vdata = self._recursiveRetrieve(ref, obj, va_ref.version_id,
-                                                preserve=(), inplace=inplace)
-
-            # delete the temp object from the container if necessary
-            if deleteRefFromContainer:
-                obj.manage_delObjects(ids=[ref_id])
-
+            ref_vdata = self._recursiveRetrieve(history_id,
+                                                selector=va_ref.version_id,
+                                                preserve=(), 
+                                                inplace=inplace,
+                                                source=obj)
+            
             # reattach the python reference
             attr_ref.setAttribute(ref_vdata.data.object)
 
@@ -440,42 +453,28 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # XXX this is an implicit policy we can live with for now
         for attr_ref in vdata.data.outside_refs:
             va_ref = attr_ref.getAttribute()
-            ref = portal_hidhandler.queryObject(va_ref.history_id, None)
+            ref = dereference(va_ref.history_id, self)[0]
             if ref is None:
                 ref = getattr(aq_base(obj), attr_ref.getAttributeName())
             # If the object is not under version control just
             # attach the current working copy
             attr_ref.setAttribute(ref)
 
-        if inplace:
-            # replace obj retaining identity
-            #
-            # An inplace copy has to preserve the object itself as we don't
-            # want to manage parents and python references to it.
-            # This is done by copying the retreived data over the working 
-            # copies data.
-            # XXX hmmm? Do we need to do the replacement recursively?
-            for attr, val in vdata.data.object.__dict__.items():
-                setattr(obj, attr, val)
-
+        if not inplace:
+            # the above operations was not inplace so the previous state 
+            # has to be rolled back
+            for key, val in saved_attrs.items():
+                setattr(obj, key, val)
+            for key in keys_to_delete:
+                delattr(obj, key)
+            obj._p_changed = saved_p_changed
+        else:
             # reindex the object
+            # XXX shall we care here about reindexing? I don't think!
             portal_catalog = getToolByName(self, 'portal_catalog')
             portal_catalog.reindexObject(obj)
-
+        
         return vdata
-
-    security.declarePrivate('_setContainment')
-    def _setContainment(self, obj, parent):
-        """Make obj be contained within parent"""
-        # Cannot set the attribute directory as Python will think it
-        # is a private variable and munge the name.
-        tempAttribute = '__v_CMFEDITIONS_TMP'
-        changed = parent._p_changed
-        setattr(parent, tempAttribute, obj)
-        wrapped = getattr(parent, tempAttribute)
-        delattr(parent, tempAttribute)
-        parent._p_changed = changed
-        return wrapped
 
 
 class VersionData:
@@ -508,30 +507,30 @@ class LazyHistory:
     __allow_access_to_unprotected_subobjects__ = 1
 
     def __init__(self, repository, obj, parent, preserve=()):
-        self._repository = repository
+        self._repo = repository
         self._obj = obj
-        self._parent = parent
         self._preserve = preserve
+        self._retrieve = repository._retrieve
 
     def __len__(self):
+        """See IHistory
         """
-        """
-        archivist = getToolByName(self._repository, 'portal_archivist')
-        return len(archivist.queryHistory(self._obj))
+        portal_archivist = getToolByName(self._repo, 'portal_archivist')
+        return len(portal_archivist.queryHistory(self._obj))
 
     def __getitem__(self, selector):
-        vd = self._repository._recursiveRetrieve(self._obj, self._parent,
-                                                 selector, self._preserve)
-        return VersionData(vd.data.object, vd.preserved_data,
-                           vd.sys_metadata, vd.app_metadata)
-
+        """See IHistory
+        """
+        return self._retrieve(self._obj, selector, self._preserve)
 
     def __iter__(self):
-        return GetItemIterator(self.__getitem__, ArchivistRetrieveError)
+        """See IHistory
+        """
+        return Iterator(self.__getitem__, ArchivistRetrieveError)
 
 
-class GetItemIterator:
-    """Iterator object using a getitem implementation to iterate over.
+class Iterator:
+    """Iterator object using the passed getitem implementation.
     """
     def __init__(self, getItem, stopExceptions):
         self._getItem = getItem

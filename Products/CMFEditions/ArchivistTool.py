@@ -30,9 +30,11 @@ from cPickle import Pickler, Unpickler
 import traceback
 import re
 
+import zLOG
+
 from Globals import InitializeClass
 from Persistence import Persistent
-from Acquisition import Implicit, aq_base, aq_parent, aq_inner, aq_acquire
+from Acquisition import aq_base
 from AccessControl import ClassSecurityInfo, getSecurityManager
 from ZODB.PersistentList import PersistentList
 from OFS.SimpleItem import SimpleItem
@@ -43,6 +45,7 @@ from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.interfaces import IOpaqueItems
 
 from Products.CMFEditions.utilities import KwAsAttributes
+from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.interfaces.IStorage import StorageError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
@@ -50,11 +53,12 @@ from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IArchivist import IHistory
 from Products.CMFEditions.interfaces.IArchivist import IVersionData
-from Products.CMFEditions.interfaces.IArchivist import ArchivistError
 from Products.CMFEditions.interfaces.IArchivist import IPreparedObject
 from Products.CMFEditions.interfaces.IArchivist import IAttributeAdapter
 from Products.CMFEditions.interfaces.IArchivist import IVersionAwareReference
 from Products.CMFEditions.interfaces.IArchivist import IObjectData
+
+from Products.CMFEditions.interfaces.IArchivist import ArchivistError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRegisterError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistSaveError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
@@ -75,15 +79,16 @@ def deepcopy(obj):
     u = Unpickler(stream)
     return u.load()
 
-
 class VersionData:
     """
     """
     __implements__ = (IVersionData, )
     
-    def __init__(self, data, refs_to_be_deleted, preserved_data, metadata):
+    def __init__(self, data, refs_to_be_deleted, attr_handling_references, 
+                 preserved_data, metadata):
         self.data = data
         self.refs_to_be_deleted = refs_to_be_deleted
+        self.attr_handling_references = attr_handling_references
         self.preserved_data = preserved_data
         self.sys_metadata = metadata['sys_metadata']
         self.app_metadata = metadata['app_metadata']
@@ -92,9 +97,10 @@ class VersionData:
 class AttributeAdapter(Persistent):
     __implements__ = (IAttributeAdapter, )
     
-    def __init__(self, parent, attr_name):
+    def __init__(self, parent, attr_name, type=None):
         self._parent = aq_base(parent)
         self._name = attr_name
+        self._type = type
         
     def setAttribute(self, obj):
         setattr(self._parent, self._name, obj)
@@ -104,6 +110,9 @@ class AttributeAdapter(Persistent):
         
     def getAttributeName(self):
         return self._name
+    
+    def getType(self):
+        return self._type
 
 
 class VersionAwareReference(Persistent):
@@ -118,15 +127,15 @@ class VersionAwareReference(Persistent):
         self.info = info
         
     def setReference(self, target_obj, remove_info=True):
-        hidhandler = getToolByName(target_obj, 'portal_historyidhandler')
-        archivist = getToolByName(target_obj, 'portal_archivist')
+        """See IVersionAwareReference
+        """
         storage = getToolByName(target_obj, 'portal_historiesstorage')
         
         # save as much information as possible
         # it may be that the target object is not yet registered with the 
         # storage (aka not under version control)
-        history_id = self.history_id = hidhandler.register(target_obj)
-        if storage.isRegistered(history_id):
+        target_obj, self.history_id = dereference(target_obj)
+        if storage.isRegistered(self.history_id):
             self.version_id = target_obj.version_id
             # XXX the location id has to be gotten from the object directly
             self.location_id = 0 # XXX only one location possible currently
@@ -137,6 +146,7 @@ class VersionAwareReference(Persistent):
             
         if remove_info and hasattr(self, 'info'):
             self.info = None
+
 
 class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
     """
@@ -203,11 +213,10 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
     def prepare(self, obj, app_metadata=None, sys_metadata={}):
         """
         """
-        historyidhandler = getToolByName(self, 'portal_historyidhandler')
         storage = getToolByName(self, 'portal_historiesstorage')
         modifier = getToolByName(self, 'portal_modifier')
         
-        history_id = historyidhandler.register(obj)
+        obj, history_id = dereference(obj, self)
         if storage.isRegistered(history_id):
             # already registered
             version_id = len(self.queryHistory(obj))
@@ -219,7 +228,8 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
             # (the current implementation isn't able yet to handle multiple
             # locations. Nevertheless lets set the location id to a well
             # known default value)
-            history_id = historyidhandler.register(obj)
+            uidhandler = getToolByName(self, 'portal_uidhandler')
+            history_id = uidhandler.register(obj)
             version_id = obj.version_id = 0
             obj.location_id = 0
             is_registered = False
@@ -262,24 +272,21 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         """
         """
         storage = getToolByName(self, 'portal_historiesstorage')
-        historyidhandler = getToolByName(self, 'portal_historyidhandler')
-        history_id = historyidhandler.queryUid(obj)
+        obj, history_id = dereference(obj, self)
         if not storage.isRegistered(history_id):
             raise ArchivistUnregisteredError(
                 "The object %s is not registered" % obj)
         
-        moddate = storage.getModificationDate(history_id, selector)
-        return moddate == obj.ModificationDate()
+        modified = storage.getModificationDate(history_id, selector)
+        return modified == obj.modified()
 
     security.declarePrivate('save')
     def save(self, prepared_obj, autoregister=None):
         """
         """
-        # do save only if already under repository control
         if not prepared_obj.is_registered:
             if autoregister:
-                self.register(prepared_obj)
-                return
+                return self.register(prepared_obj)
             raise ArchivistSaveError(
                 "Saving an unregistered object is not possible. Register "
                 "the object '%s' first. "% prepared_obj.original.object)
@@ -302,15 +309,14 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
             return history[selector]
         except StorageRetrieveError:
             raise ArchivistRetrieveError(
-                "Retreiving of '%s' failed. Version '%s' does not exist. "
+                "Retrieving of '%s' failed. Version '%s' does not exist. "
                 % (obj, selector))
-        
+    
     security.declarePrivate('getHistory')
     def getHistory(self, obj, preserve=()):
         """
         """
         try:
-            # the hard work is done by LazyHistory
             return LazyHistory(self, obj, preserve)
         except StorageUnregisteredError:
             raise ArchivistUnregisteredError(
@@ -325,18 +331,6 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
             return LazyHistory(self, obj, preserve)
         except StorageUnregisteredError:
             return default
-
-    # XXX 1. make a retrieveByHistoryId?, 2. we don't have a test, 
-    #     3. selector as parameter, 4. Do we have to let modifers intercept?
-    security.declarePrivate('getObjectType')
-    def getObjectType(self, history_id):
-        """
-        """
-        portal_storage = getToolByName(self, 'portal_historiesstorage')
-        vdata = portal_storage.retrieve(history_id) # XXX use selector here?
-        return vdata.object.object.portal_type
-
-
 
 InitializeClass(ArchivistTool)
 
@@ -392,24 +386,22 @@ class LazyHistory:
     __implements__ = (IHistory, )
     
     def __init__(self, archivist, obj, preserve=()):
+        """Sets up a lazy history.
+        """
         self._modifier = getToolByName(archivist, 'portal_modifier')
-        self._storage = getToolByName(archivist, 'portal_historiesstorage')
-        self._historyidhandler = getToolByName(archivist, 'portal_historyidhandler')
-        self._obj = obj
-        self._history_id = self._historyidhandler.queryUid(obj)
+        storage = getToolByName(archivist, 'portal_historiesstorage')
+        self._obj, history_id = dereference(obj, archivist)
         self._preserve = preserve
-        
-        # if the storages 'getHistory' is lazy also, the archivists
-        # 'getHistory' will be completely lazy
-        self._history = self._storage.getHistory(self._history_id)
+        self._history = storage.getHistory(history_id)
         
     def __len__(self):
+        """See IHistory
         """
-        """
-        # asking the history here for the length
         return len(self._history)
         
     def __getitem__(self, selector):
+        """See IHistory
+        """
         # To retrieve an object from the storage the following
         # steps have to be carried out:
         #
@@ -418,7 +410,7 @@ class LazyHistory:
         
         # 2. clone the data and add the version id
         data = deepcopy(vdata.object)
-        repo_clone = data.object
+        repo_clone = aq_base(data.object)
         
         # 3. the separately saved attributes need not be cloned
         referenced_data = vdata.referenced_data
@@ -431,18 +423,22 @@ class LazyHistory:
                                                     referenced_data)
         
         # 6. call the after retrieve modifier
-        refs_to_be_deleted, preserved_data = \
+        refs_to_be_deleted, attr_handling_references, preserved_data = \
             self._modifier.afterRetrieveModifier(self._obj, repo_clone, 
                                                  self._preserve)
         
-        return VersionData(data, refs_to_be_deleted, preserved_data, metadata)
+        return VersionData(data, refs_to_be_deleted, 
+                           attr_handling_references, preserved_data, 
+                           metadata)
         
     def __iter__(self):
-        return GetItemIterator(self.__getitem__, StorageRetrieveError)
+        """See IHistory
+        """
+        return Iterator(self.__getitem__, StorageRetrieveError)
 
 
-class GetItemIterator:
-    """Iterator object using a getitem implementation to iterate over.
+class Iterator:
+    """Iterator object using the passed getitem implementation.
     """
     def __init__(self, getItem, stopExceptions):
         self._getItem = getItem

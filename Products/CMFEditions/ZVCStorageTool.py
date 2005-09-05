@@ -34,7 +34,6 @@ import zLOG
 from Globals import InitializeClass
 from BTrees.OOBTree import OOBTree
 from Persistence import Persistent
-from Acquisition import Implicit, aq_base, aq_parent, aq_inner, aq_acquire
 from AccessControl import ClassSecurityInfo, getSecurityManager
 
 from OFS.SimpleItem import SimpleItem
@@ -230,9 +229,9 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         getattr(zvc_repo, method_name)(zvc_obj, metadata)
         
         self._saveZVCInfo(zvc_obj, history_id)
-	zvc_histid = self._getZVCHistoryId(history_id)
-	return self._getHistoriesLength(zvc_histid) - 1
-	
+        zvc_histid = self._getZVCHistoryId(history_id)
+        return self._getHistoriesLength(zvc_histid) - 1
+
 
     # -------------------------------------------------------------------
     # methods implementing IStorage
@@ -242,6 +241,8 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     def isRegistered(self, history_id):
         """See IStorage.
         """
+        if history_id is None:
+            return False
         return self._getHistoryIdMapping().get(history_id, False)
         
     security.declarePrivate('register')
@@ -297,7 +298,8 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         """See IStorage.
         """
         vdata = self.retrieve(history_id, selector)
-        return vdata.object.object.ModificationDate()
+#        return vdata.object.object.ModificationDate()
+        return vdata.object.object.modified()
 
 class ZVCAwareWrapper(Persistent):
     """ZVC assumes the stored object has a getPhysicalPath method.

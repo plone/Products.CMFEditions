@@ -173,10 +173,15 @@ class OMBaseModifier:
         # a uninitialzed 'IVersionAwareReference' object
         result_refs = []
         for name in clone.objectIds():
-            result_refs.append(AttributeAdapter(clone, name))
+            result_refs.append(AttributeAdapter(clone, name, type="ObjectManager"))
 
         return result_refs
 
+    def _getAttributeNamesHandlingSubObjects(self, obj, repo_clone):
+        attrs = ['_objects']
+        attrs.extend(repo_clone.objectIds())
+        attrs.extend(obj.objectIds())
+        return attrs
 
 class OMOutsideChildrensModifier(OMBaseModifier):
     """ObjectManager modifier treating all childrens as outside refs
@@ -202,7 +207,8 @@ class OMOutsideChildrensModifier(OMBaseModifier):
         return [], outside_refs
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        return [], {}
+        ref_names = self._getAttributeNamesHandlingSubObjects(obj, repo_clone)
+        return [], ref_names, {}
 
 InitializeClass(OMOutsideChildrensModifier)
 
@@ -231,10 +237,14 @@ class OMInsideChildrensModifier(OMBaseModifier):
         return inside_refs, []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        # check if the modifier is called with a valid working copy
+        if obj is None:
+            return [], [], {}
+            
         hidhandler = getToolByName(obj, 'portal_historyidhandler')
         queryUid = hidhandler.queryUid
 
-        # Inside refs from the original object that have no corresponding
+        # Inside refs from the original object that have no counterpart
         # in the repositories clone have to be deleted from the original.
         # The following steps have to be carried out:
         # 
@@ -259,12 +269,15 @@ class OMInsideChildrensModifier(OMBaseModifier):
             if histid in orig_histids:
                 del orig_histids[histid]
         
-        # (3) remove: XXX arghh, we can't do this here
-        ############## make a list of OMSubobjectsAdapter here instead of 
-        ############## deleting here
+        # (3) build the list of adapters to the references to be removed
         refs_to_be_deleted = \
             [OMSubObjectAdapter(obj, name) for name in orig_histids.values()]
-        return refs_to_be_deleted, {}
+        
+        # return all attribute names that have something to do with 
+        # referencing
+        ref_names = self._getAttributeNamesHandlingSubObjects(obj, repo_clone)
+        
+        return refs_to_be_deleted, ref_names, {}
 
 InitializeClass(OMOutsideChildrensModifier)
 
@@ -274,18 +287,23 @@ class OMSubObjectAdapter:
     
     __implements__ = (IReferenceAdapter, )
 
-    def __init__(self, objectManager, name):
+    def __init__(self, obj, name):
         """Initialize the adapter.
         """
-        self._objectManager = objectManager
+        self._obj = obj
         self._name = name
 
+    def save(self, dict):
+        """See interface
+        """
+        dict[self._name] = getattr(aq_base(self._obj), self._name)
+
     def remove(self):
-        """See interface.
+        """See interface
         """
         # XXX do we want there is the ``manage_afterDelete`` hook called?
         # The decision has to go into the interface documentation.
-        self.objectManager.manage_delObjects(ids=[self._name])
+        self._obj.manage_delObjects(ids=[self._name])
 
 
 _marker = []
@@ -302,6 +320,10 @@ class RetainWorkflowStateAndHistory:
         return [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        # check if the modifier is called with a valid working copy
+        if obj is None:
+            return [], [], {}
+            
         # replace the workflow stuff of the repository clone by the
         # one of the working copy or delete it
         if getattr(aq_base(obj), 'review_state', _marker) is not _marker:
@@ -316,7 +338,7 @@ class RetainWorkflowStateAndHistory:
               is not _marker):
             del repo_clone.workflow_history
 
-        return [], {}
+        return [], [], {}
 
 InitializeClass(RetainWorkflowStateAndHistory)
 
@@ -332,6 +354,10 @@ class RetainPermissionsSettings:
         return [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        # check if the modifier is called with a valid working copy
+        if obj is None:
+            return [], [], {}
+            
         # replace the permission stuff of the repository clone by the
         # one of the working copy or delete it
         for key, val in obj.__dict__.items():
@@ -339,7 +365,7 @@ class RetainPermissionsSettings:
             if key.startswith('_') and key.endswith('_Permission'):
                 setattr(repo_clone, key, val)
 
-        return [], {}
+        return [], [], {}
 
 InitializeClass(RetainPermissionsSettings)
 
