@@ -81,6 +81,7 @@
                         class="noborder"
                         checked="checked"
                         tabindex=""
+                        tal:define="tabindex tabindex/next"
                         tal:attributes="value python:True;
                                         tabindex tabindex;
                                         checked python:type_id in versionablelist;
