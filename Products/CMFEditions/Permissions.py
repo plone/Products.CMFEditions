@@ -25,21 +25,21 @@ $Id: Permissions.py,v 1.1 2005/02/13 11:52:58 gregweb Exp $
 
 from Products.CMFCore.CMFCorePermissions import setDefaultRoles
 
-ApplyVersionControl = 'Apply version control'
+ApplyVersionControl = 'CMFEditions: Apply version control'
 setDefaultRoles(ApplyVersionControl, ('Manager',))
 
-SaveNewVersion = 'Save new version'
+SaveNewVersion = 'CMFEditions: Save new version'
 setDefaultRoles(SaveNewVersion, ('Manager',))
 
-AccessPreviousVersions = 'Access previous versions'
+AccessPreviousVersions = 'CMFEditions: Access previous versions'
 setDefaultRoles(AccessPreviousVersions, ('Manager',))
 
-RevertToPreviousVersions = 'Revert to previous versions'
+RevertToPreviousVersions = 'CMFEditions: Revert to previous versions'
 setDefaultRoles(RevertToPreviousVersions, ('Manager',))
 
-CheckoutToLocation = 'Checkout to location'
+CheckoutToLocation = 'CMFEditions: Checkout to location'
 setDefaultRoles(CheckoutToLocation, ('Manager',))
 
-ManageVersioningPolicies = 'Manage versioning policies'
+ManageVersioningPolicies = 'CMFEditions: Manage versioning policies'
 setDefaultRoles(ManageVersioningPolicies, ('Manager',))
 
