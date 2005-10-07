@@ -46,17 +46,17 @@ manage_addModifierForm = PageTemplateFile('www/modifierAddForm.pt',
 class ConditionalModifier(SimpleItem):
     """This is a wrapper for a modifier.
     """
-    
+
     __implements__ = (
         IConditionalModifier,
     )
-    
+
     modifierEditForm = PageTemplateFile('www/modifierEditForm.pt', 
                                         globals(),
                                         __name__='modifierEditForm')
     modifierEditForm._owner = None
     manage = manage_main = modifierEditForm
-    
+
     def __init__(self, id, modifier, title=''):
         """See IConditionalModifier.
         """
@@ -65,25 +65,25 @@ class ConditionalModifier(SimpleItem):
         self.meta_type = 'edmod_%s' % id
         self._modifier = modifier
         self._enabled = False
-    
+
     def edit(self, enabled=None):
         """See IConditionalModifier.
         """
         if enabled is not None and self._enabled != enabled:
             self._enabled = enabled
-    
+
     def isApplicable(self, obj, portal=None):
         """See IConditionalModifier.
         """
         # check if disabled or an empty condition
         if self._enabled:
             return True
-        
+
     def isEnabled(self):
         """See IConditionalModifier.
         """
         return self._enabled
-    
+
     def getModifier(self):
         """See IConditionalModifier.
         """
@@ -99,21 +99,21 @@ manage_addTalesModifierForm = PageTemplateFile('www/talesModifierAddForm.pt',
 class ConditionalTalesModifier(ConditionalModifier):
     """This is a wrapper with a tales condition for a modifier.
     """
-    
+
     __implements__ = (
         IConditionalTalesModifier,
     )
-    
+
     modifierEditForm = PageTemplateFile('www/talesModifierEditForm.pt', 
                                         globals(),
                                         __name__='modifierEditForm')
-                                        
+
     def __init__(self, id, modifier, title=''):
         """See IConditionalTalesModifier.
         """
         ConditionalModifier.__init__(self, id, modifier, title)
         self._condition = None
-    
+
     def edit(self, enabled=None, condition=None):
         """See IConditionalTalesModifier.
         """
@@ -127,22 +127,22 @@ class ConditionalTalesModifier(ConditionalModifier):
         # check if disabled or an empty condition
         if not self._enabled or not self.getTalesCondition():
             return False
-        
+
         # create the expression context and return result
         context = createExpressionContext(obj, portal)
         return self._condition(context)
-        
+
     def getTalesCondition(self):
         """See IConditionalTalesModifier.
         """
         return getattr(self._condition, 'text', '')
-    
+
 InitializeClass(ConditionalTalesModifier)
 
 
 def createExpressionContext(obj, portal=None, **more_symbols):
     """Creates a valid context for the expression.
-    
+
     Tal expressions need a context in order to do the evaluation.
     obj is the object that will be mapped to "object" in the
     expression's context.
@@ -152,13 +152,13 @@ def createExpressionContext(obj, portal=None, **more_symbols):
 
     def findNextFolderishParent(obj):
         """Try to find the folder of the given object by aquisition.
-        
+
         XXX what's the correct strategy in Zope2 land to check for a folder?
             what's most relyable?
             a) check if isPrincipiaFolderish is True?
             b) check if the object is an ObjectManager?
             c) other?
-            
+
             We have to do the right thing here to get things working 
             correctly. I hope all the products out there do the right
             thing also ...
@@ -183,26 +183,26 @@ def createExpressionContext(obj, portal=None, **more_symbols):
         obj_url = obj.absolute_url()
     except AttributeError:
         obj_url = ''
-        
+
     # use the portal if folder lookup fails due to an unwrapped obj
     folder = findNextFolderishParent(obj) or portal
-    
+
     pm = getToolByName(portal, 'portal_membership', None)
     if pm is None or pm.isAnonymousUser():
         member = None
     else:
         member = pm.getAuthenticatedMember()
-    
+
     try:
         meta_type = obj.meta_type
     except AttributeError:
         meta_type = None
-        
+
     try:
         portal_type = obj.getPortalTypeName()
     except AttributeError:
         portal_type  = None
-    
+
     data = {
         'object_url':   obj_url,
         'folder_url':   folder is not None and folder.absolute_url() or '',

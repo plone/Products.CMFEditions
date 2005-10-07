@@ -358,7 +358,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     def _retrieve(self, obj, selector=None, preserve=()):
         """Retrieve a former state.
-        
+
         Puts the returned version into same context as the working copy is
         (to make attribute access acquirable).
         """
@@ -367,18 +367,18 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         return VersionData(wrapped, vd.preserved_data,
                            vd.sys_metadata, vd.app_metadata)
 
-    def _recursiveRetrieve(self, obj, selector=None, preserve=(), 
+    def _recursiveRetrieve(self, obj, selector=None, preserve=(),
                            inplace=False, source=None):
         """This is the real workhorse pulling objects out recursively.
         """
         portal_archivist = getToolByName(self, 'portal_archivist')
         portal_reffactories = getToolByName(self, 'portal_referencefactories')
-        
+
         vdata = portal_archivist.retrieve(obj, selector, preserve)
 
         obj, history_id = dereference(obj, self)
         hasBeenDeleted = obj is None
-        
+
         # CMF's invokeFactory needs the added object be traversable from 
         # itself to the root and from the root to the itself. This is the 
         # reason why it is necessary to replace the working copies current 
@@ -395,20 +395,20 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         else:
             if source is None:
                 ##### the source has to be stored with the object at save time
-                # I(gregweb)'m pretty sure the whole source stuff here gets 
+                # I(gregweb)'m pretty sure the whole source stuff here gets
                 # obsolete as soon as a va_ref to the source is stored also
                 # XXX for now let's stick with this:
                 source = aq_parent(aq_inner(obj))
-        
-            # in the special case the object has been moved the retrieved 
+
+            # in the special case the object has been moved the retrieved
             # object has to get a new history (it's like copying back back
             # the object and then retrieve an old state)
             hasBeenMoved = portal_reffactories.hasBeenMoved(obj, source)
-        
+
         saved_p_changed = obj._p_changed
         saved_attrs = {}
         keys_to_delete = []
-        
+
         # Replace the objects attributes retaining identity and save the 
         # replaced attributes for the case the operation is not inplace.
         _missing = object()
@@ -420,14 +420,16 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # XXX just also mark missing values to be able to delete them later
             if obj_val is not _missing:
                 saved_attrs[key] = obj_val
+            else:
+                keys_to_delete.append(key)
             setattr(obj, key, val)
-        
-        # Delete reference attributes and save the replaced attributes 
+
+        # Delete reference attributes and save the replaced attributes
         # for the case the operation is not inplace.
         for ref in vdata.refs_to_be_deleted:
             ref.save(saved_attrs)
-            ref.remove()
-        
+            ref.remove(permanent=inplace)
+
         # retrieve all inside refs
         for attr_ref in vdata.data.inside_refs:
             # get the referenced working copy
@@ -438,14 +440,14 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # XXX Perhaps there is a need for a workaround!
             va_ref = attr_ref.getAttribute()
             history_id = va_ref.history_id
-            
+
             # retrieve the referenced version
             ref_vdata = self._recursiveRetrieve(history_id,
                                                 selector=va_ref.version_id,
                                                 preserve=(), 
                                                 inplace=inplace,
                                                 source=obj)
-            
+
             # reattach the python reference
             attr_ref.setAttribute(ref_vdata.data.object)
 
@@ -453,15 +455,20 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # XXX this is an implicit policy we can live with for now
         for attr_ref in vdata.data.outside_refs:
             va_ref = attr_ref.getAttribute()
+            # If the attribute has been removed by a modifier, then we get
+            # None, move on to the next ref.
+            if va_ref is None:
+                continue
             ref = dereference(va_ref.history_id, self)[0]
             if ref is None:
-                ref = getattr(aq_base(obj), attr_ref.getAttributeName())
+                ref = getattr(aq_base(obj), attr_ref.getAttributeName(), None)
             # If the object is not under version control just
-            # attach the current working copy
-            attr_ref.setAttribute(ref)
+            # attach the current working copy if it exists
+            if ref is not None:
+                attr_ref.setAttribute(ref)
 
         if not inplace:
-            # the above operations was not inplace so the previous state 
+            # the above operations was not inplace so the previous state
             # has to be rolled back
             for key, val in saved_attrs.items():
                 setattr(obj, key, val)
@@ -471,9 +478,10 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         else:
             # reindex the object
             # XXX shall we care here about reindexing? I don't think!
+            # I (alecm) think we must reindex, otherwise the catalog will
+            # certainly be out of sync.
             portal_catalog = getToolByName(self, 'portal_catalog')
             portal_catalog.reindexObject(obj)
-        
         return vdata
 
 

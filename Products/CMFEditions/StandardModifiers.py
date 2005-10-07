@@ -208,6 +208,29 @@ class OMOutsideChildrensModifier(OMBaseModifier):
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         ref_names = self._getAttributeNamesHandlingSubObjects(obj, repo_clone)
+
+        # Add objects that have been added to the working copy
+        clone_ids = repo_clone.objectIds()
+        orig_ids = obj.objectIds()
+        for attr_name in orig_ids:
+            if attr_name not in clone_ids:
+                new_ob = getattr(obj, attr_name, None)
+                if new_ob is not None:
+                    repo_clone._setOb(attr_name, new_ob)
+
+        # Delete references that are no longer relevant
+        for attr_name in clone_ids:
+            if attr_name not in orig_ids:
+                try:
+                    repo_clone._delOb(attr_name)
+                except AttributeError:
+                    pass
+
+        # Restore _objects, so that order is preserved and ids are consistent
+        orig_objects = getattr(obj, '_objects', None)
+        if orig_objects is not None:
+            repo_clone._objects = orig_objects
+
         return [], ref_names, {}
 
 InitializeClass(OMOutsideChildrensModifier)
@@ -240,7 +263,7 @@ class OMInsideChildrensModifier(OMBaseModifier):
         # check if the modifier is called with a valid working copy
         if obj is None:
             return [], [], {}
-            
+
         hidhandler = getToolByName(obj, 'portal_historyidhandler')
         queryUid = hidhandler.queryUid
 
@@ -253,30 +276,31 @@ class OMInsideChildrensModifier(OMBaseModifier):
         #    reverted from the repository
         # 3. Return the remaining inside objects that have to be removed 
         #    from the original.
-        
+
         # (1) list originals inside references
         orig_histids = {}
         for id, o in obj.objectItems():
             histid = queryUid(o, None)
-            orig_histids[histid] = id
-        # there may be objects without history_id
-        if None in orig_histids:
-            del orig_histids[None]
-        
+            # there may be objects without history_id
+            # We want to make sure to delete these on revert
+            if histid is not None:
+                orig_histids[histid] = id
+            else:
+                orig_histids['no_history'+id]=id
+
         # (2) evaluate the refs that get replaced anyway
         for varef in repo_clone.objectValues():
             histid = varef.history_id
             if histid in orig_histids:
                 del orig_histids[histid]
-        
+
         # (3) build the list of adapters to the references to be removed
         refs_to_be_deleted = \
             [OMSubObjectAdapter(obj, name) for name in orig_histids.values()]
-        
+
         # return all attribute names that have something to do with 
         # referencing
         ref_names = self._getAttributeNamesHandlingSubObjects(obj, repo_clone)
-        
         return refs_to_be_deleted, ref_names, {}
 
 InitializeClass(OMOutsideChildrensModifier)
@@ -298,12 +322,22 @@ class OMSubObjectAdapter:
         """
         dict[self._name] = getattr(aq_base(self._obj), self._name)
 
-    def remove(self):
+    def remove(self, permanent=False):
         """See interface
         """
         # XXX do we want there is the ``manage_afterDelete`` hook called?
         # The decision has to go into the interface documentation.
-        self._obj.manage_delObjects(ids=[self._name])
+        # IM(alecm)O, we should update the catalog if the change is permanent
+        # and not if otherwise, this forces this Adapter to know a bit about
+        # implementation details, but it's an optional arg to a specific
+        # implemetnation of this interface, so I think this is acceptable.
+        # The only other option I see is to do the deletion in the
+        # CopyModifyMerge tool which is aware of the distinction between
+        # retrieve and revert.
+        if permanent:
+            self._obj.manage_delObjects(ids=[self._name])
+        else:
+            self._obj._delOb(self._name)
 
 
 _marker = []

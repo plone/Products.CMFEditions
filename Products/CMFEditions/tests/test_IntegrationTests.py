@@ -301,7 +301,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(doc1.Title(), "v3 of doc1")
         self.assertEqual(doc2.Title(), "v3 of doc2")
 
-
     def test11_versionAFolderishObjectThatTreatsChildrensAsInsideRefs(self):
         portal_repo = self.portal.portal_repository
         fol = self.portal.fol
@@ -400,6 +399,175 @@ class TestIntegration(PloneTestCase.PloneTestCase):
                                         if r['name'] == member_role][0]
         self.failUnless(role_enabled['checked'])
 
+    def test13_revertUpdatesCatalog(self):
+        portal_repo = self.portal.portal_repository
+        cat = self.portal.portal_catalog
+        doc = self.portal.doc
+
+        doc.edit(text='Plain text')
+        portal_repo.applyVersionControl(doc)
+        doc.edit(text='blahblah')
+        portal_repo.save(doc)
+        # Test that catalog has current value
+        results = cat(SearchableText='Plain Text')
+        self.assertEqual(len(results), 0)
+        results = cat(SearchableText='blahblah')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].getObject(), doc)
+
+        retrieved_data = portal_repo.retrieve(doc, 0,
+                        preserve=['_Access_contents_information_Permission'])
+        retrieved_doc = retrieved_data.object
+        self.failUnless('Plain text' in retrieved_doc.getText())
+        # Test that basic retrieval did not alter the catalog
+        results = cat(SearchableText='Plain Text')
+        self.assertEqual(len(results), 0)
+        results = cat(SearchableText='blahblah')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].getObject(), doc)
+
+        portal_repo.revert(doc, 0)
+        # Test that the catalog is updated on revert
+        results = cat(SearchableText='blahblah')
+        self.assertEqual(len(results), 0)
+        results = cat(SearchableText='Plain Text')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].getObject().getRawText(), 'Plain text')
+
+    def test14_retrieveFolderWithAddedOrDeletedObjects(self):
+        portal_repo = self.portal.portal_repository
+        fol = self.portal.fol
+        doc1 = fol.doc1
+        doc2 = fol.doc2
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        doc1.setTitle("v1 of doc1")
+        doc2.setTitle("v1 of doc2")
+
+        portal_repo.applyVersionControl(fol, comment='first save')
+
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_folder = retrieved_data.object
+        self.assertEqual(ret_folder.objectIds(), fol.objectIds())
+        self.assertEqual(ret_folder.objectValues(), fol.objectValues())
+
+        # remove an item
+        fol.manage_delObjects('doc2')
+
+        # retrieve should update sub-objects
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_folder = retrieved_data.object
+        self.assertEqual(ret_folder.objectIds(), fol.objectIds())
+        self.assertEqual(ret_folder.objectValues(), fol.objectValues())
+
+        # add it back
+        fol.invokeFactory('Document', 'doc2')
+        doc2 = fol.doc2
+        doc2.setTitle('v2 of doc2')
+
+        # retrieve should update sub-objects
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_folder = retrieved_data.object
+        self.assertEqual(ret_folder.objectIds(), fol.objectIds())
+        self.assertEqual(ret_folder.objectValues(), fol.objectValues())
+        self.assertEqual(ret_folder.doc2.Title(), 'v2 of doc2')
+
+        # add new item
+        fol.invokeFactory('Document', 'doc3')
+        doc3 = fol.doc3
+        doc3.setTitle('v1 of doc3')
+
+        # retrieve should copy new sub-objects
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_folder = retrieved_data.object
+        self.assertEqual(ret_folder.objectIds(), fol.objectIds())
+        self.assertEqual(ret_folder.objectValues(), fol.objectValues())
+        self.assertEqual(ret_folder.doc3.Title(), 'v1 of doc3')
+
+        orig_ids = fol.objectIds()
+        orig_values = fol.objectValues()
+        # revert to original state, ensure that subobject changes are
+        # preserved
+        portal_repo.revert(fol, 0)
+
+        # check if reversion worked correctly
+        self.assertEqual(fol.objectIds(), orig_ids)
+        self.assertEqual(fol.objectValues(), orig_values)
+
+        # XXX we should be preserving order as well
+
+    def test15_retrieveInsideRefsFolderWithAddedOrDeletedObjects(self):
+        portal_repo = self.portal.portal_repository
+        fol = self.portal.fol
+        doc1 = fol.doc1
+        doc2 = fol.doc2
+
+        # just configure the standard folder to treat the childrens as
+        # inside refrences. For this we reconfigure the standard modifiers.
+        portal_modifier = self.portal.portal_modifier
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+                             condition="python: False")
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+                             condition="python: portal_type=='Folder'")
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        doc1.setTitle("v1 of doc1")
+        doc2.setTitle("v1 of doc2")
+
+        orig_ids = fol.objectIds()
+        orig_values = fol.objectValues()
+
+        portal_repo.applyVersionControl(fol, comment='first save')
+
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_folder = retrieved_data.object
+        self.assertEqual(ret_folder.objectIds(), orig_ids)
+        ret_values = ret_folder.objectValues()
+        # The values are not identical to the stored values because they are
+        # retrieved from the repository.
+        for i in range(len(ret_values)):
+            self.assertEqual(ret_values[i].getId(), orig_values[i].getId())
+            self.assertEqual(ret_values[i].Title(), orig_values[i].Title())
+
+        # remove an item
+        fol.manage_delObjects('doc2')
+
+        # retrieve should retrieve missing sub-objects
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_folder = retrieved_data.object
+        self.assertEqual(ret_folder.objectIds(), orig_ids)
+        ret_values = ret_folder.objectValues()
+        for i in range(len(ret_values)):
+            self.assertEqual(ret_values[i].getId(), orig_values[i].getId())
+            self.assertEqual(ret_values[i].Title(), orig_values[i].Title())
+
+        # add new item
+        fol.invokeFactory('Document', 'doc3')
+        doc3 = fol.doc3
+        doc3.setTitle('v1 of doc3')
+
+        # retrieve should not add new sub-objects
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_folder = retrieved_data.object
+        self.assertEqual(ret_folder.objectIds(), orig_ids)
+        ret_values = ret_folder.objectValues()
+        for i in range(len(ret_values)):
+            self.assertEqual(ret_values[i].getId(), orig_values[i].getId())
+            self.assertEqual(ret_values[i].Title(), orig_values[i].Title())
+
+        # revert to original state, ensure that subobject changes are
+        # reverted
+        portal_repo.revert(fol, 0)
+        fol = self.portal.fol
+
+        # check if reversion worked correctly
+        self.assertEqual(fol.objectIds(), orig_ids)
+        rev_values = fol.objectValues()
+        for i in range(len(ret_values)):
+            self.assertEqual(ret_values[i].getId(), orig_values[i].getId())
+            self.assertEqual(ret_values[i].Title(), orig_values[i].Title())
 
 if __name__ == '__main__':
     framework()

@@ -96,21 +96,22 @@ class VersionData:
 
 class AttributeAdapter(Persistent):
     __implements__ = (IAttributeAdapter, )
-    
+
     def __init__(self, parent, attr_name, type=None):
         self._parent = aq_base(parent)
         self._name = attr_name
         self._type = type
-        
+
     def setAttribute(self, obj):
         setattr(self._parent, self._name, obj)
-        
+
     def getAttribute(self):
-        return getattr(self._parent, self._name)
-        
+        # The attribute may have been removed by a modifier
+        return getattr(self._parent, self._name, None)
+
     def getAttributeName(self):
         return self._name
-    
+
     def getType(self):
         return self._type
 
@@ -119,7 +120,7 @@ class VersionAwareReference(Persistent):
     """A Reference that is version aware (and in future also location aware).
     """
     __implements__ = (IVersionAwareReference, )
-    
+
     def __init__(self, **info):
         self.history_id = None
         self.version_id = None

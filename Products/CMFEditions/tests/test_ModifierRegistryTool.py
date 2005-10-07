@@ -96,7 +96,7 @@ class SimpleModifierBase:
         except AttributeError:
             arm = 1
         setattr(repo_obj, self.afterRetrieveModifierAttribute, arm)
-        return [], {}
+        return [], [], {}
 
 class SimpleModifier1(SimpleModifierBase):
     beforeSaveModifierAttribute = 'beforeSave1'
@@ -154,7 +154,7 @@ class LoggingModifierBase:
         
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         mlog.append("%s.afterRetrieveModifier" % (self.__class__.__name__))
-        return [], {}
+        return [], [], {}
 
 class LoggingModifier_A(LoggingModifierBase):
     pass

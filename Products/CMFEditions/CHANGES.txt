@@ -10,6 +10,10 @@ Current
 
 Bugs fixed
 
+- Fixed a number of bugs involving handling of adding and deleting subobjects
+  of versioned folders.
+  [alecm]
+
 - Fixed a permissions bug which made the versions_history_form inaccessible if
   any of the versions were saved while private (or otherwise had
   'Access contents information' disabled).
@@ -25,6 +29,10 @@ Bugs fixed
   from beeing retained on retrieve and revert. 
 
 Features added
+
+- Made the ModifierRegistryTool make use of any preserve dict passed back to
+  it by afterRetrieveModifiers.
+  [alecm]
 
 - Added modifier to copy permissions from working copy onto retrieved
   versions, otherwise retaining workflow can have some very strange
