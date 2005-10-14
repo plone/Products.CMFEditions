@@ -7,6 +7,7 @@
       i18n:domain="plone">
   <head><title></title></head>
   <body>
+      <!-- FIXME: this mecanism remove slots defined in at's edit_macros -->
       <metal:header define-macro="header"
                     tal:define="edit_macros here/portal_skins/archetypes/edit_macros/macros">
         <div metal:use-macro="edit_macros/header" />
@@ -39,6 +40,10 @@
                           tal:attributes="tabindex tabindex/next;"></textarea>
             </div>
           </metal:block>
+          <metal:block fill-slot="extra_buttons">
+            <metal:block define-slot="extra_buttons"/>
+          </metal:block>
+
         </div>
       </metal:body>
   </body>
