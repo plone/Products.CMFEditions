@@ -60,7 +60,7 @@
                        class="version-table-version"
                        tal:condition="not:current"
                        tal:attributes="href string:$here_url/versions_history_form?version_id=${id}">
-                       (show)</a>
+                       (show below)</a>
                   </td>
                   <td>
                     <span tal:content="python:here.toLocalizedTime(vdata.sys_metadata['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
@@ -107,7 +107,8 @@
 
     <form action="#"
         method="post"
-        tal:attributes="action string:$here_url/saveasnewversion">
+        tal:attributes="action string:$here_url/saveasnewversion"
+        tal:condition="python:pr.supportsPolicy(here,'at_edit_autoversion')">
 
         <fieldset>
 

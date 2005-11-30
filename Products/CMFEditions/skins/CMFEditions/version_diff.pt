@@ -22,15 +22,16 @@
 
     <h1 tal:content="here/title_or_id" />
 
-    <h2 tal:condition="python:id1=='current'">Changes since version <span tal:replace="id2"/></h2>
-    <h2 tal:condition="python:id1!='current'">Changes from version <span tal:replace="string:${id2} to version ${id1}"/></h2>
-    <i tal:condition="diffs/same">No changes</i>
-    <tal:block tal:condition="not:diffs/same" tal:repeat="d diffs/getDiffs">
-      <tal:legend condition="python:not request.get('has_legend', None)">
+    <h3 tal:condition="python:id1=='current'">Changes since version <span tal:replace="id2"/></h3>
+    <h3 tal:condition="python:id2!='current'">Changes from version <span tal:replace="string:${id2} to version ${id1}"/></h3>
+    <em tal:condition="diffs/same">No changes</em>
+    <form id="diffs"
+          action="#"
+          tal:condition="not:diffs/same" tal:repeat="d diffs/getDiffs">
+      <tal:legend condition="repeat/d/start">
         <div metal:use-macro="here/diff_legend/macros/diff_legend" />
-        <tal:legend-set define="dummy python: request.set('has_legend',True)" />
       </tal:legend>
-      <div class="diffs"
+      <div class="field"
            tal:condition="not:d/same"
            tal:define="unified exists:d/unified_diff;
                        html exists:d/html_diff;
@@ -38,16 +39,18 @@
                        ndiff exists:d/ndiff;
                        inline python: inline and not request.get('no_inline', 0);
                        html python: html and not request.get('show_unified', 0)">
-        <h3 tal:content="d/label">[field]</h3>
+        <label tal:content="d/label">[field]</label>
         <tal:html condition="inline">
+            <br />
             <a href="#"
                tal:attributes="href string:${base_page_url}&amp;no_inline:int=1">Show code differences</a>
             <br />
+            <br />
             <div class="inline-diff"
                  tal:content="structure d/inline_diff">[inline diff]</div>
-            <br />
         </tal:html>
         <tal:html condition="python: html and not inline">
+            <br />
             <tal:visual-only tal:condition="exists:d/inline_diff">
                 <a href="#"
                    tal:attributes="href string:${base_page_url}">Show visual differences</a>
@@ -75,25 +78,24 @@
             <br /><br />
         </tal:nodiff>
       </div>
-    </tal:block>
+    </form>
 
     <tal:block tal:condition="diffs/recursive">
     <h2>Changed files</h2>
     <i tal:condition="not:diffs/getSubDiffs">None</i>
     <ul tal:condition="diffs/getSubDiffs">
-    <tal:block tal:repeat="cs diffs/getSubDiffs">
-        <li tal:condition="not:cs/same"><a tal:content="cs/id" tal:attributes="href cs/id">[filename]</a></li>
-    </tal:block>
+        <li tal:repeat="cs diffs/getSubDiffs" tal:condition="not:cs/same">
+            <a tal:content="cs/id" tal:attributes="href cs/id">[filename]</a></li>
     </ul>
 
     <h2>Removed files</h2>
-    <i tal:condition="not:diffs/getRemovedItems">None</i>
+    <em tal:condition="not:diffs/getRemovedItems">None</em>
     <ul tal:condition="diffs/getRemovedItems">
     <li tal:repeat="id diffs/getRemovedItems" tal:content="id">[filename]</li>
     </ul>
 
     <h2>Added files</h2>
-    <i tal:condition="not:diffs/getAddedItems">None</i>
+    <em tal:condition="not:diffs/getAddedItems">None</em>
     <ul tal:condition="diffs/getAddedItems">
     <li tal:repeat="id diffs/getAddedItems"><a tal:content="id" tal:attributes="href id">[filename]</a></li>
     </ul>
