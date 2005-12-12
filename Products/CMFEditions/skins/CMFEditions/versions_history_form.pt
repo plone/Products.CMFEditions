@@ -108,7 +108,7 @@
     <form action="#"
         method="post"
         tal:attributes="action string:$here_url/saveasnewversion"
-        tal:condition="python:pr.supportsPolicy(here,'at_edit_autoversion')">
+        tal:condition="not: python:pr.supportsPolicy(here,'at_edit_autoversion')">
 
         <fieldset>
 
