@@ -58,7 +58,6 @@
                     <span tal:content="id">1</span>
                     <a href="#"
                        class="version-table-version"
-                       tal:condition="not:current"
                        tal:attributes="href string:$here_url/versions_history_form?version_id=${id}">
                        (show below)</a>
                   </td>
@@ -73,7 +72,7 @@
                   <td>
                     <ul>
                         <tal:diffs condition="exists:here/portal_diff">
-                        <li tal:condition="not:current">
+                        <li>
                             <a href=""
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/version_diff?version_id1=current&version_id2=${id}">
@@ -89,7 +88,7 @@
                             </a>
                         </li>
                         </tal:diffs>
-                        <li tal:condition="not:current">
+                        <li>
                             <a href=""
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/rollbackversion?version_id=${id}">
