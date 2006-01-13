@@ -6,10 +6,10 @@
 
   <div metal:fill-slot="main"
        tal:define="pr nocall:here/portal_repository;
-                   history python:pr.getHistory(here)">
+                   history python:pr.getHistory(here)"
+                   tal:condition="python: pr.isVersionable(context)">
 
-
-    <h1>History of
+    <h1>Versions of
           <span tal:content="here/title_or_id">title</span>
     </h1>
 
@@ -38,15 +38,15 @@
 
                 <tr>
                   <th><tal:title i18n:translate="listingheader_key"
-                      >version</tal:title></th>
-                  <th><tal:title i18n:translate="listingheader_datetime"
-                      >created</tal:title></th>
-                  <th><tal:title i18n:translate="listingheader_user"
-                      >user</tal:title></th>
+                      >Version</tal:title></th>
+                  <th><tal:title i18n:translate="listingheader_performed_by"
+                      >Performed by</tal:title></th>
+                  <th><tal:title i18n:translate="listingheader_date_and_time"
+                  >Date and Time</tal:title></th>
                   <th><tal:title i18n:translate="listingheader_comment"
-                      >comment</tal:title></th>
+                      >Comment</tal:title></th>
                   <th><tal:title i18n:translate="listingheader_actions"
-                      >actions</tal:title></th>
+                      >Actions</tal:title></th>
                 </tr>
             </thead>
 
@@ -63,10 +63,10 @@
                        (show below)</a>
                   </td>
                   <td>
-                    <span tal:content="python:here.toLocalizedTime(vdata.sys_metadata['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
+                    <span tal:content="vdata/sys_metadata/principal">francesco</span>
                   </td>
                   <td>
-                    <span tal:content="vdata/sys_metadata/principal">fciriaci</span>
+                    <span tal:content="python:here.toLocalizedTime(vdata.sys_metadata['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
                   </td>
                   <td><span tal:content="vdata/comment">Draft version ready for comments from the group.</span>
                   </td>
