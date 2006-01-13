@@ -20,8 +20,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """Test the ATContentTypes content
-
-$Id:$
 """
 
 import os, sys, time
@@ -46,7 +44,7 @@ from Products.PloneTestCase.setup import PLONE21
 from Products.CMFEditions.tests import installProduct
 from Products.CMFEditions import PACKAGE_HOME
 
-PloneTestCase.setupPloneSite()
+# Plone 2.0.x compatibility
 ZopeTestCase.installProduct('CMFUid')
 ZopeTestCase.installProduct('CMFEditions')
 
@@ -55,8 +53,11 @@ ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
 ZopeTestCase.installProduct('ATContentTypes')
 
-ZopeTestCase.installProduct('Zelenium')
-ZopeTestCase.installProduct('PloneSelenium')
+#ZopeTestCase.installProduct('Zelenium')
+#ZopeTestCase.installProduct('PloneSelenium')
+
+PloneTestCase.setupPloneSite()
+
 
 types = {'image':'Image',
          'document':'Document',
@@ -86,7 +87,7 @@ def setupCMFEditions(app, portal_name, quiet):
         ZopeTestCase.installProduct('MimetypesRegistry', optional=True)
         if not quiet: ZopeTestCase._print('Adding ATContentTypes ... ')
         installProduct(portal, 'ATContentTypes')
-    installProduct(portal, 'PloneSelenium')
+    #installProduct(portal, 'PloneSelenium')
     # Log out
     noSecurityManager()
     transaction.commit()
@@ -103,7 +104,6 @@ class TestATContents(PloneTestCase.PloneTestCase):
         self.catalog = self.portal.portal_catalog
         self.workflow = self.portal.portal_workflow
         self.portal_repository = self.portal.portal_repository
-        self.portal_archivist = self.portal.portal_archivist
 
     def set_metadata(self, obj, text):
         obj.setTitle(text)
@@ -129,38 +129,37 @@ class TestATContents(PloneTestCase.PloneTestCase):
         self.folder.invokeFactory(types['document'], id='doc')
         portal_repository = self.portal_repository
         content = self.folder.doc
-        content.text = 'text v1'
+        content.setText('text v1')
         self.set_metadata(content, 'content')
         portal_repository.applyVersionControl(content, comment='save no 1')
-        content.text = 'text v2'
+        content.setText('text v2')
         self.set_metadata(content, 'contentOK')
         portal_repository.save(content, comment='save no 2')
         vdata = portal_repository.retrieve(content, 0)
         obj = vdata.object
-        self.assertEqual(obj.text, 'text v1')
+        self.assertEqual(obj.getRawText(), 'text v1')
         self.metadata_test(obj, 'content')
         vdata = portal_repository.retrieve(content, 1)
         obj = vdata.object
-        self.assertEqual(obj.text, 'text v2')
+        self.assertEqual(obj.getRawText(), 'text v2')
         self.metadata_test(obj, 'contentOK')
         portal_repository.revert(content, 0)
-        self.assertEqual(content.text, 'text v1')
+        self.assertEqual(content.getRawText(), 'text v1')
         self.metadata_test(content, 'content')
 
     def testNewsItem(self):
         self.folder.invokeFactory(types['news'], id='news_one')
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.news_one
         content.text = 'text v1'
         portal_repository.applyVersionControl(content, comment='save no 1')
         content.text = 'text v2'
         portal_repository.save(content, comment='save no 2')
-        vdata = portal_archivist.retrieve(content, 0)
-        obj = vdata.data.object
+        vdata = portal_repository.retrieve(content, 0)
+        obj = vdata.object
         self.assertEqual(obj.text, 'text v1')
-        vdata = portal_archivist.retrieve(content, 1)
-        obj = vdata.data.object
+        vdata = portal_repository.retrieve(content, 1)
+        obj = vdata.object
         self.assertEqual(obj.text, 'text v2')
         portal_repository.revert(content, 0)
         self.assertEqual(content.text, 'text v1')
@@ -170,17 +169,16 @@ class TestATContents(PloneTestCase.PloneTestCase):
         img1 = open(os.path.join(PACKAGE_HOME, 'tests/img1.png'), 'rb').read()
         img2 = open(os.path.join(PACKAGE_HOME, 'tests/img2.png'), 'rb').read()
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.image
         content.edit(file=img1)
         portal_repository.applyVersionControl(content, comment='save no 1')
         content.edit(file=img2)
         portal_repository.save(content, comment='save no 2')
-        vdata = portal_archivist.retrieve(content, 0)
-        obj = vdata.data.object
+        vdata = portal_repository.retrieve(content, 0)
+        obj = vdata.object
         self.assertEqual(obj.data, img1)
-        vdata = portal_archivist.retrieve(content, 1)
-        obj = vdata.data.object
+        vdata = portal_repository.retrieve(content, 1)
+        obj = vdata.object
         self.assertEqual(obj.data, img2)
         portal_repository.revert(content, 0)
         self.assertEqual(content.data, img1)
@@ -190,33 +188,38 @@ class TestATContents(PloneTestCase.PloneTestCase):
         file1 = open(os.path.join(PACKAGE_HOME, 'tests/img1.png'), 'rb').read()
         file2 = open(os.path.join(PACKAGE_HOME, 'tests/img2.png'), 'rb').read()
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.file
         content.edit(file=file1)
         portal_repository.applyVersionControl(content, comment='save no 1')
         content.edit(file=file2)
         portal_repository.save(content, comment='save no 2')
-        vdata = portal_archivist.retrieve(content, 0)
-        obj = vdata.data.object
+        vdata = portal_repository.retrieve(content, 0)
+        obj = vdata.object
         self.assertEqual(obj.data, file1)
-        vdata = portal_archivist.retrieve(content, 1)
-        obj = vdata.data.object
+        vdata = portal_repository.retrieve(content, 1)
+        obj = vdata.object
         self.assertEqual(obj.data, file2)
         portal_repository.revert(content, 0)
         self.assertEqual(content.data, file1)
 
     def testFolder(self):
-        self.folder.invokeFactory(types['folder'], id='folder')
+        titleOne = 'folderOne'
+        titleTwo = 'folderTwo'
+        self.folder.invokeFactory(types['folder'], id='myfolder')
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
-        content = self.folder.folder
-        portal_repository.applyVersionControl(content, comment='save no 1')
-        portal_repository.save(content, comment='save no 2')
-        vdata = portal_archivist.retrieve(content, 0)
-        obj = vdata.data.object
-        vdata = portal_archivist.retrieve(content, 1)
-        obj = vdata.data.object
+        content = self.folder.myfolder
+        content.setTitle(titleOne)
+        portal_repository.applyVersionControl(content, comment='save no 0')
+        content.setTitle(titleTwo)
+        portal_repository.save(content, comment='save no 1')
+        vdata = portal_repository.retrieve(content, 0)
+        obj = vdata.object
+        self.assertEqual(obj.Title(), titleOne)
+        vdata = portal_repository.retrieve(content, 1)
+        obj = vdata.object
+        self.assertEqual(obj.Title(), titleTwo)
         portal_repository.revert(content, 0)
+        self.assertEqual(content.Title(), titleOne)
 
 
 def test_suite():
