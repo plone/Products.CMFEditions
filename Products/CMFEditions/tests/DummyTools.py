@@ -4,6 +4,7 @@ from StringIO import StringIO
 from OFS.SimpleItem import SimpleItem
 from OFS.CopySupport import CopySource
 from Products.CMFDefault.DublinCore import DefaultDublinCoreImpl
+from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.ArchivistTool import ObjectData
 from Products.CMFEditions.ArchivistTool import PreparedObject
 from Products.CMFEditions.ArchivistTool import AttributeAdapter 
@@ -47,38 +48,6 @@ def notifyModified(obj):
     t = obj.modified()
     while t == DateTime(): pass
     obj.notifyModified()
-
-def dereference(reference, zodb_hook=None):
-    """Dereference an object.
-    
-    The passed ``reference`` may be an object or a unique id.
-    
-    Returns a tuple consisting of the derefrenced object and 
-    the unique id of the object: ``(obj, uid)``
-    
-    If the object could not be dereferenced ``obj`` is None.
-    If the object is not yet registered with the uid handler 
-    ``uid`` is None.
-    """
-    if zodb_hook is None:
-        # try to use the reference as zodb hook
-        zodb_hook = reference
-
-    portal_hidhandler = getToolByName(zodb_hook, 'portal_historyidhandler')
-    
-    # eek: ``CopySource^` is used by CMFContentTypes and Archetypes based 
-    # content types
-    if isinstance(reference, CopySource):
-        # The object passed is already a python reference to a content object
-        obj = reference
-        uid = portal_hidhandler.queryUid(obj, None)
-    else:
-        # Currently as multiple locations are not yet supported the object
-        # is all-embracing dereferenceable by the history id.
-        uid = reference
-        obj = portal_hidhandler.queryObject(uid, None)
-    
-    return obj, uid
 
 
 class DummyArchivist(SimpleItem):
@@ -225,8 +194,8 @@ class DummyArchivist(SimpleItem):
         # storage simulation
         self._archive[prepared_obj.history_id].append(svdata)
     
-    def retrieve(self, obj, selector=None, preserve=()):
-        obj, history_id = dereference(obj, self)
+    def retrieve(self, obj=None, history_id=None, selector=None, preserve=()):
+        obj, history_id = dereference(obj, history_id, self)
         if selector is None:
             selector = len(self._archive[history_id]) - 1  #HEAD
 
@@ -245,11 +214,12 @@ class DummyArchivist(SimpleItem):
 
         return deepCopy(vdata)
     
-    def getHistory(self, obj, preserve=()):
-        obj, history_id = dereference(obj, self)
+    def getHistory(self, obj=None, history_id=None, preserve=()):
+        obj, history_id = dereference(obj, history_id, self)
         return [deepCopy(obj) for obj in self._archive[history_id]]
 
-    def queryHistory(self, obj, preserve=(), default=[]):
+    def queryHistory(self, obj=None, history_id=None, 
+                     preserve=(), default=[]):
         try:
             history = self.getHistory(obj, preserve)
         except KeyError:
@@ -258,8 +228,8 @@ class DummyArchivist(SimpleItem):
             return history
         return default
 
-    def isUpToDate(self, obj, selector=None):
-        obj = dereference(obj, self)[0]
+    def isUpToDate(self, obj=None, history_id=None, selector=None):
+        obj = dereference(obj, history_id, self)[0]
         mem = self.retrieve(obj, selector)
 #        return mem.data.object.ModificationDate() == obj.ModificationDate()
         return mem.data.object.modified() == obj.modified()
