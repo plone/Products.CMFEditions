@@ -10,9 +10,7 @@
 
         <table class="listing nosort" summary="Versions History"
                i18n:attributes="summary summary_versions_history;"
-               tal:define="review_history python:wtool.getInfoFor(here, 'review_history', []);
-                                review_history python:[review for review in review_history if review.get('action','')]"
-               tal:condition="review_history">
+               tal:condition="history">
 
           <tr>
             <th i18n:translate="listingheader_key">Version</th>
