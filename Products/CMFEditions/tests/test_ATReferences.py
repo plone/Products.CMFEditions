@@ -56,8 +56,8 @@ class TestATReferences(PloneTestCase.PloneTestCase):
 
         repo.applyVersionControl(doc1)
         repo.applyVersionControl(doc2)
-
-        doc1.addReference(doc2)
+        relationship = 'dumb_relationship'
+        doc1.addReference(doc2, relationship=relationship)
         doc1.setTitle('v1')
         repo.save(doc1)
         from Products.Archetypes.config import REFERENCE_ANNOTATION as refs_container_name
@@ -69,8 +69,9 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         after_retrieve_refs = getattr(doc1, refs_container_name).objectValues()
         self.assertEqual(refs[0].targetUID, after_retrieve_refs[0].targetUID)
         self.assertEqual(refs[0].sourceUID, after_retrieve_refs[0].sourceUID)
+        self.assertEqual(refs[0].relationship, after_retrieve_refs[0].relationship)
 
-    def test_referencesAreRestored(self):
+    def test_referencesAreSavedAndRestored(self):
 
         repo = self.portal.portal_repository
         fol = self.portal.fol
@@ -86,8 +87,34 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         doc1.deleteReference(doc2)
         self.failIf(doc1.getReferences(targetObject=doc2))
         repo.revert(doc1, 1)
-        self.failUnless(doc1.getReferences(targetObject=doc2))
+        self.assertEqual(aq_base(doc1.getReferences(targetObject=doc2)[0]),
+                         aq_base(doc2))
 
+    def test_contentReferencesAreSavedAndRestored(self):
+
+        from Products.Archetypes.ReferenceEngine import ContentReference
+        repo = self.portal.portal_repository
+        fol = self.portal.fol
+        doc1 = self.portal.fol.doc1
+        doc2 = self.portal.fol.doc2
+
+        repo.applyVersionControl(doc1)
+        repo.applyVersionControl(doc2)
+
+#  XXX Simply using this kind of ref doesn't work
+#         doc1.addReference(doc2, referenceClass=ContentReference,
+#         contentType='Document')
+#         doc1.setTitle('v1')
+#         ref_doc = doc1.getReferenceImpl(targetObject=doc2)[0]
+#         ref_doc.setTitle('ref_doc v1')
+#         repo.save(doc1)
+#         doc1.deleteReference(doc2)
+#         self.failIf(doc1.getReferences(targetObject=doc2))
+#         repo.revert(doc1, 1)
+#         self.assertEqual(aq_base(doc1.getReferences(targetObject=doc2)[0]),
+#                          aq_base(doc2))
+#         ref_doc = doc1.getReferenceImpl(targetObject=doc2)[0]
+#         self.assertEqual('ref_doc v1', ref_doc.getTitle())
 
 if __name__ == '__main__':
     framework()
