@@ -569,6 +569,63 @@ class TestIntegration(PloneTestCase.PloneTestCase):
             self.assertEqual(ret_values[i].getId(), orig_values[i].getId())
             self.assertEqual(ret_values[i].Title(), orig_values[i].Title())
 
+    def test16_revertInsideRefsUpdatesCatalog(self):
+        portal_repo = self.portal.portal_repository
+        cat = self.portal.portal_catalog
+        fol = self.portal.fol
+        doc = fol.doc1
+
+        # just configure the standard folder to treat the childrens as
+        # inside refrences. For this we reconfigure the standard modifiers.
+        portal_modifier = self.portal.portal_modifier
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+                             condition="python: False")
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+                             condition="python: portal_type=='Folder'")
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        doc.setTitle("v1 of doc1")
+        fol.reindexObject()
+        doc.reindexObject()
+        portal_repo.applyVersionControl(fol, comment='first save')
+
+        # save change no 2
+        fol.setTitle('v2 of fol')
+        doc.setTitle("v2 of doc1")
+        fol.reindexObject()
+        doc.reindexObject()
+        portal_repo.save(fol, comment='second save')
+
+        # Test that catalog has current value
+        results = cat(SearchableText='v1')
+        self.assertEqual(len(results), 0)
+        results = cat(SearchableText='v2', portal_type='Document')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].getObject(), doc)
+
+        retrieved_data = portal_repo.retrieve(fol, 0,
+                        preserve=['_Access_contents_information_Permission'])
+        retrieved_doc = retrieved_data.object.doc1
+        self.assertEqual(retrieved_doc.Title(), 'v1 of doc1')
+        # Test that basic retrieval did not alter the catalog
+        results = cat(SearchableText='v1', )
+        self.assertEqual(len(results), 0)
+        results = cat(SearchableText='v2',  portal_type='Document')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].getObject(), doc)
+
+        portal_repo.revert(fol, 0)
+        reverted_doc = self.portal.fol.doc1
+        self.assertEqual(reverted_doc.Title(), 'v1 of doc1')
+        # Test that the catalog is updated on revert
+        results = cat(SearchableText='v2')
+        self.assertEqual(len(results), 0)
+        results = cat(SearchableText='v1', portal_type='Document')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].getObject().Title(), 'v1 of doc1')
+        
+
 if __name__ == '__main__':
     framework()
 else:

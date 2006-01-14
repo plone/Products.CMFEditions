@@ -84,8 +84,11 @@
     <h2>Changed files</h2>
     <i tal:condition="not:diffs/getSubDiffs">None</i>
     <ul tal:condition="diffs/getSubDiffs">
-        <li tal:repeat="cs diffs/getSubDiffs" tal:condition="not:cs/same">
-            <a tal:content="cs/id" tal:attributes="href cs/id">[filename]</a></li>
+        <li tal:repeat="cs diffs/getSubDiffs">
+        	  <tal:check condition="not:cs/same">
+            	<a tal:content="cs/id" tal:attributes="href cs/id">[filename]</a>
+           </tal:check>
+       </li>
     </ul>
 
     <h2>Removed files</h2>
