@@ -36,9 +36,6 @@ ZopeTestCase.installProduct('Archetypes')
 ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
 
-ZopeTestCase.installProduct('Zelenium')
-ZopeTestCase.installProduct('PloneSelenium')
-
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
 default_user = PloneTestCase.default_user
@@ -55,7 +52,6 @@ def setupCMFEditions(app, portal_name, quiet):
     installProduct(portal, 'Archetypes', optional=True)
     installProduct(portal, 'PortalTransforms')
     installProduct(portal, 'MimetypesRegistry', optional=True)
-    installProduct(portal, 'PloneSelenium', optional=True)
     # Log out
     noSecurityManager()
     transaction.commit()

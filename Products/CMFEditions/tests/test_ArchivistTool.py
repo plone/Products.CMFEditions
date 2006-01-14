@@ -30,7 +30,7 @@ import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 from Testing import ZopeTestCase
-from Products.CMFTestCase import CMFTestCase
+#from Products.CMFTestCase import CMFTestCase
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions.tests import installProduct
 
@@ -54,9 +54,6 @@ ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
 ZopeTestCase.installProduct('ATContentTypes')
 
-ZopeTestCase.installProduct('PloneSelenium')
-ZopeTestCase.installProduct('Zelenium')
-
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
 default_user = PloneTestCase.default_user
@@ -75,7 +72,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
         installProduct(self.portal, 'CMFEditions')
-        installProduct(self.portal, 'PloneSelenium', optional=True)
         self.portal.invokeFactory('Document', 'doc')
         self.portal.invokeFactory('Folder', 'fol')
         self.portal.fol.invokeFactory('Document', 'doc1_inside')

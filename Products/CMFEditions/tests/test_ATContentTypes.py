@@ -53,9 +53,6 @@ ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
 ZopeTestCase.installProduct('ATContentTypes')
 
-#ZopeTestCase.installProduct('Zelenium')
-#ZopeTestCase.installProduct('PloneSelenium')
-
 PloneTestCase.setupPloneSite()
 
 
@@ -87,7 +84,6 @@ def setupCMFEditions(app, portal_name, quiet):
         ZopeTestCase.installProduct('MimetypesRegistry', optional=True)
         if not quiet: ZopeTestCase._print('Adding ATContentTypes ... ')
         installProduct(portal, 'ATContentTypes')
-    #installProduct(portal, 'PloneSelenium')
     # Log out
     noSecurityManager()
     transaction.commit()

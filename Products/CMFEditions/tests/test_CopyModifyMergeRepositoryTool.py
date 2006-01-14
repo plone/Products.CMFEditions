@@ -83,9 +83,6 @@ PloneTestCase.setupPloneSite()
 ZopeTestCase.installProduct('CMFUid')
 ZopeTestCase.installProduct('CMFEditions')
 
-ZopeTestCase.installProduct('Zelenium')
-ZopeTestCase.installProduct('PloneSelenium')
-
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
 default_user = PloneTestCase.default_user
@@ -103,8 +100,6 @@ class TestCopyModifyMergeRepositoryToolBase(PloneTestCase.PloneTestCase):
 
         # add test data
         installProduct(self.portal, 'CMFEditions')
-        installProduct(self.portal, 'PloneSelenium', optional=True)
-        
         self.portal.invokeFactory('Document', 'doc')
         self.portal.invokeFactory('Link', 'link')
         self.portal.invokeFactory('Folder', 'fol')
@@ -336,8 +331,6 @@ class TestRegressionTests(PloneTestCase.PloneTestCase):
         # to the portal root
         self.setRoles(['Manager',])
         installProduct(self.portal, 'CMFEditions')
-        installProduct(self.portal, 'PloneSelenium', optional=True)
-
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
 

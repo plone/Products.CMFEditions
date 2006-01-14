@@ -51,9 +51,6 @@ ZopeTestCase.installProduct('PortalTransforms')
 ZopeTestCase.installProduct('MimetypesRegistry')
 ZopeTestCase.installProduct('ATContentTypes')
 
-ZopeTestCase.installProduct('Zelenium')
-ZopeTestCase.installProduct('PloneSelenium')
-
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
 default_user = PloneTestCase.default_user
@@ -64,7 +61,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
-        installProduct(self.portal, 'PloneSelenium', optional=True)
         installProduct(self.portal, 'CMFEditions')
 
         # add an additional user
@@ -157,15 +153,15 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(len(history), 3)
 
         """XXX we like to test that but implementation isn't there yet
-        # test some of the log entries
+        # test some of the log entries"""
         h1 = history[1]
-        self.assertEqual(h1.version_id, '2')
-        self.assertEqual(h1.action, h1.ACTION_CHECKIN)
-        self.assertEqual(h1.message, 'v2\nsecond line')
-        self.failUnless(h1.user_id)
-        self.assertEqual(h1.path, '/'.join(doc.getPhysicalPath()))
-        self.failUnless(h1.timestamp)
-        """
+        self.assertEqual(h1.version_id, 1)
+        #self.assertEqual(h1.action, h1.ACTION_CHECKIN)
+        #self.assertEqual(h1.message, 'v2\nsecond line')
+        #self.failUnless(h1.user_id)
+        #self.assertEqual(h1.path, '/'.join(doc.getPhysicalPath()))
+        #self.failUnless(h1.timestamp)
+        """"""
 
     def test06_retrieveSpecificVersion(self):
         portal_repo = self.portal.portal_repository

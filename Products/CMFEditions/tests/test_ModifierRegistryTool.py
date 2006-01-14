@@ -59,10 +59,6 @@ from Products.CMFEditions.tests import installProduct
 PloneTestCase.setupPloneSite()
 ZopeTestCase.installProduct('CMFUid')
 ZopeTestCase.installProduct('CMFEditions')
-
-ZopeTestCase.installProduct('Zelenium')
-ZopeTestCase.installProduct('PloneSelenium')
-
 portal_owner = PloneTestCase.portal_owner
 portal_name = PloneTestCase.portal_name
 default_user = PloneTestCase.default_user
@@ -183,8 +179,6 @@ class TestModifierRegistryTool(PloneTestCase.PloneTestCase):
         self.setRoles(['Manager',])
 
         installProduct(self.portal, 'CMFEditions')
-        installProduct(self.portal, 'PloneSelenium', optional=True)
-
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
