@@ -54,6 +54,7 @@ from Products.CMFEditions.Permissions import RevertToPreviousVersions
 from Products.CMFEditions.Permissions import CheckoutToLocation
 from Products.CMFEditions.Permissions import ManageVersioningPolicies
 from Products.CMFEditions.VersionPolicies import VersionPolicy
+from Products.Archetypes.interfaces.referenceable import IReferenceable
 
 VERSIONABLE_CONTENT_TYPES = []
 VERSION_POLICY_MAPPING = {}
@@ -482,6 +483,11 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # certainly be out of sync.
             portal_catalog = getToolByName(self, 'portal_catalog')
             portal_catalog.reindexObject(obj)
+            # reindex AT reference data
+            # we need to reindex reference_catalog too 
+            if IReferenceable.isImplementedBy(obj):
+                container = aq_parent(aq_inner(obj))
+                obj._updateCatalog(container)
         return vdata
 
 
