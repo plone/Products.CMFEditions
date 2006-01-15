@@ -174,5 +174,5 @@ else:
     from unittest import TestSuite, makeSuite
     def test_suite():
         suite = TestSuite()
-        suite.addTest(makeSuite(TestIntegration))
+        suite.addTest(makeSuite(TestATReferences))
         return suite
