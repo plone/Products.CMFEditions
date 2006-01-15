@@ -17,6 +17,12 @@ from Products.CMFEditions.interfaces.IRepository \
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions.tests import installProduct
 
+try:
+    from transaction import get_transaction
+except ImportError:
+    print "Are you using zope 2.7?"
+    pass
+
 PloneTestCase.setupPloneSite()
 ZopeTestCase.installProduct('CMFUid')
 ZopeTestCase.installProduct('CMFEditions')
@@ -87,8 +93,7 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         doc1.deleteReference(doc2)
         self.failIf(doc1.getReferences(targetObject=doc2))
         repo.revert(doc1, 1)
-        self.assertEqual(aq_base(doc1.getReferences(targetObject=doc2)[0]),
-                         aq_base(doc2))
+        self.assertEqual(doc1.getReferences(targetObject=doc2), [doc2])
 
     def test_contentReferencesAreSavedAndRestored(self):
 
@@ -132,7 +137,7 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         fol.manage_delObjects('doc2')
         repo.revert(doc1, 1)
         self.assertEqual(doc1.getReferences(), [])
-        self.failIf(doc1.getRefenceImpl())
+        self.failIf(doc1.getReferenceImpl())
 
     def test_refcatalogIsUpdatedWithInsideRefsAndATRefsBetweenChildrenObjs(self):
 
@@ -153,12 +158,14 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         doc1.addReference(doc2)
         doc2.addReference(doc1)
         repo.save(fol)
+        
         doc1.setTitle('changed')
         doc1.deleteReference(doc2)
         doc2.deleteReference(doc1)
         self.failIf(doc1.getReferences())
         self.failIf(doc2.getReferences())
         repo.revert(fol, 1)
+        
         doc1 = self.portal.fol.doc1
         doc2 = self.portal.fol.doc2
         self.assertEqual(doc1.Title(), 'v1')

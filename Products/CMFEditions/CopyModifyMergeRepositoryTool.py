@@ -54,8 +54,13 @@ from Products.CMFEditions.Permissions import RevertToPreviousVersions
 from Products.CMFEditions.Permissions import CheckoutToLocation
 from Products.CMFEditions.Permissions import ManageVersioningPolicies
 from Products.CMFEditions.VersionPolicies import VersionPolicy
-from Products.Archetypes.interfaces.referenceable import IReferenceable
-
+try:
+    from Products.Archetypes.interfaces.referenceable import IReferenceable
+    from Products.Archetypes.config import REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
+    WRONG_AT=False
+except ImportError:
+    WRONG_AT=True
+    
 VERSIONABLE_CONTENT_TYPES = []
 VERSION_POLICY_MAPPING = {}
 VERSION_POLICY_DEFS = {}
@@ -269,8 +274,11 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         original_id = obj.getId()
 
         self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
-        self._recursiveRetrieve(obj=obj, selector=selector, inplace=True)
-
+        fixup_queue = []
+        self._recursiveRetrieve(obj=obj, selector=selector, inplace=True, fixup_queue=fixup_queue)
+        # run fixups
+        self._doInplaceFixups(fixup_queue, True)
+        
         # XXX this should go away if _recursiveRetrieve is correctly implemented
         if obj.getId() != original_id:
             obj._setId(original_id)
@@ -283,7 +291,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """
         self._assertAuthorized(obj, AccessPreviousVersions, 'retrieve')
         return self._retrieve(obj, selector, preserve)
-
+    
     security.declarePublic('isUpToDate')
     def isUpToDate(self, obj, selector=None):
         """See interface.
@@ -373,12 +381,11 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                            vd.sys_metadata, vd.app_metadata)
 
     def _recursiveRetrieve(self, obj=None, history_id=None, selector=None, preserve=(),
-                           inplace=False, source=None):
+                           inplace=False, source=None, fixup_queue=None):
         """This is the real workhorse pulling objects out recursively.
         """
         portal_archivist = getToolByName(self, 'portal_archivist')
         portal_reffactories = getToolByName(self, 'portal_referencefactories')
-
         obj, history_id = dereference(obj, history_id, self)
             
         hasBeenDeleted = obj is None
@@ -459,11 +466,12 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             history_id = va_ref.history_id
 
             # retrieve the referenced version
-            ref_vdata = self._recursiveRetrieve(history_id=history_id,
-                                                selector=va_ref.version_id,
-                                                preserve=(),
-                                                inplace=inplace,
-                                                source=obj)
+            ref_vdata= self._recursiveRetrieve(history_id=history_id,
+                                               selector=va_ref.version_id,
+                                               preserve=(),
+                                               inplace=inplace,
+                                               source=obj,
+                                               fixup_queue=fixup_queue)
 
             # reattach the python reference
             attr_ref.setAttribute(ref_vdata.data.object)
@@ -485,28 +493,52 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             if ref is not None:
                 attr_ref.setAttribute(ref)
 
+        # the above operations was not inplace so the previous state
+        # has to be rolled back
         if not inplace:
-            # the above operations was not inplace so the previous state
-            # has to be rolled back
             for key, val in saved_attrs.items():
-                setattr(obj, key, val)
+                setattr(obj_to_fixup, key, val)
             for key in keys_to_delete:
-                delattr(obj, key)
-            obj._p_changed = saved_p_changed
-        else:
-            # reindex the object
-            # XXX shall we care here about reindexing? I don't think!
-            # I (alecm) think we must reindex, otherwise the catalog will
-            # certainly be out of sync.
-            portal_catalog = getToolByName(self, 'portal_catalog')
-            portal_catalog.reindexObject(obj)
-            # reindex AT reference data
-            # we need to reindex reference_catalog too 
-            if IReferenceable.isImplementedBy(obj):
-                container = aq_parent(aq_inner(obj))
-                obj._updateCatalog(container)
+                delattr(obj_to_fixup, key)
+            obj_to_fixup._p_changed = saved_p_changed
+   
+        # feed the fixup queue defined in revert() and retrieve() to
+        # perform post-retrieve fixups on the object
+        if fixup_queue is not None:
+           fixup_queue.append(obj)
         return vdata
 
+    def _doInplaceFixups(self, queue, inplace):
+        """ Perform fixups to deal with implementation details
+        (especially zodb and cmf details) which need to be done in
+        each retrieved object."""
+        for obj in queue:
+            if inplace:
+                self._fixupCatalogData(obj)
+                if not WRONG_AT:
+                    self._fixupATReferences(obj)
+
+    def _fixupCatalogData(self, obj):
+        """ Reindex the object, otherwise the catalog will certainly
+        be out of sync."""
+        portal_catalog = getToolByName(self, 'portal_catalog')
+        portal_catalog.reindexObject(obj)
+
+    def _fixupATReferences(self, obj):
+        """reindex AT reference data, we need to reindex
+        reference_catalog too"""
+        
+        if IReferenceable.isImplementedBy(obj):
+            # Delete refs if their target doesn't exists anymore
+            ref_folder = getattr(obj, REFERENCES_CONTAINER_NAME)
+            uid_catalog = getToolByName(self, 'uid_catalog')
+            ref_objs = ref_folder.objectValues()
+            for ref in ref_objs:
+                if not uid_catalog(UID=ref.targetUID):
+                    ref_folder.manage_delObjects(ref.getId())
+            # then reindex references
+            container = aq_parent(aq_inner(obj))
+            obj._updateCatalog(container)
 
 class VersionData:
     """
