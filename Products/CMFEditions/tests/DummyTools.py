@@ -221,7 +221,7 @@ class DummyArchivist(SimpleItem):
     def queryHistory(self, obj=None, history_id=None, 
                      preserve=(), default=[]):
         try:
-            history = self.getHistory(obj, preserve)
+            history = self.getHistory(obj=obj, history_id=history_id, preserve=preserve)
         except KeyError:
             return default
         if history:
@@ -229,8 +229,8 @@ class DummyArchivist(SimpleItem):
         return default
 
     def isUpToDate(self, obj=None, history_id=None, selector=None):
-        obj = dereference(obj, history_id, self)[0]
-        mem = self.retrieve(obj, selector)
+        obj = dereference(obj=obj, history_id=history_id, zodb_hook=self)[0]
+        mem = self.retrieve(obj=obj, history_id=history_id, selector=selector)
 #        return mem.data.object.ModificationDate() == obj.ModificationDate()
         return mem.data.object.modified() == obj.modified()
 
