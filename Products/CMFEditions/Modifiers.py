@@ -71,8 +71,11 @@ class ConditionalModifier(SimpleItem):
         """See IConditionalModifier.
         """
         self.title = title
-        if enabled is not None and self._enabled != enabled:
+
+        if enabled is not None and (enabled=='True' or enabled==True):
             self._enabled = enabled
+        else:
+            self._enabled = False
 
         if REQUEST:
             REQUEST.set("manage_tabs_message", "Changed")
