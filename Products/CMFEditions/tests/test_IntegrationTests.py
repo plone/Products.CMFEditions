@@ -329,18 +329,20 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # save change no 2
         fol.setTitle('v2 of fol')
         doc1.setTitle("v2 of doc1")
-        fol.manage_delObjects(ids=['doc2'])
+        doc2.setTitle("v2 of doc2")
         portal_repo.save(fol, comment='second save after we deleted doc2')
 
         # save change no 3
         fol.setTitle('v3 of fol')
         doc1.setTitle("v3 of doc1")
+        fol.manage_delObjects(ids=['doc2'])
         fol.invokeFactory('Document', 'doc3')
-        doc1.setTitle("v1 of doc3")
+        doc3 = fol.doc3
+        doc3.setTitle("v1 of doc3")
         portal_repo.save(fol, comment='second save with new doc3')
 
         # revert to change no 1 (version idexes start with index 0)
-        portal_repo.revert(fol, selector=0)
+        portal_repo.revert(fol, selector=1)
 
         # check if revertion worked correctly
         fol = self.portal.fol
@@ -348,9 +350,9 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.failUnless('doc2' in fol.objectIds())
         self.failIf('doc3' in fol.objectIds())
         doc2 = fol.doc2
-        self.assertEqual(fol.Title(), "v1 of fol")
-        self.assertEqual(doc1.Title(), "v1 of doc1")
-        self.assertEqual(doc2.Title(), "v1 of doc2")
+        self.assertEqual(fol.Title(), "v2 of fol")
+        self.assertEqual(doc1.Title(), "v2 of doc1")
+        self.assertEqual(doc2.Title(), "v2 of doc2")
         self.assertEqual(portal_historyidhandler.queryUid(doc1), orig_uid1)
         self.assertEqual(portal_historyidhandler.queryUid(doc2), orig_uid2)
         
