@@ -496,6 +496,11 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # the above operations was not inplace so the previous state
         # has to be rolled back
         if not inplace:
+            if hasBeenDeleted or hasBeenMoved:
+                # XXX XXX this is important but is demonstrationg some problems through test failures.
+                obj.unindexObject()
+            # the above operations was not inplace so the previous state
+            # has to be rolled back
             for key, val in saved_attrs.items():
                 setattr(obj, key, val)
             for key in keys_to_delete:

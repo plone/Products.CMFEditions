@@ -26,7 +26,7 @@ $Id: $
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo, getSecurityManager
 
-from Acquisition import aq_parent, aq_inner
+from Acquisition import aq_parent, aq_inner, aq_base
 from ZODB.PersistentList import PersistentList
 from OFS.OrderedFolder import OrderedFolder
 
@@ -70,7 +70,7 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder, ActionProviderBase):
         portal_type = repo_clone.getPortalTypeName()
         id = repo_clone.getId()
         if id in source.objectIds():
-            id = generateId(source, prefix=id)
+            id = generateId(source)
         # XXX does the factory return an id or obj? If yes, use this one
         id = source.invokeFactory(portal_type, id)
         obj = getattr(source, id)

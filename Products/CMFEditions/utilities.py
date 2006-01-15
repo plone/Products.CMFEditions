@@ -30,6 +30,8 @@ from Acquisition import aq_base
 from OFS.CopySupport import CopySource
 from Products.CMFCore.utils import getToolByName
 
+STUB_OBJECT_PREFIX = 'CMFEditionsTempId'
+
 class KwAsAttributes(Persistent):
     """Class attaching to itself passed keyword attributes.
     """
@@ -74,7 +76,7 @@ def generateId(parent, prefix=None, volatile=False):
     """Generate an unused id (optionaly a volatile one).
     """
     existingIds = parent.objectIds()
-    idTemplate = '%s%s_%%s' % (volatile * '__v_', prefix or 'CMFEditionsTempId')
+    idTemplate = '%s%s_%%s' % (volatile * '__v_', prefix or STUB_OBJECT_PREFIX)
     while 1:
         id =  idTemplate % random.randrange(1000000)
         if id not in existingIds:

@@ -642,7 +642,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # uid in a different location), the uid of the reverted object should be changed.
         portal_repo = self.portal.portal_repository
         portal_historyidhandler = self.portal.portal_historyidhandler
-
         fol = self.portal.fol
         doc1 = fol.doc1
 
@@ -683,6 +682,170 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # check if reversion worked correctly
         self.failIf(portal_historyidhandler.queryUid(reverted_doc) == orig_uid, 
                          "UIDs should not be equal, current value: %s"%orig_uid)
+
+    def test18_retrieveObjectWhichHasBeenReplaced(self):
+        portal_repo = self.portal.portal_repository
+        fol = self.portal.fol
+        doc1 = fol.doc1
+        doc2 = fol.doc2
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        doc1.setTitle("v1 of doc1")
+        doc2.setTitle("v1 of doc2")
+
+        portal_repo.applyVersionControl(doc1, comment='first save')
+        portal_repo.applyVersionControl(doc2, comment='first save')
+        
+        transaction.commit(1)
+        fol.manage_renameObjects(['doc1','doc2'],['doc1_renamed', 'doc1'])
+
+        doc1 = fol.doc1_renamed
+        doc2 = fol.doc1
+        
+        doc1.setTitle('v2 of doc1_renamed')
+        doc2.setTitle('v2 of doc1 (was doc2)')
+
+        portal_repo.save(doc1, comment='second save')
+        portal_repo.save(doc2, comment='second save')
+        
+        retrieved_data = portal_repo.retrieve(doc1, 0)
+        ret_doc = retrieved_data.object
+        self.assertEqual(ret_doc.getId(), 'doc1')
+        self.assertEqual(ret_doc.Title(), 'v1 of doc1')
+
+        portal_repo.revert(doc1, 0)
+        rev_doc = fol.doc1_renamed
+        self.assertEqual(rev_doc.getId(), 'doc1_renamed')
+        self.assertEqual(rev_doc.Title(), 'v1 of doc1')
+
+    def test19_retrieveDeletedObjectWhichHasBeenReplacedInAnInsideRefsFolder(self):
+        portal_repo = self.portal.portal_repository
+        fol = self.portal.fol
+        doc1 = fol.doc1
+        doc2 = fol.doc2
+        
+        portal_modifier = self.portal.portal_modifier
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+                             condition="python: False")
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+                             condition="python: portal_type=='Folder'")
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        doc1.setTitle("v1 of doc1")
+        doc2.setTitle("v1 of doc2")
+
+        portal_repo.applyVersionControl(fol, comment='first save')
+        
+        fol.manage_delObjects(['doc1'])
+        transaction.commit(1)
+        fol.manage_renameObjects(['doc2'],['doc1'])
+
+        doc2 = fol.doc1
+        
+        doc1.setTitle('v2 of doc1_renamed')
+        doc2.setTitle('v2 of doc1 (was doc2)')
+
+        portal_repo.save(fol, comment='second save')
+        
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_fol = retrieved_data.object
+        self.assertEqual(ret_fol.objectIds(), ['doc1', 'doc2'])
+        ret_doc1 = ret_fol.doc1
+        ret_doc2 = ret_fol.doc2
+        self.assertEqual(ret_doc1.getId(), 'doc1')
+        self.assertEqual(ret_doc1.Title(), 'v1 of doc1')
+        self.assertEqual(ret_doc2.getId(), 'doc2')
+        self.assertEqual(ret_doc2.Title(), 'v1 of doc2')
+        
+        portal_repo.revert(fol, 0)
+        rev_fol = self.portal.fol
+        self.assertEqual(rev_fol.objectIds(), ['doc1', 'doc2'])
+        rev_doc1 = rev_fol.doc1
+        rev_doc2 = rev_fol.doc2
+        self.assertEqual(rev_doc1.getId(), 'doc1')
+        self.assertEqual(rev_doc1.Title(), 'v1 of doc1')
+        self.assertEqual(rev_doc2.getId(), 'doc2')
+        self.assertEqual(rev_doc2.Title(), 'v1 of doc2')
+
+    def test20_retrieveMovedObjectWhichHasBeenReplacedInAnInsideRefsFolder(self):
+        portal_repo = self.portal.portal_repository
+        fol = self.portal.fol
+        doc1 = fol.doc1
+        doc2 = fol.doc2
+        
+        portal_modifier = self.portal.portal_modifier
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+                             condition="python: False")
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+                             condition="python: portal_type=='Folder'")
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        doc1.setTitle("v1 of doc1")
+        doc2.setTitle("v1 of doc2")
+
+        portal_repo.applyVersionControl(fol, comment='first save')
+        
+        transaction.commit(1)
+        self.portal.manage_pasteObjects(fol.manage_cutObjects(['doc1']))
+        fol.manage_renameObjects(['doc2'],['doc1'])
+
+        doc2 = fol.doc1
+        doc1 = self.portal.doc1
+        
+        doc1.setTitle('v2 of doc1 (now in portal root)')
+        doc2.setTitle('v2 of doc1 (was doc2)')
+
+        portal_repo.save(fol, comment='second save')
+        
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_fol = retrieved_data.object
+        ret_doc1 = ret_fol.doc1
+        ret_doc2 = ret_fol.doc2
+        self.assertEqual(ret_doc1.getId(), 'doc1')
+        self.assertEqual(ret_doc1.Title(), 'v1 of doc1')
+        self.assertEqual(ret_doc2.getId(), 'doc2')
+        self.assertEqual(ret_doc2.Title(), 'v1 of doc2')
+        
+    def test21_DontLeaveDanglingCatalogEntriesWhenInvokingFactory(self):
+        portal_repo = self.portal.portal_repository
+        catalog = self.portal.portal_catalog
+        fol = self.portal.fol
+        doc1 = fol.doc1
+        doc2 = fol.doc2
+        
+        portal_modifier = self.portal.portal_modifier
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+                             condition="python: False")
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+                             condition="python: portal_type=='Folder'")
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        doc1.setTitle("v1 of doc1")
+        doc2.setTitle("v1 of doc2")
+
+        portal_repo.applyVersionControl(fol, comment='first save')
+        
+        self.assertEqual(len(catalog(getId='doc1')), 1)
+        
+        fol.manage_delObjects(['doc2', 'doc1'])
+
+        self.assertEqual(len(catalog(getId='doc1')), 0)
+
+        portal_repo.save(fol, comment='second save')
+        
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_fol = retrieved_data.object
+        self.assertEqual(ret_fol.objectIds(), ['doc1', 'doc2'])
+        self.assertEqual(len(catalog(getId='doc1')), 0)
+        
+        portal_repo.revert(fol, 0)
+        rev_fol = self.portal.fol
+        self.assertEqual(rev_fol.objectIds(), ['doc1', 'doc2'])
+        self.assertEqual(len(catalog(getId='doc1')), 1)
 
 if __name__ == '__main__':
     framework()
