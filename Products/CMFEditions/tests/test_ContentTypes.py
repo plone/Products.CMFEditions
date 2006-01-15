@@ -3,6 +3,8 @@ import os, sys, time
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
+
+
 # BBB
 try:
     import transaction
@@ -13,6 +15,7 @@ from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_base
 from Testing import ZopeTestCase
+import pdb; pdb.set_trace()
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions import PACKAGE_HOME
 
