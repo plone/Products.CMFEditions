@@ -15,7 +15,6 @@ from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_base
 from Testing import ZopeTestCase
-import pdb; pdb.set_trace()
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions import PACKAGE_HOME
 
