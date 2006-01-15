@@ -1,19 +1,19 @@
 #########################################################################
-# Copyright (c) 2005 Alberto Berti, Gregoire Weber. 
+# Copyright (c) 2005 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
-# 
+#
 # This file is part of CMFEditions.
-# 
+#
 # CMFEditions is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # CMFEditions is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -39,7 +39,7 @@ from Products.CMFCore.CMFCorePermissions import ManagePortal
 from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
 from Products.CMFEditions.interfaces.IModifier import IConditionalModifier
 
-manage_addModifierForm = PageTemplateFile('www/modifierAddForm.pt', 
+manage_addModifierForm = PageTemplateFile('www/modifierAddForm.pt',
                                           globals(),
                                           __name__='manage_addModifierForm')
 
@@ -51,11 +51,12 @@ class ConditionalModifier(SimpleItem):
         IConditionalModifier,
     )
 
-    modifierEditForm = PageTemplateFile('www/modifierEditForm.pt', 
+    modifierEditForm = PageTemplateFile('www/modifierEditForm.pt',
                                         globals(),
                                         __name__='modifierEditForm')
     modifierEditForm._owner = None
     manage = manage_main = modifierEditForm
+    manage_options = ({'label' : 'Edit', 'action' : 'modifierEditForm'},) + SimpleItem.manage_options[:]
 
     def __init__(self, id, modifier, title=''):
         """See IConditionalModifier.
@@ -66,11 +67,16 @@ class ConditionalModifier(SimpleItem):
         self._modifier = modifier
         self._enabled = False
 
-    def edit(self, enabled=None):
+    def edit(self, enabled=None, title='', REQUEST=None):
         """See IConditionalModifier.
         """
+        self.title = title
         if enabled is not None and self._enabled != enabled:
             self._enabled = enabled
+
+        if REQUEST:
+            REQUEST.set("manage_tabs_message", "Changed")
+            return self.modifierEditForm(self, REQUEST)
 
     def isApplicable(self, obj, portal=None):
         """See IConditionalModifier.
@@ -92,8 +98,8 @@ class ConditionalModifier(SimpleItem):
 InitializeClass(ConditionalModifier)
 
 
-manage_addTalesModifierForm = PageTemplateFile('www/talesModifierAddForm.pt', 
-                                               globals(), 
+manage_addTalesModifierForm = PageTemplateFile('www/talesModifierAddForm.pt',
+                                               globals(),
                                                __name__='manage_addTalesModifierForm')
 
 class ConditionalTalesModifier(ConditionalModifier):
@@ -104,9 +110,10 @@ class ConditionalTalesModifier(ConditionalModifier):
         IConditionalTalesModifier,
     )
 
-    modifierEditForm = PageTemplateFile('www/talesModifierEditForm.pt', 
+    modifierEditForm = PageTemplateFile('www/talesModifierEditForm.pt',
                                         globals(),
                                         __name__='modifierEditForm')
+    manage_options = ({'label' : 'Edit', 'action' : 'modifierEditForm'},) + ConditionalModifier.manage_options[:]
 
     def __init__(self, id, modifier, title=''):
         """See IConditionalTalesModifier.
@@ -114,12 +121,16 @@ class ConditionalTalesModifier(ConditionalModifier):
         ConditionalModifier.__init__(self, id, modifier, title)
         self._condition = None
 
-    def edit(self, enabled=None, condition=None):
+    def edit(self, enabled=None, condition=None, title='', REQUEST=None):
         """See IConditionalTalesModifier.
         """
-        ConditionalModifier.edit(self, enabled)
+        ConditionalModifier.edit(self, enabled, title)
         if condition is not None and condition != self.getTalesCondition():
             self._condition = Expression(condition)
+
+        if REQUEST:
+            REQUEST.set("manage_tabs_message", "Changed")
+            return self.modifierEditForm(self, REQUEST)
 
     def isApplicable(self, obj, portal=None):
         """See IConditionalTalesModifier.
@@ -159,11 +170,11 @@ def createExpressionContext(obj, portal=None, **more_symbols):
             b) check if the object is an ObjectManager?
             c) other?
 
-            We have to do the right thing here to get things working 
+            We have to do the right thing here to get things working
             correctly. I hope all the products out there do the right
             thing also ...
         """
-        # XXX propose this check (should be the same): 
+        # XXX propose this check (should be the same):
         #    if aq_base(obj) is obj:
         if obj is None or not hasattr(obj, 'aq_base'):
             folder = None

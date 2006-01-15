@@ -31,6 +31,8 @@ from Globals import InitializeClass
 
 from Acquisition import aq_base
 
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.CMFCorePermissions import ManagePortal
 
@@ -41,8 +43,6 @@ from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
 from Products.CMFEditions.interfaces.IModifier import IReferenceAdapter
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
-from Products.CMFEditions.Modifiers import manage_addModifierForm
-from Products.CMFEditions.Modifiers import manage_addTalesModifierForm
 
 from Products.Archetypes import config as at_config
 
@@ -79,6 +79,11 @@ def install(portal_modifier):
 
         portal_modifier.register(m['id'], wrapper)
 
+
+manage_OMOutsideChildrensModifierAddForm = PageTemplateFile('www/OMOutsideChildrensModifierAddForm.pt',
+                                          globals(),
+                                          __name__='manage_OMOutsideChildrensModifierAddForm')
+
 def manage_addOMOutsideChildrensModifier(self, id, title=None, REQUEST=None):
     """Add an object manager modifier treating childrens as outside refs
     """
@@ -87,6 +92,11 @@ def manage_addOMOutsideChildrensModifier(self, id, title=None, REQUEST=None):
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+
+manage_OMInsideChildrensModifierAddForm = PageTemplateFile('www/OMInsideChildrensModifierAddForm.pt',
+                                          globals(),
+                                          __name__='manage_OMInsideChildrensModifierAddForm')
 
 def manage_addOMInsideChildrensModifier(self, id, title=None,
                                         REQUEST=None):
@@ -98,6 +108,12 @@ def manage_addOMInsideChildrensModifier(self, id, title=None,
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
+
+manage_RetainUIDsModifierAddForm =  \
+                         PageTemplateFile('www/RetainUIDsModifierAddForm.pt',
+                                          globals(),
+                                          __name__='manage_RetainUIDsModifierAddForm')
+
 def manage_addRetainUIDs(self, id, title=None, REQUEST=None):
     """Add a modifier retaining UIDs upon retrieve.
     """
@@ -106,7 +122,12 @@ def manage_addRetainUIDs(self, id, title=None, REQUEST=None):
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
-        
+
+
+manage_RetainWorkflowStateAndHistoryModifierAddForm =  \
+                         PageTemplateFile('www/RetainWorkflowStateAndHistoryModifierAddForm.pt',
+                                          globals(),
+                                          __name__='manage_RetainWorkflowStateAndHistoryModifierAddForm')
 
 def manage_addRetainWorkflowStateAndHistory(self, id, title=None,
                                             REQUEST=None):
@@ -118,6 +139,12 @@ def manage_addRetainWorkflowStateAndHistory(self, id, title=None,
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
+
+manage_RetainPermissionsSettingsAddForm =  \
+                         PageTemplateFile('www/RetainPermissionsSettingsModifierAddForm.pt',
+                                          globals(),
+                                          __name__='manage_RetainPermissionsSettingsModifierAddForm')
+
 def manage_addRetainPermissionsSettings(self, id, title=None,
                                             REQUEST=None):
     """Add a modifier retaining permissions upon retrieve.
@@ -127,6 +154,12 @@ def manage_addRetainPermissionsSettings(self, id, title=None,
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+
+manage_SaveFileDataInFileTypeByReferenceModifierAddForm =  \
+                         PageTemplateFile('www/SaveFileDataInFileTypeByReferenceModifierAddForm.pt',
+                                          globals(),
+                                          __name__='manage_SaveFileDataInFileTypeByReferenceModifierAddForm')
 
 def manage_addSaveFileDataInFileTypeByReference(self, id, title=None,
                                                 REQUEST=None):
@@ -282,11 +315,11 @@ class OMInsideChildrensModifier(OMBaseModifier):
         # Inside refs from the original object that have no counterpart
         # in the repositories clone have to be deleted from the original.
         # The following steps have to be carried out:
-        # 
+        #
         # 1. list all inside references of the original
-        # 2. remove from the list the inside references that just will be 
+        # 2. remove from the list the inside references that just will be
         #    reverted from the repository
-        # 3. Return the remaining inside objects that have to be removed 
+        # 3. Return the remaining inside objects that have to be removed
         #    from the original.
 
         # (1) list originals inside references
@@ -310,7 +343,7 @@ class OMInsideChildrensModifier(OMBaseModifier):
         refs_to_be_deleted = \
             [OMSubObjectAdapter(obj, name) for name in orig_histids.values()]
 
-        # return all attribute names that have something to do with 
+        # return all attribute names that have something to do with
         # referencing
         ref_names = self._getAttributeNamesHandlingSubObjects(obj, repo_clone)
         return refs_to_be_deleted, ref_names, {}
@@ -320,7 +353,7 @@ InitializeClass(OMOutsideChildrensModifier)
 class OMSubObjectAdapter:
     """Adapter to an object manager children.
     """
-    
+
     __implements__ = (IReferenceAdapter, )
 
     def __init__(self, obj, name):
@@ -369,7 +402,7 @@ class RetainWorkflowStateAndHistory:
         # check if the modifier is called with a valid working copy
         if obj is None:
             return [], [], {}
-            
+
         # replace the workflow stuff of the repository clone by the
         # one of the working copy or delete it
         if getattr(aq_base(obj), 'review_state', _marker) is not _marker:
@@ -403,7 +436,7 @@ class RetainPermissionsSettings:
         # check if the modifier is called with a valid working copy
         if obj is None:
             return [], [], {}
-            
+
         # replace the permission stuff of the repository clone by the
         # one of the working copy or delete it
         for key, val in obj.__dict__.items():
@@ -438,7 +471,7 @@ class RetainUIDs:
             anno_tool = getToolByName(obj, 'portal_uidannotation')
             annotation = anno_tool(repo_clone, uid_tool.UID_ATTRIBUTE_NAME)
             annotation.setUid(working_uid)
-            
+
         #Preserve ATUID
         uid = getattr(aq_base(obj), 'UID', None)
         if uid is not None and callable(obj.UID):
@@ -481,7 +514,7 @@ InitializeClass(SaveFileDataInFileTypeByReference)
 # Standard modifier configuration
 #----------------------------------------------------------------------
 
-modifiers = ( 
+modifiers = (
     {
         'id': 'OMInsideChildrensModifier',
         'title': "Modifier for object managers treating children as inside objects.",
@@ -489,7 +522,7 @@ modifiers = (
         'condition': 'python: False',
         'wrapper': ConditionalTalesModifier,
         'modifier': OMInsideChildrensModifier,
-        'form': manage_addTalesModifierForm,
+        'form': manage_OMInsideChildrensModifierAddForm,
         'factory': manage_addOMInsideChildrensModifier,
         'icon': 'www/modifier.gif',
     },
@@ -500,7 +533,7 @@ modifiers = (
         'condition': "python: portal_type=='Folder'",
         'wrapper': ConditionalTalesModifier,
         'modifier': OMOutsideChildrensModifier,
-        'form': manage_addTalesModifierForm,
+        'form': manage_OMOutsideChildrensModifierAddForm,
         'factory': manage_addOMOutsideChildrensModifier,
         'icon': 'www/modifier.gif',
     },
@@ -510,7 +543,7 @@ modifiers = (
         'enabled': True,
         'wrapper': ConditionalModifier,
         'modifier': RetainUIDs,
-        'form': manage_addModifierForm,
+        'form': manage_RetainUIDsModifierAddForm,
         'factory': manage_addRetainUIDs,
         'icon': 'www/modifier.gif',
     },
@@ -520,7 +553,7 @@ modifiers = (
         'enabled': True,
         'wrapper': ConditionalModifier,
         'modifier': RetainWorkflowStateAndHistory,
-        'form': manage_addModifierForm,
+        'form': manage_RetainWorkflowStateAndHistoryModifierAddForm,
         'factory': manage_addRetainWorkflowStateAndHistory,
         'icon': 'www/modifier.gif',
     },
@@ -530,7 +563,7 @@ modifiers = (
         'enabled': True,
         'wrapper': ConditionalModifier,
         'modifier': RetainPermissionsSettings,
-        'form': manage_addModifierForm,
+        'form': manage_RetainPermissionsSettingsAddForm ,
         'factory': manage_addRetainPermissionsSettings,
         'icon': 'www/modifier.gif',
     },
@@ -541,7 +574,7 @@ modifiers = (
         'condition': "python: meta_type=='Portal File'",
         'wrapper': ConditionalTalesModifier,
         'modifier': SaveFileDataInFileTypeByReference,
-        'form': manage_addTalesModifierForm,
+        'form': manage_SaveFileDataInFileTypeByReferenceModifierAddForm,
         'factory': manage_addSaveFileDataInFileTypeByReference,
         'icon': 'www/modifier.gif',
     },
