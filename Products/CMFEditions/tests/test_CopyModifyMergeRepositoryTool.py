@@ -41,7 +41,6 @@ except ImportError:
     from Products.CMFEditions.bbb import transaction
 
 from Testing import ZopeTestCase
-from Products.CMFTestCase import CMFTestCase
 
 from Interface.Verify import verifyObject
 from Acquisition import aq_base
