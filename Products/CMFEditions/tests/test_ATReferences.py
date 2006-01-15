@@ -66,7 +66,8 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         doc1.addReference(doc2, relationship=relationship)
         doc1.setTitle('v1')
         repo.save(doc1)
-        from Products.Archetypes.config import REFERENCE_ANNOTATION as refs_container_name
+        from Products.Archetypes.config import REFERENCE_ANNOTATION as \
+             refs_container_name
         refs = getattr(doc1, refs_container_name).objectValues()
         doc1.deleteReference(doc2)
         should_be_empty_now = getattr(doc1, refs_container_name).objectValues()
@@ -75,7 +76,8 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         after_retrieve_refs = getattr(doc1, refs_container_name).objectValues()
         self.assertEqual(refs[0].targetUID, after_retrieve_refs[0].targetUID)
         self.assertEqual(refs[0].sourceUID, after_retrieve_refs[0].sourceUID)
-        self.assertEqual(refs[0].relationship, after_retrieve_refs[0].relationship)
+        self.assertEqual(refs[0].relationship,
+                         after_retrieve_refs[0].relationship)
 
     def test_referencesAreSavedAndRestored(self):
 
@@ -172,8 +174,20 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         self.assertEqual([doc1], doc2.getReferences())
         self.assertEqual([doc2], doc1.getReferences())
         
-
-
+    def test_refOnWorkingCopyArePreserved(self):
+        repo = self.portal.portal_repository
+        fol = self.portal.fol
+        doc1 = self.portal.fol.doc1
+        portal_modifier = self.portal.portal_modifier
+        portal_modifier.edit("RetainATRefs",
+                             enabled=True, 
+                             condition="python: True")
+        repo.applyVersionControl(doc1)
+        doc1.addReference(fol)
+        repo.save(doc1)
+        repo.revert(doc1, 1)
+        self.assertEqual([fol], doc1.getReferences())
+ 
 
 if __name__ == '__main__':
     framework()
