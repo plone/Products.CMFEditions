@@ -141,10 +141,10 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         
         portal_repository.save(doc, comment='save no 2')
         
-        vdata = portal_archivist.retrieve(doc, 0)
+        vdata = portal_archivist.retrieve(obj=doc, selector=0)
         
         self.assertEqual(vdata.data.object.text, 'text v1')
-        vdata = portal_archivist.retrieve(doc, 1)
+        vdata = portal_archivist.retrieve(obj=doc, selector=1)
         self.assertEqual(vdata.data.object.text, 'text v2')
 
     def test02_retrieve(self):
@@ -304,7 +304,7 @@ save    fol: hid=1, irefs=({hid:2, vid:1}, {hid:3, vid:1}), orefs=({hid:None, vi
 
         portal_archivist.reset_log()
 
-        retr = portal_repository.retrieve(fol, 0)
+        retr = portal_repository.retrieve(fol, selector=0)
 
         # check recursive retrieve
         alog_str = portal_archivist.get_log()

@@ -217,7 +217,7 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         storage = getToolByName(self, 'portal_historiesstorage')
         modifier = getToolByName(self, 'portal_modifier')
         
-        obj, history_id = dereference(obj, self)
+        obj, history_id = dereference(obj, zodb_hook=self)
         if storage.isRegistered(history_id):
             # already registered
             version_id = len(self.queryHistory(obj))
@@ -269,11 +269,11 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
                                     prepared_obj.metadata)
 
     security.declarePrivate('isUpToDate')
-    def isUpToDate(self, obj, selector=None):
+    def isUpToDate(self, obj=None, history_id=None, selector=None):
         """
         """
         storage = getToolByName(self, 'portal_historiesstorage')
-        obj, history_id = dereference(obj, self)
+        obj, history_id = dereference(obj, history_id, self)
         if not storage.isRegistered(history_id):
             raise ArchivistUnregisteredError(
                 "The object %s is not registered" % obj)
@@ -299,13 +299,13 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
                             prepared_obj.metadata)
             
     security.declarePrivate('retrieve')
-    def retrieve(self, obj, selector=None, preserve=()):
+    def retrieve(self, obj=None, history_id=None, selector=None, preserve=()):
         """
         """
         # retrieve the object by accessing the right history entry
         # the histories storage called by LazyHistory knows what to do
         # with a None selector
-        history = self.getHistory(obj, preserve)
+        history = self.getHistory(obj, history_id, preserve)
         try:
             return history[selector]
         except StorageRetrieveError:
@@ -314,22 +314,22 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
                 % (obj, selector))
     
     security.declarePrivate('getHistory')
-    def getHistory(self, obj, preserve=()):
+    def getHistory(self, obj=None, history_id=None, preserve=()):
         """
         """
         try:
-            return LazyHistory(self, obj, preserve)
+            return LazyHistory(self, obj, history_id, preserve)
         except StorageUnregisteredError:
             raise ArchivistUnregisteredError(
                 "Retrieving a version of an unregistered object is not "
                 "possible. Register the object '%s' first. " % obj)
         
     security.declarePrivate('queryHistory')
-    def queryHistory(self, obj, preserve=(), default=[]):
+    def queryHistory(self, obj=None, history_id=None, preserve=(), default=[]):
         """
         """
         try:
-            return LazyHistory(self, obj, preserve)
+            return LazyHistory(self, obj, history_id, preserve)
         except StorageUnregisteredError:
             return default
 
@@ -386,12 +386,16 @@ class LazyHistory:
     """
     __implements__ = (IHistory, )
     
-    def __init__(self, archivist, obj, preserve=()):
-        """Sets up a lazy history.
+    def __init__(self, archivist, obj, history_id, preserve=()):
+        """Sets up a lazy history. Takes an object which should be the original object
+           in the portal, and a history_id for the storage lookup.  If the history id
+           is omitted then the history_id will be determined by dereferencing the obj.
+           If the obj is omitted, then the obj will be obtained by ddereferencing the
+           history_id.
         """
         self._modifier = getToolByName(archivist, 'portal_modifier')
         storage = getToolByName(archivist, 'portal_historiesstorage')
-        self._obj, history_id = dereference(obj, archivist)
+        self._obj, history_id = dereference(obj, history_id, archivist)
         self._preserve = preserve
         self._history = storage.getHistory(history_id)
         

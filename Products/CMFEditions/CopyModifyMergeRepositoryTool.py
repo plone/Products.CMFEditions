@@ -269,7 +269,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         original_id = obj.getId()
 
         self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
-        self._recursiveRetrieve(obj, selector=selector, inplace=True)
+        self._recursiveRetrieve(obj=obj, selector=selector, inplace=True)
 
         # XXX this should go away if _recursiveRetrieve is correctly implemented
         if obj.getId() != original_id:
@@ -363,21 +363,20 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         Puts the returned version into same context as the working copy is
         (to make attribute access acquirable).
         """
-        vd = self._recursiveRetrieve(obj, selector, preserve, inplace=False)
+        vd = self._recursiveRetrieve(obj=obj, selector=selector, preserve=preserve, inplace=False)
         wrapped = wrap(vd.data.object, aq_parent(aq_inner(obj)))
         return VersionData(wrapped, vd.preserved_data,
                            vd.sys_metadata, vd.app_metadata)
 
-    def _recursiveRetrieve(self, obj, selector=None, preserve=(),
+    def _recursiveRetrieve(self, obj=None, history_id=None, selector=None, preserve=(),
                            inplace=False, source=None):
         """This is the real workhorse pulling objects out recursively.
         """
         portal_archivist = getToolByName(self, 'portal_archivist')
         portal_reffactories = getToolByName(self, 'portal_referencefactories')
 
-        vdata = portal_archivist.retrieve(obj, selector, preserve)
-
-        obj, history_id = dereference(obj, self)
+        obj, history_id = dereference(obj, history_id, self)
+            
         hasBeenDeleted = obj is None
 
         # CMF's invokeFactory needs the added object be traversable from 
@@ -390,6 +389,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         if hasBeenDeleted:
             # if the object to retreive doesn't have a counterpart in the tree
             # build a new one before retrieving an old state
+            vdata = portal_archivist.retrieve(obj=obj, history_id=history_id, selector=selector, preserve=preserve)
             repo_clone = vdata.data.object
             obj = portal_reffactories.invokeFactory(repo_clone, source)
             hasBeenMoved = False
@@ -405,6 +405,18 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # object has to get a new history (it's like copying back back
             # the object and then retrieve an old state)
             hasBeenMoved = portal_reffactories.hasBeenMoved(obj, source)
+            
+        if hasBeenMoved:
+            if getattr(aq_base(source), obj.getId(), None) is None:
+                vdata = portal_archivist.retrieve(obj=obj, history_id=history_id, selector=selector, preserve=preserve)
+                repo_clone = vdata.data.object
+                repo_clone = vdata.data.object
+                obj = portal_reffactories.invokeFactory(repo_clone, source)
+            else:
+                # What is the desired behavior
+                pass
+
+        vdata = portal_archivist.retrieve(obj, history_id, selector, preserve)
 
         saved_p_changed = obj._p_changed
         saved_attrs = {}
@@ -443,9 +455,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             history_id = va_ref.history_id
 
             # retrieve the referenced version
-            ref_vdata = self._recursiveRetrieve(history_id,
+            ref_vdata = self._recursiveRetrieve(history_id=history_id,
                                                 selector=va_ref.version_id,
-                                                preserve=(), 
+                                                preserve=(),
                                                 inplace=inplace,
                                                 source=obj)
 
@@ -460,8 +472,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # None, move on to the next ref.
             if va_ref is None:
                 continue
-            ref = dereference(va_ref.history_id, self)[0]
-            if ref is None:
+            try:
+                ref = dereference(history_id=va_ref.history_id, zodb_hook=self)[0]
+            except TypeError:
                 ref = getattr(aq_base(obj), attr_ref.getAttributeName(), None)
             # If the object is not under version control just
             # attach the current working copy if it exists
@@ -535,7 +548,7 @@ class LazyHistory:
     def __getitem__(self, selector):
         """See IHistory
         """
-        return self._retrieve(self._obj, selector, self._preserve)
+        return self._retrieve(self._obj, selector=selector, preserve=self._preserve)
 
     def __iter__(self):
         """See IHistory

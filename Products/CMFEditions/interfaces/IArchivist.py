@@ -68,7 +68,7 @@ class IArchivist(Interface):
         return value of the 'prepare' method to 'prepared_obj'.
         """
 
-    def isUpToDate(obj, selector=None):
+    def isUpToDate(obj=None, history_id=None, selector=None):
         """Returns True if the working copy has changed since the last save
            or revert compared to the selected version. If selector is None,
            the comparison is done with the HEAD.
@@ -77,8 +77,12 @@ class IArchivist(Interface):
         identical to the selected version.
         """
 
-    def retrieve(obj, selector=None, preserve=()):
+    def retrieve(obj=None, history_id=None, selector=None, preserve=()):
         """Retrieves a former state of an object.
+        
+        Requires either an object which is the working copy, or a history_id
+        for an object if no history_id is provided the history_id will be 
+        obtained from the working copy object.
         
         Returns an 'IVersionData' object.
         
@@ -93,10 +97,14 @@ class IArchivist(Interface):
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
 
-    def getHistory(obj, preserve=()):
+    def getHistory(obj=None, history_id=None, preserve=()):
         """Returns the history of an object.
         
         The history is a 'IHistory' object.
+        
+        Requires either an object which is the working copy, or a history_id
+        for an object if no history_id is provided the history_id will be 
+        obtained from the working copy object.
         
         Raises an 'ArchivistError' exception if the given object doesn't
         have a history.
@@ -109,8 +117,12 @@ class IArchivist(Interface):
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
 
-    def queryHistory(obj, preserve=(), default=[]):
+    def queryHistory(obj=None, history_id=None, preserve=(), default=[]):
         """Returns the history of an object.
+        
+        Requires either an object which is the working copy, or a history_id
+        for an object if no history_id is provided the history_id will be 
+        obtained from the working copy object.
         
         The history is a 'IHistory' object.
         

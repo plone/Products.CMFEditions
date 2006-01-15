@@ -38,37 +38,36 @@ class KwAsAttributes(Persistent):
             setattr(self, key, val)
 
 
-def dereference(reference, zodb_hook=None):
+def dereference(obj=None, history_id=None, zodb_hook=None):
     """Dereference an object.
     
-    The passed ``reference`` may be an object or a unique id.
+    Works with either an obj or a history_id or both.
+    
+    If only a history_id is used, then a 'zodb_hook' is required to obtain
+    the uid tool.
     
     Returns a tuple consisting of the derefrenced object and 
     the unique id of the object: ``(obj, uid)``
     
-    If the object could not be dereferenced ``obj`` is None.
-    If the object is not yet registered with the uid handler 
-    ``uid`` is None.
+    If an object or historyu_id cannot be found None will be returned for 
+    one or both values.
     """
+
     if zodb_hook is None:
         # try to use the reference as zodb hook
-        zodb_hook = reference
+        zodb_hook = obj
 
     portal_uidhandler = getToolByName(zodb_hook, 'portal_uidhandler')
+
+    if history_id is None:
+        if obj is None:
+            raise TypeError, "This method requires either an obj or a history_id"
+        else:
+            history_id = portal_uidhandler.queryUid(obj, None)
+    elif obj is None:
+        obj = portal_uidhandler.queryObject(history_id, None)
     
-    # eek: ``CopySource^` is used by CMFContentTypes and Archetypes based 
-    # content types
-    if isinstance(reference, CopySource):
-        # The object passed is already a python reference to a content object
-        obj = reference
-        uid = portal_uidhandler.queryUid(obj, None)
-    else:
-        # Currently as multiple locations are not yet supported the object
-        # is all-embracing dereferenceable by the history id.
-        uid = reference
-        obj = portal_uidhandler.queryObject(uid, None)
-    
-    return obj, uid
+    return obj, history_id
 
 
 def generateId(parent, prefix=None, volatile=False):

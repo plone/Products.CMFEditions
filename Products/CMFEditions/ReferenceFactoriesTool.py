@@ -26,7 +26,7 @@ $Id: $
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo, getSecurityManager
 
-from Acquisition import aq_base
+from Acquisition import aq_parent, aq_inner
 from ZODB.PersistentList import PersistentList
 from OFS.OrderedFolder import OrderedFolder
 
@@ -88,7 +88,7 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder, ActionProviderBase):
     def hasBeenMoved(self, obj, source):
         """See IReferenceFactories
         """
-        # XXX: Just assuming ObjectManager behaviour for now
-        return getattr(aq_base(source), obj.getId(), None) is None
+        # Check that the path of the object's parent (by path) is the same as the source
+        return aq_parent(aq_inner(obj)).getPhysicalPath() != source.getPhysicalPath()
 
 InitializeClass(ReferenceFactoriesTool)

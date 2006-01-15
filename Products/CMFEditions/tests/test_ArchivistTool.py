@@ -117,7 +117,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         doc.text = 'text v2'
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
-        vdata = portal_archivist.retrieve(doc, 0, preserve=('gaga', 'gugus'))
+        vdata = portal_archivist.retrieve(obj=doc, selector=0, preserve=('gaga', 'gugus'))
         retr_doc = vdata.data.object
         retr_meta = vdata.app_metadata
         doc_histid = portal_historyidhandler.queryUid(doc)
@@ -143,7 +143,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
         doc_histid = portal_historyidhandler.queryUid(doc)
-        vdata = portal_archivist.retrieve(doc_histid, 0, 
+        vdata = portal_archivist.retrieve(history_id=doc_histid, selector=0, 
                                           preserve=('gaga', 'gugus'))
         retr_doc = vdata.data.object
         retr_meta = vdata.app_metadata
@@ -218,7 +218,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         portal_archivist.save(prep)
 
         doc_histid = portal_historyidhandler.queryUid(doc)
-        history = portal_archivist.getHistory(doc_histid)
+        history = portal_archivist.getHistory(history_id=doc_histid)
 
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
@@ -346,19 +346,19 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         v1 = portal_archivist.register(prep)
 
-        self.failUnless(portal_archivist.isUpToDate(doc))
-        self.failUnless(portal_archivist.isUpToDate(doc, v1))
+        self.failUnless(portal_archivist.isUpToDate(obj=doc))
+        self.failUnless(portal_archivist.isUpToDate(obj=doc, selector=v1))
 
         doc.text = 'text v2'
         notifyModified(doc)
-        self.failIf(portal_archivist.isUpToDate(doc))
+        self.failIf(portal_archivist.isUpToDate(obj=doc))
 
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         v2 = portal_archivist.save(prep)
 
-        self.failUnless(portal_archivist.isUpToDate(doc))
-        self.failUnless(portal_archivist.isUpToDate(doc, v2))
-        self.failIf(portal_archivist.isUpToDate(doc, v1))
+        self.failUnless(portal_archivist.isUpToDate(obj=doc))
+        self.failUnless(portal_archivist.isUpToDate(obj=doc, selector=v2))
+        self.failIf(portal_archivist.isUpToDate(obj=doc, selector=v1))
 
 
 class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):

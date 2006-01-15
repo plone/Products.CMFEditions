@@ -44,6 +44,8 @@ from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 from Products.CMFEditions.Modifiers import manage_addModifierForm
 from Products.CMFEditions.Modifiers import manage_addTalesModifierForm
 
+from Products.Archetypes import config as at_config
+
 #----------------------------------------------------------------------
 # Product initialziation, installation and factory stuff
 #----------------------------------------------------------------------
@@ -95,6 +97,16 @@ def manage_addOMInsideChildrensModifier(self, id, title=None,
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+def manage_addRetainUIDs(self, id, title=None, REQUEST=None):
+    """Add a modifier retaining UIDs upon retrieve.
+    """
+    modifier = RetainUIDs()
+    self._setObject(id, ConditionalModifier(id, modifier, title))
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        
 
 def manage_addRetainWorkflowStateAndHistory(self, id, title=None,
                                             REQUEST=None):
@@ -403,6 +415,46 @@ class RetainPermissionsSettings:
 
 InitializeClass(RetainPermissionsSettings)
 
+class RetainUIDs:
+    """Modifier which ensures uid consistency by retaining the uid from the working copy.  Ensuring
+       that newly created objects are assigned an appropriate uid is a job for the repository tool.
+    """
+
+    __implements__ = (ISaveRetrieveModifier, )
+
+    def beforeSaveModifier(self, obj, clone):
+        return [], []
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        # check if the modifier is called with a valid working copy
+        if obj is None:
+            return [], [], {}
+
+        #Preserve CMFUid
+        uid_tool = getToolByName(obj, 'portal_historyidhandler', None)
+        if uid_tool is not None:
+            working_uid = uid_tool.queryUid(obj)
+            copy_uid = uid_tool.queryUid(repo_clone)
+            anno_tool = getToolByName(obj, 'portal_uidannotation')
+            annotation = anno_tool(repo_clone, uid_tool.UID_ATTRIBUTE_NAME)
+            annotation.setUid(working_uid)
+            
+        #Preserve ATUID
+        uid = getattr(aq_base(obj), 'UID', None)
+        if uid is not None and callable(obj.UID):
+            working_atuid = obj.UID()
+            repo_uid = repo_clone.UID()
+            setattr(repo_clone, at_config.UUID_ATTR, working_atuid)
+            if working_atuid != repo_uid:
+                # XXX: We need to do something with forward references
+                annotations = repo_clone._getReferenceAnnotations()
+                for ref in annotations.objectValues():
+                    ref.sourceUID = working_atuid
+
+        return [], [], {}
+
+InitializeClass(RetainUIDs)
+
 
 class SaveFileDataInFileTypeByReference:
     """Standard modifier avoiding unnecessary cloning of the file data.
@@ -450,6 +502,16 @@ modifiers = (
         'modifier': OMOutsideChildrensModifier,
         'form': manage_addTalesModifierForm,
         'factory': manage_addOMOutsideChildrensModifier,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'RetainUIDs',
+        'title': "Retains the CMF and AT UIDs from the working copy",
+        'enabled': True,
+        'wrapper': ConditionalModifier,
+        'modifier': RetainUIDs,
+        'form': manage_addModifierForm,
+        'factory': manage_addRetainUIDs,
         'icon': 'www/modifier.gif',
     },
     {

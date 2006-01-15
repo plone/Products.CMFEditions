@@ -27,7 +27,13 @@ $Id: test_IntegrationTests.py,v 1.15 2005/06/24 11:42:01 gregweb Exp $
 import os, sys
 
 if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
+    execfile(os.path.join(sys.path[0], 'framework.py'))# BBB
+
+try:
+    import transaction
+except ImportError:
+    from Products.CMFEditions.bbb import transaction
+    
 
 from Testing import ZopeTestCase
 
@@ -299,6 +305,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
     def test11_versionAFolderishObjectThatTreatsChildrensAsInsideRefs(self):
         portal_repo = self.portal.portal_repository
+        portal_historyidhandler = self.portal.portal_historyidhandler
         fol = self.portal.fol
         doc1 = fol.doc1
         doc2 = fol.doc2
@@ -316,6 +323,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         doc1.setTitle("v1 of doc1")
         doc2.setTitle("v1 of doc2")
         portal_repo.applyVersionControl(fol, comment='first save')
+        orig_uid1 = portal_historyidhandler.queryUid(doc1)
+        orig_uid2 = portal_historyidhandler.queryUid(doc2)
 
         # save change no 2
         fol.setTitle('v2 of fol')
@@ -342,6 +351,9 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(fol.Title(), "v1 of fol")
         self.assertEqual(doc1.Title(), "v1 of doc1")
         self.assertEqual(doc2.Title(), "v1 of doc2")
+        self.assertEqual(portal_historyidhandler.queryUid(doc1), orig_uid1)
+        self.assertEqual(portal_historyidhandler.queryUid(doc2), orig_uid2)
+        
 
     def test12_retrieveAndRevertRetainWorkingCopiesPermissions(self):
         portal_repo = self.portal.portal_repository
@@ -621,6 +633,54 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].getObject().Title(), 'v1 of doc1')
         
+    def test17_moveInsideRefThenRevertChangesUid(self):
+        # When an object is contained in an 'Inside references folder' and has been moved 
+        # into another location, it should maintain its CMF Uid, if the folder is then 
+        # reverted to a state where it contained the object (which now exists with the same
+        # uid in a different location), the uid of the reverted object should be changed.
+        portal_repo = self.portal.portal_repository
+        portal_historyidhandler = self.portal.portal_historyidhandler
+
+        fol = self.portal.fol
+        doc1 = fol.doc1
+
+        # just configure the standard folder to treat the childrens as
+        # inside refrences. For this we reconfigure the standard modifiers.
+        portal_modifier = self.portal.portal_modifier
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+                             condition="python: False")
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+                             condition="python: portal_type=='Folder'")
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        doc1.setTitle("v1 of doc1")
+
+        portal_repo.applyVersionControl(fol, comment='first save')
+        orig_uid = portal_historyidhandler.queryUid(doc1)
+        
+        transaction.commit(1)
+        self.portal.manage_pasteObjects(fol.manage_cutObjects(ids=['doc1']))
+        moved_doc = self.portal.doc1
+        self.assertEqual(portal_historyidhandler.queryUid(moved_doc), orig_uid)
+        transaction.commit(1)
+
+        # retrieve should change the uid if it already exists
+        retrieved_data = portal_repo.retrieve(fol, 0)
+        ret_folder = retrieved_data.object
+        ret_doc = ret_folder.doc1
+        self.failIf(portal_historyidhandler.queryUid(ret_doc) == orig_uid,
+                         "UIDs should not be equal, current value: %s"%orig_uid)
+
+        # revert to original state, ensure that subobject changes are
+        # reverted and that uid is changed
+        portal_repo.revert(fol, 0)
+        fol = self.portal.fol
+        reverted_doc = fol.doc1
+
+        # check if reversion worked correctly
+        self.failIf(portal_historyidhandler.queryUid(reverted_doc) == orig_uid, 
+                         "UIDs should not be equal, current value: %s"%orig_uid)
 
 if __name__ == '__main__':
     framework()
