@@ -497,10 +497,10 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # has to be rolled back
         if not inplace:
             for key, val in saved_attrs.items():
-                setattr(obj_to_fixup, key, val)
+                setattr(obj, key, val)
             for key in keys_to_delete:
-                delattr(obj_to_fixup, key)
-            obj_to_fixup._p_changed = saved_p_changed
+                delattr(obj, key)
+            obj._p_changed = saved_p_changed
    
         # feed the fixup queue defined in revert() and retrieve() to
         # perform post-retrieve fixups on the object
