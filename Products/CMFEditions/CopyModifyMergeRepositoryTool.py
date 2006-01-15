@@ -356,6 +356,10 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             clone_ref.setReference(orig_ref, remove_info=True)
 
         portal_archivist.save(prep, autoregister=autoapply)
+        
+        # just to ensure that the working copy has the correct 
+        # ``verision_id``
+        prep.copyVersionIdFromClone()
 
     def _retrieve(self, obj, selector=None, preserve=()):
         """Retrieve a former state.

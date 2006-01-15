@@ -380,6 +380,9 @@ class PreparedObject:
         self.metadata = metadata
         self.is_registered = is_registered
 
+    def copyVersionIdFromClone(self):
+        self.original.object.version_id = self.clone.object.version_id
+
 
 class LazyHistory:
     """Lazy history.
