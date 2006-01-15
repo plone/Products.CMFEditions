@@ -45,10 +45,11 @@ from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
 try:
-    from Products.Archetypes.config import UUID_ATTR
+    from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
 except ImportError:
     UUID_ATTR = None
-
+    REFERENCE_ANNOTATION
+    
 #----------------------------------------------------------------------
 # Product initialziation, installation and factory stuff
 #----------------------------------------------------------------------
@@ -122,6 +123,21 @@ def manage_addRetainUIDs(self, id, title=None, REQUEST=None):
     """
     modifier = RetainUIDs()
     self._setObject(id, ConditionalModifier(id, modifier, title))
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+
+manage_RetainATRefsModifierAddForm =  \
+               PageTemplateFile('www/RetainATRefsModifierAddForm.pt',
+                                globals(),
+                                __name__='manage_RetainUIDsModifierAddForm')
+
+def manage_addRetainATRefs(self, id, title=None, REQUEST=None):
+    """Add a modifier retaining AT References upon retrieve.
+    """
+    modifier = RetainATRefs()
+    self._setObject(id, ConditionalTalesModifier(id, modifier, title))
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
@@ -491,6 +507,27 @@ class RetainUIDs:
 
 InitializeClass(RetainUIDs)
 
+class RetainATRefs:
+    """Modifier which ensures the Archetypes references of the working
+       copy are preserved when reverting to a previous version
+    """
+
+    __implements__ = (ISaveRetrieveModifier, )
+
+    def beforeSaveModifier(self, obj, clone):
+        return [], []
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        # check if the modifier is called with a valid working copy
+        if obj is None:
+            return [], [], {}
+
+        #Preserve AT references
+        orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
+        setattr(repo_clone, REFERENCE_ANNOTATION, orig_refs_container)
+        return [], [], {}
+
+InitializeClass(RetainUIDs)
 
 class SaveFileDataInFileTypeByReference:
     """Standard modifier avoiding unnecessary cloning of the file data.
@@ -548,6 +585,17 @@ modifiers = (
         'modifier': RetainUIDs,
         'form': manage_RetainUIDsModifierAddForm,
         'factory': manage_addRetainUIDs,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'RetainATRefs',
+        'title': "Retains AT refs",
+        'enabled': False,
+        'condition': 'python: False',
+        'wrapper': ConditionalTalesModifier,
+        'modifier': RetainATRefs,
+        'form': manage_RetainATRefsModifierAddForm,
+        'factory': manage_addRetainATRefs,
         'icon': 'www/modifier.gif',
     },
     {
