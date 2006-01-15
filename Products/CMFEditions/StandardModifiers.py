@@ -44,7 +44,10 @@ from Products.CMFEditions.interfaces.IModifier import IReferenceAdapter
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
-from Products.Archetypes import config as at_config
+try:
+    from Products.Archetypes.config import UUID_ATTR
+except ImportError:
+    UUID_ATTR = None
 
 #----------------------------------------------------------------------
 # Product initialziation, installation and factory stuff
@@ -474,10 +477,10 @@ class RetainUIDs:
 
         #Preserve ATUID
         uid = getattr(aq_base(obj), 'UID', None)
-        if uid is not None and callable(obj.UID):
+        if UUID_ATTR is not None and uid is not None and callable(obj.UID):
             working_atuid = obj.UID()
             repo_uid = repo_clone.UID()
-            setattr(repo_clone, at_config.UUID_ATTR, working_atuid)
+            setattr(repo_clone, UUID_ATTR, working_atuid)
             if working_atuid != repo_uid:
                 # XXX: We need to do something with forward references
                 annotations = repo_clone._getReferenceAnnotations()
