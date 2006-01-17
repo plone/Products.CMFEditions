@@ -25,6 +25,7 @@ $Id: CopyModifyMergeRepositoryTool.py,v 1.20 2005/06/24 11:42:01 gregweb Exp $
 """
 
 import time
+import transaction
 
 from Globals import InitializeClass
 from Persistence import Persistent
@@ -54,6 +55,7 @@ from Products.CMFEditions.Permissions import RevertToPreviousVersions
 from Products.CMFEditions.Permissions import CheckoutToLocation
 from Products.CMFEditions.Permissions import ManageVersioningPolicies
 from Products.CMFEditions.VersionPolicies import VersionPolicy
+from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
 try:
     from Products.Archetypes.interfaces.referenceable import IReferenceable
     from Products.Archetypes.config import REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
@@ -375,7 +377,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         Puts the returned version into same context as the working copy is
         (to make attribute access acquirable).
         """
+        #saved = transaction.savepoint()
         vd = self._recursiveRetrieve(obj=obj, selector=selector, preserve=preserve, inplace=False)
+        #saved.rollback()
         wrapped = wrap(vd.data.object, aq_parent(aq_inner(obj)))
         return VersionData(wrapped, vd.preserved_data,
                            vd.sys_metadata, vd.app_metadata)
@@ -387,7 +391,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         portal_archivist = getToolByName(self, 'portal_archivist')
         portal_reffactories = getToolByName(self, 'portal_referencefactories')
         obj, history_id = dereference(obj, history_id, self)
-            
+
         hasBeenDeleted = obj is None
 
         # CMF's invokeFactory needs the added object be traversable from 
@@ -421,7 +425,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             if getattr(aq_base(source), obj.getId(), None) is None:
                 vdata = portal_archivist.retrieve(obj=obj, history_id=history_id, selector=selector, preserve=preserve)
                 repo_clone = vdata.data.object
-                repo_clone = vdata.data.object
                 obj = portal_reffactories.invokeFactory(repo_clone, source)
             else:
                 # What is the desired behavior
@@ -432,7 +435,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         saved_p_changed = obj._p_changed
         saved_attrs = {}
         keys_to_delete = []
-
+        
         # Replace the objects attributes retaining identity and save the 
         # replaced attributes for the case the operation is not inplace.
         _missing = object()
@@ -447,7 +450,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             else:
                 keys_to_delete.append(key)
             setattr(obj, key, val)
-
+        
         # Delete reference attributes and save the replaced attributes
         # for the case the operation is not inplace.
         for ref in vdata.refs_to_be_deleted:
@@ -496,9 +499,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # the above operations was not inplace so the previous state
         # has to be rolled back
         if not inplace:
-            if hasBeenDeleted or hasBeenMoved:
-                # XXX XXX this is important but is demonstrationg some problems through test failures.
-                obj.unindexObject()
             # the above operations was not inplace so the previous state
             # has to be rolled back
             for key, val in saved_attrs.items():
@@ -519,15 +519,22 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         each retrieved object."""
         for obj in queue:
             if inplace:
-                self._fixupCatalogData(obj)
                 if not WRONG_AT:
                     self._fixupATReferences(obj)
+                self._fixIds(obj)
+                self._fixupCatalogData(obj)
 
     def _fixupCatalogData(self, obj):
         """ Reindex the object, otherwise the catalog will certainly
         be out of sync."""
         portal_catalog = getToolByName(self, 'portal_catalog')
         portal_catalog.reindexObject(obj)
+        # XXX: In theory we should probably be emitting IObjectModified and 
+        # IObjectMoved events here as those are the possible consequences of a 
+        # revert. Perhaps in out current meager z2 existence we should do
+        # obj.manage_afterRename()?  Also, should we be doing obj.reindexObject()
+        # instead to make sure we maximally cover specialized classes which want
+        # to handle their cataloging in special ways.
 
     def _fixupATReferences(self, obj):
         """reindex AT reference data, we need to reindex
@@ -544,6 +551,39 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # then reindex references
             container = aq_parent(aq_inner(obj))
             obj._updateCatalog(container)
+            
+    def _fixIds(self, obj):
+        items = getattr(obj ,'objectItems', None)
+        if callable(items):
+            temp_ids = []
+            # find sub-objects whose id doesn't match the name in the container
+            # remove them from the folder temporarily. This could probably be made 
+            # more efficient.  We assume that any id inconsistencies were created by 
+            # us, and fix accordingly.
+            for orig_id, child in items():
+                real_id = child.getId()
+                if orig_id != real_id:
+                    obj._delOb(orig_id)
+                    object_list = getattr(obj, '_objects', None)
+                    if object_list is not None:
+                        obj._objects = tuple([o for o in object_list if o['id'] != orig_id])
+                    temp_ids.append((real_id, child))
+            # Make a second pass to move the objects into place if possible
+            all_ids = list(obj.objectIds())
+            for new_id, child in temp_ids:
+                if new_id not in all_ids:
+                    # XXX: This calls child.manage_afterAdd, and it's not clear that we 
+                    # should do so, perhaps manually manipulating the _objects is the
+                    # better way to go.
+                    obj._setObject(new_id, child)
+                    all_ids.append(new_id)
+                else:
+                    # If we really can't add the object make the temp_id permanent
+                    temp_id = new_id + STUB_OBJECT_PREFIX
+                    child.id = temp_id
+                    obj._setObject(temp_id, child)
+                    all_ids.append(temp_id)
+
 
 class VersionData:
     """

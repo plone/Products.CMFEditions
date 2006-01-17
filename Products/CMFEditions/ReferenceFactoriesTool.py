@@ -70,8 +70,8 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder, ActionProviderBase):
         portal_type = repo_clone.getPortalTypeName()
         id = repo_clone.getId()
         if id in source.objectIds():
-            id = generateId(source)
-        # XXX does the factory return an id or obj? If yes, use this one
+            id = generateId(source, prefix=id)
+        # XXX: This makes a lot of changes outside the object scope we :(
         id = source.invokeFactory(portal_type, id)
         obj = getattr(source, id)
         try:
@@ -79,8 +79,6 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder, ActionProviderBase):
             portal_hidhandler.setUid(obj, history_id)
         except portal_hidhandler.UniqueIdError:
             portal_hidhandler.register(obj)
-        
-        # XXX check catalog integrity on retrieve!!!
         
         return obj
 

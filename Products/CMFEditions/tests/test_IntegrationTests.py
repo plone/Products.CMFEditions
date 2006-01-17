@@ -543,6 +543,9 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
         # remove an item
         fol.manage_delObjects('doc2')
+        
+        cur_ids = fol.objectIds()
+        self.assertEqual(len(cur_ids), 1)
 
         # retrieve should retrieve missing sub-objects
         retrieved_data = portal_repo.retrieve(fol, 0)
@@ -552,12 +555,17 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         for i in range(len(ret_values)):
             self.assertEqual(ret_values[i].getId(), orig_values[i].getId())
             self.assertEqual(ret_values[i].Title(), orig_values[i].Title())
+        # We should not have altered the folder itself on retrieve
+        self.assertEqual(fol.objectIds(), cur_ids)
 
         # add new item
         fol.invokeFactory('Document', 'doc3')
         doc3 = fol.doc3
         doc3.setTitle('v1 of doc3')
 
+        cur_ids = fol.objectIds()
+        self.assertEqual(len(cur_ids), 2)
+        
         # retrieve should not add new sub-objects
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_folder = retrieved_data.object
@@ -566,6 +574,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         for i in range(len(ret_values)):
             self.assertEqual(ret_values[i].getId(), orig_values[i].getId())
             self.assertEqual(ret_values[i].Title(), orig_values[i].Title())
+        # We should not have altered the folder itself on retrieve
+        self.assertEqual(fol.objectIds(), cur_ids)
 
         # revert to original state, ensure that subobject changes are
         # reverted
@@ -802,12 +812,23 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_fol = retrieved_data.object
+        self.assertEqual(ret_fol.objectIds(), ['doc1', 'doc2'])
         ret_doc1 = ret_fol.doc1
         ret_doc2 = ret_fol.doc2
         self.assertEqual(ret_doc1.getId(), 'doc1')
         self.assertEqual(ret_doc1.Title(), 'v1 of doc1')
         self.assertEqual(ret_doc2.getId(), 'doc2')
         self.assertEqual(ret_doc2.Title(), 'v1 of doc2')
+        
+        retrieved_data = portal_repo.revert(fol, 0)
+        rev_fol = self.portal.fol
+        self.assertEqual(rev_fol.objectIds(), ['doc1', 'doc2'])
+        rev_doc1 = rev_fol.doc1
+        rev_doc2 = rev_fol.doc2
+        self.assertEqual(rev_doc1.getId(), 'doc1')
+        self.assertEqual(rev_doc1.Title(), 'v1 of doc1')
+        self.assertEqual(rev_doc2.getId(), 'doc2')
+        self.assertEqual(rev_doc2.Title(), 'v1 of doc2')
         
     def test21_DontLeaveDanglingCatalogEntriesWhenInvokingFactory(self):
         portal_repo = self.portal.portal_repository
@@ -836,6 +857,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(len(catalog(getId='doc1')), 0)
 
         portal_repo.save(fol, comment='second save')
+        
         
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_fol = retrieved_data.object
