@@ -7,8 +7,12 @@ Dependencies
 Dependencies for use of CMFEditions with Plone
 ----------------------------------------------
 
-- ZopeVersionControl 0.3.1:
-  <http://cvs.zope.org/Products/ZopeVersionControl/?only_with_tag=ZopeVersionControl-0_3_1>
+- ZopeVersionControl:
+
+  - if you use Zope 2.7 : 0.3.1 (provided in the alpha2 release of CMFEditions)
+
+  - if you use Zope 2.8 : you need to checkout HEAD of ZopeVersionControl-0_3_1
+    branch
 
 
 If you're using Plone 2.0
