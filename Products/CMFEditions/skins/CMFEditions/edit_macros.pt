@@ -53,7 +53,8 @@
                     -->
             </script>
 
-            <div class="field editionSaveVersion"
+            <div i18n:domain="cmfeditions"
+                 class="field editionSaveVersion"
                  tal:condition="python: pr.isVersionable(here) and not pr.supportsPolicy(here,'at_edit_autoversion')">
               <label><span i18n:translate="label_save_new_version">Save as new version</span></label>
               <div class="formHelp"
@@ -67,7 +68,8 @@
                      tal:attributes="tabindex tabindex/next;"/>
             </div>
 
-            <div class="field editionComment"
+            <div i18n:domain="cmfeditions"
+                 class="field editionComment"
                  id="cmfeditions_version_comment_block"
                  tal:condition="python: pr.isVersionable(here) and fieldsets.index(fieldset) &gt;= len(fieldsets) - 1">
               <label><span i18n:translate="label_version_comment">Version Comment</span></label>

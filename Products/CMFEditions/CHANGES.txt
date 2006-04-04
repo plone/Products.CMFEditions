@@ -30,6 +30,9 @@ Bugs fixed
 
 Features added
 
+- I18N tuned (diff-legend untested), french added
+  [Gpgi, gotcha]
+
 - Made the ModifierRegistryTool make use of any preserve dict passed back to
   it by afterRetrieveModifiers.
   [alecm]

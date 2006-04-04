@@ -1,6 +1,6 @@
 <span class="versionsHistory"
       metal:define-macro="versions_history"
-      i18n:domain="plone">
+      i18n:domain="cmfeditions">
 <tal:history      tal:define="pr nocall:here/portal_repository;
                   history python:pr.getHistory(here)"
                   tal:condition="python: history and pr.isVersionable(context)">
@@ -27,8 +27,9 @@
                 <span tal:content="id">1</span>
                 <a href="#"
                    class="version-table-version"
-                   tal:attributes="href string:$here_url/versions_history_form?version_id=${id}">
-                  show version</a>
+                   tal:attributes="href string:$here_url/versions_history_form?version_id=${id}"
+                   i18n:translate="label_show_version">
+                  show versions</a>
               </td>
               <td>
                 <span tal:content="vdata/sys_metadata/principal">francesco</span>
