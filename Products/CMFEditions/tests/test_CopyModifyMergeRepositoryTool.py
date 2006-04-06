@@ -128,20 +128,20 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
 
         vdata = portal_repository.retrieve(doc)
         self.failUnless(verifyObject(IVersionData, vdata))
-        
+
     def test01_saveVersionableAspects(self):
         portal_repository = self.portal.portal_repository
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
-        
+
         doc.text = 'text v1'
         portal_repository.applyVersionControl(doc, comment='save no 1')
         doc.text = 'text v2'
-        
+
         portal_repository.save(doc, comment='save no 2')
-        
+
         vdata = portal_archivist.retrieve(obj=doc, selector=0)
-        
+
         self.assertEqual(vdata.data.object.text, 'text v1')
         vdata = portal_archivist.retrieve(obj=doc, selector=1)
         self.assertEqual(vdata.data.object.text, 'text v2')
@@ -150,18 +150,18 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         portal_repository = self.portal.portal_repository
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
-        
+
         doc.text = 'text v1'
         portal_repository.applyVersionControl(doc, comment='save no 1')
         doc.text = 'text v2'
         portal_repository.save(doc, comment='save no 2')
-        
+
         vdata = portal_repository.retrieve(doc, selector=0)
         self.failUnless(verifyObject(IVersionData, vdata))
         self.assertEqual(vdata.object.text, 'text v1')
         vdata = portal_repository.retrieve(doc, selector=1)
         self.assertEqual(vdata.object.text, 'text v2')
-        
+
     def test03_recursiveRevertOfFolderWithOutsideObject(self):
         portal_repository = self.portal.portal_repository
         portal_archivist = self.portal.portal_archivist
@@ -171,26 +171,26 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         fol.title = 'fol title v1'
         doc3_outside.title = 'doc3_outside title text v1'
         portal_repository.applyVersionControl(fol, comment='save no 1')
-        
+
         fol.title = 'fol title v2'
         doc3_outside.title = 'doc3_outside title text v2'
         portal_repository.save(fol, comment='save no 2')
-        
+
         portal_repository.revert(fol, 0)
-        
+
         # check result
         self.assertEqual(self.portal.fol, fol)
         self.assertEqual(self.portal.fol.doc3_outside, doc3_outside)
-        
+
         self.assertEqual(fol.title, 'fol title v1')
-        self.assertEqual(doc3_outside.title, 
+        self.assertEqual(doc3_outside.title,
                         'doc3_outside title text v2')
 
     def test04_isUptoDate(self):
         portal_repository = self.portal.portal_repository
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
-        
+
         doc.text = 'text v1'
         portal_repository.applyVersionControl(doc, comment='save no 1')
         self.assertEqual(portal_repository.isUpToDate(doc), True)
@@ -202,7 +202,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         portal_repository = self.portal.portal_repository
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
-        
+
         doc.text = 'text v1'
         portal_repository.applyVersionControl(doc, comment='save no 1')
         hist = portal_repository.getHistory(doc)
@@ -220,7 +220,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         portal_archivist = self.portal.portal_archivist
         portal_hidhandler = self.portal.portal_historyidhandler
         doc = self.portal.doc
-        
+
         doc.text = 'text v1'
         portal_repository.applyVersionControl(doc, comment='save no 1')
         doc.text = 'text v2'
@@ -229,7 +229,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         # save the ``history_id`` to be able to retrieve the object after
         # it's deletion
         history_id = portal_hidhandler.queryUid(doc)
-        
+
         # delete the object we want to retrieve later
         doc_type = doc.getPortalTypeName()
         self.portal.manage_delObjects(ids=['doc'])
@@ -241,11 +241,52 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         self.assertEqual(vdata.object.text, 'text v1')
         vdata = portal_repository.retrieve(doc, selector=1)
         self.assertEqual(vdata.object.text, 'text v2')
-        
+
+    def test07_restoreDeletedObject(self):
+        portal_repository = self.portal.portal_repository
+        portal_hidhandler = self.portal.portal_historyidhandler
+        doc = self.portal.doc
+
+        doc.text = 'text v1'
+        portal_repository.applyVersionControl(doc, comment='save no 1')
+
+        # save the ``history_id`` to be able to retrieve the object after
+        # it's deletion
+        history_id = portal_hidhandler.queryUid(doc)
+
+        # delete the object we want to retrieve later
+        self.portal.manage_delObjects(ids=['doc'])
+        self.failIf('doc' in self.portal.objectIds())
+        vdata = portal_repository.restore(history_id, selector=0, container=self.portal)
+        self.failUnless('doc' in self.portal.objectIds())
+        restored = self.portal.doc
+        self.assertEqual(restored.text, 'text v1')
+
+    def test07_restoreDeletedObjectWithNewId(self):
+        portal_repository = self.portal.portal_repository
+        portal_hidhandler = self.portal.portal_historyidhandler
+        doc = self.portal.doc
+
+        doc.text = 'text v1'
+        portal_repository.applyVersionControl(doc, comment='save no 1')
+
+        # save the ``history_id`` to be able to retrieve the object after
+        # it's deletion
+        history_id = portal_hidhandler.queryUid(doc)
+
+        # delete the object we want to retrieve later
+        self.portal.manage_delObjects(ids=['doc'])
+        self.failIf('doc' in self.portal.objectIds())
+        vdata = portal_repository.restore(history_id, selector=0,
+                                         container=self.portal, new_id='doc2')
+        self.failUnless('doc2' in self.portal.objectIds())
+        restored = self.portal.doc2
+        self.assertEqual(restored.text, 'text v1')
+
 
 class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):
 
-    def _setupArchivist(self): 
+    def _setupArchivist(self):
         # replace the "original" tools by dummy tools
         tools = (
             DummyArchivist(),
@@ -258,13 +299,13 @@ class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):
         portal_repository.autoapply = False
         portal_archivist = self.portal.portal_archivist
         fol = self.portal.fol
-        
-        portal_archivist.reset_log() 
+
+        portal_archivist.reset_log()
         portal_repository.applyVersionControl(fol, comment='save no 1')
         portal_repository.save(fol, comment='save no 2')
-        
+
         # check if correctly recursing and setting reference data correctly
-        # XXX the result depends on a history id handler returning 
+        # XXX the result depends on a history id handler returning
         #     numbers staring with 1 (see 'hid')
         alog_str = portal_archivist.get_log()
         expected = """
@@ -281,9 +322,9 @@ prepare fol: hid=1, refs=(doc1_inside, doc2_inside, doc3_outside)
   prepare doc2_inside: hid=3
   save    doc2_inside: hid=3, isreg=True, auto=False
 save    fol: hid=1, irefs=({hid:2, vid:1}, {hid:3, vid:1}), orefs=({hid:None, vid:-1}), isreg=True, auto=False"""
-        
+
         self.assertEqual(alog_str, expected)
-        
+
     def test02_recursiveRetrieve(self):
         portal_repository = self.portal.portal_repository
         portal_archivist = self.portal.portal_archivist

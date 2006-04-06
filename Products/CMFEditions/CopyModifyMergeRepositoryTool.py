@@ -62,7 +62,7 @@ try:
     WRONG_AT=False
 except ImportError:
     WRONG_AT=True
-    
+
 VERSIONABLE_CONTENT_TYPES = []
 VERSION_POLICY_MAPPING = {}
 VERSION_POLICY_DEFS = {}
@@ -264,7 +264,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """See interface.
         """
         self._assertAuthorized(obj, SaveNewVersion, 'save')
-        self._recursiveSave(obj, metadata, 
+        self._recursiveSave(obj, metadata,
                             self._prepareSysMetadata(comment),
                             autoapply=self.autoapply)
 
@@ -278,14 +278,14 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
         fixup_queue = []
         self._recursiveRetrieve(obj=obj, selector=selector, inplace=True, fixup_queue=fixup_queue)
-        # run fixups
-        self._doInplaceFixups(fixup_queue, True)
-        
         # XXX this should go away if _recursiveRetrieve is correctly implemented
         if obj.getId() != original_id:
             obj._setId(original_id)
             #parent.manage_renameObject(obj.getId(), original_id)
             #parent._setObject(original_id, obj, set_owner=0)
+
+        # run fixups
+        self._doInplaceFixups(fixup_queue, True)
 
     security.declarePublic('retrieve')
     def retrieve(self, obj, selector=None, preserve=()):
@@ -293,7 +293,31 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """
         self._assertAuthorized(obj, AccessPreviousVersions, 'retrieve')
         return self._retrieve(obj, selector, preserve)
-    
+
+    security.declarePublic('restore')
+    def restore(self, history_id, selector, container, new_id=None):
+        """See interface.
+        """
+
+        self._assertAuthorized(container, RevertToPreviousVersions, 'revert')
+        fixup_queue = []
+        vdata = self._recursiveRetrieve(history_id=history_id,
+                                        selector=selector, inplace=True,
+                                        source=container,
+                                        fixup_queue=fixup_queue,
+                                        ignore_existing=True)
+
+        # Set the id to the desired value
+        orig_id = vdata.data.object.getId()
+        if new_id and orig_id != new_id:
+            # Make sure we have a _p_jar
+            transaction.savepoint()
+            container.manage_renameObject(orig_id, new_id)
+            #parent._setObject(original_id, obj, set_owner=0)
+
+        # run fixups
+        self._doInplaceFixups(fixup_queue, True)
+
     security.declarePublic('isUpToDate')
     def isUpToDate(self, obj, selector=None):
         """See interface.
@@ -315,8 +339,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     def _assertAuthorized(self, obj, permission, name=None):
         # We need to provide access to the repository upon the object
-        # permissions istead of repositories method permissions. 
-        # So the repository method access is set to public and the 
+        # permissions istead of repositories method permissions.
+        # So the repository method access is set to public and the
         # access is check on the object when needed.
         if not _checkPermission(permission, obj):
             raise Unauthorized(name)
@@ -366,8 +390,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             clone_ref.setReference(orig_ref, remove_info=True)
 
         portal_archivist.save(prep, autoregister=autoapply)
-        
-        # just to ensure that the working copy has the correct 
+
+        # just to ensure that the working copy has the correct
         # ``verision_id``
         prep.copyVersionIdFromClone()
 
@@ -377,28 +401,38 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         Puts the returned version into same context as the working copy is
         (to make attribute access acquirable).
         """
-        #saved = transaction.savepoint()
-        vd = self._recursiveRetrieve(obj=obj, selector=selector, preserve=preserve, inplace=False)
-        #saved.rollback()
+        # We make a savepoint so that we can undo anything that happened
+        # during the transaction.  There may be resource managers which do not
+        # support savepoints, those will raise errors here, which means that
+        # retrieve and getHistory should not be used as a part of more
+        # complex transactions.
+        saved = transaction.savepoint()
+        vd = self._recursiveRetrieve(obj=obj, selector=selector,
+                                     preserve=preserve, inplace=False)
+        saved.rollback()
         wrapped = wrap(vd.data.object, aq_parent(aq_inner(obj)))
         return VersionData(wrapped, vd.preserved_data,
                            vd.sys_metadata, vd.app_metadata)
 
     def _recursiveRetrieve(self, obj=None, history_id=None, selector=None, preserve=(),
-                           inplace=False, source=None, fixup_queue=None):
+                           inplace=False, source=None, fixup_queue=None,
+                           ignore_existing=False):
         """This is the real workhorse pulling objects out recursively.
         """
         portal_archivist = getToolByName(self, 'portal_archivist')
         portal_reffactories = getToolByName(self, 'portal_referencefactories')
-        obj, history_id = dereference(obj, history_id, self)
+        if ignore_existing:
+            obj = None
+        else:
+            obj, history_id = dereference(obj, history_id, self)
 
         hasBeenDeleted = obj is None
 
-        # CMF's invokeFactory needs the added object be traversable from 
-        # itself to the root and from the root to the itself. This is the 
-        # reason why it is necessary to replace the working copies current 
-        # state with the one of the versions state retrieved. If the 
-        # operation is not an inplace operation (retrieve instead of 
+        # CMF's invokeFactory needs the added object be traversable from
+        # itself to the root and from the root to the itself. This is the
+        # reason why it is necessary to replace the working copies current
+        # state with the one of the versions state retrieved. If the
+        # operation is not an inplace operation (retrieve instead of
         # revert) this has to be reversed after having recursed into the
         # tree.
         if hasBeenDeleted:
@@ -420,7 +454,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # object has to get a new history (it's like copying back back
             # the object and then retrieve an old state)
             hasBeenMoved = portal_reffactories.hasBeenMoved(obj, source)
-            
+
         if hasBeenMoved:
             if getattr(aq_base(source), obj.getId(), None) is None:
                 vdata = portal_archivist.retrieve(obj=obj, history_id=history_id, selector=selector, preserve=preserve)
@@ -432,29 +466,17 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
         vdata = portal_archivist.retrieve(obj, history_id, selector, preserve)
 
-        saved_p_changed = obj._p_changed
-        saved_attrs = {}
-        keys_to_delete = []
-        
-        # Replace the objects attributes retaining identity and save the 
-        # replaced attributes for the case the operation is not inplace.
+        # Replace the objects attributes retaining identity.
         _missing = object()
         attrs_to_leave = vdata.attr_handling_references
         for key, val in vdata.data.object.__dict__.items():
             if key in attrs_to_leave:
                 continue
             obj_val = getattr(aq_base(obj), key, _missing)
-            # XXX just also mark missing values to be able to delete them later
-            if obj_val is not _missing:
-                saved_attrs[key] = obj_val
-            else:
-                keys_to_delete.append(key)
             setattr(obj, key, val)
-        
-        # Delete reference attributes and save the replaced attributes
-        # for the case the operation is not inplace.
+
+        # Delete reference attributes.
         for ref in vdata.refs_to_be_deleted:
-            ref.save(saved_attrs)
             ref.remove(permanent=inplace)
 
         # retrieve all inside refs
@@ -474,7 +496,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                                                preserve=(),
                                                inplace=inplace,
                                                source=obj,
-                                               fixup_queue=fixup_queue)
+                                               fixup_queue=fixup_queue,
+                                               ignore_existing=ignore_existing)
 
             # reattach the python reference
             attr_ref.setAttribute(ref_vdata.data.object)
@@ -496,17 +519,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             if ref is not None:
                 attr_ref.setAttribute(ref)
 
-        # the above operations was not inplace so the previous state
-        # has to be rolled back
-        if not inplace:
-            # the above operations was not inplace so the previous state
-            # has to be rolled back
-            for key, val in saved_attrs.items():
-                setattr(obj, key, val)
-            for key in keys_to_delete:
-                delattr(obj, key)
-            obj._p_changed = saved_p_changed
-   
         # feed the fixup queue defined in revert() and retrieve() to
         # perform post-retrieve fixups on the object
         if fixup_queue is not None:
@@ -529,8 +541,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         be out of sync."""
         portal_catalog = getToolByName(self, 'portal_catalog')
         portal_catalog.reindexObject(obj)
-        # XXX: In theory we should probably be emitting IObjectModified and 
-        # IObjectMoved events here as those are the possible consequences of a 
+        # XXX: In theory we should probably be emitting IObjectModified and
+        # IObjectMoved events here as those are the possible consequences of a
         # revert. Perhaps in out current meager z2 existence we should do
         # obj.manage_afterRename()?  Also, should we be doing obj.reindexObject()
         # instead to make sure we maximally cover specialized classes which want
@@ -539,7 +551,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     def _fixupATReferences(self, obj):
         """reindex AT reference data, we need to reindex
         reference_catalog too"""
-        
+
         if IReferenceable.isImplementedBy(obj):
             # Delete refs if their target doesn't exists anymore
             ref_folder = getattr(obj, REFERENCES_CONTAINER_NAME)
@@ -551,14 +563,14 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # then reindex references
             container = aq_parent(aq_inner(obj))
             obj._updateCatalog(container)
-            
+
     def _fixIds(self, obj):
         items = getattr(obj ,'objectItems', None)
         if callable(items):
             temp_ids = []
             # find sub-objects whose id doesn't match the name in the container
-            # remove them from the folder temporarily. This could probably be made 
-            # more efficient.  We assume that any id inconsistencies were created by 
+            # remove them from the folder temporarily. This could probably be made
+            # more efficient.  We assume that any id inconsistencies were created by
             # us, and fix accordingly.
             for orig_id, child in items():
                 real_id = child.getId()
@@ -572,7 +584,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             all_ids = list(obj.objectIds())
             for new_id, child in temp_ids:
                 if new_id not in all_ids:
-                    # XXX: This calls child.manage_afterAdd, and it's not clear that we 
+                    # XXX: This calls child.manage_afterAdd, and it's not clear that we
                     # should do so, perhaps manually manipulating the _objects is the
                     # better way to go.
                     obj._setObject(new_id, child)

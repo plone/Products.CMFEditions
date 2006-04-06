@@ -33,7 +33,7 @@ try:
     import transaction
 except ImportError:
     from Products.CMFEditions.bbb import transaction
-    
+
 
 from Testing import ZopeTestCase
 
@@ -313,9 +313,9 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # just configure the standard folder to treat the childrens as
         # inside refrences. For this we reconfigure the standard modifiers.
         portal_modifier = self.portal.portal_modifier
-        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False,
                              condition="python: False")
-        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True,
                              condition="python: portal_type=='Folder'")
 
         # save change no 1
@@ -355,7 +355,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(doc2.Title(), "v2 of doc2")
         self.assertEqual(portal_historyidhandler.queryUid(doc1), orig_uid1)
         self.assertEqual(portal_historyidhandler.queryUid(doc2), orig_uid2)
-        
+
 
     def test12_retrieveAndRevertRetainWorkingCopiesPermissions(self):
         portal_repo = self.portal.portal_repository
@@ -516,9 +516,9 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # just configure the standard folder to treat the childrens as
         # inside refrences. For this we reconfigure the standard modifiers.
         portal_modifier = self.portal.portal_modifier
-        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False,
                              condition="python: False")
-        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True,
                              condition="python: portal_type=='Folder'")
 
         # save change no 1
@@ -543,7 +543,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
         # remove an item
         fol.manage_delObjects('doc2')
-        
+
         cur_ids = fol.objectIds()
         self.assertEqual(len(cur_ids), 1)
 
@@ -565,7 +565,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
         cur_ids = fol.objectIds()
         self.assertEqual(len(cur_ids), 2)
-        
+
         # retrieve should not add new sub-objects
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_folder = retrieved_data.object
@@ -598,9 +598,9 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # just configure the standard folder to treat the childrens as
         # inside refrences. For this we reconfigure the standard modifiers.
         portal_modifier = self.portal.portal_modifier
-        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False,
                              condition="python: False")
-        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True,
                              condition="python: portal_type=='Folder'")
 
         # save change no 1
@@ -644,10 +644,10 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         results = cat(SearchableText='v1', portal_type='Document')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].getObject().Title(), 'v1 of doc1')
-        
+
     def test17_moveInsideRefThenRevertChangesUid(self):
-        # When an object is contained in an 'Inside references folder' and has been moved 
-        # into another location, it should maintain its CMF Uid, if the folder is then 
+        # When an object is contained in an 'Inside references folder' and has been moved
+        # into another location, it should maintain its CMF Uid, if the folder is then
         # reverted to a state where it contained the object (which now exists with the same
         # uid in a different location), the uid of the reverted object should be changed.
         portal_repo = self.portal.portal_repository
@@ -658,9 +658,9 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # just configure the standard folder to treat the childrens as
         # inside refrences. For this we reconfigure the standard modifiers.
         portal_modifier = self.portal.portal_modifier
-        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False,
                              condition="python: False")
-        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True,
                              condition="python: portal_type=='Folder'")
 
         # save change no 1
@@ -669,7 +669,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
         portal_repo.applyVersionControl(fol, comment='first save')
         orig_uid = portal_historyidhandler.queryUid(doc1)
-        
+
         transaction.commit(1)
         self.portal.manage_pasteObjects(fol.manage_cutObjects(ids=['doc1']))
         moved_doc = self.portal.doc1
@@ -690,7 +690,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         reverted_doc = fol.doc1
 
         # check if reversion worked correctly
-        self.failIf(portal_historyidhandler.queryUid(reverted_doc) == orig_uid, 
+        self.failIf(portal_historyidhandler.queryUid(reverted_doc) == orig_uid,
                          "UIDs should not be equal, current value: %s"%orig_uid)
 
     def test18_retrieveObjectWhichHasBeenReplaced(self):
@@ -706,19 +706,19 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
         portal_repo.applyVersionControl(doc1, comment='first save')
         portal_repo.applyVersionControl(doc2, comment='first save')
-        
+
         transaction.commit(1)
         fol.manage_renameObjects(['doc1','doc2'],['doc1_renamed', 'doc1'])
 
         doc1 = fol.doc1_renamed
         doc2 = fol.doc1
-        
+
         doc1.setTitle('v2 of doc1_renamed')
         doc2.setTitle('v2 of doc1 (was doc2)')
 
         portal_repo.save(doc1, comment='second save')
         portal_repo.save(doc2, comment='second save')
-        
+
         retrieved_data = portal_repo.retrieve(doc1, 0)
         ret_doc = retrieved_data.object
         self.assertEqual(ret_doc.getId(), 'doc1')
@@ -734,11 +734,11 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         fol = self.portal.fol
         doc1 = fol.doc1
         doc2 = fol.doc2
-        
+
         portal_modifier = self.portal.portal_modifier
-        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False,
                              condition="python: False")
-        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True,
                              condition="python: portal_type=='Folder'")
 
         # save change no 1
@@ -747,18 +747,18 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         doc2.setTitle("v1 of doc2")
 
         portal_repo.applyVersionControl(fol, comment='first save')
-        
+
         fol.manage_delObjects(['doc1'])
         transaction.commit(1)
         fol.manage_renameObjects(['doc2'],['doc1'])
 
         doc2 = fol.doc1
-        
+
         doc1.setTitle('v2 of doc1_renamed')
         doc2.setTitle('v2 of doc1 (was doc2)')
 
         portal_repo.save(fol, comment='second save')
-        
+
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_fol = retrieved_data.object
         self.assertEqual(ret_fol.objectIds(), ['doc1', 'doc2'])
@@ -768,7 +768,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(ret_doc1.Title(), 'v1 of doc1')
         self.assertEqual(ret_doc2.getId(), 'doc2')
         self.assertEqual(ret_doc2.Title(), 'v1 of doc2')
-        
+
         portal_repo.revert(fol, 0)
         rev_fol = self.portal.fol
         self.assertEqual(rev_fol.objectIds(), ['doc1', 'doc2'])
@@ -784,11 +784,11 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         fol = self.portal.fol
         doc1 = fol.doc1
         doc2 = fol.doc2
-        
+
         portal_modifier = self.portal.portal_modifier
-        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False,
                              condition="python: False")
-        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True,
                              condition="python: portal_type=='Folder'")
 
         # save change no 1
@@ -797,19 +797,19 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         doc2.setTitle("v1 of doc2")
 
         portal_repo.applyVersionControl(fol, comment='first save')
-        
+
         transaction.commit(1)
         self.portal.manage_pasteObjects(fol.manage_cutObjects(['doc1']))
         fol.manage_renameObjects(['doc2'],['doc1'])
 
         doc2 = fol.doc1
         doc1 = self.portal.doc1
-        
+
         doc1.setTitle('v2 of doc1 (now in portal root)')
         doc2.setTitle('v2 of doc1 (was doc2)')
 
         portal_repo.save(fol, comment='second save')
-        
+
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_fol = retrieved_data.object
         self.assertEqual(ret_fol.objectIds(), ['doc1', 'doc2'])
@@ -819,7 +819,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(ret_doc1.Title(), 'v1 of doc1')
         self.assertEqual(ret_doc2.getId(), 'doc2')
         self.assertEqual(ret_doc2.Title(), 'v1 of doc2')
-        
+
         retrieved_data = portal_repo.revert(fol, 0)
         rev_fol = self.portal.fol
         self.assertEqual(rev_fol.objectIds(), ['doc1', 'doc2'])
@@ -829,18 +829,18 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(rev_doc1.Title(), 'v1 of doc1')
         self.assertEqual(rev_doc2.getId(), 'doc2')
         self.assertEqual(rev_doc2.Title(), 'v1 of doc2')
-        
+
     def test21_DontLeaveDanglingCatalogEntriesWhenInvokingFactory(self):
         portal_repo = self.portal.portal_repository
         catalog = self.portal.portal_catalog
         fol = self.portal.fol
         doc1 = fol.doc1
         doc2 = fol.doc2
-        
+
         portal_modifier = self.portal.portal_modifier
-        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False,
                              condition="python: False")
-        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True,
                              condition="python: portal_type=='Folder'")
 
         # save change no 1
@@ -849,25 +849,93 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         doc2.setTitle("v1 of doc2")
 
         portal_repo.applyVersionControl(fol, comment='first save')
-        
+
         self.assertEqual(len(catalog(getId='doc1')), 1)
-        
+
         fol.manage_delObjects(['doc2', 'doc1'])
 
         self.assertEqual(len(catalog(getId='doc1')), 0)
 
         portal_repo.save(fol, comment='second save')
-        
-        
+
+
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_fol = retrieved_data.object
         self.assertEqual(ret_fol.objectIds(), ['doc1', 'doc2'])
         self.assertEqual(len(catalog(getId='doc1')), 0)
-        
+
         portal_repo.revert(fol, 0)
         rev_fol = self.portal.fol
         self.assertEqual(rev_fol.objectIds(), ['doc1', 'doc2'])
         self.assertEqual(len(catalog(getId='doc1')), 1)
+
+    def test21_RevertObjectWithChangedIdMaintainsConsistentCatalog(self):
+        portal_repo = self.portal.portal_repository
+        catalog = self.portal.portal_catalog
+        fol = self.portal.fol
+        doc1 = fol.doc1
+
+        # save change no 1
+        doc1.setTitle("v1 of doc1")
+
+        portal_repo.applyVersionControl(doc1, comment='first save')
+
+        self.assertEqual(len(catalog(getId='doc1')), 1)
+
+        doc1.setTitle("v2 of doc1")
+        transaction.savepoint()
+        fol.manage_renameObject('doc1', 'doc1_changed')
+        doc1 = fol.doc1_changed
+        doc1.reindexObject()
+
+        self.assertEqual(len(catalog(getId='doc1')), 0)
+        self.assertEqual(len(catalog(getId='doc1_changed')), 1)
+
+        portal_repo.save(doc1, comment='second save')
+
+        portal_repo.revert(doc1, 0)
+        rev_doc = fol.doc1_changed
+        self.assertEqual(rev_doc.Title(), "v1 of doc1")
+        self.assertEqual(len(catalog(getId='doc1')), 0)
+        self.assertEqual(len(catalog(getId='doc1_changed')), 1)
+        self.assertEqual(len(catalog(Title='v1 of doc1')), 1)
+
+    def test21_RestoreMovedObject(self):
+        portal_repo = self.portal.portal_repository
+        catalog = self.portal.portal_catalog
+        portal_hidhandler = self.portal.portal_historyidhandler
+        fol = self.portal.fol
+        doc1 = fol.doc1
+
+        # save change no 1
+        doc1.setTitle("v1 of doc1")
+
+        portal_repo.applyVersionControl(doc1, comment='first save')
+        # save the ``history_id`` to be able to retrieve the object after
+        # it's deletion
+        history_id = portal_hidhandler.queryUid(doc1)
+
+        doc1.setTitle("v2 of doc1")
+        transaction.savepoint()
+        fol.manage_renameObject('doc1', 'doc1_changed')
+        doc1 = fol.doc1_changed
+        doc1.reindexObject()
+
+        self.assertEqual(len(catalog(getId='doc1')), 0)
+        self.assertEqual(len(catalog(getId='doc1_changed')), 1)
+
+        portal_repo.save(doc1, comment='second save')
+        portal_repo.restore(history_id, selector=0, container=fol)
+        # Both documents should now be in place
+        res_doc = fol.doc1
+        self.assertEqual(res_doc.Title(), "v1 of doc1")
+        self.assertEqual(len(catalog(getId='doc1')), 1)
+        self.assertEqual(len(catalog(getId='doc1_changed')), 1)
+        self.assertEqual(len(catalog(Title='v1 of doc1')), 1)
+        self.assertEqual(len(catalog(Title='v2 of doc1')), 1)
+        # The reverted document should have a new uid, because an object with
+        # the original uid exists
+        self.failIf(portal_hidhandler.queryUid(res_doc) == history_id)
 
 if __name__ == '__main__':
     framework()

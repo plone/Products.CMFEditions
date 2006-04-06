@@ -1,19 +1,19 @@
 #########################################################################
-# Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber. 
+# Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
-# 
+#
 # This file is part of CMFEditions.
-# 
+#
 # CMFEditions is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # CMFEditions is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -42,16 +42,16 @@ class KwAsAttributes(Persistent):
 
 def dereference(obj=None, history_id=None, zodb_hook=None):
     """Dereference an object.
-    
+
     Works with either an obj or a history_id or both.
-    
+
     If only a history_id is used, then a 'zodb_hook' is required to obtain
     the uid tool.
-    
-    Returns a tuple consisting of the derefrenced object and 
+
+    Returns a tuple consisting of the derefrenced object and
     the unique id of the object: ``(obj, uid)``
-    
-    If an object or historyu_id cannot be found None will be returned for 
+
+    If an object or history_id cannot be found None will be returned for
     one or both values.
     """
 
@@ -67,8 +67,12 @@ def dereference(obj=None, history_id=None, zodb_hook=None):
         else:
             history_id = portal_uidhandler.queryUid(obj, None)
     elif obj is None:
-        obj = portal_uidhandler.queryObject(history_id, None)
-    
+        try:
+            obj = portal_uidhandler.queryObject(history_id, None)
+        except AttributeError:
+            # We may get an attribute error in some cases, just return None
+            pass
+
     return obj, history_id
 
 
@@ -85,17 +89,17 @@ def generateId(parent, prefix='', volatile=False):
 
 def wrap(obj, parent):
     """Copy the context and containment from one object to another.
-    
-    This is needed to allow acquiring attributes. Containment and context 
-    is setup only in direction to the parents but not from the parent 
+
+    This is needed to allow acquiring attributes. Containment and context
+    is setup only in direction to the parents but not from the parent
     to itself. So doing the following raises an ``AttributeError``::
-    
+
         getattr(wrapped.aq_parent, tempAttribute)
     """
-    # be sure the obj is unwraped before wrapping it (argh, having 
+    # be sure the obj is unwraped before wrapping it (argh, having
     # caused pulling my hair out until I realized it is wrapped)
     obj = aq_base(obj).__of__(parent)
-    
+
     # set containment temporarly
     tempAttribute = generateId(parent, volatile=True)
     changed = parent._p_changed

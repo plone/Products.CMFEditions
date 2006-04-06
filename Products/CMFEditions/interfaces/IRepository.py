@@ -163,6 +163,11 @@ class ICopyModifyMergeRepository(Interface):
         copy in any way.
         """
 
+    def restore(history_id, selector, container, new_id=None):
+        """Restores a specific object/version from version control into a
+        particular container, possibly with a differing id.
+        """
+
     def isUpToDate(obj):
         """Returns True if the working copy is modified.
         """

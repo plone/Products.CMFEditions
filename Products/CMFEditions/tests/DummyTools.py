@@ -7,7 +7,7 @@ from Products.CMFDefault.DublinCore import DefaultDublinCoreImpl
 from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.ArchivistTool import ObjectData
 from Products.CMFEditions.ArchivistTool import PreparedObject
-from Products.CMFEditions.ArchivistTool import AttributeAdapter 
+from Products.CMFEditions.ArchivistTool import AttributeAdapter
 from Products.CMFEditions.ArchivistTool import VersionData
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IStorage import IStreamableReference
@@ -20,8 +20,10 @@ from pickle import dumps, loads
 from DateTime import DateTime
 import types
 
+# Make alog module level so that it survives transaction rollbacks
+alog = []
 
-class Dummy(SimpleItem, DefaultDublinCoreImpl): 
+class Dummy(SimpleItem, DefaultDublinCoreImpl):
    pass
 
 class UniqueIdError(Exception):
@@ -41,8 +43,8 @@ def deepCopy(obj):
 
 def notifyModified(obj):
     """Notify the object as modified.
-    
-    Sleeps as long as DateTime delivers a different time then 
+
+    Sleeps as long as DateTime delivers a different time then
     notifies the object as modified (faster than time.sleep(2)).
     """
     t = obj.modified()
@@ -54,24 +56,25 @@ class DummyArchivist(SimpleItem):
     """Archivist simulating modifiers and history storage.
     """
     id = 'portal_archivist'
-    
+
     def getId(self):
         return self.id
-    
+
     def __init__(self):
         self._archive = {}
         self._counter = 0
-        self.alog = []
+        self.reset_log()
         self.alog_indent = ''
 
     def log(self, msg):
-        self.alog.append(msg)
+        alog.append(msg)
 
     def get_log(self):
-        return "\n".join(self.alog)
+        return "\n".join(alog)
 
     def reset_log(self):
-        self.alog = []
+        global alog
+        alog = []
 
     def prepare(self, obj, app_metadata=None, sys_metadata={}):
         obj, history_id = dereference(obj)
@@ -90,12 +93,12 @@ class DummyArchivist(SimpleItem):
         else:
             version_id = len(self.queryHistory(obj))
             is_registered = True
-        
+
         base_obj = aq_base(obj)
         doc1_inside = getattr(base_obj, 'doc1_inside', None)
         doc2_inside = getattr(base_obj, 'doc2_inside', None)
         doc3_outside = getattr(base_obj, 'doc3_outside', None)
-        
+
         # simulate clone modifiers
         icrefs = []
         ocrefs = []
@@ -107,7 +110,7 @@ class DummyArchivist(SimpleItem):
         if doc3_outside is not None:
             ocrefs.append(AttributeAdapter(clone, 'doc3_outside'))
         crefs = icrefs + ocrefs
-        
+
         # simulate before save modifier
         iorefs = []
         oorefs = []
@@ -120,55 +123,55 @@ class DummyArchivist(SimpleItem):
         orefs = iorefs + oorefs
         for cref in crefs:
             cref.setAttribute(VersionAwareReference())
-        
+
         # log
         if sys_metadata['originator'] is None:
             self.log("")
         if orefs:
-            self.log("%sprepare %s: hid=%s, refs=(%s)" 
-                        % (self.alog_indent, 
-                           obj.getId(), 
-                           history_id, 
+            self.log("%sprepare %s: hid=%s, refs=(%s)"
+                        % (self.alog_indent,
+                           obj.getId(),
+                           history_id,
                            ', '.join([ref.getId() for ref in orefs])))
         else:
-            self.log("%sprepare %s: hid=%s" 
+            self.log("%sprepare %s: hid=%s"
                         % (self.alog_indent, obj.getId(), history_id))
         self.alog_indent += '  '
 
         # prepare object structure
         original_info = ObjectData(obj, iorefs, oorefs)
         clone_info = ObjectData(clone, icrefs, ocrefs)
-        
+
         return PreparedObject(history_id, original_info, clone_info, (),
                               app_metadata, sys_metadata, is_registered)
-    
+
     def register(self, prepared_obj):
         # log
-        self.log("%sregister %s: hid=%s, is_registered=%s" 
+        self.log("%sregister %s: hid=%s, is_registered=%s"
                     % (self.alog_indent,
-                       prepared_obj.original.object.getId(), 
-                       prepared_obj.history_id, 
+                       prepared_obj.original.object.getId(),
+                       prepared_obj.history_id,
                        prepared_obj.is_registered))
-        
+
         if not prepared_obj.is_registered:
             # new empty history
             self._archive[prepared_obj.history_id] = []
             self.save(prepared_obj)
-    
+
     def save(self, prepared_obj, autoregister=False):
         if not prepared_obj.is_registered:
             if not autoregister:
                 raise ArchivistError("not registered: %s " % prepared_obj.original.object)
             self._archive[prepared_obj.history_id] = []
-        
+
         # log
         self.alog_indent = self.alog_indent[0:-2]
-        
+
         irefs = [ref.getAttribute() for ref in prepared_obj.clone.inside_refs]
         orefs = [ref.getAttribute() for ref in prepared_obj.clone.outside_refs]
-        irefs_prep = ['{hid:%s, vid:%s}' % (r.history_id, r.version_id) 
+        irefs_prep = ['{hid:%s, vid:%s}' % (r.history_id, r.version_id)
                       for r in irefs]
-        orefs_prep = ['{hid:%s, vid:%s}' % (r.history_id, r.version_id) 
+        orefs_prep = ['{hid:%s, vid:%s}' % (r.history_id, r.version_id)
                       for r in orefs]
         irefs = ', '.join(irefs_prep)
         orefs = ', '.join(orefs_prep)
@@ -177,12 +180,12 @@ class DummyArchivist(SimpleItem):
         if orefs:
             orefs = "orefs=(%s), " % orefs
         refs = irefs + orefs
-        self.log("%ssave    %s: hid=%s, %sisreg=%s, auto=%s"  
+        self.log("%ssave    %s: hid=%s, %sisreg=%s, auto=%s"
                     % (self.alog_indent,
-                       prepared_obj.original.object.getId(), 
-                       prepared_obj.history_id, 
+                       prepared_obj.original.object.getId(),
+                       prepared_obj.history_id,
                        refs,
-                       prepared_obj.is_registered, 
+                       prepared_obj.is_registered,
                        autoregister))
 
         # save in the format the data needs to be retrieved
@@ -193,32 +196,32 @@ class DummyArchivist(SimpleItem):
         }
         # storage simulation
         self._archive[prepared_obj.history_id].append(svdata)
-    
+
     def retrieve(self, obj=None, history_id=None, selector=None, preserve=()):
         obj, history_id = dereference(obj, history_id, self)
         if selector is None:
             selector = len(self._archive[history_id]) - 1  #HEAD
 
-        self.log("%sretrieve %s: hid=%s, selector=%s" 
+        self.log("%sretrieve %s: hid=%s, selector=%s"
                     % (self.alog_indent, obj.getId(), history_id, selector))
-        
+
         data = self._archive[history_id][selector]
         attr_handling_references = ['_objects']
         attr_handling_references.extend(data['clone'].object.objectIds())
         attr_handling_references.extend(obj.objectIds())
-        vdata = VersionData(data['clone'], 
+        vdata = VersionData(data['clone'],
                     [],
                     attr_handling_references,
                     data['referenced_data'],
                     data['metadata'])
 
         return deepCopy(vdata)
-    
+
     def getHistory(self, obj=None, history_id=None, preserve=()):
         obj, history_id = dereference(obj, history_id, self)
         return [deepCopy(obj) for obj in self._archive[history_id]]
 
-    def queryHistory(self, obj=None, history_id=None, 
+    def queryHistory(self, obj=None, history_id=None,
                      preserve=(), default=[]):
         try:
             history = self.getHistory(obj=obj, history_id=history_id, preserve=preserve)
@@ -240,7 +243,7 @@ class VersionAwareReference:
         self.history_id = None
         self.version_id = None
         self.info = info
-    
+
     def setReference(self, target_obj, remove_info=True):
         portal_hidhandler = getToolByName(target_obj, 'portal_historyidhandler')
         portal_archivist = getToolByName(target_obj, 'portal_archivist')
@@ -257,28 +260,28 @@ class DummyModifier(DummyBaseTool):
 
     def beforeSaveModifier(self, obj, clone):
         return {}, {}
-        
+
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         preserved = {}
         # just a dead simple test implementation
         for key in preserve:
             preserved[key] = key
         return [], [], preserved
-    
+
     def getReferencedAttributes(self, obj):
         return {}
-    
+
     def reattachReferencedAttributes(self, object, referenced_data):
         # nothing to do
-        return 
-    
+        return
+
     def getOnCloneModifiers(self, obj):
         return None
 
 class FolderishContentObjectModifier(DummyBaseTool):
     """This is a full fledged modifier.
     """
-    
+
     __implements__ = ()
     id = 'portal_modifier'
 
@@ -286,17 +289,17 @@ class FolderishContentObjectModifier(DummyBaseTool):
         # we declare the title beeing a big blob we don't want to be
         # pickled and unpickled by the archivist
         return {'title': obj.title}
-    
+
     def getOnCloneModifiers(self, obj):
         """Removes childrens ending with '_inside' or '_outside'.
-        
-        Just replaces object manager sub objects ending '_inside' or 
-        '_outside' by a uninitialzed 'IVersionAwareReference'. 
+
+        Just replaces object manager sub objects ending '_inside' or
+        '_outside' by a uninitialzed 'IVersionAwareReference'.
         All other childrens get versioned with the parent.
         """
         portal_archivist = getToolByName(obj, 'portal_archivist')
         VersionAwareReference = portal_archivist.classes.VersionAwareReference
-        
+
         # do not pickle the object managers subobjects
         refs = {}
         outside_refs = []
@@ -309,7 +312,7 @@ class FolderishContentObjectModifier(DummyBaseTool):
             elif name.endswith('_outside'):
                 outside_refs.append(sub)
                 refs[pyid] = True
-        
+
         # do not pickle the big blob attributes
         base_obj = aq_base(obj)
         for attr in self.getReferencedAttributes(obj).keys():
@@ -319,12 +322,12 @@ class FolderishContentObjectModifier(DummyBaseTool):
                 pass
             else:
                 refs[pyid] = False
-        
+
         def persistent_id(obj):
             if id(obj) in refs:
                 return id(obj)
             return None
-            
+
         def persistent_load(pid):
             if pid in refs:
                 if refs[pid]:
@@ -335,17 +338,17 @@ class FolderishContentObjectModifier(DummyBaseTool):
                     return None
             # should never reach this!
             assert False
-        
+
         return persistent_id, persistent_load, inside_refs, outside_refs, ''
-    
+
     def beforeSaveModifier(self, obj, clone):
         """Returns all unititialized 'IVersionAwareReference' objects.
-        
+
         This allways goes in conjunction with 'getOnCloneModifiers'.
         """
         portal_archivist = getToolByName(obj, 'portal_archivist')
         AttributeAdapter = portal_archivist.classes.AttributeAdapter
-        
+
         # just return adapters to the attributes that were replaced by
         # a uninitialzed 'IVersionAwareReference' object
         outside_refs = []
@@ -355,23 +358,23 @@ class FolderishContentObjectModifier(DummyBaseTool):
                 inside_refs.append(AttributeAdapter(clone, name))
             elif name.endswith('_outside'):
                 outside_refs.append(AttributeAdapter(clone, name))
-        
+
         return inside_refs, outside_refs
-        
+
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         preserved = {}
         # just a dead simple test implementation
         for key in preserve:
             preserved[key] = key
-        
+
         ref_names = self._getAttributeNamesHandlingSubObjects(obj)
         return [], ref_names, {}
-    
+
     def reattachReferencedAttributes(self, object, referenced_data):
         # just a dead simple test implementation
         for key, value in referenced_data.items():
             setattr(object, key, value)
-    
+
     def _getAttributeNamesHandlingSubObjects(self, obj):
         return ['_objects'].extend(obj.objectIds())
 
@@ -380,13 +383,13 @@ class DummyHistoryIdHandler(DummyBaseTool):
     id = 'portal_historyidhandler'
 
     UID_ATTRIBUTE_NAME = 'editions_uhid'
-    
+
     uhid_counter = 0
-    
+
     UniqueIdError = UniqueIdError
-    
+
     objectRegistry = {}
-    
+
     def register(self, obj):
         uhid = self.queryUid(obj)
         if uhid is None:
@@ -395,22 +398,22 @@ class DummyHistoryIdHandler(DummyBaseTool):
             setattr(obj, self.UID_ATTRIBUTE_NAME, uhid)
             self.objectRegistry[uhid] = obj
         return uhid
-   
+
     def queryUid(self, obj, default=None):
         return getattr(aq_base(obj), self.UID_ATTRIBUTE_NAME, default)
-        
+
     def getUid(self, obj):
         uid = self.queryUid(obj, default=None)
         if uid is None:
             raise UniqueIdError("'%s' has no unique id attached." % obj)
         return uid
-        
+
     def queryObject(self, uid, default=None):
         try:
             return self.objectRegistry[uid]
         except KeyError:
             return default
-        
+
 #    def setUid(self, obj, uid, check_uniqueness=True):
 #        setattr(obj, self.UID_ATTRIBUTE_NAME, uid)
 
@@ -459,15 +462,15 @@ class MemoryStorage(DummyBaseTool):
     def _save(self, history_id, object, referenced_data={}, metadata=None):
         histories = self._histories
         cloned_referenced_data = {}
-        
+
         for key, ref in referenced_data.items():
             # a real storage may treat IStreamableReference obj differently
             if IStreamableReference.isImplementedBy(ref):
                 cloned_referenced_data[key] = deepCopy(ref.getObject())
             else:
                 cloned_referenced_data[key] = deepCopy(ref)
-        vdata = StorageVersionData(object=object, 
-                                   referenced_data=cloned_referenced_data, 
+        vdata = StorageVersionData(object=object,
+                                   referenced_data=cloned_referenced_data,
                                    metadata=metadata)
         if history_id in histories.keys():
             histories[history_id].append(vdata)
@@ -475,7 +478,7 @@ class MemoryStorage(DummyBaseTool):
             histories[history_id] = [vdata]
 
         return len(histories[history_id]) - 1
-    
+
     def retrieve(self, history_id, selector=None):
         vdata = self.getHistory(history_id)[selector]
         vdata.referenced_data = deepcopy(vdata.referenced_data)
