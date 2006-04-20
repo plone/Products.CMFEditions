@@ -552,7 +552,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """reindex AT reference data, we need to reindex
         reference_catalog too"""
 
-        if IReferenceable.isImplementedBy(obj):
+        if IReferenceable.isImplementedBy(obj) and hasattr(obj, REFERENCES_CONTAINER_NAME):
             # Delete refs if their target doesn't exists anymore
             ref_folder = getattr(obj, REFERENCES_CONTAINER_NAME)
             uid_catalog = getToolByName(self, 'uid_catalog')

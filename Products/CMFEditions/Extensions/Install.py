@@ -220,8 +220,16 @@ def add_versioning_policies(self, write):
 
 
 def uninstall(self, tools=tools, reinstall=False):
+    id = 'versioning'
     portal = getToolByName(self, 'portal_url').getPortalObject()
     at = getToolByName(portal, 'portal_actions')
+    
+    #remove policies
+    rt = getToolByName(portal, 'portal_repository')
+    p_defs = rt._policy_defs
+    for policy_id in list(p_defs.keys()):
+	    rt.removePolicy(policy_id)
+   
     at.deleteActionProvider('portal_repository')
     # rename our uid tool back to the original name if the new tool was
     # removed
