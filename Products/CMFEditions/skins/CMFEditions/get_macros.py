@@ -5,10 +5,11 @@
 ##bind script=script
 ##bind subpath=traverse_subpath
 ##title=
-##parameters=version_id
+##parameters=vdata
 
-
-type_info = context.portal_types.getTypeInfo(context)
+# We need to get the view appropriate for the object in the history, not
+# the current object, which may differ due to some migration.
+type_info = context.portal_types.getTypeInfo(vdata.object)
 action = type_info.getActionById('view')
 
 version_view = getattr(context, action, None)

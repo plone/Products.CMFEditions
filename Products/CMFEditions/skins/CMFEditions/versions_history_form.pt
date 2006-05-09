@@ -145,7 +145,7 @@
          tal:define="version_id python:request.get('version_id', None);"
          tal:condition="version_id">
       <tal:block define="vdata python:pr.retrieve(here,version_id);
-                         version_view_macro python: here.get_macros(version_id);"
+                         version_view_macro python: here.get_macros(vdata);"
 >
 
         <h1>Version <b tal:content="version_id">0</b></h1>
