@@ -36,6 +36,10 @@ from Interface import Interface, Attribute
 
 class IDeletionSupport(Interface):
     """Storage Deletion Support
+    
+    See the notes about the ``retrieve`` and ``getHistory`` methods 
+    of ``IStorage`` and the ``__len__``, ``__getattr__`` and 
+    ``__iter__`` methods of ``IHistory``.
     """
     
     def delete(history_id, version, metadata={}):
@@ -54,10 +58,21 @@ class IDeletionSupport(Interface):
         
         Reinterpretation of ``retrieve`` and ``getHistory``:
         
-        In constrast the normal ``retrieve`` now has to return a 
-        substitute if an ``IDeletionPolicy`` was found. As well when a 
-        specific version is read from the history returned from 
-        ``getHistory``.
+        In constrast the "normal" ``retrieve`` and ``__getattr__`` now 
+        has to return a substitute if an ``IDeletionPolicy`` was found. 
+        As well when a specific version is read from the history returned 
+        from ``getHistory``.
+        """
+
+    def getEffectiveHistoriesLength(history_id):
+        """Return the Length of the History Ignoring Deleted Versions
+        
+        In contrast the ``__len__`` method of the history returned still 
+        has to return the length of the history *including* the deleted
+        version (because upper layers may try to count from the end).
+        
+        ``__iter__`` from ``IHistory`` shall always return the next non
+        deleted version of the resources history.
         """
 
 
