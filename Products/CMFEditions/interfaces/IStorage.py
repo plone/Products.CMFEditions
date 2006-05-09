@@ -58,8 +58,8 @@ class IStorage(Interface):
         
         May veto the registering proces by raising a 'StorageError' 
         exception. No action is performed on repeated registering.
-
-	Returns the value of the newest version(selector).
+        
+        Returns the value of the newest version(selector).
         """
     
     def save(history_id, object, referenced_data={}, metadata={}):
@@ -78,8 +78,8 @@ class IStorage(Interface):
         
         'metadata' must be a (nested) dictionary. If a 'comment' key exists
         the implementation may assume it is a human readable string.
-
-	Returns the value of the newest version(selector).
+        
+        Returns the value of the newest version(selector).
         """
 
     def retrieve(history_id, selector):
