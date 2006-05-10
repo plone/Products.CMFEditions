@@ -26,6 +26,7 @@ __version__ = "$Revision: 1.18 $"
 
 import traceback
 import sys
+import time
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
 
@@ -47,6 +48,7 @@ from Products.ZopeVersionControl.Utility import VersionControlError
 from Products.ZopeVersionControl.EventLog import LogEntry
 
 from Products.CMFEditions.interfaces.IStorage import IStorage
+from Products.CMFEditions.interfaces.IPurgeSupport import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import IHistory
 from Products.CMFEditions.interfaces.IStorage import IVersionData
 from Products.CMFEditions.interfaces.IStorage import StorageError
@@ -72,6 +74,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     __implements__ = (
         SimpleItem.__implements__,
         IStorage,
+        IPurgeSupport,
     )
         
     id = 'portal_historiesstorage'
@@ -85,6 +88,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     
     
     _history_id_mapping = None
+    _history_id_purgeCounters = None
     zvc_repo = None
     
     security = ClassSecurityInfo()
@@ -102,6 +106,19 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         if self._history_id_mapping is None:
             self._history_id_mapping = OOBTree()
         return self._history_id_mapping
+
+    def _getHistoryIdPurgeCounters(self):
+        if self._history_id_purgeCounters is None:
+            self._history_id_purgeCounters = OOBTree()
+        return self._history_id_purgeCounters
+
+    def _incrementPurgeCount(self, history_id):
+        purgeCounters = self._getHistoryIdPurgeCounters()
+        purgeCounter = purgeCounters.get(history_id, 0)
+        purgeCounters[history_id] = purgeCounter + 1
+
+    def _getPurgeCount(self, history_id):
+        return self._getHistoryIdPurgeCounters().get(history_id, 0)
 
     def _getVCInfo(self, history_id):
         """Returns the ZVC 'vc_info' object.
@@ -143,9 +160,30 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         
         return vc_info
     
-    def _prepareMetadata(self, metadata):
+    def _retrieveLogEntry(self, zvc_histid, zvc_selector):
+        """Retrieves the metadata from ZVCs log
+        
+        Unfortunately this may get costy with long histories.
+        """
+        zvcrepo = self._getZVCRepo()
+        log = zvcrepo.getVersionHistory(zvc_histid).getLogEntries()
+        checkin = LogEntry.ACTION_CHECKIN
+        entries = [e for e in log if e.version_id==zvc_selector and e.action==checkin]
+        
+        # just make a log entry if something wrong happened
+        if len(entries) != 1:
+            zLOG.LOG("CMFEditions ASSERT:", zLOG.INFO,
+                     "Uups, an object has been stored %s times with the same "
+                     "history '%s'!!!" % (len(entry), zvc_selector))
+        
+        return entries[0]
+
+    def _decodeZVCMessage(self, message):
+        return loads(message.split('\x00\n', 1)[1])
+
+    def _encodeMetadata(self, metadata):
         # metadata format is:
-        #    - first line: comment or empty comment
+        #    - first line with traling \x00: comment or empty comment
         #    - then: pickled metadata (incl. comment)
         try:
             comment = metadata['sys_metadata']['comment']
@@ -153,10 +191,6 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
             comment = ''
         return '\x00\n'.join((comment, dumps(metadata, HIGHEST_PROTOCOL)))
 
-    def _recallMetadata(self, message):
-        # we know the comment is still there in the pickled metadata
-        return loads(message.split('\x00\n', 1)[1])
-    
     def _getZVCHistoryId(self, history_id):
         """Returns the ZVC history id.
         """
@@ -169,10 +203,9 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         history = zvcrepo.getVersionHistory(zvc_histid)
         return len(history.getVersionIds())
     
-    def _retrieve(self, zvc_histid, selector=None):
-        """Private method returning a version by the ZVC history_id.
+    def _getZVCSelector(self, zvc_histid, selector):
+        """Converts the CMFEditions selector into a ZVC selector
         """
-        # ----- check selector
         if selector is None:
             # None means HEAD, the selector for the head is the histories 
             # length (may change with branches)
@@ -183,38 +216,32 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
             selector = int(selector) + 1
         
         # ZVC expects version selectors being string numbers
-        selector = str(selector)
+        return str(selector)
+    
+    def _retrieve(self, zvc_histid, selector=None):
+        """Private method returning a version by the ZVC history_id.
+        """
+        zvc_selector = self._getZVCSelector(zvc_histid, selector)
         
-        # ----- retrieve the object
+        # retrieve the object
         zvcrepo = self._getZVCRepo()
         try:
-            zvc_obj = zvcrepo.getVersionOfResource(zvc_histid, selector)
+            zvc_obj = zvcrepo.getVersionOfResource(zvc_histid, zvc_selector)
         except VersionControlError:
             raise StorageRetrieveError(
                 "Retrieving of object with history id '%s' failed. "
                 "Version '%s' does not exist. "
-                % (zvc_histid, selector))
+                % (zvc_histid, zvc_selector))
         
-        # just store ZVC info from the object
+        # internal bookkeeping: just store ZVC info from the object
         self._saveZVCInfo(zvc_obj, zvc_histid)
         
-        # ----- retrieve metadata
-        # Get the right message from the ZVC log. Unfortunately this may get 
-        # costly with long histories.
-        # XXX has to be optimized somehow (by saving metadata separately?)
-        log = zvcrepo.getVersionHistory(zvc_histid).getLogEntries()
-        checkin = LogEntry.ACTION_CHECKIN
-        entries = [e for e in log if e.version_id==selector and e.action==checkin]
-        
-        # just make a log entry if something wrong happened
-        if len(entries) != 1:
-            zLOG.LOG("CMFEditions ASSERT:", zLOG.INFO,
-                     "Uups, an object has been stored %s times with the same "
-                     "history '%s'!!!" % (len(entry), selector))
+        # retrieve metadata
+        logEntry = self._retrieveLogEntry(zvc_histid, zvc_selector)
+        metadata = self._decodeZVCMessage(logEntry.message)
         
         object = zvc_obj.getWrappedObject()
         referenced_data = zvc_obj.getReferencedData()
-        metadata = self._recallMetadata(entries[0].message)
         return VersionData(object, referenced_data, metadata)
 
     def _applyOrCheckin(self, method_name, vc_info, history_id, 
@@ -223,14 +250,25 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         """
         zvc_repo = self._getZVCRepo()
         zvc_obj = ZVCAwareWrapper(object, referenced_data, metadata, vc_info)
-        metadata = self._prepareMetadata(metadata)
+        message = self._encodeMetadata(metadata)
         
         # call applyVersionControl or checkinResource (or any other)
-        getattr(zvc_repo, method_name)(zvc_obj, metadata)
+        getattr(zvc_repo, method_name)(zvc_obj, message)
         
         self._saveZVCInfo(zvc_obj, history_id)
         zvc_histid = self._getZVCHistoryId(history_id)
         return self._getHistoriesLength(zvc_histid) - 1
+
+    def _prepareSysMetadata(self, comment):
+        return {
+            # comment is system metadata
+            'comment': comment,
+            # setting a timestamp here set the same timestamp at all
+            # recursively saved objects
+            'timestamp': int(time.time()),
+            # ZVC needs a physical path (may be root)
+            'physicalPath': (),
+        }
 
 
     # -------------------------------------------------------------------
@@ -301,6 +339,66 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
 #        return vdata.object.object.ModificationDate()
         return vdata.object.object.modified()
 
+    # -------------------------------------------------------------------
+    # methods implementing IPurgeSupport
+    # -------------------------------------------------------------------
+
+    security.declarePrivate('purge') # XXX not private, by permission
+    def purge(self, history_id, selector, comment="", metadata={}):
+        """See ``IPurgeSupport``
+        """
+        zvcrepo = self._getZVCRepo()
+        zvc_histid = self._getZVCHistoryId(history_id)
+        zvc_selector = self._getZVCSelector(zvc_histid, selector)
+        
+        # Get a reference to the version stored in the ZVC history storage
+        #
+        # Implementation Note:
+        #
+        # ZVCs ``getVersionOfResource`` is quite more complex. But as we 
+        # do not use labeling and branches it is not a problem to get the
+        # version in the following simple way.
+        history = zvcrepo.getVersionHistory(zvc_histid)
+        version = history.getVersionById(zvc_selector)
+        
+        data = version._data
+        if type(data.getWrappedObject()) is not Removed:
+            # increment the purge count to be able to deliver the 
+            # effective length of the history fast
+            self._incrementPurgeCount(history_id)
+            
+            # prepare replacement for the deleted object and metadata
+            metadata = {
+                "app_metadata": metadata,
+                "sys_metadata": self._prepareSysMetadata(comment),
+            }
+            removedInfo = Removed("purged", metadata)
+            
+            # digging into ZVC internals: remove the stored object
+            version._data = ZVCAwareWrapper(removedInfo, None, metadata)
+            
+            # digging into ZVC internals: replace the message
+            logEntry = self._retrieveLogEntry(zvc_histid, zvc_selector)
+            logEntry.message = self._encodeMetadata(metadata)
+
+    security.declarePrivate('retrieveUnsubstituted')
+    def retrieveUnsubstituted(self, history_id, selector=None):
+        """See ``IPurgeSupport``
+        """
+        zvc_histid = self._getZVCHistoryId(history_id)
+        return self._retrieve(zvc_histid, selector)
+
+    security.declarePrivate('getLength')
+    def getLength(self, history_id, ignorePurged=True):
+        """See ``IPurgeSupport``
+        """
+        zvc_histid = self._getZVCHistoryId(history_id)
+        length = self._getHistoriesLength(zvc_histid)
+        if ignorePurged:
+            length -= self._getPurgeCount(history_id)
+        return length
+
+
 class ZVCAwareWrapper(Persistent):
     """ZVC assumes the stored object has a getPhysicalPath method.
     
@@ -322,6 +420,17 @@ class ZVCAwareWrapper(Persistent):
         
     def getPhysicalPath(self):
         return self._physicalPath
+
+
+class Removed(Persistent):
+    """Indicates that removement of data
+    """
+    
+    def __init__(self, reason, metadata):
+        """Store Removed Info
+        """
+        self.reason = reason
+        self.metadata = metadata
 
 
 class VersionData:
@@ -349,6 +458,8 @@ class LazyHistory:
         return self._storage._getHistoriesLength(self._zvc_histid)
 
     def __getitem__(self, selector):
+        # XXX check bug: ``selector`` is CMFEditions selector but has 
+        #     to be a ZVC selector.
         return self._storage._retrieve(self._zvc_histid, selector)
         
     def __iter__(self):

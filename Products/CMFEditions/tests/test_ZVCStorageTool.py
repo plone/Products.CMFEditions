@@ -39,6 +39,7 @@ from OFS.ObjectManager import ObjectManager
 
 from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IStorage import IStorage
+from Products.CMFEditions.interfaces.IPurgeSupport import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
 from Products.CMFEditions import UniqueIdHandlerTool
@@ -105,6 +106,7 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
 
         # test interface conformance
         verifyObject(IStorage, portal_storage)
+        verifyObject(IPurgeSupport, portal_storage)
 
     def test01_saveAfterRegisteringDoesNotRaiseException(self):
         portal_storage = self.portal.portal_historiesstorage
@@ -133,6 +135,12 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         portal_storage.save(1, ObjectData(obj2), metadata=self.buildMetadata('saved v2'))
         
         retrieved_obj = portal_storage.retrieve(history_id=1, selector=0)
+        self.assertEqual(retrieved_obj.object.object.text, 'v1 of text')
+        self.assertEqual(self.getComment(retrieved_obj.metadata), 'saved v1')
+        
+        # the same with ``retrieveUnsubstituted``
+        retrieved_obj = portal_storage.retrieveUnsubstituted(history_id=1, 
+                                                             selector=0)
         self.assertEqual(retrieved_obj.object.object.text, 'v1 of text')
         self.assertEqual(self.getComment(retrieved_obj.metadata), 'saved v1')
         
@@ -224,6 +232,54 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         self.assertEqual(v2_modified, portal_storage.getModificationDate(history_id=1, selector=v2))
         self.assertEqual(v1_modified, portal_storage.getModificationDate(history_id=1, selector=v1))
 
+    def test08_lengthAfterHavingPurgedAVersion(self):
+        portal_storage = self.portal.portal_historiesstorage
+        
+        obj1 = Dummy()
+        obj1.text = 'v1 of text'
+        portal_storage.register(1, ObjectData(obj1), metadata=self.buildMetadata('saved v1'))
+        
+        obj2 = Dummy()
+        obj2.text = 'v2 of text'
+        portal_storage.save(1, ObjectData(obj2), metadata=self.buildMetadata('saved v2'))
+        
+        obj3 = Dummy()
+        obj3.text = 'v3 of text'
+        portal_storage.save(1, ObjectData(obj3), metadata=self.buildMetadata('saved v3'))
+        
+        # purge a version
+        portal_storage.purge(1, 1, comment='purged v2')
+        
+        lenWith = portal_storage.getLength(1, ignorePurged=False)
+        self.assertEqual(lenWith, 3)
+        lenWithout = portal_storage.getLength(1, ignorePurged=True)
+        self.assertEqual(lenWithout, 2)
+        
+        # purge again the same version (should not change the purge count)
+        portal_storage.purge(1, 1, comment="purged v2")
+        
+        lenWith = portal_storage.getLength(1, ignorePurged=False)
+        self.assertEqual(lenWith, 3)
+        lenWithout = portal_storage.getLength(1, ignorePurged=True)
+        self.assertEqual(lenWithout, 2)
+
+        # the same with ``retrieveUnsubstituted``
+        retrieved_obj = portal_storage.retrieveUnsubstituted(history_id=1, 
+                                                             selector=1)
+        self.assertEqual(retrieved_obj.object.reason, "purged")
+        self.assertEqual(self.getComment(retrieved_obj.metadata), "purged v2")
+        
+
+    def _test09_xxx(self):
+        history = portal_storage.getHistory(history_id=1)
+        self.assertEqual(len(history), 2)
+        vdata = history[0]
+        self.assertEqual(vdata.object.object.text, 'v1 of text')
+        self.assertEqual(self.getComment(vdata.metadata), 'saved v%s' % counter)
+        vdata = history[1]
+        self.assertEqual(vdata.object.object.text, 'v3 of text')
+        self.assertEqual(self.getComment(vdata.metadata), 'saved v%s' % counter)
+        
 
 class TestMemoryStorage(TestZVCStorageTool):
 
@@ -238,5 +294,5 @@ else:
     def test_suite():
         suite = TestSuite()
         suite.addTest(makeSuite(TestZVCStorageTool))
-	suite.addTest(makeSuite(TestMemoryStorage))
+        suite.addTest(makeSuite(TestMemoryStorage))
         return suite
