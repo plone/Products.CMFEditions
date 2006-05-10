@@ -113,3 +113,13 @@ class IPurgePolicy(Interface):
         This method gets called before the current version get saved. 
         Signalize not to save the current version by returning ``True``.
         """
+    
+    def retrieveSubstitute(history_id, selector):
+        """Return a selected version of an object or a substitute
+        
+        Called by the storage if the object to be retrieved was purged.
+        Implement the policy in case a client tries to retrieve a purged
+        version.
+        
+        Return a 'IVersionData' object.
+        """
