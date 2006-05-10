@@ -59,7 +59,7 @@ class IPurgeSupport(Interface):
     ``__iter__`` methods of ``IHistory``.
     """
     
-    def purge(history_id, selector, metadata={}):
+    def purge(history_id, selector, comment="", metadata={}):
         """Purge a Version from a Resources History
         
         Purge the given version from the given history. The metadata
@@ -79,7 +79,7 @@ class IPurgeSupport(Interface):
         now has to return a substitute if an ``IPurgePolicy`` was found. 
         """
 
-    def getLength(history_id, countPurged=False):
+    def getLength(history_id, ignoretPurged=True):
         """Return the Length of the History
         
         Return the length of the resources history. Either counting
