@@ -12,6 +12,7 @@ from Products.CMFEditions.ArchivistTool import VersionData
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IStorage import IStreamableReference
 from Products.CMFEditions.interfaces.IStorage import IStorage
+from Products.CMFEditions.interfaces.IPurgeSupport import IPurgeSupport
 from Products.CMFEditions.interfaces.IPurgeSupport import IPurgePolicy
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
@@ -424,6 +425,16 @@ class StorageVersionData:
         self.referenced_data = referenced_data
         self.metadata = metadata
 
+class Removed:
+    """Indicates that removement of data
+    """
+    
+    def __init__(self, reason, metadata):
+        """Store Removed Info
+        """
+        self.reason = reason
+        self.metadata = metadata
+
 class HistoryList(types.ListType):
     """
     """
@@ -438,7 +449,7 @@ class HistoryList(types.ListType):
 
 class MemoryStorage(DummyBaseTool):
 
-    __implements__ = IStorage
+    __implements__ = (IStorage, IPurgeSupport)
     id = 'portal_historiesstorage'
 
 
@@ -470,7 +481,7 @@ class MemoryStorage(DummyBaseTool):
                 cloned_referenced_data[key] = deepCopy(ref.getObject())
             else:
                 cloned_referenced_data[key] = deepCopy(ref)
-        vdata = StorageVersionData(object=object,
+        vdata = StorageVersionData(object=deepCopy(object),
                                    referenced_data=cloned_referenced_data,
                                    metadata=metadata)
         if history_id in histories.keys():
@@ -481,6 +492,17 @@ class MemoryStorage(DummyBaseTool):
         return len(histories[history_id]) - 1
 
     def retrieve(self, history_id, selector=None):
+        vdata = self._retrieve(history_id, selector)
+        if isinstance(vdata.object, Removed):
+            # delegate retrieving to purge policy if one is available
+            # if none is available just return "the removed object"
+            policy = getToolByName(self, 'portal_purgepolicy', None)
+            if policy is not None:
+                vdata = policy.retrieveSubstitute(history_id, selector, vdata)
+        return vdata
+
+
+    def _retrieve(self, history_id, selector):
         vdata = self.getHistory(history_id)[selector]
         vdata.referenced_data = deepcopy(vdata.referenced_data)
         return vdata
@@ -510,6 +532,47 @@ class MemoryStorage(DummyBaseTool):
 #        return vdata.object.object.ModificationDate()
         return vdata.object.object.modified()
 
+    def purge(self, history_id, selector, comment="", metadata={}):
+        """See ``IPurgeSupport``
+        """
+        histories = self._histories
+        history = histories[history_id]
+        vdata = history[selector]
+        
+        if not isinstance(vdata.object, Removed):
+            # prepare replacement for the deleted object and metadata
+            metadata = {
+                "app_metadata": metadata,
+                "sys_metadata": {"comment": comment},
+            }
+            removedInfo = Removed("purged", metadata)
+            
+            # digging into ZVC internals: remove the stored object
+            history[selector] = StorageVersionData(removedInfo, None, metadata)
+
+    def retrieveUnsubstituted(self, history_id, selector=None):
+        """See ``IPurgeSupport``
+        """
+        vdata = self._retrieve(history_id, selector)
+        if isinstance(vdata.object, Removed):
+            return True, vdata
+        else:
+            return False, vdata
+
+    def getLength(self, history_id, ignorePurged=True):
+        """See ``IPurgeSupport``
+        """
+        histories = self._histories
+        history = histories[history_id]
+        if not ignorePurged:
+            return len(history)
+        
+        length = 0
+        for vdata in history:
+            if not isinstance(vdata.object, Removed):
+                length += 1
+        
+        return length
 
 
 class DummyPurgePolicy(DummyBaseTool):

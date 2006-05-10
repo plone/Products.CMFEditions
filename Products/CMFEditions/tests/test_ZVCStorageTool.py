@@ -79,23 +79,18 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
+        # add the Editions Tool (this way we test the 'Install' script!)
         installProduct(self.portal, 'CMFEditions')
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
-
-        # add the Editions Tool (this way we test the 'Install' script!)
-        tools = (
-            UniqueIdHandlerTool.UniqueIdHandlerTool,
-            ModifierRegistryTool.ModifierRegistryTool,
-            ArchivistTool.ArchivistTool,
-            CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool,
-        )
+        
+        # eventually install another storage 
+        self.installStorageTool()
 
     def installStorageTool(self):
-        """Install your storage tool at this point"""
-        CMFEditions = self.portal.manage_addProduct['CMFEditions']
-        CMFEditions.manage_addTool(ZVCStorageTool.ZVCStorageTool.meta_type)
+        # No op: the storage tool is already installed by installProduct
+        pass
 
     def installPurgePolicyTool(self):
         self._setDummyTool(DummyPurgePolicy())
@@ -337,6 +332,7 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
 class TestMemoryStorage(TestZVCStorageTool):
 
     def installStorageTool(self):
+        # install the memory storage
         tool = MemoryStorage()
         setattr(self.portal, tool.getId(), tool)
 
