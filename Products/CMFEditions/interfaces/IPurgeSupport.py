@@ -59,7 +59,7 @@ class IPurgeSupport(Interface):
     ``__iter__`` methods of ``IHistory``.
     """
     
-    def purge(history_id, version, metadata={}):
+    def purge(history_id, selector, metadata={}):
         """Purge a Version from a Resources History
         
         Purge the given version from the given history. The metadata
