@@ -8,7 +8,8 @@ Purge Support Implementation
 ToDo
 ----
 
-- Implement save policy support (testing with dummy purge policy)
+- Implement save policy support allowing automatic deleting of version 
+  at save time(testing with dummy purge policy)
 - Write tests for IHistory (__iter__, __getattr__, __len__)
 - Check what happens if __len__ would only return the length of not 
   purged versions. Decide what to do.
@@ -17,7 +18,8 @@ ToDo
 - Add reverse iterator for history (eventually change default behaviour)
 - Do UI Tests
 
-- What shall getModificationDate return? Answer and decide what to do.
+- What shall getModificationDate return in case of purged versions? 
+  Answer and decide what to do.
 - Some complex integration test with deleted version. Check what fails 
   and decide what to do.
 - Fix outstanding failing tests.
