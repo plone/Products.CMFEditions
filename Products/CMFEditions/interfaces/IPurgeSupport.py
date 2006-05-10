@@ -67,7 +67,7 @@ class IPurgeSupport(Interface):
         the purging.
         """
 
-    def retrieveUnsubstituted(history_id, selector):
+    def retrieveUnsubstituted(history_id, selector=None):
         """Return a Version of the Resource with the Given History Id
         
         Return a ``IVersionData`` object wich may contain a purged 
