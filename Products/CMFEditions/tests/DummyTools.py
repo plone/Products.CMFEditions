@@ -12,6 +12,7 @@ from Products.CMFEditions.ArchivistTool import VersionData
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IStorage import IStreamableReference
 from Products.CMFEditions.interfaces.IStorage import IStorage
+from Products.CMFEditions.interfaces.IPurgeSupport import IPurgePolicy
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFCore.utils import getToolByName
@@ -29,7 +30,7 @@ class Dummy(SimpleItem, DefaultDublinCoreImpl):
 class UniqueIdError(Exception):
     pass
 
-class DummyBaseTool:
+class DummyBaseTool(SimpleItem):
     def getId(self):
         return self.id
 
@@ -509,3 +510,24 @@ class MemoryStorage(DummyBaseTool):
 #        return vdata.object.object.ModificationDate()
         return vdata.object.object.modified()
 
+
+
+class DummyPurgePolicy(DummyBaseTool):
+    """Dummy Purge Policy
+    """
+    __implements__ = IPurgePolicy
+    id = 'portal_purgepolicy'
+
+    def purge(self, history_id, metadata={}):
+        pass
+
+    def retrieveSubstitute(self, history_id, selector, default=None):
+        """Retrives the next older version
+        """
+        storage = getToolByName(self, 'portal_historiesstorage')
+        while selector:
+            selector -= 1
+            removed, data = storage.retrieveUnsubstituted(history_id, selector)
+            if not removed:
+                return data
+        return default

@@ -70,8 +70,9 @@ class IPurgeSupport(Interface):
     def retrieveUnsubstituted(history_id, selector=None):
         """Return a Version of the Resource with the Given History Id
         
-        Return a ``IVersionData`` object wich may contain a purged 
-        version of a resource.
+        Return a tuple of ``(bool, IVersionData)``. The bool signalizes if 
+        the returned version got removed (True) and the ``IVersionData`` 
+        object contains the version or information about the removement.
         
         Reinterpretation of ``retrieve`` and ``getHistory`` is necessary:
         
@@ -113,7 +114,7 @@ class IPurgePolicy(Interface):
         This method gets called before the current version get saved. 
         Signalize not to save the current version by returning ``True``.
         """
-    
+
     def retrieveSubstitute(history_id, selector):
         """Return a selected version of an object or a substitute
         

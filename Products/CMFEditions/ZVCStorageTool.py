@@ -320,10 +320,17 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     security.declarePrivate('retrieve')
     def retrieve(self, history_id, selector=None):
-        """See IStorage.
+        """See ``IStorage`` and Comments in ``IPurgePolicy``
         """
         zvc_histid = self._getZVCHistoryId(history_id)
-        return self._retrieve(zvc_histid, selector)
+        data = self._retrieve(zvc_histid, selector)
+        if type(data.object) is Removed:
+            # delegate retrieving to purge policy if one is available
+            # if none is available just return "the removed object"
+            policy = getToolByName(self, 'portal_purgepolicy', None)
+            if policy is not None:
+                data = policy.retrieveSubstitute(history_id, selector, data)
+        return data
     
     security.declarePrivate('getHistory')
     def getHistory(self, history_id):
@@ -343,7 +350,8 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     # methods implementing IPurgeSupport
     # -------------------------------------------------------------------
 
-    security.declarePrivate('purge') # XXX not private, by permission
+    # XXX check permission: shall not be private
+    security.declarePrivate('purge')
     def purge(self, history_id, selector, comment="", metadata={}):
         """See ``IPurgeSupport``
         """
@@ -386,8 +394,13 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         """See ``IPurgeSupport``
         """
         zvc_histid = self._getZVCHistoryId(history_id)
-        return self._retrieve(zvc_histid, selector)
+        data = self._retrieve(zvc_histid, selector)
+        if type(data.object) is Removed:
+            return True, data
+        else:
+            return False, data
 
+    # XXX check permission: shall not be private
     security.declarePrivate('getLength')
     def getLength(self, history_id, ignorePurged=True):
         """See ``IPurgeSupport``

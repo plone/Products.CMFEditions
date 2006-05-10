@@ -55,6 +55,8 @@ from DummyTools import notifyModified
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions.tests import installProduct
 
+from DummyTools import DummyPurgePolicy
+
 PloneTestCase.setupPloneSite()
 ZopeTestCase.installProduct('CMFUid')
 ZopeTestCase.installProduct('CMFEditions')
@@ -94,6 +96,12 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         """Install your storage tool at this point"""
         CMFEditions = self.portal.manage_addProduct['CMFEditions']
         CMFEditions.manage_addTool(ZVCStorageTool.ZVCStorageTool.meta_type)
+
+    def installPurgePolicyTool(self):
+        self._setDummyTool(DummyPurgePolicy())
+
+    def _setDummyTool(self, tool):
+        setattr(self.portal, tool.getId(), tool)
 
     def buildMetadata(self, comment):
         return {'sys_metadata': {'comment': comment}}
@@ -139,8 +147,9 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         self.assertEqual(self.getComment(retrieved_obj.metadata), 'saved v1')
         
         # the same with ``retrieveUnsubstituted``
-        retrieved_obj = portal_storage.retrieveUnsubstituted(history_id=1, 
-                                                             selector=0)
+        removed, retrieved_obj = \
+            portal_storage.retrieveUnsubstituted(history_id=1, selector=0)
+        self.failIf(removed)
         self.assertEqual(retrieved_obj.object.object.text, 'v1 of text')
         self.assertEqual(self.getComment(retrieved_obj.metadata), 'saved v1')
         
@@ -232,7 +241,7 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         self.assertEqual(v2_modified, portal_storage.getModificationDate(history_id=1, selector=v2))
         self.assertEqual(v1_modified, portal_storage.getModificationDate(history_id=1, selector=v1))
 
-    def test08_lengthAfterHavingPurgedAVersion(self):
+    def _setupMinimalHistory(self):
         portal_storage = self.portal.portal_historiesstorage
         
         obj1 = Dummy()
@@ -246,40 +255,84 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         obj3 = Dummy()
         obj3.text = 'v3 of text'
         portal_storage.save(1, ObjectData(obj3), metadata=self.buildMetadata('saved v3'))
+
+        obj4 = Dummy()
+        obj4.text = 'v4 of text'
+        portal_storage.save(1, ObjectData(obj4), metadata=self.buildMetadata('saved v4'))
+
+    def test08_lengthAfterHavingPurgedAVersion(self):
+        self._setupMinimalHistory()
+        portal_storage = self.portal.portal_historiesstorage
         
         # purge a version
         portal_storage.purge(1, 1, comment='purged v2')
         
+        # check getLength
         lenWith = portal_storage.getLength(1, ignorePurged=False)
-        self.assertEqual(lenWith, 3)
+        self.assertEqual(lenWith, 4)
         lenWithout = portal_storage.getLength(1, ignorePurged=True)
-        self.assertEqual(lenWithout, 2)
+        self.assertEqual(lenWithout, 3)
         
         # purge again the same version (should not change the purge count)
         portal_storage.purge(1, 1, comment="purged v2")
         
+        # check again getLength (unchanged behaviour)
         lenWith = portal_storage.getLength(1, ignorePurged=False)
-        self.assertEqual(lenWith, 3)
+        self.assertEqual(lenWith, 4)
         lenWithout = portal_storage.getLength(1, ignorePurged=True)
-        self.assertEqual(lenWithout, 2)
+        self.assertEqual(lenWithout, 3)
 
-        # the same with ``retrieveUnsubstituted``
-        retrieved_obj = portal_storage.retrieveUnsubstituted(history_id=1, 
-                                                             selector=1)
+    def test09_retrievePurgedVersionsNoPolicyInstalled(self):
+        self._setupMinimalHistory()
+        portal_storage = self.portal.portal_historiesstorage
+        
+        # purge a version
+        portal_storage.purge(1, 2, comment='purged v3')
+        
+        # ``retrieve`` returns the removed info because there is no purge 
+        # policy installed
+        retrieved_obj = portal_storage.retrieve(history_id=1, selector=2)
+        self.assertEqual(retrieved_obj.object.reason, "purged")
+        self.assertEqual(self.getComment(retrieved_obj.metadata), "purged v3")
+        
+        # ``retrieveUnsubstituted`` allways returns the removed info
+        removed, retrieved_obj = \
+            portal_storage.retrieveUnsubstituted(history_id=1, selector=2)
+        self.failUnless(removed)
+        self.assertEqual(retrieved_obj.object.reason, "purged")
+        self.assertEqual(self.getComment(retrieved_obj.metadata), "purged v3")
+
+    def test10_retrievePurgedVersionsWithPolicyInstalled(self):
+        self._setupMinimalHistory()
+        portal_storage = self.portal.portal_historiesstorage
+        
+        # install the purge policy that returns the next older not removed
+        self.installPurgePolicyTool()
+        
+        # purge two versions
+        portal_storage.purge(1, 1, comment='purged v2')
+        portal_storage.purge(1, 2, comment='purged v3')
+        
+        # ``retrieve`` returns the next older object 
+        retrieved_obj = portal_storage.retrieve(history_id=1, selector=1)
+        self.assertEqual(retrieved_obj.object.object.text, 'v1 of text')
+        self.assertEqual(self.getComment(retrieved_obj.metadata), 'saved v1')
+        retrieved_obj = portal_storage.retrieve(history_id=1, selector=2)
+        self.assertEqual(retrieved_obj.object.object.text, 'v1 of text')
+        self.assertEqual(self.getComment(retrieved_obj.metadata), 'saved v1')
+        
+        # ``retrieveUnsubstituted`` allways returns the removed info
+        removed, retrieved_obj = \
+            portal_storage.retrieveUnsubstituted(history_id=1, selector=1)
+        self.failUnless(removed)
         self.assertEqual(retrieved_obj.object.reason, "purged")
         self.assertEqual(self.getComment(retrieved_obj.metadata), "purged v2")
-        
+        removed, retrieved_obj = \
+            portal_storage.retrieveUnsubstituted(history_id=1, selector=2)
+        self.failUnless(removed)
+        self.assertEqual(retrieved_obj.object.reason, "purged")
+        self.assertEqual(self.getComment(retrieved_obj.metadata), "purged v3")
 
-    def _test09_xxx(self):
-        history = portal_storage.getHistory(history_id=1)
-        self.assertEqual(len(history), 2)
-        vdata = history[0]
-        self.assertEqual(vdata.object.object.text, 'v1 of text')
-        self.assertEqual(self.getComment(vdata.metadata), 'saved v%s' % counter)
-        vdata = history[1]
-        self.assertEqual(vdata.object.object.text, 'v3 of text')
-        self.assertEqual(self.getComment(vdata.metadata), 'saved v%s' % counter)
-        
 
 class TestMemoryStorage(TestZVCStorageTool):
 
