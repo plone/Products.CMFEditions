@@ -2,6 +2,37 @@
 ToDos
 ======
 
+Purge Support Implementation
+============================
+
+ToDo
+----
+
+- Implement save policy support (testing with dummy purge policy)
+- Write tests for IHistory (__iter__, __getattr__, __len__)
+- Check what happens if __len__ would only return the length of not 
+  purged versions. Decide what to do.
+- Implement a purge policy (last n, enable/disable)
+- Add enable/disable in case there is no purge policy (Storage Impl.)
+- Add reverse iterator for history (eventually change default behaviour)
+- Do UI Tests
+
+- What shall getModificationDate return? Answer and decide what to do.
+- Some complex integration test with deleted version. Check what fails 
+  and decide what to do.
+- Fix outstanding failing tests.
+
+
+Done
+----
+
+- manual purge support implementation on storage level (incl tests)
+
+
+
+----------------------------------------------------------------------
+
+
 Numbers don't indicate any importance and order in implementation.
 
 next number: 54

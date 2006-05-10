@@ -582,7 +582,7 @@ class DummyPurgePolicy(DummyBaseTool):
     id = 'portal_purgepolicy'
 
     def purge(self, history_id, metadata={}):
-        pass
+        raise NotImplementedError() # XXX implement!
 
     def retrieveSubstitute(self, history_id, selector, default=None):
         """Retrives the next older version
