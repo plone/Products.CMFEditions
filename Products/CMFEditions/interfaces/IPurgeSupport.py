@@ -54,43 +54,53 @@ from Interface import Interface, Attribute
 class IPurgeSupport(Interface):
     """Storage Purge Support
     
-    See the notes about the ``retrieve`` and ``getHistory`` methods 
-    of ``IStorage`` and the ``__len__``, ``__getattr__`` and 
-    ``__iter__`` methods of ``IHistory``.
+    Add ``purge`` and extend the signature of ``retrieve`` and 
+    ``getHistory``. The defaults of the extended methods mimique the
+    behaviour of ``IStorage``.
     """
     
-    def purge(history_id, selector, comment="", metadata={}):
+    def retrieve(history_id, selector, countPurged=True, substitute=True):
+        """Return the Version of the Resource with the given History Id
+        
+        Overrides ``retrieve`` from ``IStorage`` by adding ``countPurged`` 
+        and ``substitute`` parameters.
+        
+        If ``countPurged`` is ``True`` purged versions are taken into
+        account also. If ``False`` purged versions are ignored and not
+        taken into account in counting.
+        
+        If ``substitute`` is ``True`` a substitute is returned in case
+        the requested version was purged before.
+        
+        Return a ``IVersionData`` object.
+        """
+
+    def getHistory(history_id, countPurged=True, substitute=True):
+        """Returns the history of an object by the given history id.
+        
+        Overrides ``getHistory`` from ``IStorage`` by adding 
+        ``countPurged`` and ``substitute`` parameters.
+        
+        If ``countPurged`` is ``True`` purged versions are returned also. 
+        If ``False`` purged versions aren't returned.
+        
+        If ``substitute`` is ``True`` a substitute is returned in case
+        the requested version was purged before.
+        
+        Return a ``IHistory`` object.
+        """
+
+    def purge(history_id, selector, comment="", metadata={}, 
+              countPurged=True):
         """Purge a Version from a Resources History
+        
+        If ``countPurged`` is ``True`` version numbering counts purged
+        versions also. If ``False`` purged versiona are not taken into 
+        account.
         
         Purge the given version from the given history. The metadata
         passed may be used to store informations about the reasons of
         the purging.
-        """
-
-    def retrieveUnsubstituted(history_id, selector=None):
-        """Return a Version of the Resource with the Given History Id
-        
-        Return a tuple of ``(bool, IVersionData)``. The bool signalizes if 
-        the returned version got removed (True) and the ``IVersionData`` 
-        object contains the version or information about the removement.
-        
-        Reinterpretation of ``retrieve`` and ``getHistory`` is necessary:
-        
-        The "normal" ``retrieve`` and ``__getattr__`` (of ``IHistory``) 
-        now has to return a substitute if an ``IPurgePolicy`` was found. 
-        """
-
-    def getLength(history_id, ignoretPurged=True):
-        """Return the Length of the History
-        
-        Return the length of the resources history. Either counting
-        the purged versions or not.
-        
-        XXX Check if we need this method to be backwards compatible with 
-            ``__len__`` or if it feasable to change ``__len__``.
-        
-        ``__iter__`` from ``IHistory`` shall always return the next non
-        purged version of the resources history.
         """
 
 
@@ -100,22 +110,22 @@ class IPurgePolicy(Interface):
     Purge versions in a history according a policy.
     """
 
-    def purge(history_id, metadata={}):
+    def beforeSaveHook(history_id, metadata={}):
         """Purge Versions from the History According a Policy
         
         The Policy has full control over the whole history of the resource 
-        and may decide to purge none, one or even more than one version.
+        and may decide to purge or alter versions in the history.
         
-        The metadata passed may be used to store informations about the 
-        reasons of the purging.
+        The metadata passed is the metadata that was passed to the 
+        ``save`` method.
         
         Hint:
         
         This method gets called before the current version get saved. 
-        Signalize not to save the current version by returning ``True``.
+        Signalize not to save the current version by returning ``False``.
         """
 
-    def retrieveSubstitute(history_id, selector):
+    def retrieveSubstitute(history_id, selector, default=None):
         """Return a selected version of an object or a substitute
         
         Called by the storage if the object to be retrieved was purged.

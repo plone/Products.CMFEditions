@@ -424,7 +424,9 @@ class StorageVersionData:
         self.object = object
         self.referenced_data = referenced_data
         self.metadata = metadata
-
+    def isValid(self):
+        return not isinstance(self.object, Removed)
+        
 class Removed:
     """Indicates that removement of data
     """
@@ -462,6 +464,13 @@ class MemoryStorage(DummyBaseTool):
            return self._save(history_id, object, referenced_data, metadata)
 
     def save(self, history_id, object, referenced_data={}, metadata=None):
+        # delegate the decission what to purge to the purge policy tool
+        # if it exists. If the call returns ``True`` do not save the current
+        # version.
+        policy = getToolByName(self, 'portal_purgepolicy', None)
+        if policy is not None and policy.beforeSaveHook(history_id, metadata):
+            return len(histories[history_id]) - 1
+        
         if not self._histories.has_key(history_id):
             raise StorageUnregisteredError(
                 "Saving or retrieving an unregistered object is not "
@@ -491,54 +500,69 @@ class MemoryStorage(DummyBaseTool):
 
         return len(histories[history_id]) - 1
 
-    def retrieve(self, history_id, selector=None):
-        vdata = self._retrieve(history_id, selector)
-        if isinstance(vdata.object, Removed):
-            # delegate retrieving to purge policy if one is available
-            # if none is available just return "the removed object"
-            policy = getToolByName(self, 'portal_purgepolicy', None)
-            if policy is not None:
-                vdata = policy.retrieveSubstitute(history_id, selector, vdata)
-        return vdata
+    def retrieve(self, history_id, selector=None, 
+                 countPurged=True, substitute=True):
+        if countPurged:
+            vdata = self._getHistory(history_id)[selector]
+            vdata.referenced_data = deepcopy(vdata.referenced_data)
+            if substitute and isinstance(vdata.object, Removed):
+                # delegate retrieving to purge policy if one is available
+                # if none is available just return "the removed object"
+                policy = getToolByName(self, 'portal_purgepolicy', None)
+                if policy is not None:
+                    vdata = policy.retrieveSubstitute(history_id, selector, vdata)
+            return vdata
+        else:
+            valid = 0
+            history = self._getHistory(history_id)
+            for vdata in history:
+                if isinstance(vdata.object, Removed):
+                    continue
+                if valid == selector:
+                    return vdata
+                valid += 1
+        raise StorageRetrieveError("Retrieving non existing version %s" 
+                                   % selector)
 
+    def getHistory(self, history_id, preserve=(), 
+                    countPurged=True, substitute=True):
+        history = []
+        sel = 0
+        while True:
+            try:
+                vdata = self.retrieve(history_id, sel, countPurged, substitute)
+            except StorageRetrieveError:
+                break
+            history.append(vdata)
+            sel += 1
+        return HistoryList(history)
 
-    def _retrieve(self, history_id, selector):
-        vdata = self.getHistory(history_id)[selector]
-        vdata.referenced_data = deepcopy(vdata.referenced_data)
-        return vdata
-
-    def getHistory(self, history_id, preserve=()):
+    def _getHistory(self, history_id, preserve=()):
         try:
-            histories = self._histories[history_id]
+            history = self._histories[history_id]
         except KeyError:
             raise StorageUnregisteredError(
                 "Saving or retrieving an unregistered object is not "
                 "possible. Register the object with history id '%s' first. "
                 % history_id)
-        return HistoryList(histories)
-
-    def queryHistory(self, history_id, preserve=(), default=[]):
-        try:
-            histories = self._histories[history_id]
-        except KeyError:
-            return default
-        return HistoryList(histories)
+        return HistoryList(history)
 
     def isRegistered(self, history_id):
         return history_id in self._histories
 
     def getModificationDate(self, history_id, selector=None):
         vdata = self.retrieve(history_id, selector)
-#        return vdata.object.object.ModificationDate()
         return vdata.object.object.modified()
 
-    def purge(self, history_id, selector, comment="", metadata={}):
+    def purge(self, history_id, selector, comment="", metadata={}, 
+              countPurged=True):
         """See ``IPurgeSupport``
         """
         histories = self._histories
         history = histories[history_id]
-        vdata = history[selector]
-        
+        vdata = self.retrieve(history_id, selector, countPurged, 
+                              substitute=False)
+        selector = history.index(vdata)
         if not isinstance(vdata.object, Removed):
             # prepare replacement for the deleted object and metadata
             metadata = {
@@ -549,15 +573,6 @@ class MemoryStorage(DummyBaseTool):
             
             # digging into ZVC internals: remove the stored object
             history[selector] = StorageVersionData(removedInfo, None, metadata)
-
-    def retrieveUnsubstituted(self, history_id, selector=None):
-        """See ``IPurgeSupport``
-        """
-        vdata = self._retrieve(history_id, selector)
-        if isinstance(vdata.object, Removed):
-            return True, vdata
-        else:
-            return False, vdata
 
     def getLength(self, history_id, ignorePurged=True):
         """See ``IPurgeSupport``
@@ -581,16 +596,29 @@ class DummyPurgePolicy(DummyBaseTool):
     __implements__ = IPurgePolicy
     id = 'portal_purgepolicy'
 
-    def purge(self, history_id, metadata={}):
-        raise NotImplementedError() # XXX implement!
-
+    def beforeSaveHook(self, history_id, metadata={}):
+        """Purge old versions
+        
+        Purges old version so that at maximum two versions reside in 
+        the history.
+        """
+        storage = getToolByName(self, 'portal_historiesstorage')
+        currentVersion = len(storage.getHistory(history_id))
+        while True:
+            length = len(storage.getHistory(history_id, countPurged=False))
+            if length < 2:
+                break
+            comment = "purged on save of version %s" % currentVersion
+            storage.purge(history_id, 0, comment, metadata={}, 
+                          countPurged=False)
+    
     def retrieveSubstitute(self, history_id, selector, default=None):
         """Retrives the next older version
         """
         storage = getToolByName(self, 'portal_historiesstorage')
         while selector:
             selector -= 1
-            removed, data = storage.retrieveUnsubstituted(history_id, selector)
-            if not removed:
+            data = storage.retrieve(history_id, selector, substitute=False)
+            if data.isValid():
                 return data
         return default
