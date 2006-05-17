@@ -12,8 +12,8 @@ from Products.CMFEditions.ArchivistTool import VersionData
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IStorage import IStreamableReference
 from Products.CMFEditions.interfaces.IStorage import IStorage
-from Products.CMFEditions.interfaces.IPurgeSupport import IPurgeSupport
-from Products.CMFEditions.interfaces.IPurgeSupport import IPurgePolicy
+from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
+from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFCore.utils import getToolByName

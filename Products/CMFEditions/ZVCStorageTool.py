@@ -48,7 +48,7 @@ from Products.ZopeVersionControl.Utility import VersionControlError
 from Products.ZopeVersionControl.EventLog import LogEntry
 
 from Products.CMFEditions.interfaces.IStorage import IStorage
-from Products.CMFEditions.interfaces.IPurgeSupport import IPurgeSupport
+from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import IHistory
 from Products.CMFEditions.interfaces.IStorage import IVersionData
 from Products.CMFEditions.interfaces.IStorage import StorageError

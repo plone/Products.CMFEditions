@@ -39,7 +39,7 @@ from OFS.ObjectManager import ObjectManager
 
 from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IStorage import IStorage
-from Products.CMFEditions.interfaces.IPurgeSupport import IPurgeSupport
+from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
 from Products.CMFEditions import UniqueIdHandlerTool
