@@ -44,6 +44,172 @@ $Id: IRepository.py,v 1.8 2005/04/01 17:41:56 disommav Exp $
 from Interface import Interface, Attribute
 
 
+class ICopyModifyMergeRepository(Interface):
+    """The simplest repository possible.
+
+    This component exposes the main API.
+    """
+
+    def isVersionable(obj):
+        """Return True if the content type is versionable.
+        """
+
+    def setAutoApplyMode(autoapply):
+        """Sets the autoapply mode.
+
+        Before a repository can host a version of a content it has to be
+        registred.
+        If True the first 'save' operation will register the content
+        automatically and applies version control.
+        The default value is True.
+        """
+
+    def applyVersionControl(obj, comment='', metadata={}):
+        """Register the content to the repository.
+
+        Must be called prior any of the other repository related methods.
+        Not necessary if 'autoapply' is set to a True.
+        'comment' preferably is a human readable string comment.
+        'metadata' must be a dictionary.
+        This operation save the current version of the working copy as
+        first version to the repository.
+        """
+
+    def save(obj, comment='', metadata={}):
+        """Saves the current version of the content.
+
+        'comment' preferably is a human readable string comment.
+        'metadata' must be a dictionary.
+        """
+
+    def revert(obj, selector=None):
+        """Reverts to a former version of the content by replacing the working
+        copy.
+
+        Reverts to the most recently saved version if no selector
+        is passed.
+        """
+
+    def retrieve(obj, selector=None, preserve=()):
+        """Returns a former version of a content without replacing the working
+        copy.
+
+        It returns an ``IVersionData`` object and doesn't modify the working
+        copy in any way.
+        """
+
+    def restore(history_id, selector, container, new_id=None):
+        """Restore a Specific version of an Object into a Container
+        
+        Usage Hint:
+        
+        May be used to restore a deleted object (delted from the tree).
+        A version having been purged from the storage may never be restored.
+        A new id may be chosen.
+        """
+
+    def isUpToDate(obj):
+        """Returns True if the working copy is modified.
+        """
+
+    def getHistory(obj, preserve=()):
+        """Returns the history of a content.
+
+        Returns a sequence (``IHistory``) of ``IVersionData`` objects.
+        """
+
+
+class IPurgeSupport(Interface):
+    """Repository Purge Support
+    
+    Purging a version from the storage removes that version irrevocably.
+    
+    Adds ``purge`` and extends the signature of ``retrieve`` and 
+    ``getHistory``. The defaults of the extended methods mimique the
+    standard behaviour of ``IStorage``.
+    """
+    
+    def retrieve(obj, selector, preserve=(), countPurged=True, 
+                 substitute=True):
+        """Return the Version of the Given Content
+        
+        Overrides ``retrieve`` from ``ICopyModifyMerge`` by adding 
+        ``countPurged`` and ``substitute`` parameters.
+        
+        If ``countPurged`` is ``True`` purged versions are taken into
+        account also. If ``False`` purged versions are ignored and not
+        taken into account in counting.
+        
+        If ``substitute`` is ``True`` a substitute is returned in case
+        the requested version was purged before.
+        
+        Return an ``IVersionData`` object and is not allowed to modify 
+        the working copy in any way.
+        """
+
+    def revert(obj, selector=None, countPurged=True, substitute=True):
+        """Replace the Working Copy by a Former Version of the Content
+
+        Reverts to the most recently saved version if no selector
+        is passed.
+        
+        Overrides ``retrieve`` from ``ICopyModifyMerge`` by adding 
+        ``countPurged`` and ``substitute`` parameters.
+        
+        If ``countPurged`` is ``True`` purged versions are returned also. 
+        If ``False`` purged versions aren't returned.
+        
+        If ``substitute`` is ``True`` a substitute is returned in case
+        the requested version was purged before.
+        """
+
+    def restore(history_id, selector, container, new_id=None, 
+                countPurged=True, substitute=True):
+        """Restore a Specific version of an Object into a Container
+        
+        Overrides ``retrieve`` from ``ICopyModifyMerge`` by adding 
+        ``countPurged`` and ``substitute`` parameters.
+        
+        If ``countPurged`` is ``True`` purged versions are returned also. 
+        If ``False`` purged versions aren't returned.
+        
+        If ``substitute`` is ``True`` a substitute is returned in case
+        the requested version was purged before.
+        
+        Usage Hint:
+        
+        May be used to restore a deleted object (delted from the tree).
+        A version having been purged from the storage may never be restored.
+        A new id may be chosen.
+        """
+
+    def getHistory(obj, preserve=(), countPurged=True, substitute=True):
+        """Return the history of a content
+        
+        Overrides ``getHistory`` from ``ICopyModifyMergeRepository`` by 
+        adding ``countPurged`` and ``substitute`` parameters.
+        
+        If ``countPurged`` is ``True`` purged versions are returned also. 
+        If ``False`` purged versions aren't returned.
+        
+        If ``substitute`` is ``True`` a substitute is returned in case
+        the requested version was purged before.
+        
+        Return a sequence (``IHistory``) of ``IVersionData`` objects.
+        """
+
+    def purge(object, selector, comment="", metadata={}, countPurged=True):
+        """Purge a Version of a Content
+        
+        If ``countPurged`` is ``True`` version numbering counts purged
+        versions also. If ``False`` purged versiona are not taken into 
+        account.
+        
+        Purge the given version of the object. The metadata passed may be 
+        used to store informations about the reasons of the purging.
+        """
+
+
 class IVersionSupport(Interface):
     """Check if versioning is supported for a specific content.
     """
@@ -108,75 +274,6 @@ class IContentTypeVersionPolicySupport(IContentTypeVersionSupport):
     def getPolicyMap():
         """Return a mapping of types to the lists of policies they support,
            for use in config screen."""
-
-class ICopyModifyMergeRepository(Interface):
-    """The simplest repository possible.
-
-    This component exposes the main API.
-    """
-
-    def isVersionable(obj):
-        """Return True if the content type is versionable.
-        """
-
-    def setAutoApplyMode(autoapply):
-        """Sets the autoapply mode.
-
-        Before a repository can host a version of a content it has to be
-        registred.
-        If True the first 'save' operation will register the content
-        automatically and applies version control.
-        The default value is True.
-        """
-
-    def applyVersionControl(obj, comment='', metadata={}):
-        """Register the content to the repository.
-
-        Must be called prior any of the other repository related methods.
-        Not necessary if 'autoapply' is set to a True.
-        'comment' preferably is a human readable string comment.
-        'metadata' must be a dictionary.
-        This operation save the current version of the working copy as
-        first version to the repository.
-        """
-
-    def save(obj, comment='', metadata={}):
-        """Saves the current version of the content.
-
-        'comment' preferably is a human readable string comment.
-        'metadata' must be a dictionary.
-        """
-
-    def revert(obj, selector=None):
-        """Reverts to a former version of the content by replacing the working
-        copy.
-
-        Reverts to the most recently saved version if no selector
-        is passed.
-        """
-
-    def retrieve(obj, selector=None, preserve=()):
-        """Returns a former version of a content without replacing the working
-        copy.
-
-        It returns an ``IVersionData`` object and doesn't modify the working
-        copy in any way.
-        """
-
-    def restore(history_id, selector, container, new_id=None):
-        """Restores a specific object/version from version control into a
-        particular container, possibly with a differing id.
-        """
-
-    def isUpToDate(obj):
-        """Returns True if the working copy is modified.
-        """
-
-    def getHistory(obj, preserve=()):
-        """Returns the history of a content.
-
-        Returns a sequence (``IHistory``) of ``IVersionData`` objects.
-        """
 
 
 class IVersionData(Interface):
