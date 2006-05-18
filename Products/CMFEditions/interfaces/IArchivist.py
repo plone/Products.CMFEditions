@@ -141,123 +141,24 @@ class IArchivist(Interface):
 class IPurgeSupport(Interface):
     """Repository Purge Support
     
-    Purging a version from the storage removes that version irrevocably.
+    Purging a version removes that version irrevocably.
     
-    Adds ``purge`` and extends the signature of ``retrieve`` and 
-    ``getHistory``. The defaults of the extended methods mimique the
-    standard behaviour of ``IStorage``.
+    When an archivist is supporting purging the semantics if ``retrieve``,
+    ``isUpToDate``, ``getHistory`` and ``queryHistory`` change a little bit:
+    
+    - ``retrieve``: If the version to retrieve has been purged another 
+      version is returned (policy defined by ``portal_purgepolicy``).
+    - ``isUpToDate``: Checks against a substitute if the selected version
+      was previously purged (again the policy is defined by 
+      ``portal_purgepolicy``).
+    - ``getHistory`` abd ``queryHistory`` return an object that behaves 
+      the following way:
+    
+      - ``__getattr__`` behaves like ``retrieve``.
+      - when iterating over the history only non purged versions are 
+        returned. The purged version are just skiped.
     """
     
-    
-    def isUpToDate(obj=None, history_id=None, selector=None, 
-                   countPurged=True, substitute=True):
-        """Returns True if the working copy has changed since the last save
-           or revert compared to the selected version. If selector is None,
-           the comparison is done with the HEAD.
-        
-        The working copy is up to date if the modification date is
-        identical to the one of the selected version.
-        
-        Overrides ``retrieve`` from ``ICopyModifyMerge`` by adding 
-        ``countPurged`` and ``substitute`` parameters.
-        
-        If ``countPurged`` is ``True`` purged versions are returned also. 
-        If ``False`` purged versions aren't returned.
-        
-        If ``substitute`` is ``True`` a substitute is returned in case
-        the requested version was purged before.
-        """
-
-    def retrieve(obj=None, history_id=None, selector=None, preserve=(), 
-                 countPurged=True, substitute=True):
-        """Retrieves a former state of an object.
-        
-        Requires either an object which is the working copy, or a history_id
-        for an object if no history_id is provided the history_id will be 
-        obtained from the working copy object.
-        
-        Returns an 'IVersionData' object.
-        
-        Set the selector to None if you like to retrieve the most actual
-        version.
-        
-        Modifiers may overwrite some aspects of the retrieved version by
-        the equivalent aspects of the working copy. Sometimes the 
-        overwritten information is from interest. Attributes (and 
-        subattributes) beeing from interest can be passed with the
-        'preserve' argument. 
-        
-        E.g. preserve=('family_name', 'nick_name', 'real_name')
-                Overrides ``retrieve`` from ``ICopyModifyMerge`` by adding 
-        ``countPurged`` and ``substitute`` parameters.
-        
-        If ``countPurged`` is ``True`` purged versions are returned also. 
-        If ``False`` purged versions aren't returned.
-        
-        If ``substitute`` is ``True`` a substitute is returned in case
-        the requested version was purged before.
-        """
-
-    def getHistory(obj=None, history_id=None, preserve=(), 
-                   countPurged=True, substitute=True):
-        """Returns the history of an object.
-        
-        The history is a 'IHistory' object.
-        
-        Requires either an object which is the working copy, or a history_id
-        for an object if no history_id is provided the history_id will be 
-        obtained from the working copy object.
-        
-        Raises an 'ArchivistError' exception if the given object doesn't
-        have a history.
-        
-        Modifiers may overwrite some aspects of the retrieved version by
-        the equivalent aspects of the working copy. Sometimes the 
-        overwritten information is from interest. Attributes (and 
-        subattributes) beeing from interest can be passed with the
-        'preserve' argument. 
-        E.g. preserve=('family_name', 'nick_name', 'real_name')
-        
-        Overrides ``retrieve`` from ``ICopyModifyMerge`` by adding 
-        ``countPurged`` and ``substitute`` parameters.
-        
-        If ``countPurged`` is ``True`` purged versions are returned also. 
-        If ``False`` purged versions aren't returned.
-        
-        If ``substitute`` is ``True`` a substitute is returned in case
-        the requested version was purged before.
-        """
-
-    def queryHistory(obj=None, history_id=None, preserve=(), default=[], 
-                     countPurged=True, substitute=True):
-        """Returns the history of an object.
-        
-        Requires either an object which is the working copy, or a history_id
-        for an object if no history_id is provided the history_id will be 
-        obtained from the working copy object.
-        
-        The history is a 'IHistory' object.
-        
-        Returns the default value if the given object doesn't have a 
-        history.
-        
-        Modifiers may overwrite some aspects of the retrieved version by
-        the equivalent aspects of the working copy. Sometimes the 
-        overwritten information is from interest. Attributes (and 
-        subattributes) beeing from interest can be passed with the
-        'preserve' argument. 
-        E.g. preserve=('family_name', 'nick_name', 'real_name')
-
-        Overrides ``retrieve`` from ``ICopyModifyMerge`` by adding 
-        ``countPurged`` and ``substitute`` parameters.
-        
-        If ``countPurged`` is ``True`` purged versions are returned also. 
-        If ``False`` purged versions aren't returned.
-        
-        If ``substitute`` is ``True`` a substitute is returned in case
-        the requested version was purged before.
-        """
-
     def purge(obj=None, history_id=None, selector=None, comment="", 
               metadata={}, countPurged=True):
         """Purge a Version of a Content
@@ -267,11 +168,20 @@ class IPurgeSupport(Interface):
         obtained from the working copy object.
         
         If ``countPurged`` is ``True`` version numbering counts purged
-        versions also. If ``False`` purged versiona are not taken into 
+        versions also. If ``False`` purged versions are not taken into 
         account.
         
-        Purge the given version of the object. The metadata passed may be 
-        used to store informations about the reasons of the purging.
+        Example: 
+        
+        An object got saved ten times. Two versions got purged in earlier 
+        calls. The histor looks like this (a ``p`` stands for purged)::
+        
+            versions: 0, 1, 2, 3p, 4p, 5, 6, 7, 8, 9
+            selector: 0, 1, 2, 3,  4,  5, 6, 7, 8, 9 (countPurged==True)
+            selector: 0, 1, 2, -,  -,  3, 4, 5, 6, 7 (countPurged==False)
+        
+        The comment and metadata passed may be used to store informations 
+        about the reasons of the purging.
         """
 
 
