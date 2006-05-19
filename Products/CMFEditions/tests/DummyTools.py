@@ -236,7 +236,6 @@ class DummyArchivist(SimpleItem):
     def isUpToDate(self, obj=None, history_id=None, selector=None):
         obj = dereference(obj=obj, history_id=history_id, zodb_hook=self)[0]
         mem = self.retrieve(obj=obj, history_id=history_id, selector=selector)
-#        return mem.data.object.ModificationDate() == obj.ModificationDate()
         return mem.data.object.modified() == obj.modified()
 
 
@@ -440,14 +439,41 @@ class Removed:
 class HistoryList(types.ListType):
     """
     """
+    def __init__(self, items, oldestFirst):
+        types.ListType.__init__(self, items)
+        self._len = len(items)
+        self._oldestFirst = oldestFirst
+    
     def __getitem__(self, selector):
         if selector is None:
-            selector = -1
+            selector = self._len - 1
         try:
            return types.ListType.__getitem__(self, selector)
         except IndexError:
             raise StorageRetrieveError("Retrieving non existing version %s" % selector)
+    
+    def __iter__(self):
+        if self._oldestFirst:
+            return types.ListType.__iter__(self)
+        else:
+            return ReverseIterator(types.ListType.__getitem__, self, self._len)
 
+class ReverseIterator:
+    """Iterator object using a getitem implementation to iterate over.
+    """
+    def __init__(self, getItem, li, length):
+        self._getItem = getItem
+        self._list = li
+        self._pos = length
+
+    def __iter__(self):
+        return self
+        
+    def next(self):
+        self._pos -= 1
+        if self._pos < 0:
+            raise StopIteration()
+        return self._getItem(self._list, self._pos)
 
 class MemoryStorage(DummyBaseTool):
 
@@ -524,10 +550,11 @@ class MemoryStorage(DummyBaseTool):
         raise StorageRetrieveError("Retrieving non existing version %s" 
                                    % selector)
 
-    def getHistory(self, history_id, preserve=(), 
+    def getHistory(self, history_id, preserve=(), oldestFirst=False,
                     countPurged=True, substitute=True):
         history = []
         sel = 0
+        
         while True:
             try:
                 vdata = self.retrieve(history_id, sel, countPurged, substitute)
@@ -535,7 +562,7 @@ class MemoryStorage(DummyBaseTool):
                 break
             history.append(vdata)
             sel += 1
-        return HistoryList(history)
+        return HistoryList(history, oldestFirst)
 
     def _getHistory(self, history_id, preserve=()):
         try:
@@ -545,7 +572,7 @@ class MemoryStorage(DummyBaseTool):
                 "Saving or retrieving an unregistered object is not "
                 "possible. Register the object with history id '%s' first. "
                 % history_id)
-        return HistoryList(history)
+        return HistoryList(history, oldestFirst=True)
 
     def isRegistered(self, history_id):
         return history_id in self._histories
@@ -574,12 +601,12 @@ class MemoryStorage(DummyBaseTool):
             # digging into ZVC internals: remove the stored object
             history[selector] = StorageVersionData(removedInfo, None, metadata)
 
-    def getLength(self, history_id, ignorePurged=True):
-        """See ``IPurgeSupport``
+    def _getLength(self, history_id, countPurged=True):
+        """Returns the length of the history
         """
         histories = self._histories
         history = histories[history_id]
-        if not ignorePurged:
+        if countPurged:
             return len(history)
         
         length = 0

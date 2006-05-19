@@ -211,10 +211,12 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         return data
 
     security.declarePrivate('getHistory')
-    def getHistory(self, history_id, countPurged=True, substitute=True):
+    def getHistory(self, history_id, oldestFirst=False, countPurged=True, 
+                   substitute=True):
         """See IStorage.
         """
-        return LazyHistory(self, history_id, countPurged, substitute)
+        return LazyHistory(self, history_id, oldestFirst, countPurged, 
+                           substitute)
 
     security.declarePrivate('getModificationDate')
     def getModificationDate(self, history_id, selector=None, 
@@ -549,10 +551,11 @@ class LazyHistory:
         IHistory,
     )
 
-    def __init__(self, storage, history_id, 
+    def __init__(self, storage, history_id, oldestFirst=False,
                  countPurged=True, substitute=True):
         self._storage = storage
         self._history_id = history_id
+        self._oldestFirst = oldestFirst
         self._countPurged = countPurged
         self._substitute = substitute
 
@@ -564,23 +567,33 @@ class LazyHistory:
                                       self._countPurged, self._substitute)
 
     def __iter__(self):
-        return GetItemIterator(self.__getitem__, StorageRetrieveError)
+        if self._oldestFirst:
+            startPos = -1
+            direction = +1
+        else:
+            startPos = self._storage._getLength(self._history_id, 
+                                                self._countPurged)
+            direction = -1
+            
+        return GetItemIterator(self.__getitem__, startPos, direction, 
+                               stopExceptions=(StorageRetrieveError,))
 
 
 class GetItemIterator:
     """Iterator object using a getitem implementation to iterate over.
     """
-    def __init__(self, getItem, stopExceptions):
+    def __init__(self, getItem, startPos, direction, stopExceptions):
         self._getItem = getItem
         self._stopExceptions = stopExceptions
-        self._pos = -1
+        self._pos = startPos
+        self._direction = direction
 
     def __iter__(self):
         return self
         
     def next(self):
         try:
-            self._pos += 1
+            self._pos += self._direction
             return self._getItem(self._pos)
         except self._stopExceptions:
             raise StopIteration()

@@ -91,8 +91,11 @@ class IStorage(Interface):
         Returns a 'IVersionData' object.
         """
 
-    def getHistory(history_id):
-        """Returns the history of an object by the given history id.
+    def getHistory(history_id, oldestFirst=False):
+        """Return the history of an object by the given history id.
+        
+        Return the oldest version first  when ``oldestFirst`` set to 
+        ``True``. Default is ``False`` (youngest version first).
         
         Returns a 'IHistory' object.
         """
@@ -131,8 +134,12 @@ class IPurgeSupport(Interface):
         Return a ``IVersionData`` object.
         """
 
-    def getHistory(history_id, countPurged=True, substitute=True):
-        """Returns the history of an object by the given history id.
+    def getHistory(history_id, oldestFirst=False, countPurged=True, 
+                   substitute=True):
+        """Return the history of an object by the given history id.
+        
+        Return the oldest version first  when ``oldestFirst`` set to 
+        ``True``. Default is ``False`` (youngest version first).
         
         Overrides ``getHistory`` from ``IStorage`` by adding 
         ``countPurged`` and ``substitute`` parameters.
@@ -165,19 +172,22 @@ class IHistory(Interface):
     """
     
     def __len__():
-        """Returns the length of the history.
+        """Return the length of the history.
         """
     
     def __getattr__(version_id):
-        """Returns the version of an object corresponding to the version id.
+        """Return the version of an object corresponding to the version id.
         
-        The item returned is of 'IVersionData'.
+        The item returned is of ``IVersionData``.
         """
     
     def __iter__():
-        """Returns an ordered set of versions for being looped over.
+        """Iterator returning the versions.
         
-        The returned iterator returns 'IVersionData' objects.
+        The ordering depends on the ``oldestFirst`` parameter of 
+        ``getHistory``.
+        
+        The iterators ``next`` method returns ``IVersionData`` objects.
         """
 
 
@@ -203,6 +213,10 @@ class IVersionData(Interface):
         
         Metadata has to be cloned before any write change to avoid 
         temporal problems (by changing the history).
+        """)
+
+    version_id = Attribute(
+        """The version_id of the object.
         """)
 
 
