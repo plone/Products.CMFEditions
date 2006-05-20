@@ -180,7 +180,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.assertEqual(history[1].data.object.text, 'text v2')
         self.assertEqual(history[1].app_metadata, 'save number 2')
 
-    def test05_iterateOverHistory(self):
+    def test05_iterateOverHistoryFromOldToNew(self):
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
 
@@ -197,7 +197,8 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         portal_archivist.save(prep)
 
         counter = 0
-        for vdata in portal_archivist.getHistory(doc):
+        
+        for vdata in portal_archivist.getHistory(doc, oldestFirst=True):
             counter += 1
             self.assertEqual(vdata.data.object.text, 'text v%s' % counter)
             self.assertEqual(vdata.app_metadata, 'save number %s' % counter)
@@ -217,7 +218,8 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         portal_archivist.save(prep)
 
         doc_histid = portal_historyidhandler.queryUid(doc)
-        history = portal_archivist.getHistory(history_id=doc_histid)
+        history = portal_archivist.getHistory(history_id=doc_histid, 
+                                              oldestFirst=True)
 
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
@@ -358,6 +360,55 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.failUnless(portal_archivist.isUpToDate(obj=doc))
         self.failUnless(portal_archivist.isUpToDate(obj=doc, selector=v2))
         self.failIf(portal_archivist.isUpToDate(obj=doc, selector=v1))
+
+    def test10_iterateOverHistoryFromNewToOld(self):
+        portal_archivist = self.portal.portal_archivist
+        doc = self.portal.doc
+
+        doc.text = 'text v1'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        portal_archivist.register(prep)
+
+        doc.text = 'text v2'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        portal_archivist.save(prep)
+
+        doc.text = 'text v3'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 3')
+        portal_archivist.save(prep)
+
+        counter = 0
+        
+        history = portal_archivist.getHistory(doc)
+        length = len(history)
+        for i, vdata in enumerate(history):
+            self.assertEqual(vdata.data.object.text, 
+                             'text v%s' % (length-i))
+            self.assertEqual(vdata.app_metadata, 
+                             'save number %s' % (length-i))
+
+    def test11_getHistoryByIdIndependentlyOfOrdering(self):
+        portal_archivist = self.portal.portal_archivist
+        portal_historyidhandler = self.portal.portal_historyidhandler
+        portal_historiesstorage = self.portal.portal_historiesstorage
+        doc = self.portal.doc
+
+        doc.text = 'text v1'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        portal_archivist.register(prep)
+
+        doc.text = 'text v2'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        portal_archivist.save(prep)
+
+        doc_histid = portal_historyidhandler.queryUid(doc)
+        history = portal_archivist.getHistory(history_id=doc_histid)
+
+        # check if correct data and metadata retrieved
+        self.assertEqual(history[0].data.object.text, 'text v1')
+        self.assertEqual(history[0].app_metadata, 'save number 1')
+        self.assertEqual(history[1].data.object.text, 'text v2')
+        self.assertEqual(history[1].app_metadata, 'save number 2')
 
 
 class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):

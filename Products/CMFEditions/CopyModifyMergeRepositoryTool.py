@@ -326,7 +326,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         return portal_archivist.isUpToDate(obj=obj, selector=selector)
 
     security.declarePublic('getHistory')
-    def getHistory(self, obj, preserve=()):
+    def getHistory(self, obj, preserve=(), oldestFirst=False):
         """See interface.
         """
         self._assertAuthorized(obj, AccessPreviousVersions, 'getHistory')

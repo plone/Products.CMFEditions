@@ -97,7 +97,7 @@ class IArchivist(Interface):
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
 
-    def getHistory(obj=None, history_id=None, preserve=()):
+    def getHistory(obj=None, history_id=None, preserve=(), oldestFirst=False):
         """Returns the history of an object.
         
         The history is a 'IHistory' object.
@@ -105,6 +105,9 @@ class IArchivist(Interface):
         Requires either an object which is the working copy, or a history_id
         for an object if no history_id is provided the history_id will be 
         obtained from the working copy object.
+        
+        Return the oldest version first  when ``oldestFirst`` set to 
+        ``True``. Default is ``False`` (youngest version first).
         
         Raises an 'ArchivistError' exception if the given object doesn't
         have a history.
@@ -117,12 +120,16 @@ class IArchivist(Interface):
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
 
-    def queryHistory(obj=None, history_id=None, preserve=(), default=[]):
+    def queryHistory(obj=None, history_id=None, preserve=(), default=[], 
+                     oldestFirst=False):
         """Returns the history of an object.
         
         Requires either an object which is the working copy, or a history_id
         for an object if no history_id is provided the history_id will be 
         obtained from the working copy object.
+        
+        Return the oldest version first  when ``oldestFirst`` set to 
+        ``True``. Default is ``False`` (youngest version first).
         
         The history is a 'IHistory' object.
         

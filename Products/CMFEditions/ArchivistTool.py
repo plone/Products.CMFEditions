@@ -314,22 +314,24 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
                 % (obj, selector))
     
     security.declarePrivate('getHistory')
-    def getHistory(self, obj=None, history_id=None, preserve=()):
+    def getHistory(self, obj=None, history_id=None, preserve=(), 
+                   oldestFirst=False):
         """
         """
         try:
-            return LazyHistory(self, obj, history_id, preserve)
+            return LazyHistory(self, obj, history_id, preserve, oldestFirst)
         except StorageUnregisteredError:
             raise ArchivistUnregisteredError(
                 "Retrieving a version of an unregistered object is not "
                 "possible. Register the object '%s' first. " % obj)
         
     security.declarePrivate('queryHistory')
-    def queryHistory(self, obj=None, history_id=None, preserve=(), default=[]):
+    def queryHistory(self, obj=None, history_id=None, preserve=(), default=[],
+                     oldestFirst=False):
         """
         """
         try:
-            return LazyHistory(self, obj, history_id, preserve)
+            return LazyHistory(self, obj, history_id, preserve, oldestFirst)
         except StorageUnregisteredError:
             return default
 
@@ -389,32 +391,62 @@ class LazyHistory:
     """
     __implements__ = (IHistory, )
     
-    def __init__(self, archivist, obj, history_id, preserve=()):
-        """Sets up a lazy history. Takes an object which should be the original object
-           in the portal, and a history_id for the storage lookup.  If the history id
-           is omitted then the history_id will be determined by dereferencing the obj.
-           If the obj is omitted, then the obj will be obtained by ddereferencing the
-           history_id.
+    def __init__(self, archivist, obj, history_id, preserve=(), 
+                 oldestFirst=False):
+        """Sets up a lazy history. 
+        
+        Takes an object which should be the original object in the portal, 
+        and a history_id for the storage lookup. If the history id is 
+        omitted then the history_id will be determined by dereferencing 
+        the obj. If the obj is omitted, then the obj will be obtained by 
+        dereferencing the history_id.
         """
         self._modifier = getToolByName(archivist, 'portal_modifier')
         storage = getToolByName(archivist, 'portal_historiesstorage')
         self._obj, history_id = dereference(obj, history_id, archivist)
         self._preserve = preserve
-        self._history = storage.getHistory(history_id)
+        # 1. It doesn't help to pass ``oldestFirst`` to ``getHistory`` as
+        #    we retrieve the versions with ``__getitem__`` and not via an
+        #    iterator.
+        # 2. The full history is used for ``__getitem__`` access whereas
+        #    the effective history (without the purged version) is used
+        #    when the history is iterated over. Getting two variants of the
+        #    same history is cheap as the histories returned by the storage
+        #    are lazy (glad that we use lazy histories since ever!!!)
+        self._oldestFirst = oldestFirst
+        self._fullHistory = storage.getHistory(history_id, 
+                                               countPurged=True,
+                                               substitute=True)
+        self._effectiveHistory = storage.getHistory(history_id,
+                                                    countPurged=False)
         
     def __len__(self):
         """See IHistory
         """
-        return len(self._history)
-        
+        # Thought a long time about the decission to return the effective 
+        # length of the history (without purged versions). If someone likes 
+        # to get the length with the purged version one may ask for the 
+        # ``version_id`` of the newest version and add one.
+        return len(self._effectiveHistory)
+    
     def __getitem__(self, selector):
         """See IHistory
+        """
+        return self._retrieve(selector, countPurged=True)
+        
+    def _retrieve(self, selector, countPurged):
+        """Returns the selected version.
         """
         # To retrieve an object from the storage the following
         # steps have to be carried out:
         #
         # 1. get the appropriate data from the storage
-        vdata = self._history[selector]
+        if countPurged:
+            # used for retrieving a version by version_id
+            vdata = self._fullHistory[selector]
+        else:
+            # used for iterating over the history
+            vdata = self._effectiveHistory[selector]
         
         # 2. clone the data and add the version id
         data = deepcopy(vdata.object)
@@ -442,23 +474,34 @@ class LazyHistory:
     def __iter__(self):
         """See IHistory
         """
-        return Iterator(self.__getitem__, StorageRetrieveError)
+        if self._oldestFirst:
+            startPos = -1
+            direction = +1
+        else:
+            startPos = len(self._effectiveHistory)
+            direction = -1
+            
+        return GetItemIterator(self._retrieve, startPos, direction, 
+                               stopExceptions=(StorageRetrieveError,))
 
 
-class Iterator:
-    """Iterator object using the passed getitem implementation.
+class GetItemIterator:
+    """Iterator object using a getitem implementation to iterate over.
     """
-    def __init__(self, getItem, stopExceptions):
+    def __init__(self, getItem, startPos, direction, stopExceptions):
         self._getItem = getItem
         self._stopExceptions = stopExceptions
-        self._pos = -1
+        self._pos = startPos
+        self._direction = direction
 
     def __iter__(self):
         return self
         
     def next(self):
         try:
-            self._pos += 1
-            return self._getItem(self._pos)
+            self._pos += self._direction
+            if self._pos < 0:
+                raise StopIteration()
+            return self._getItem(self._pos, countPurged=False)
         except self._stopExceptions:
             raise StopIteration()

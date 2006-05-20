@@ -112,9 +112,12 @@ class ICopyModifyMergeRepository(Interface):
         """Returns True if the working copy is modified.
         """
 
-    def getHistory(obj, preserve=()):
+    def getHistory(obj, preserve=(), oldestFirst=False):
         """Returns the history of a content.
 
+        Return the oldest version first  when ``oldestFirst`` set to 
+        ``True``. Default is ``False`` (youngest version first).
+        
         Returns a sequence (``IHistory``) of ``IVersionData`` objects.
         """
 
