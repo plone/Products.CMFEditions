@@ -41,6 +41,7 @@ from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IStorage import IStorage
 from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
+from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 
 from Products.CMFEditions import UniqueIdHandlerTool
 from Products.CMFEditions import ModifierRegistryTool
@@ -469,6 +470,28 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         self.assertEquals(history[2].object.object.text, obj3.text)
         self.assertEqual(self.getComment(history[2].metadata), 'saved v3')
 
+    def test13_retrieveNonExistentVersion(self):
+        portal_storage = self.portal.portal_historiesstorage
+
+        obj1 = Dummy()
+        obj1.text = 'v1 of text'
+        portal_storage.register(1, ObjectData(obj1), metadata=self.buildMetadata('saved v1'))
+
+        obj2 = Dummy()
+        obj2.text = 'v2 of text'
+        portal_storage.save(1, ObjectData(obj2), metadata=self.buildMetadata('saved v2'))
+
+        # purge
+        portal_storage.purge(1, 0, comment='purged v1')
+        
+        # retrieve non existing version
+        self.assertRaises(StorageRetrieveError,
+                          portal_storage.retrieve, history_id=1, selector=2, 
+                          countPurged=True, substitute=True)
+
+        self.assertRaises(StorageRetrieveError,
+                          portal_storage.retrieve, history_id=1, selector=1, 
+                          countPurged=False)
 
 
 class TestMemoryStorage(TestZVCStorageTool):

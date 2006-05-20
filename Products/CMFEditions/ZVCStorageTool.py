@@ -187,6 +187,8 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         try:
             zvc_obj = zvc_repo.getVersionOfResource(zvc_histid, zvc_selector)
         except VersionControlError:
+            # we should never get here (as an exception is raised in 
+            # ``_getZVCSelector``)
             raise StorageRetrieveError(
                 "Retrieving of object with history id '%s' failed. "
                 "Version '%s' does not exist. " % (history_id, selector))
@@ -421,7 +423,12 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     def _getZVCSelector(self, history_id, selector, countPurged):
         """Converts the CMFEditions selector into a ZVC selector
         """
-        selector = self._getVersionId(history_id, selector, countPurged)
+        try:
+            selector = self._getVersionId(history_id, selector, countPurged)
+        except IndexError:
+            raise StorageRetrieveError(
+                "Retrieving of object with history id '%s' failed. "
+                "Version '%s' does not exist. " % (history_id, selector))
         
         # ZVC's first version is version 1 and is of type string
         return str(selector + 1)
