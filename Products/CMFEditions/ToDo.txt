@@ -8,8 +8,10 @@ Purge Support Implementation
 ToDo
 ----
 
-- new: propagate purge stuff to upper tools
-- Implement a purge policy (last n, enable/disable) as Tool
+- refactor Archivist such that it allows propagating purge support to 
+  repo layer.
+
+- Implement a purge policy tool (last n, enable/disable)
 - Add enable/disable in case there is no purge policy (Storage Impl.)
 - Add reverse iterator for history (eventually change default behaviour)
 - Do UI Tests
@@ -29,10 +31,8 @@ Done
   at save time(testing with dummy purge policy)
 - Write tests for IHistory (__iter__, __getattr__, __len__)
 - Check what happens if __len__ would only return the length of not 
-  purged versions. Decide what to do.
-- Refactored storage entirely
-
-
+  purged versions. Decide what to do: This is necessary!
+- refatored storage massively
 
 
 ----------------------------------------------------------------------
@@ -50,6 +50,8 @@ Inbox
     may then easily inherit the generic tests.
 
 44. Replace hards tabs by soft tabs.
+
+45. Get AT reference stuff working (see ``test_FAQ.py``).
 
 46. Discuss naming: ``revert`` <--> ``rollback``
 
@@ -74,6 +76,25 @@ Inbox
     
     This is the wrong place. A modifier shall do that.
     
+48. ``ZVCStorageTool.py`` stores the current ``__vc_info__`` in a mapping
+    even if the operation was a retrieve. But this is correct only in the 
+    case of a revert. This may end in odd behaviour if a user is just looking 
+    at an old version but continueing working on teh current one.
+    --> ``ZVCStorageTool.py`` should not strip the ``__vc_info__`` away.
+    Argghhh: We really should replace the ``ZVCStorageTool`` by a simpler
+    ZODB based one. In the short term we have to write a test showing the 
+    problem and then correct it if there is really one.
+    
+    > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\zvcstoragetool.py(121)_saveZVCInfo()
+    (Pdb) l
+    116                     % history_id)
+    117
+    118         def _saveZVCInfo(self, obj, history_id):
+    119             """Saves ZVC related informations and deletes them from the object.
+    120             """
+    121             vc_info = deepCopy(obj.__vc_info__)
+    122  ->         self._getHistoryIdMapping()[history_id] = vc_info
+
 49. Currently autoapply can be enabled/disabled for the object to version only.
     All subobjects (related objects) are automagically autoapplied when the
     object gets versioned. This may be a security hole as one can give 
@@ -107,6 +128,9 @@ CMFEditions 1.0beta1
 
 42. Solve problem in line 142 of test_CopyModifyMergeRepositoryTool.py
     (test03_..., part marked with XXX)
+
+41. Add at least one functional test to benefit from the fact that 
+    Stefan Holek is here
 
 18. Write a How-To about how to write a modifier (it's like a driver
     that may screw up your operating system)
@@ -262,31 +286,4 @@ Done
     We have to extend the storage api to be able to get to the 
     independently of the storage type and possibly more cheaply. 
     (--> everybody, done: tomek, varun)
-
-48. ``ZVCStorageTool.py`` stores the current ``__vc_info__`` in a mapping
-    even if the operation was a retrieve. But this is correct only in the 
-    case of a revert. This may end in odd behaviour if a user is just looking 
-    at an old version but continueing working on teh current one.
-    --> ``ZVCStorageTool.py`` should not strip the ``__vc_info__`` away.
-    Argghhh: We really should replace the ``ZVCStorageTool`` by a simpler
-    ZODB based one. In the short term we have to write a test showing the 
-    problem and then correct it if there is really one.
-    
-    > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\zvcstoragetool.py(121)_saveZVCInfo()
-    (Pdb) l
-    116                     % history_id)
-    117
-    118         def _saveZVCInfo(self, obj, history_id):
-    119             """Saves ZVC related informations and deletes them from the object.
-    120             """
-    121             vc_info = deepCopy(obj.__vc_info__)
-    122  ->         self._getHistoryIdMapping()[history_id] = vc_info
-
-45. Get AT reference stuff working (see ``test_FAQ.py``), hanks to 
-    Pisa-Sprinters 2006
-
-41. Add at least one functional test to benefit from the fact that 
-    Stefan Holek is here (at the SnowSprint 2005): Not done
-    
-
 
