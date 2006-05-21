@@ -578,12 +578,12 @@ class LazyHistory:
         """See IHistory.
         """
         if not self._oldestFirst:
+            if selector >= self._length:
+                raise StorageRetrieveError(
+                    "Retrieving of object with history id '%s' failed. "
+                    "Version '%s' does not exist. " 
+                    % (self._history_id, selector))
             if selector >= 0:
-                if selector >= self._length:
-                    raise StorageRetrieveError(
-                        "Retrieving of object with history id '%s' failed. "
-                        "Version '%s' does not exist. " 
-                        % (self._history_id, selector))
                 selector = self._length - 1 - selector
             else:
                 selector = - (selector + 1)
