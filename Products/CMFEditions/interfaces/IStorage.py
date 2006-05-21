@@ -91,11 +91,8 @@ class IStorage(Interface):
         Returns a 'IVersionData' object.
         """
 
-    def getHistory(history_id, oldestFirst=False):
+    def getHistory(history_id):
         """Return the history of an object by the given history id.
-        
-        Return the oldest version first  when ``oldestFirst`` set to 
-        ``True``. Default is ``False`` (youngest version first).
         
         Returns a 'IHistory' object.
         """
@@ -170,12 +167,8 @@ class IPurgeSupport(Interface):
         Return a ``IVersionData`` object.
         """
 
-    def getHistory(history_id, oldestFirst=False, countPurged=True, 
-                   substitute=True):
+    def getHistory(history_id, countPurged=True, substitute=True):
         """Return the history of an object by the given history id.
-        
-        Return the oldest version first  when ``oldestFirst`` set to 
-        ``True``. Default is ``False`` (youngest version first).
         
         If ``countPurged`` is ``True`` purged versions are returned also. 
         If ``False`` purged versions aren't returned.
@@ -217,9 +210,6 @@ class IHistory(Interface):
     
     def __iter__():
         """Iterator returning the versions.
-        
-        The ordering depends on the ``oldestFirst`` parameter of 
-        ``getHistory``.
         
         The iterators ``next`` method returns ``IVersionData`` objects.
         """

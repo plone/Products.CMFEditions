@@ -213,12 +213,10 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         return data
 
     security.declarePrivate('getHistory')
-    def getHistory(self, history_id, oldestFirst=False, countPurged=True, 
-                   substitute=True):
+    def getHistory(self, history_id, countPurged=True, substitute=True):
         """See IStorage.
         """
-        return LazyHistory(self, history_id, oldestFirst, countPurged, 
-                           substitute)
+        return LazyHistory(self, history_id, countPurged, substitute)
 
     security.declarePrivate('getModificationDate')
     def getModificationDate(self, history_id, selector=None, 
@@ -558,12 +556,10 @@ class LazyHistory:
         IHistory,
     )
 
-    def __init__(self, storage, history_id, oldestFirst=False,
-                 countPurged=True, substitute=True):
+    def __init__(self, storage, history_id, countPurged=True, substitute=True):
         """See IHistory.
         """
         self._history_id = history_id
-        self._oldestFirst = oldestFirst
         self._countPurged = countPurged
         self._substitute = substitute
         self._length = storage._getLength(history_id, countPurged)
@@ -577,17 +573,6 @@ class LazyHistory:
     def __getitem__(self, selector):
         """See IHistory.
         """
-        if not self._oldestFirst:
-            if selector >= self._length:
-                raise StorageRetrieveError(
-                    "Retrieving of object with history id '%s' failed. "
-                    "Version '%s' does not exist. " 
-                    % (self._history_id, selector))
-            if selector >= 0:
-                selector = self._length - 1 - selector
-            else:
-                selector = - (selector + 1)
-                
         return self._retrieve(self._history_id, selector, self._countPurged, 
                               self._substitute)
 

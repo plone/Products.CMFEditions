@@ -519,8 +519,8 @@ class MemoryStorage(DummyBaseTool):
             raise StorageRetrieveError("Retrieving non existing version %s" 
                                        % selector)
 
-    def getHistory(self, history_id, preserve=(), oldestFirst=False,
-                    countPurged=True, substitute=True):
+    def getHistory(self, history_id, preserve=(), countPurged=True, 
+                   substitute=True):
         history = []
         sel = 0
         
@@ -532,9 +532,7 @@ class MemoryStorage(DummyBaseTool):
             history.append(vdata)
             sel += 1
             
-        if not oldestFirst:
-            history.reverse()
-        return history
+        return HistoryList(history)
 
     def isRegistered(self, history_id):
         return history_id in self._histories
@@ -572,7 +570,7 @@ class MemoryStorage(DummyBaseTool):
                 "Saving or retrieving an unregistered object is not "
                 "possible. Register the object with history id '%s' first. "
                 % history_id)
-        return history
+        return HistoryList(history)
 
     def _getLength(self, history_id, countPurged=True):
         """Returns the length of the history
@@ -588,6 +586,18 @@ class MemoryStorage(DummyBaseTool):
                 length += 1
         
         return length
+
+
+class HistoryList(types.ListType):
+    """
+    """
+    def __getitem__(self, selector):
+        if selector is None:
+            selector = -1
+        try:
+           return types.ListType.__getitem__(self, selector)
+        except IndexError:
+            raise StorageRetrieveError("Retrieving non existing version %s" % selector)
 
 
 class DummyPurgePolicy(DummyBaseTool):
