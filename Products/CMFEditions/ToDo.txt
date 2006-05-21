@@ -12,7 +12,7 @@ ToDo
 - Do UI Tests
 - Test history with ``oldestFirst=True/False``
 
-- Add enable/disable in case there is no purge policy (Storage Impl.)
+- Add enable/disable purge in case there is no purge policy (Storage Impl.)
 - move ``oldestFirst`` parameter before the ``preserve`` parameter
 - Some complex integration test with deleted version. 
 - Fix outstanding failing tests.
