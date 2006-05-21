@@ -456,8 +456,9 @@ class MemoryStorage(DummyBaseTool):
         # if it exists. If the call returns ``True`` do not save the current
         # version.
         policy = getToolByName(self, 'portal_purgepolicy', None)
-        if policy is not None and policy.beforeSaveHook(history_id, metadata):
-            return len(histories[history_id]) - 1
+        if policy is not None:
+            if not policy.beforeSaveHook(history_id, metadata):
+                return len(self._histories[history_id]) - 1
         
         if not self._histories.has_key(history_id):
             raise StorageUnregisteredError(
@@ -607,7 +608,7 @@ class DummyPurgePolicy(DummyBaseTool):
     __implements__ = IPurgePolicy
     id = 'portal_purgepolicy'
 
-    def beforeSaveHook(self, history_id, metadata={}):
+    def beforeSaveHook(self, history_id, obj, metadata={}):
         """Purge old versions
         
         Purges old version so that at maximum two versions reside in 
@@ -622,6 +623,8 @@ class DummyPurgePolicy(DummyBaseTool):
             comment = "purged on save of version %s" % currentVersion
             storage.purge(history_id, 0, comment, metadata={}, 
                           countPurged=False)
+        
+        return True
     
     def retrieveSubstitute(self, history_id, selector, default=None):
         """Retrives the next older version

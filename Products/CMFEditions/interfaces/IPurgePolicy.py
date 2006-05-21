@@ -36,7 +36,7 @@ class IPurgePolicy(Interface):
     are called from the storage.
     """
 
-    def beforeSaveHook(history_id, metadata={}):
+    def beforeSaveHook(history_id, obj, metadata={}):
         """Purge Versions from the History According a Policy
         
         The Policy has full control over the whole history of the resource 
@@ -45,6 +45,8 @@ class IPurgePolicy(Interface):
         Called before the current version is saved to the storage.
         The metadata passed is the metadata that was passed to the 
         ``save`` method.
+        
+        ``obj`` is the object that will be saved afterwards.
         
         Hint:
         

@@ -327,8 +327,10 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         # tool if one exists. If the call returns ``True`` do not save 
         # or register the current version.
         policy = getToolByName(self, 'portal_purgepolicy', None)
-        if policy is not None and policy.beforeSaveHook(history_id, metadata):
-            return self._getHistoriesLength(history_id, countPurged=True) - 1
+        if policy is not None:
+            if not policy.beforeSaveHook(history_id, object, metadata):
+                return self._getHistoriesLength(history_id, 
+                                                countPurged=True) - 1
         
         # prepare the object for beeing saved with ZVC
         #
