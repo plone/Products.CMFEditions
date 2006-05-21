@@ -8,18 +8,13 @@ Purge Support Implementation
 ToDo
 ----
 
-- refactor Archivist such that it allows propagating purge support to 
-  repo layer.
-
 - Implement a purge policy tool (last n, enable/disable)
-- Add enable/disable in case there is no purge policy (Storage Impl.)
-- Add reverse iterator for history (eventually change default behaviour)
 - Do UI Tests
+- Test history with ``oldestFirst=True/False``
 
-- What shall getModificationDate return in case of purged versions? 
-  Answer and decide what to do.
-- Some complex integration test with deleted version. Check what fails 
-  and decide what to do.
+- Add enable/disable in case there is no purge policy (Storage Impl.)
+- move ``oldestFirst`` parameter before the ``preserve`` parameter
+- Some complex integration test with deleted version. 
 - Fix outstanding failing tests.
 
 
@@ -33,6 +28,11 @@ Done
 - Check what happens if __len__ would only return the length of not 
   purged versions. Decide what to do: This is necessary!
 - refatored storage massively
+- refactor Archivist such that it allows propagating purge support to 
+  repo layer.
+- What shall getModificationDate return in case of purged versions? 
+  Answer and decide what to do. Answer: the date of a substitute. Done.
+- Add reverse iterator for history (eventually change default behaviour)
 
 
 ----------------------------------------------------------------------
