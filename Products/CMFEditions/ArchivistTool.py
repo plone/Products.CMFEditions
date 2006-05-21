@@ -269,7 +269,8 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
                                     prepared_obj.metadata)
 
     security.declarePrivate('isUpToDate')
-    def isUpToDate(self, obj=None, history_id=None, selector=None):
+    def isUpToDate(self, obj=None, history_id=None, selector=None, 
+                   countPurged=True):
         """
         """
         storage = getToolByName(self, 'portal_historiesstorage')
@@ -278,7 +279,8 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
             raise ArchivistUnregisteredError(
                 "The object %s is not registered" % obj)
         
-        modified = storage.getModificationDate(history_id, selector)
+        modified = storage.getModificationDate(history_id, selector,
+                                               countPurged)
         return modified == obj.modified()
 
     security.declarePrivate('save')
@@ -299,13 +301,15 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
                             prepared_obj.metadata)
             
     security.declarePrivate('retrieve')
-    def retrieve(self, obj=None, history_id=None, selector=None, preserve=()):
+    def retrieve(self, obj=None, history_id=None, selector=None, preserve=(),
+                 countPurged=True):
         """
         """
         # retrieve the object by accessing the right history entry
         # the histories storage called by LazyHistory knows what to do
         # with a None selector
-        history = self.getHistory(obj, history_id, preserve)
+        history = self.getHistory(obj, history_id, preserve, 
+                                  oldestFirst=True, countPurged=True)
         try:
             return history[selector]
         except StorageRetrieveError:
@@ -315,11 +319,12 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
     
     security.declarePrivate('getHistory')
     def getHistory(self, obj=None, history_id=None, preserve=(), 
-                   oldestFirst=False):
+                   oldestFirst=False, countPurged=True):
         """
         """
         try:
-            return LazyHistory(self, obj, history_id, preserve, oldestFirst)
+            return LazyHistory(self, obj, history_id, preserve, 
+                               oldestFirst, countPurged)
         except StorageUnregisteredError:
             raise ArchivistUnregisteredError(
                 "Retrieving a version of an unregistered object is not "
@@ -327,11 +332,12 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         
     security.declarePrivate('queryHistory')
     def queryHistory(self, obj=None, history_id=None, preserve=(), default=[],
-                     oldestFirst=False):
+                     oldestFirst=False, countPurged=True):
         """
         """
         try:
-            return LazyHistory(self, obj, history_id, preserve, oldestFirst)
+            return LazyHistory(self, obj, history_id, preserve, 
+                               oldestFirst, countPurged)
         except StorageUnregisteredError:
             return default
 
@@ -391,8 +397,8 @@ class LazyHistory:
     """
     __implements__ = (IHistory, )
     
-    def __init__(self, archivist, obj, history_id, preserve=(), 
-                 oldestFirst=False):
+    def __init__(self, archivist, obj, history_id, preserve, oldestFirst, 
+                 countPurged):
         """Sets up a lazy history. 
         
         Takes an object which should be the original object in the portal, 
@@ -405,48 +411,22 @@ class LazyHistory:
         storage = getToolByName(archivist, 'portal_historiesstorage')
         self._obj, history_id = dereference(obj, history_id, archivist)
         self._preserve = preserve
-        # 1. It doesn't help to pass ``oldestFirst`` to ``getHistory`` as
-        #    we retrieve the versions with ``__getitem__`` and not via an
-        #    iterator.
-        # 2. The full history is used for ``__getitem__`` access whereas
-        #    the effective history (without the purged version) is used
-        #    when the history is iterated over. Getting two variants of the
-        #    same history is cheap as the histories returned by the storage
-        #    are lazy (glad that we use lazy histories since ever!!!)
         self._oldestFirst = oldestFirst
-        self._fullHistory = storage.getHistory(history_id, 
-                                               countPurged=True,
-                                               substitute=True)
-        self._effectiveHistory = storage.getHistory(history_id,
-                                                    countPurged=False)
+        self._history = storage.getHistory(history_id, countPurged=True)
         
     def __len__(self):
         """See IHistory
         """
-        # Thought a long time about the decission to return the effective 
-        # length of the history (without purged versions). If someone likes 
-        # to get the length with the purged version one may ask for the 
-        # ``version_id`` of the newest version and add one.
-        return len(self._effectiveHistory)
+        return len(self._history)
     
     def __getitem__(self, selector):
         """See IHistory
-        """
-        return self._retrieve(selector, countPurged=True)
-        
-    def _retrieve(self, selector, countPurged):
-        """Returns the selected version.
         """
         # To retrieve an object from the storage the following
         # steps have to be carried out:
         #
         # 1. get the appropriate data from the storage
-        if countPurged:
-            # used for retrieving a version by version_id
-            vdata = self._fullHistory[selector]
-        else:
-            # used for iterating over the history
-            vdata = self._effectiveHistory[selector]
+        vdata = self._history[selector]
         
         # 2. clone the data and add the version id
         data = deepcopy(vdata.object)
@@ -478,10 +458,10 @@ class LazyHistory:
             startPos = -1
             direction = +1
         else:
-            startPos = len(self._effectiveHistory)
+            startPos = len(self)
             direction = -1
             
-        return GetItemIterator(self._retrieve, startPos, direction, 
+        return GetItemIterator(self.__getitem__, startPos, direction, 
                                stopExceptions=(StorageRetrieveError,))
 
 
@@ -490,9 +470,9 @@ class GetItemIterator:
     """
     def __init__(self, getItem, startPos, direction, stopExceptions):
         self._getItem = getItem
-        self._stopExceptions = stopExceptions
         self._pos = startPos
         self._direction = direction
+        self._stopExceptions = stopExceptions
 
     def __iter__(self):
         return self
@@ -502,6 +482,6 @@ class GetItemIterator:
             self._pos += self._direction
             if self._pos < 0:
                 raise StopIteration()
-            return self._getItem(self._pos, countPurged=False)
+            return self._getItem(self._pos)
         except self._stopExceptions:
             raise StopIteration()
