@@ -8,7 +8,6 @@ Purge Support Implementation
 ToDo
 ----
 
-- Implement a purge policy tool (last n, enable/disable)
 - Do UI Tests
 - Test history with ``oldestFirst=True/False``
 
@@ -33,6 +32,7 @@ Done
 - What shall getModificationDate return in case of purged versions? 
   Answer and decide what to do. Answer: the date of a substitute. Done.
 - Add reverse iterator for history (eventually change default behaviour)
+- Implement a purge policy tool (last n, enable/disable)
 
 
 ----------------------------------------------------------------------
