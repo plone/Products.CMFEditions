@@ -115,14 +115,50 @@ class IPurgeSupport(Interface):
     
     Adds ``purge`` and extends the signature of ``retrieve`` and 
     ``getHistory``. The defaults of the extended methods mimique the
-    standard behaviour of ``IStorage``.
+    standard behaviour of the original methods.
+    
+    With the introduction of purging two selection scheme exist for 
+    retrieving versions. Either purged versions are taken into account 
+    or not:
+    
+    - By passing ``countPurged=True`` purged versions are taken into
+      account when accessing a version. When a purged version is accessed
+      the storage tool decides what to do.
+    - By passing ``countPurged=False`` purged versions are **not taken into
+      account** when accessing a version.
+    
+    Example: 
+    
+    An object got saved ten times. Two versions got purged in earlier 
+    calls. The history looks like this (``s`` means: depends on storage,
+    ``e`` means: exception raised)::
+    
+      countPurged==True:
+      
+        selector:          0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+        version retrieved: 0, 1, 2, s, s, 5, 6, 7, 8, 9
+        
+      countPurged==False:
+       
+        selector:          0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+        version retrieved: 0, 1, 2, 5, 6, 7, 8, 9, e, e
     """
     
+    def purge(history_id, selector, comment="", metadata={}, 
+              countPurged=True):
+        """Purge a Version from a Resources History
+        
+        If ``countPurged`` is ``True`` version numbering counts purged
+        versions also. If ``False`` purged versiona are not taken into 
+        account.
+        
+        Purge the given version from the given history. The metadata
+        passed may be used to store informations about the reasons of
+        the purging.
+        """
+
     def retrieve(history_id, selector, countPurged=True, substitute=True):
         """Return the Version of the Resource with the given History Id
-        
-        Overrides ``retrieve`` from ``IStorage`` by adding ``countPurged`` 
-        and ``substitute`` parameters.
         
         If ``countPurged`` is ``True`` purged versions are taken into
         account also. If ``False`` purged versions are ignored and not
@@ -141,9 +177,6 @@ class IPurgeSupport(Interface):
         Return the oldest version first  when ``oldestFirst`` set to 
         ``True``. Default is ``False`` (youngest version first).
         
-        Overrides ``getHistory`` from ``IStorage`` by adding 
-        ``countPurged`` and ``substitute`` parameters.
-        
         If ``countPurged`` is ``True`` purged versions are returned also. 
         If ``False`` purged versions aren't returned.
         
@@ -153,17 +186,18 @@ class IPurgeSupport(Interface):
         Return a ``IHistory`` object.
         """
 
-    def purge(history_id, selector, comment="", metadata={}, 
-              countPurged=True):
-        """Purge a Version from a Resources History
+    def getModificationDate(history_id, selector=None, countPurged=True, 
+                            substitute=True):
+        """ Returns the modification date of the selected version of object
+            which has the given history id.
         
-        If ``countPurged`` is ``True`` version numbering counts purged
-        versions also. If ``False`` purged versiona are not taken into 
-        account.
+        If ``countPurged`` is ``True`` purged versions are returned also. 
+        If ``False`` purged versions aren't returned.
         
-        Purge the given version from the given history. The metadata
-        passed may be used to store informations about the reasons of
-        the purging.
+        If ``substitute`` is ``True`` a substitute is returned in case
+        the requested version was purged before.
+        
+        If selected is None, the most recent version (HEAD) is taken.
         """
 
 

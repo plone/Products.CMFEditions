@@ -577,8 +577,9 @@ class MemoryStorage(DummyBaseTool):
     def isRegistered(self, history_id):
         return history_id in self._histories
 
-    def getModificationDate(self, history_id, selector=None):
-        vdata = self.retrieve(history_id, selector)
+    def getModificationDate(self, history_id, selector=None, 
+                            countPurged=True, substitute=True):
+        vdata = self.retrieve(history_id, selector, countPurged, substitute)
         return vdata.object.object.modified()
 
     def purge(self, history_id, selector, comment="", metadata={}, 
