@@ -99,7 +99,7 @@ class IArchivist(Interface):
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
 
-    def getHistory(obj=None, history_id=None, preserve=(), oldestFirst=False):
+    def getHistory(obj=None, history_id=None, preserve=()):
         """Return the history of an object.
         
         The history is a 'IHistory' object.
@@ -107,9 +107,6 @@ class IArchivist(Interface):
         Requires either an object which is the working copy, or a history_id
         for an object if no history_id is provided the history_id will be 
         obtained from the working copy object.
-        
-        Return the oldest version first  when ``oldestFirst`` set to 
-        ``True``. Default is ``False`` (youngest version first).
         
         Raises an 'ArchivistError' exception if the given object doesn't
         have a history.
@@ -122,8 +119,7 @@ class IArchivist(Interface):
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
 
-    def queryHistory(obj=None, history_id=None, preserve=(), default=[], 
-                     oldestFirst=False):
+    def queryHistory(obj=None, history_id=None, preserve=(), default=[]):
         """Return the history of an object.
         
         Does the same as ``getHistory`` with the difference of returning
@@ -222,8 +218,7 @@ class IPurgeSupport(Interface):
         (see interface documentation for details).
         """
 
-    def getHistory(obj=None, history_id=None, preserve=(), oldestFirst=False,
-                   countPurged=True):
+    def getHistory(obj=None, history_id=None, preserve=(), countPurged=True):
         """Return the history of an object.
         
         The history is a 'IHistory' object.
@@ -231,9 +226,6 @@ class IPurgeSupport(Interface):
         Requires either an object which is the working copy, or a history_id
         for an object if no history_id is provided the history_id will be 
         obtained from the working copy object.
-        
-        Return the oldest version first  when ``oldestFirst`` set to 
-        ``True``. Default is ``False`` (youngest version first).
         
         Raises an 'ArchivistError' exception if the given object doesn't
         have a history.
@@ -250,7 +242,7 @@ class IPurgeSupport(Interface):
         """
 
     def queryHistory(obj=None, history_id=None, preserve=(), default=[], 
-                     oldestFirst=False, countPurged=True):
+                     countPurged=True):
         """Return the history of an object.
         
         Does the same as ``getHistory`` with the difference of returning
