@@ -51,6 +51,7 @@ from Products.CMFCore.utils import getToolByName
 
 from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
+from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionSupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData
@@ -120,14 +121,15 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         doc = self.portal.doc
 
         # test the tools interface conformance
-        self.failUnless(verifyObject(ICopyModifyMergeRepository, portal_repository))
+        verifyObject(ICopyModifyMergeRepository, portal_repository)
+        verifyObject(IPurgeSupport, portal_repository)
 
         # test the version data interface conformance
         doc.text = 'text v1'
         portal_repository.applyVersionControl(doc, comment='save no 1')
 
         vdata = portal_repository.retrieve(doc)
-        self.failUnless(verifyObject(IVersionData, vdata))
+        verifyObject(IVersionData, vdata)
 
     def test01_saveVersionableAspects(self):
         portal_repository = self.portal.portal_repository

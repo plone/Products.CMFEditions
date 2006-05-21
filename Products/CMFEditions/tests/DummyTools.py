@@ -199,7 +199,8 @@ class DummyArchivist(SimpleItem):
         # storage simulation
         self._archive[prepared_obj.history_id].append(svdata)
 
-    def retrieve(self, obj=None, history_id=None, selector=None, preserve=()):
+    def retrieve(self, obj=None, history_id=None, selector=None, preserve=(),
+                 countPurged=True):
         obj, history_id = dereference(obj, history_id, self)
         if selector is None:
             selector = len(self._archive[history_id]) - 1  #HEAD

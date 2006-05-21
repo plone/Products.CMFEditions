@@ -31,6 +31,9 @@ setDefaultRoles(ApplyVersionControl, ('Manager',))
 SaveNewVersion = 'CMFEditions: Save new version'
 setDefaultRoles(SaveNewVersion, ('Manager',))
 
+PurgeVersion = 'CMFEditions: Purge version'
+setDefaultRoles(PurgeVersion, ('Manager',))
+
 AccessPreviousVersions = 'CMFEditions: Access previous versions'
 setDefaultRoles(AccessPreviousVersions, ('Manager',))
 
