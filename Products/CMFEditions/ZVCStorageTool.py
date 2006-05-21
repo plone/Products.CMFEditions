@@ -89,9 +89,9 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     """
 
     __implements__ = (
-        SimpleItem.__implements__,
-        IStorage,
         IPurgeSupport,
+        IStorage,
+        SimpleItem.__implements__,
     )
         
     id = 'portal_historiesstorage'
@@ -560,47 +560,58 @@ class LazyHistory:
 
     def __init__(self, storage, history_id, oldestFirst=False,
                  countPurged=True, substitute=True):
-        self._storage = storage
+        """See IHistory.
+        """
         self._history_id = history_id
         self._oldestFirst = oldestFirst
         self._countPurged = countPurged
         self._substitute = substitute
+        self._length = storage._getLength(history_id, countPurged)
+        self._retrieve = storage.retrieve
 
     def __len__(self):
-        return self._storage._getLength(self._history_id, self._countPurged)
+        """See IHistory.
+        """
+        return self._length
 
     def __getitem__(self, selector):
-        return self._storage.retrieve(self._history_id, selector,
-                                      self._countPurged, self._substitute)
+        """See IHistory.
+        """
+        if not self._oldestFirst:
+            if selector >= 0:
+                if selector >= self._length:
+                    raise StorageRetrieveError(
+                        "Retrieving of object with history id '%s' failed. "
+                        "Version '%s' does not exist. " 
+                        % (self._history_id, selector))
+                selector = self._length - 1 - selector
+            else:
+                selector = - (selector + 1)
+                
+        return self._retrieve(self._history_id, selector, self._countPurged, 
+                              self._substitute)
 
     def __iter__(self):
-        if self._oldestFirst:
-            startPos = -1
-            direction = +1
-        else:
-            startPos = self._storage._getLength(self._history_id, 
-                                                self._countPurged)
-            direction = -1
-            
-        return GetItemIterator(self.__getitem__, startPos, direction, 
+        """See IHistory.
+        """
+        return GetItemIterator(self.__getitem__,
                                stopExceptions=(StorageRetrieveError,))
 
 
 class GetItemIterator:
     """Iterator object using a getitem implementation to iterate over.
     """
-    def __init__(self, getItem, startPos, direction, stopExceptions):
+    def __init__(self, getItem, stopExceptions):
         self._getItem = getItem
         self._stopExceptions = stopExceptions
-        self._pos = startPos
-        self._direction = direction
+        self._pos = -1
 
     def __iter__(self):
         return self
         
     def next(self):
+        self._pos += 1
         try:
-            self._pos += self._direction
             return self._getItem(self._pos)
         except self._stopExceptions:
             raise StopIteration()

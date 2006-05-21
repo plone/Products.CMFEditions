@@ -436,45 +436,6 @@ class Removed:
         self.reason = reason
         self.metadata = metadata
 
-class HistoryList(types.ListType):
-    """
-    """
-    def __init__(self, items, oldestFirst):
-        types.ListType.__init__(self, items)
-        self._len = len(items)
-        self._oldestFirst = oldestFirst
-    
-    def __getitem__(self, selector):
-        if selector is None:
-            selector = self._len - 1
-        try:
-           return types.ListType.__getitem__(self, selector)
-        except IndexError:
-            raise StorageRetrieveError("Retrieving non existing version %s" % selector)
-    
-    def __iter__(self):
-        if self._oldestFirst:
-            return types.ListType.__iter__(self)
-        else:
-            return ReverseIterator(types.ListType.__getitem__, self, self._len)
-
-class ReverseIterator:
-    """Iterator object using a getitem implementation to iterate over.
-    """
-    def __init__(self, getItem, li, length):
-        self._getItem = getItem
-        self._list = li
-        self._pos = length
-
-    def __iter__(self):
-        return self
-        
-    def next(self):
-        self._pos -= 1
-        if self._pos < 0:
-            raise StopIteration()
-        return self._getItem(self._list, self._pos)
-
 class MemoryStorage(DummyBaseTool):
 
     __implements__ = (IStorage, IPurgeSupport)
@@ -528,8 +489,16 @@ class MemoryStorage(DummyBaseTool):
 
     def retrieve(self, history_id, selector=None, 
                  countPurged=True, substitute=True):
+        if selector is None:
+            selector = len(self._getHistory(history_id)) - 1
+            
         if countPurged:
-            vdata = self._getHistory(history_id)[selector]
+            try:
+                vdata = self._getHistory(history_id)[selector]
+            except IndexError:
+                raise StorageRetrieveError("Retrieving non existing version %s" 
+                                           % selector)
+            
             vdata.referenced_data = deepcopy(vdata.referenced_data)
             if substitute and isinstance(vdata.object, Removed):
                 # delegate retrieving to purge policy if one is available
@@ -547,8 +516,8 @@ class MemoryStorage(DummyBaseTool):
                 if valid == selector:
                     return vdata
                 valid += 1
-        raise StorageRetrieveError("Retrieving non existing version %s" 
-                                   % selector)
+            raise StorageRetrieveError("Retrieving non existing version %s" 
+                                       % selector)
 
     def getHistory(self, history_id, preserve=(), oldestFirst=False,
                     countPurged=True, substitute=True):
@@ -562,17 +531,10 @@ class MemoryStorage(DummyBaseTool):
                 break
             history.append(vdata)
             sel += 1
-        return HistoryList(history, oldestFirst)
-
-    def _getHistory(self, history_id, preserve=()):
-        try:
-            history = self._histories[history_id]
-        except KeyError:
-            raise StorageUnregisteredError(
-                "Saving or retrieving an unregistered object is not "
-                "possible. Register the object with history id '%s' first. "
-                % history_id)
-        return HistoryList(history, oldestFirst=True)
+            
+        if not oldestFirst:
+            history.reverse()
+        return history
 
     def isRegistered(self, history_id):
         return history_id in self._histories
@@ -602,11 +564,21 @@ class MemoryStorage(DummyBaseTool):
             # digging into ZVC internals: remove the stored object
             history[selector] = StorageVersionData(removedInfo, None, metadata)
 
+    def _getHistory(self, history_id):
+        try:
+            history = self._histories[history_id]
+        except KeyError:
+            raise StorageUnregisteredError(
+                "Saving or retrieving an unregistered object is not "
+                "possible. Register the object with history id '%s' first. "
+                % history_id)
+        return history
+
     def _getLength(self, history_id, countPurged=True):
         """Returns the length of the history
         """
         histories = self._histories
-        history = histories[history_id]
+        history = self._getHistory(history_id)
         if countPurged:
             return len(history)
         
