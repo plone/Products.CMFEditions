@@ -43,8 +43,8 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder, ActionProviderBase):
     __doc__ = __doc__ # copy from module
 
     __implements__ = (
-        OrderedFolder.__implements__,   # hide underspecified interfaces :-(
         IReferenceFactories,
+        OrderedFolder.__implements__,   # hide underspecified interfaces :-(
     )
     
     id = 'portal_referencefactories'

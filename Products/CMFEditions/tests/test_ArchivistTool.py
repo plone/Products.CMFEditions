@@ -86,6 +86,12 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
 
         self.installStorageTool()
 
+        # delete purge policy if there is one installed
+        try:
+            del self.portal.portal_purgepolicy
+        except AttributeError:
+            pass
+
     def installStorageTool(self):
         self._setDummyTool(MemoryStorage())
 

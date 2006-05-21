@@ -572,7 +572,8 @@ class MemoryStorage(DummyBaseTool):
                 "Saving or retrieving an unregistered object is not "
                 "possible. Register the object with history id '%s' first. "
                 % history_id)
-        return HistoryList(history)
+        return history
+#        return HistoryList(history)
 
     def _getLength(self, history_id, countPurged=True):
         """Returns the length of the history
@@ -636,3 +637,44 @@ class DummyPurgePolicy(DummyBaseTool):
             if data.isValid():
                 return data
         return default
+
+
+class PurgePolicyTestDummyStorage(DummyBaseTool):
+    """Partial Storage used for PurgePolicy Tetss
+    """
+
+    __implements__ = (IStorage, IPurgeSupport)
+    id = 'portal_historiesstorage'
+
+    def __init__(self):
+        self.history = []
+
+    def save(self, history_id, obj):
+        self.history.append(obj)
+
+    def getHistory(self, history_id, preserve=(), countPurged=True, 
+                   substitute=True):
+        return self.history
+
+    def purge(self, history_id, selector, comment="", metadata={}, 
+              countPurged=True):
+        del self.history[selector]
+
+    def retrieve(self, history_id, selector=None, 
+                 countPurged=True, substitute=True):
+        if selector >= len(self.history):
+            raise StorageRetrieveError()
+        return self.history[selector]
+
+
+class DummyData(object):
+    def __init__(self, data):
+        self.data = data
+    
+    def isValid(self):
+        return True
+
+
+class RemovedData(object):
+    def isValid(self):
+        return False

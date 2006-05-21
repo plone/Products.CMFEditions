@@ -38,6 +38,8 @@ from Products.CMFEditions import ArchivistTool
 from Products.CMFEditions import ZVCStorageTool
 from Products.CMFEditions import CopyModifyMergeRepositoryTool
 from Products.CMFEditions import ReferenceFactoriesTool
+from Products.CMFEditions import KeepLastNVersionsTool
+
 from Products.CMFEditions import StandardModifiers
 
 PACKAGE_HOME = package_home(globals())
@@ -49,6 +51,7 @@ tools = (
     ZVCStorageTool.ZVCStorageTool,
     CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool,
     ReferenceFactoriesTool.ReferenceFactoriesTool,
+    KeepLastNVersionsTool.KeepLastNVersionsTool,
     )
 
 bases = tools
