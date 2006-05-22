@@ -210,6 +210,11 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
             if policy is not None:
                 data = policy.retrieveSubstitute(history_id, selector, 
                                                  default=data)
+#        print "-----"
+#        print data.object.object.version_id
+#        print data.object.object.title
+#        print data.object.object.__annotations__['Archetypes.storage.AnnotationStorage-text'].raw
+#        print data.object.object._md['description'].raw
         return data
 
     security.declarePrivate('getHistory')
