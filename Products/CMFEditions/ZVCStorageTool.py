@@ -298,7 +298,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif not countPurged:
             # selector is a position information
             shadow = self._getShadowStorage()
-            selector = shadow['available'][history_id][selector]
+            selector = shadow['available'][history_id][int(selector)]
         return selector
 
     def _getVersionPos(self, history_id, selector, countPurged):
@@ -423,7 +423,6 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     def _getZVCSelector(self, history_id, selector, countPurged):
         """Converts the CMFEditions selector into a ZVC selector
         """
-        selector = int(selector)
         try:
             selector = self._getVersionId(history_id, selector, countPurged)
         except IndexError:
