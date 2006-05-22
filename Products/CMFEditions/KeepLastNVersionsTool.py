@@ -83,7 +83,7 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager, ActionPro
         currentVersion = len(storage.getHistory(history_id))
         while True:
             length = len(storage.getHistory(history_id, countPurged=False))
-            if length <= self.maxNumberOfVersionsToKeep:
+            if length < self.maxNumberOfVersionsToKeep:
                 break
             comment = "purged on save of version %s" % currentVersion
             storage.purge(history_id, 0, comment, metadata={}, 

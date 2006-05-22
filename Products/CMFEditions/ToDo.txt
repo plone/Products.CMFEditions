@@ -8,7 +8,7 @@ Purge Support Implementation
 ToDo
 ----
 
-- Do first UI Tests
+- Check what the problem is with retrieve in the version view
 - Test history with ``oldestFirst=True/False``
 
 - Add enable/disable purge in case there is no purge policy (Storage Impl.)
@@ -33,6 +33,7 @@ Done
   Answer and decide what to do. Answer: the date of a substitute. Done.
 - Add reverse iterator for history (eventually change default behaviour)
 - Implement a purge policy tool (last n, enable/disable)
+- Do first UI Tests
 
 
 ----------------------------------------------------------------------

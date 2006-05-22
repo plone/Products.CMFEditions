@@ -6,7 +6,7 @@
 
   <div metal:fill-slot="main"
        tal:define="pr nocall:here/portal_repository;
-                   history python:pr.getHistory(here)"
+                   history python:pr.getHistory(here, countPurged=False)"
                    tal:condition="python: pr.isVersionable(context)">
 
     <h1 i18n:translate="versions_of_title">Versions of

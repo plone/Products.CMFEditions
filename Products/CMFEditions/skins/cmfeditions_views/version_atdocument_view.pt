@@ -15,7 +15,7 @@
 
         <div class="documentDescription"
              tal:content="here/Description"
-	     tal:on-error="string:nothing">
+             tal:on-error="string:nothing">
             description
         </div>
 

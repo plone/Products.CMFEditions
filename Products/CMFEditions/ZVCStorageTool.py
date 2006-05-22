@@ -298,8 +298,8 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif not countPurged:
             # selector is a position information
             shadow = self._getShadowStorage()
-            selector = shadow['available'][history_id][int(selector)]
-        return selector
+            selector = shadow['available'][history_id][selector]
+        return int(selector)
 
     def _getVersionPos(self, history_id, selector, countPurged):
         """Returns the Position in the Version History
@@ -369,8 +369,11 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         if history_id in shadowStorage['full']:
             fullHistory = shadowStorage['full'][history_id]
             fullHistory.append(shadowInfo)
+            shadowStorage['full']._p_changed = 1
             fullIndex = len(fullHistory) - 1
-            shadowStorage['available'][history_id].append(fullIndex)
+            availableHistory = shadowStorage['available'][history_id]
+            availableHistory.append(fullIndex)
+            shadowStorage['available']._p_changed = 1
         else:
             # first version
             shadowStorage['full'][history_id] = [shadowInfo]
