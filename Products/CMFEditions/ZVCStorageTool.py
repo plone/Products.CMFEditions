@@ -423,6 +423,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     def _getZVCSelector(self, history_id, selector, countPurged):
         """Converts the CMFEditions selector into a ZVC selector
         """
+        selector = int(selector)
         try:
             selector = self._getVersionId(history_id, selector, countPurged)
         except IndexError:

@@ -28,6 +28,7 @@ __version__ = "$Revision$"
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo, getSecurityManager
 
+from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
@@ -35,7 +36,7 @@ from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
 
-class KeepLastNVersionsTool(UniqueObject, SimpleItem, ActionProviderBase):
+class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager, ActionProviderBase):
     """
     """
 
@@ -49,6 +50,12 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, ActionProviderBase):
     
     meta_type = "CMFEditions Purge Policy Keeping Only the n last Versions"
     
+    manage_options = ( 
+#        { 'label' : 'Overview', 'action' : 'manage_overview' },
+    ) + PropertyManager.manage_options \
+      + ActionProviderBase.manage_options \
+      + SimpleItem.manage_options
+
     maxNumberOfVersionsToKeep = -1 # disabled
     
     _properties = (
