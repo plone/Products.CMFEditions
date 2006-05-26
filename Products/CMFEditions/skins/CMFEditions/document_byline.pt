@@ -68,7 +68,8 @@
         </tal:rights>
 
         <span metal:use-macro="here/review_history/macros/review_history" />
-        <tal:permcheck tal:condition="python:member.has_permission('CMFEditions: Access previous versions', here)">
+        <tal:permcheck tal:define="show_preview not:suppress_preview | nothing"
+                       tal:condition="python:show_preview and member.has_permission('CMFEditions: Access previous versions', here)">
           <span metal:use-macro="here/versions_history/macros/versions_history" />
         </tal:permcheck>
 
