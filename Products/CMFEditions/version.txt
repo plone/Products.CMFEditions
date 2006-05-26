@@ -1,1 +1,1 @@
-1.0alpha2+ (HEAD, unreleased)
+1.0alpha2+ (trunk HEAD, unreleased)
