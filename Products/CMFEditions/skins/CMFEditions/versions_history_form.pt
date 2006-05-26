@@ -151,7 +151,9 @@
         <h1>Version <b tal:content="version_id">0</b></h1>
 
         <tal:block define="here nocall:vdata/object;
+                           context here;
                            portal_type python:here.getPortalTypeName().lower().replace(' ', '_');
+                           object_title here/Title;
                            view_macro python:version_view_macro;">
               <metal:use_body use-macro="view_macro" />
         </tal:block>
