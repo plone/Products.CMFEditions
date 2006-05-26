@@ -391,7 +391,7 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         history = portal_storage.getHistory(1, countPurged=False)
         length = len(history)
         
-        # iterating over the history from new to old
+        # iterating over the history
         for i, vdata in enumerate(history):
             self.assertEquals(vdata.object.object.text, 
                               'v%s of text' % (i+2))
@@ -413,7 +413,7 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         history = portal_storage.getHistory(1, countPurged=False)
         length = len(history)
         
-        # iterating over the history from new to old
+        # iterating over the history
         for i, vdata in enumerate(history):
             self.assertEquals(vdata.object.object.text, 
                               'v%s of text' % (i+3))
