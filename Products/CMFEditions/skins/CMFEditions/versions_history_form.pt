@@ -151,7 +151,7 @@
         <h1>Version <b tal:content="version_id">0</b></h1>
 
         <tal:block define="here nocall:vdata/object;
-                           context here;
+                           context nocall:here;
                            portal_type python:here.getPortalTypeName().lower().replace(' ', '_');
                            object_title here/Title;
                            suppress_preview python:True;
