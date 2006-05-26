@@ -22,7 +22,8 @@
 
 ``IStorage`` defines the fundamental storage operations wheras 
 ``IPurgePolicy`` defines support for purging versions from the
-existing history of a resource.
+storage. The other interface definitions are defintions for types
+returned by storage methods.
 
 $Id$
 """
@@ -110,9 +111,9 @@ class IPurgeSupport(Interface):
     
     Purging a version from the storage removes that version irrevocably.
     
-    Adds ``purge`` and extends the signature of ``retrieve`` and 
-    ``getHistory``. The defaults of the extended methods mimique the
-    standard behaviour of the original methods.
+    Adds ``purge`` and extends the signature of ``retrieve``, ``getHistory``
+    and ``getModificationDate``. The defaults of the extended methods 
+    mimique the standard behaviour of the original methods.
     
     With the introduction of purging two selection scheme exist for 
     retrieving versions. Either purged versions are taken into account 
@@ -237,10 +238,6 @@ class IVersionData(Interface):
         
         Metadata has to be cloned before any write change to avoid 
         temporal problems (by changing the history).
-        """)
-
-    version_id = Attribute(
-        """The version_id of the object.
         """)
 
 
