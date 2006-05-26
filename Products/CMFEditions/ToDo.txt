@@ -2,19 +2,40 @@
 ToDos
 ======
 
-Purge Support Implementation
-============================
+Roadmap
+=======
 
-ToDo
-----
+ToDo for 1.0beta1
+-----------------
 
-- Check what the problem is with retrieve in the version view
-- Test history with ``oldestFirst=True/False``
-
+- Test history with ``oldestFirst=True/False`` (purge support)
 - Add enable/disable purge in case there is no purge policy (Storage Impl.)
-- move ``oldestFirst`` parameter before the ``preserve`` parameter
-- Some complex integration test with deleted version. 
-- Fix outstanding failing tests.
+  (purge support)
+- move ``oldestFirst`` parameter before the ``preserve`` parameter 
+  (purge support)
+- Some complex integration test with deleted version. (purge support)
+- storage migration from alpha3 (purge support)
+- check numbered todo's below
+- check tracker issues on plone.org and assign to alpha3, beta1 or rc1
+- package and publish 1.0alpha3
+- merge with trunk before doing 1.0beta1
+
+
+ToDo for 1.0rc1
+---------------
+
+- Fix outstanding failing tests (before rc)
+
+- Check what the problem is with retrieve in the version view (not purge 
+  support related, to be checked before 1.0 rc or better before beta1
+  as long as it doesn't delay beta1 to much).
+
+
+ToDo for 1.0.0
+--------------
+
+- fix new bugs
+
 
 
 Done
