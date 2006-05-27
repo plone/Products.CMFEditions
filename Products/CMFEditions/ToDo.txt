@@ -23,6 +23,11 @@ ToDo for 1.0beta1
 - package and publish 1.0alpha3
 - merge with trunk before doing 1.0beta1
 
+23. The ArchivistTool shall store the path at save time (in 
+    getPhysicalPath format). [CHECK FIRST IF DISRUPTIVE FOR STORAGE]
+
+29. Solve all XXX or replace them by TODO's where apropriate.
+
 47. Retrieving an old version of an object with a different id shall retain
     the current id. What about the children ids when recursing into?
     The current implementation replaces the id in 
@@ -44,15 +49,7 @@ ToDo for 1.0beta1
     
     This is the wrong place. A modifier shall do that.
 
-42. Solve problem in line 142 of test_CopyModifyMergeRepositoryTool.py
-    (test03_..., part marked with XXX) [CHECK]
-
-23. The ArchivistTool shall store the path at save time (in 
-    getPhysicalPath format). [CHECK FIRST IF DISRUPTIVE FOR STORAGE]
-
 55. packaging: make ZVC 0.3.1 downloadable from the collective
-
-29. Solve all XXX or replace them by TODO's where apropriate.
 
 46. Discuss naming: ``revert`` <--> ``rollback``
 
@@ -303,5 +300,8 @@ Done
 28. CopyModifyMergeRepositoryTool.py currently implements one possible
     policy how to handle references. Build a framework for pluggable
     policies. --> started with ReferenceFactoriesTool.py
+
+42. Solve problem in line 142 of test_CopyModifyMergeRepositoryTool.py
+    (test03_..., part marked with XXX) [CHECK]
 
 - fixed bug that prevented version preview to show the correct content
