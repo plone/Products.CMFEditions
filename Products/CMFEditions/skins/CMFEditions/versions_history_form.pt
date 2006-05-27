@@ -145,8 +145,7 @@
          tal:define="version_id python:request.get('version_id', None);"
          tal:condition="version_id">
       <tal:block define="vdata python:pr.retrieve(here,version_id);
-                         version_view_macro python: here.get_macros(vdata);"
->
+                         version_view_macro python: here.get_macros(vdata);">
 
         <h1>Version <b tal:content="version_id">0</b></h1>
 
@@ -158,8 +157,8 @@
                            view_macro python:version_view_macro;">
               <metal:use_body use-macro="view_macro" />
         </tal:block>
-    </tal:block>
-  </div>
+      </tal:block>
+    </div>
 
   </div>
 </html>

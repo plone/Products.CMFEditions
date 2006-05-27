@@ -118,8 +118,8 @@
 
     <div style="border:solid 1px gray"
          tal:define="version_id python:request.get('version_id', None);
-		     version_view python: here.get_macros(version_id);
-		     here python:here.portal_repository.retrieve(here, version_id).object;">
+                     version_view python: here.get_macros(version_id);
+                     here python:here.portal_repository.retrieve(here, version_id).object;">
 
         <h1>Version <b tal:content="version_id">x</b></h1>
         <xmetal:use_body use-macro="version_view"/>
@@ -130,14 +130,14 @@
 
 <!--
     <div style="border:solid 1px gray"
-	 tal:condition="python:request.get('version_id','')">
+         tal:condition="python:request.get('version_id','')">
 
       <tal:block
-	  define="version_id python:request.get('version_id',);
-		  here python:here.portal_versions.retrieve(here, version_id);
-		  version_view python: here.get_macros(version_id)">
-	<h1>Version <b tal:content="version_id">x</b></h1>
-	<metal:use_body use-macro="version_view" />
+         define="version_id python:request.get('version_id',);
+                 here python:here.portal_versions.retrieve(here, version_id);
+                 version_view python: here.get_macros(version_id)">
+        <h1>Version <b tal:content="version_id">x</b></h1>
+        <metal:use_body use-macro="version_view" />
       </tal:block>
     </div>
 

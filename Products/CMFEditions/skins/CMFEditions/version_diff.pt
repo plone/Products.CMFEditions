@@ -85,8 +85,8 @@
     <i tal:condition="not:diffs/getSubDiffs">None</i>
     <ul tal:condition="diffs/getSubDiffs">
         <li tal:repeat="cs diffs/getSubDiffs">
-        	  <tal:check condition="not:cs/same">
-            	<a tal:content="cs/id" tal:attributes="href cs/id">[filename]</a>
+            <tal:check condition="not:cs/same">
+                <a tal:content="cs/id" tal:attributes="href cs/id">[filename]</a>
            </tal:check>
        </li>
     </ul>
