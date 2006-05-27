@@ -59,8 +59,7 @@
                     <a href="#"
                        class="version-table-version"
                        tal:attributes="href string:$here_url/versions_history_form?version_id=${id}"
-                       i18n:translate="label_show_below">
-                       (show below)</a>
+                       i18n:translate="label_preview_version">(preview)</a>
                   </td>
                   <td>
                     <span tal:content="vdata/sys_metadata/principal">francesco</span>
