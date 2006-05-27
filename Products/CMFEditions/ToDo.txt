@@ -18,6 +18,7 @@ ToDo for 1.0beta1
 - check numbered todo's below
 - Add enable/disable purge in case there is no purge policy (Storage Impl.)
   (purge support)
+- Add a purge permission (purge support)
 - check answers about rollback versus revert abd take a decission
 - check name change opinions and take a decission
 - Some complex integration test with deleted version. (purge support)
