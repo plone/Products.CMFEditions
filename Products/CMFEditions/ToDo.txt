@@ -2,20 +2,24 @@
 ToDos
 ======
 
+RFC (to list)
+=============
+
+- rollback in the ui --> revert
+- addons: propose udsage of diff
+
+
 Roadmap
 =======
 
 ToDo for 1.0beta1
 -----------------
 
-- Test history with ``oldestFirst=True/False`` (purge support)
+- check numbered todo's below
 - Add enable/disable purge in case there is no purge policy (Storage Impl.)
-  (purge support)
-- move ``oldestFirst`` parameter before the ``preserve`` parameter 
   (purge support)
 - Some complex integration test with deleted version. (purge support)
 - storage migration from alpha3 (purge support)
-- check numbered todo's below
 - check tracker issues on plone.org and assign to alpha3, beta1 or rc1
 - package and publish 1.0alpha3
 - merge with trunk before doing 1.0beta1
@@ -25,10 +29,6 @@ ToDo for 1.0rc1
 ---------------
 
 - Fix outstanding failing tests (before rc)
-
-- Check what the problem is with retrieve in the version view (not purge 
-  support related, to be checked before 1.0 rc or better before beta1
-  as long as it doesn't delay beta1 to much).
 
 
 ToDo for 1.0.0
@@ -41,6 +41,12 @@ ToDo for 1.0.0
 Done
 ----
 
+- Check what the problem is with retrieve in the version view (not purge 
+  support related, to be checked before 1.0 rc or better before beta1
+  as long as it doesn't delay beta1 to much).
+- move ``oldestFirst`` parameter before the ``preserve`` parameter 
+  (purge support)
+- Test history with ``oldestFirst=True/False`` (purge support)
 - manual purge support implementation on storage level (incl tests)
 - Implement save policy support allowing automatic deleting of version 
   at save time(testing with dummy purge policy)
@@ -70,8 +76,6 @@ Inbox
 43. Extract generic tests from ``test_ZVCStorageTool.py`` into a 
     ``test_IStorage.py``. ``test_ZVCStorageTool.py`` and future storage
     may then easily inherit the generic tests.
-
-44. Replace hards tabs by soft tabs.
 
 45. Get AT reference stuff working (see ``test_FAQ.py``).
 
@@ -308,4 +312,6 @@ Done
     We have to extend the storage api to be able to get to the 
     independently of the storage type and possibly more cheaply. 
     (--> everybody, done: tomek, varun)
+
+44. Replace hards tabs by soft tabs.
 

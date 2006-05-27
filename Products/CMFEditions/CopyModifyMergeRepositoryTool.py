@@ -341,12 +341,12 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         self._doInplaceFixups(fixup_queue, True)
 
     security.declarePublic('getHistory')
-    def getHistory(self, obj, preserve=(), oldestFirst=False, 
+    def getHistory(self, obj, oldestFirst=False, preserve=(), 
                    countPurged=True):
         """See IPurgeSupport.
         """
         self._assertAuthorized(obj, AccessPreviousVersions, 'getHistory')
-        return LazyHistory(self, obj, preserve, oldestFirst, countPurged)
+        return LazyHistory(self, obj, oldestFirst, preserve, countPurged)
 
     security.declarePublic('isUpToDate')
     def isUpToDate(self, obj, selector=None, countPurged=True):
@@ -656,7 +656,7 @@ class LazyHistory:
 
     __allow_access_to_unprotected_subobjects__ = 1
 
-    def __init__(self, repository, obj, preserve, oldestFirst, countPurged):
+    def __init__(self, repository, obj, oldestFirst, preserve, countPurged):
         archivist = getToolByName(repository, 'portal_archivist')
         self._repo = repository
         self._obj = obj

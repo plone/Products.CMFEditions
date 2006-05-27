@@ -114,7 +114,7 @@ class ICopyModifyMergeRepository(Interface):
         Comparison is done with the selected version.
         """
 
-    def getHistory(obj, preserve=(), oldestFirst=False):
+    def getHistory(obj, oldestFirst=False, preserve=()):
         """Returns the history of a content.
 
         Return the oldest version first  when ``oldestFirst`` set to 
@@ -228,7 +228,7 @@ class IPurgeSupport(Interface):
         (see interface documentation for details).
         """
 
-    def getHistory(obj, preserve=(), oldestFirst=False, countPurged=True):
+    def getHistory(obj, oldestFirst=False, preserve=(), countPurged=True):
         """Returns the history of a content.
 
         Return the oldest version first  when ``oldestFirst`` set to 
