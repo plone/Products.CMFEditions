@@ -5,8 +5,7 @@ ToDos
 RFC (to list)
 =============
 
-- rollback in the ui --> revert
-- addons: propose udsage of diff
+- addons: propose usage of diff
 
 
 Roadmap
@@ -15,14 +14,51 @@ Roadmap
 ToDo for 1.0beta1
 -----------------
 
+- replace (show below) with (preview)
 - check numbered todo's below
 - Add enable/disable purge in case there is no purge policy (Storage Impl.)
   (purge support)
+- check answers about rollback versus revert abd take a decission
+- check name change opinions and take a decission
 - Some complex integration test with deleted version. (purge support)
 - storage migration from alpha3 (purge support)
 - check tracker issues on plone.org and assign to alpha3, beta1 or rc1
 - package and publish 1.0alpha3
 - merge with trunk before doing 1.0beta1
+
+47. Retrieving an old version of an object with a different id shall retain
+    the current id. What about the children ids when recursing into?
+    The current implementation replaces the id in 
+    ``copymodifymergerepositorytool.py``::
+    
+        > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\copymodifymergerepositorytool.py(272)revert()
+        (Pdb) l
+        267             """
+        268             """
+        269             original_id = obj.getId()
+        270             self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
+        271             parent = aq_parent(aq_inner(obj))
+        272             self._recursiveRetrieve(obj, parent, selector, preserve=(),
+        273                                     inplace=True)
+        274  ->         if obj.getId() != original_id:
+        275                 obj._setId(original_id)
+        276                 #parent.manage_renameObject(obj.getId(), original_id)
+        277                 #parent._setObject(original_id, obj, set_owner=0)
+    
+    This is the wrong place. A modifier shall do that.
+
+42. Solve problem in line 142 of test_CopyModifyMergeRepositoryTool.py
+    (test03_..., part marked with XXX) [CHECK]
+
+23. The ArchivistTool shall store the path at save time (in 
+    getPhysicalPath format). [CHECK FIRST IF DISRUPTIVE FOR STORAGE]
+
+55. packaging: make ZVC 0.3.1 downloadable from the collective
+
+29. Solve all XXX or replace them by TODO's where apropriate.
+
+46. Discuss naming: ``revert`` <--> ``rollback``
+
 
 
 ToDo for 1.0rc1
@@ -38,8 +74,8 @@ ToDo for 1.0.0
 
 
 
-Done
-----
+Done (purge support)
+--------------------
 
 - Check what the problem is with retrieve in the version view (not purge 
   support related, to be checked before 1.0 rc or better before beta1
@@ -65,61 +101,15 @@ Done
 
 ----------------------------------------------------------------------
 
+next number: 56
 
-Numbers don't indicate any importance and order in implementation.
 
-next number: 54
-
-Inbox
-=====
+Deferred to a Future Version
+============================
 
 43. Extract generic tests from ``test_ZVCStorageTool.py`` into a 
     ``test_IStorage.py``. ``test_ZVCStorageTool.py`` and future storage
     may then easily inherit the generic tests.
-
-45. Get AT reference stuff working (see ``test_FAQ.py``).
-
-46. Discuss naming: ``revert`` <--> ``rollback``
-
-47. Retrieving an old version of an object with a different id shall retain
-    the current id. What about the children ids when recursing into?
-    The current implementation replaces the id in 
-    ``copymodifymergerepositorytool.py``::
-    
-        > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\copymodifymergerepositorytool.py(272)revert()
-        (Pdb) l
-        267             """
-        268             """
-        269             original_id = obj.getId()
-        270             self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
-        271             parent = aq_parent(aq_inner(obj))
-        272             self._recursiveRetrieve(obj, parent, selector, preserve=(),
-        273                                     inplace=True)
-        274  ->         if obj.getId() != original_id:
-        275                 obj._setId(original_id)
-        276                 #parent.manage_renameObject(obj.getId(), original_id)
-        277                 #parent._setObject(original_id, obj, set_owner=0)
-    
-    This is the wrong place. A modifier shall do that.
-    
-48. ``ZVCStorageTool.py`` stores the current ``__vc_info__`` in a mapping
-    even if the operation was a retrieve. But this is correct only in the 
-    case of a revert. This may end in odd behaviour if a user is just looking 
-    at an old version but continueing working on teh current one.
-    --> ``ZVCStorageTool.py`` should not strip the ``__vc_info__`` away.
-    Argghhh: We really should replace the ``ZVCStorageTool`` by a simpler
-    ZODB based one. In the short term we have to write a test showing the 
-    problem and then correct it if there is really one.
-    
-    > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\zvcstoragetool.py(121)_saveZVCInfo()
-    (Pdb) l
-    116                     % history_id)
-    117
-    118         def _saveZVCInfo(self, obj, history_id):
-    119             """Saves ZVC related informations and deletes them from the object.
-    120             """
-    121             vc_info = deepCopy(obj.__vc_info__)
-    122  ->         self._getHistoryIdMapping()[history_id] = vc_info
 
 49. Currently autoapply can be enabled/disabled for the object to version only.
     All subobjects (related objects) are automagically autoapplied when the
@@ -129,78 +119,36 @@ Inbox
     object not. What the reaction should be is yet unclear: raise exception or
     autoapply the outside subobjects?
 
-50. Add tests for object managers trating subobjects as inside references.
-    Also add tests for a mixed behaviour.
-
-51. ``_recursiveRetrieve``: There is currently a problem with inside_references 
-    beeing moved to outside: What do on revert when reverting an inside_reference 
-    that has previously been moved to outside (no control over it anymore)? We 
-    may end in two object having the same ``history_id`` which is **REALLY** bad. 
-    The reverted inside_reference should be attached a new history!!!
-    Just take into account: the operation of moving away and object and the 
-    reverting it is in fact a copy operation.
-    
-52. ``_recursiveRetrieve``: Rewrapping in revert shall not be done with the 
-    parent but with the current objects wrapper.
-
-        # rewrap (XXX is this the correct place here in case of inplace?)
-        vdata.data.object = vdata.data.object.__of__(parent)
-
-53. Write test suite for ``STandardModifiers``.
-
-
-CMFEditions 1.0beta1
-====================
-
-42. Solve problem in line 142 of test_CopyModifyMergeRepositoryTool.py
-    (test03_..., part marked with XXX)
-
-41. Add at least one functional test to benefit from the fact that 
-    Stefan Holek is here
+53. Write test suite for ``StandardModifiers``.
 
 18. Write a How-To about how to write a modifier (it's like a driver
     that may screw up your operating system)
+
+14. Extend the portal_uidhandler tool to make it version and location 
+    aware (see also 8.)
 
 8. archivist: an working copy under version control shall carry a 
    'history_id', 'version_id' and a 'location_id'. The resulting 'cmf_uid' 
    then is a combination of the former ones (see also 14.).
 
-14. Extend the portal_uidhandler tool to make it version and location 
-    aware (see also 8.)
+22. Implement Multi Location checkout support. 'getHistoryById' and 
+    'checkout' methods of IRepository. This also means the current
+    'portal_uidhandler' must be made location and version aware (see also 9.).
+    
+9. allow 'checkout' and 'getHistory' of a version by history_id and version_id
+   (see also 22.)
 
 11. terminology: workspace object --> working copy
                  resource == all versions at every location
 
 20. Make the autoapply of the CopyModifyMergerepository a Zope property
     beeing editable through the ZMI.
-    
-23. The ArchivistTool shall store the path at save time (in 
-    getPhysicalPath format).
-
-30. Write more unit tests to cover functionality better. Especially
-    test with folderish content objects and later Archetypes references.
-    These tests will fail before new modifiers were written.
-    We must get at least the same level of functionality as 
-    CMFEditions 0.6.x currently offers.
 
 39. Revert, View and Save have different permissions. This must be 
     reflected by the version_history_form only showing actions that
     are allowed by the current user (use actions for it).
 
-
-CMFEditions-1_0rc1
-==================
-
-100. packaging: make ZVC 0.3.1 downloadable from the collective
-
-101. packaging: for the release we need an updated CMF 1.5 CMFUid package 
-     (collective)
-
-
-CMFEditions 1.0final
-====================
-
-17. Write a README.txt
+17. Write a better README.txt
 
 19. Implement the IBulkEditableModifierRegistry interface (this enables
     us to deliver a ZMI interface for registering modifiers. Currently
@@ -215,27 +163,12 @@ CMFEditions 1.0final
 32. Make storage unit tests subclassable to allow people writing
     new storages to subclass a buch of unit tests (see also 25.).
     
-29. Solve all XXX or replace them by TODO's where apropriate.
-
-
-
-CMFEditions 1.0+ (1.1 or later)
-===============================
-
-9. allow 'checkout' and 'getHistory' of a version by history_id and version_id
-   (see also 22.)
-
-22. Implement Multi Location checkout support. 'getHistoryById' and 
-    'checkout' methods of IRepository. This also means the current
-    'portal_uidhandler' must be made location and version aware (see also 9.).
-    
 16. principal: save the name or kind of unique id?
 
-28. CopyModifyMergeRepositoryTool.py currently implements one possible
-    policy how to handle references. Build a framework for pluggable
-    policies.
-
 40. Support branching.
+
+
+
 
 
 Done
@@ -315,3 +248,58 @@ Done
 
 44. Replace hards tabs by soft tabs.
 
+45. Get AT reference stuff working (see ``test_FAQ.py``).
+
+48. ``ZVCStorageTool.py`` stores the current ``__vc_info__`` in a mapping
+    even if the operation was a retrieve. But this is correct only in the 
+    case of a revert. This may end in odd behaviour if a user is just looking 
+    at an old version but continueing working on teh current one.
+    --> ``ZVCStorageTool.py`` should not strip the ``__vc_info__`` away.
+    Argghhh: We really should replace the ``ZVCStorageTool`` by a simpler
+    ZODB based one. In the short term we have to write a test showing the 
+    problem and then correct it if there is really one.
+    
+    > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\zvcstoragetool.py(121)_saveZVCInfo()
+    (Pdb) l
+    116                     % history_id)
+    117
+    118         def _saveZVCInfo(self, obj, history_id):
+    119             """Saves ZVC related informations and deletes them from the object.
+    120             """
+    121             vc_info = deepCopy(obj.__vc_info__)
+    122  ->         self._getHistoryIdMapping()[history_id] = vc_info
+
+50. Add tests for object managers trating subobjects as inside references.
+    Also add tests for a mixed behaviour.
+
+51. ``_recursiveRetrieve``: There is currently a problem with inside_references 
+    beeing moved to outside: What do on revert when reverting an inside_reference 
+    that has previously been moved to outside (no control over it anymore)? We 
+    may end in two object having the same ``history_id`` which is **REALLY** bad. 
+    The reverted inside_reference should be attached a new history!!!
+    Just take into account: the operation of moving away and object and the 
+    reverting it is in fact a copy operation.
+    
+52. ``_recursiveRetrieve``: Rewrapping in revert shall not be done with the 
+    parent but with the current objects wrapper.
+
+        # rewrap (XXX is this the correct place here in case of inplace?)
+        vdata.data.object = vdata.data.object.__of__(parent)
+
+41. Add at least one functional test to benefit from the fact that 
+    Stefan Holek is here at the sprint (the occasion has been gone)
+
+30. Write more unit tests to cover functionality better. Especially
+    test with folderish content objects and later Archetypes references.
+    These tests will fail before new modifiers were written.
+    We must get at least the same level of functionality as 
+    CMFEditions 0.6.x currently offers.
+
+56. packaging: for the release we need an updated CMF 1.5 CMFUid package 
+    (collective). --> No support for Plone 2.0.x planed anymore.
+
+28. CopyModifyMergeRepositoryTool.py currently implements one possible
+    policy how to handle references. Build a framework for pluggable
+    policies. --> started with ReferenceFactoriesTool.py
+
+- fixed bug that prevented version preview to show the correct content
