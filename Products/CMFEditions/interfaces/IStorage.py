@@ -260,24 +260,19 @@ class IStreamableReference(Interface):
 class StorageError(Exception):
     """History storage exception.
     """
-    pass
 
 class StorageRetrieveError(StorageError):
     """Raised if tried to retrieve a non existent version of a resource.
     """
-    pass
 
 class StorageRegisterError(StorageError):
     """Raised if registering the resource failed.
     """
-    pass
     
 class StorageSaveError(StorageError):
     """Raised if saving a new version of a resource failed.
     """
-    pass
     
 class StorageUnregisteredError(StorageError):
     """Raised if trying to save an unregistered resource.
     """
-    pass

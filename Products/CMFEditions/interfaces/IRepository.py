@@ -363,3 +363,11 @@ class IHistory(Interface):
         """ Returns an iterator returning 'IVersionData' object.
         """
         
+
+class RepositoryError(Exception):
+    """Repository exception.
+    """
+
+class RepositoryPurgeError(RepositoryError):
+    """Purge is only possible with a purge policy installed.
+    """

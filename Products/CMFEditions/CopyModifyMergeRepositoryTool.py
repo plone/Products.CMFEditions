@@ -45,6 +45,7 @@ from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
 from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
+from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.interfaces.IRepository import IHistory
@@ -280,6 +281,16 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """See IPurgeSupport.
         """
         self._assertAuthorized(obj, PurgeVersion, 'purge')
+        
+        # Trying to avoid mess with purged versions which we don't offer
+        # support yet when passed to the repository layer due to a missing
+        # purge policy. The problem would occure on revert and retrieve.
+        pp = getToolByName(self, 'portal_purgepolicy', None)
+        if pp is None:
+            raise RepositoryPurgeError("Purging a version is not possible. "
+                                       "Purge is only possible with a purge "
+                                       "policy installed.")
+
         portal_archivist = getToolByName(self, 'portal_archivist')
         # just hand over to the archivist for the moment (recursive purging
         # may be implemented in a future release)

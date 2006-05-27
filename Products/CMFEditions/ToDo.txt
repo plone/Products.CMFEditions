@@ -14,13 +14,10 @@ Roadmap
 ToDo for 1.0beta1
 -----------------
 
-- Add enable/disable purge in case there is no purge policy (Storage Impl.)
-  (purge support)
-- Add a purge permission (purge support)
 - check numbered todo's below
-- check answers about rollback versus revert abd take a decission
-- check name change opinions and take a decission
+- check answers about rollback versus revert and take a decission
 - Some complex integration test with deleted version. (purge support)
+- check name change opinions and take a decission
 - storage migration from alpha3 (purge support)
 - check tracker issues on plone.org and assign to alpha3, beta1 or rc1
 - package and publish 1.0alpha3
@@ -100,6 +97,9 @@ Done (purge support)
 - replace (show below) by (preview)
 - versions_history_form: changed i18n label: 
   label_show_below --> preview_version
+- Add enable/disable purge in case there is no purge policy (Storage Impl.)
+  (purge support)
+- Add a purge permission (purge support)
 
 ----------------------------------------------------------------------
 

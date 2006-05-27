@@ -52,6 +52,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
 from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
+from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionSupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData
@@ -284,6 +285,22 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         self.failUnless('doc2' in self.portal.objectIds())
         restored = self.portal.doc2
         self.assertEqual(restored.text, 'text v1')
+
+    def test08_purgingDisallowedWithoutPurgingPolicy(self):
+        portal_repository = self.portal.portal_repository
+        doc = self.portal.doc
+        
+        # remove purge policy for this test
+        portal_purgepolicy = self.portal.portal_purgepolicy
+        del self.portal.portal_purgepolicy
+
+        doc.text = 'text v1'
+        portal_repository.applyVersionControl(doc, comment='save no 1')
+
+        self.assertRaises(RepositoryPurgeError,
+                          portal_repository.purge, doc, selector=0)
+
+        self.portal.portal_purgepolicy = portal_purgepolicy
 
 
 class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):
@@ -620,6 +637,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                                      ATVersionOnEditPolicy)
         self.failUnless(self.isFCActionInPlace('validate_integrity',
                                                      'success', None, None))
+
 
 if __name__ == '__main__':
     framework()
