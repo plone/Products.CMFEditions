@@ -59,6 +59,7 @@ ToDo for 1.0.0
 --------------
 
 - fix new bugs reported from rc1
+- extensive credits list (using svn blame)
 
 
 
