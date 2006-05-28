@@ -11,20 +11,20 @@ RFC (to list)
 Roadmap
 =======
 
-ToDo for 1.0beta1
------------------
+ToDo for 1.0alpha3 and 1.0beta1
+-------------------------------
+
+- check tracker issues on plone.org and assign to alpha3, beta1 or rc1
+- update DEPENDENCIES.txt for alpha and beta
+55. packaging: make ZVC 0.3.1 downloadable from the collective
+- package and publish 1.0alpha3
 
 - check answers about rollback versus revert and take a decission
-- check numbered todo's below
 - Some complex integration test with deleted version. (purge support)
 - check name change opinions and take a decission
 - storage migration from alpha3 (purge support)
-- check tracker issues on plone.org and assign to alpha3, beta1 or rc1
-- package and publish 1.0alpha3
-- merge with trunk before doing 1.0beta1
 
-55. packaging: make ZVC 0.3.1 downloadable from the collective
-    update DEPENDENCIES.txt
+- merge with trunk before doing 1.0beta1
 
 47. Retrieving an old version of an object with a different id shall retain
     the current id. What about the children ids when recursing into?
