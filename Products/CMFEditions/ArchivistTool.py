@@ -34,7 +34,7 @@ import zLOG
 
 from Globals import InitializeClass
 from Persistence import Persistent
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, getSecurityManager
 from ZODB.PersistentList import PersistentList
 from OFS.SimpleItem import SimpleItem
@@ -147,7 +147,7 @@ class VersionAwareReference(Persistent):
             # XXX we really need a isUpToDate/isChanged methods!
             
         if remove_info and hasattr(self, 'info'):
-            self.info = None
+            del self.info
 
 
 class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
@@ -385,12 +385,24 @@ class PreparedObject:
         comment = sys_metadata.get('comment', '')
         timestamp = sys_metadata.get('timestamp', int(time.time()))
         originator = sys_metadata.get('originator', None)
+        
+        # parent reference (register the parent with the unique id handler)
+        # register with sys_metadata as there is no other possibility
+        obj = original.object
+        parent = aq_parent(aq_inner(obj))
+        portal_uidhandler = getToolByName(obj, 'portal_uidhandler')
+        
         metadata = {
             'sys_metadata': {
                 'comment': comment,
                 'timestamp': timestamp,
                 'originator': originator,
                 'principal': getUserId(),
+                'parent': {
+                    'history_id': portal_uidhandler.register(parent),
+                    'version_id': getattr(parent, "version_id", None),
+                    'location_id': getattr(parent, "location_id", None),
+                }
             },
             'app_metadata': app_metadata,
         }

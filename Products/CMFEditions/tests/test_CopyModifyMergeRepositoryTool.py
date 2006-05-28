@@ -329,18 +329,18 @@ class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):
         alog_str = portal_archivist.get_log()
         expected = """
 prepare fol: hid=1, refs=(doc1_inside, doc2_inside, doc3_outside)
-  prepare doc1_inside: hid=2
-  save    doc1_inside: hid=2, isreg=False, auto=True
-  prepare doc2_inside: hid=3
-  save    doc2_inside: hid=3, isreg=False, auto=True
-save    fol: hid=1, irefs=({hid:2, vid:0}, {hid:3, vid:0}), orefs=({hid:None, vid:-1}), isreg=False, auto=True
+  prepare doc1_inside: hid=3
+  save    doc1_inside: hid=3, isreg=False, auto=True
+  prepare doc2_inside: hid=4
+  save    doc2_inside: hid=4, isreg=False, auto=True
+save    fol: hid=1, irefs=({hid:3, vid:0}, {hid:4, vid:0}), orefs=({hid:None, vid:-1}), isreg=False, auto=True
 
 prepare fol: hid=1, refs=(doc1_inside, doc2_inside, doc3_outside)
-  prepare doc1_inside: hid=2
-  save    doc1_inside: hid=2, isreg=True, auto=False
-  prepare doc2_inside: hid=3
-  save    doc2_inside: hid=3, isreg=True, auto=False
-save    fol: hid=1, irefs=({hid:2, vid:1}, {hid:3, vid:1}), orefs=({hid:None, vid:-1}), isreg=True, auto=False"""
+  prepare doc1_inside: hid=3
+  save    doc1_inside: hid=3, isreg=True, auto=False
+  prepare doc2_inside: hid=4
+  save    doc2_inside: hid=4, isreg=True, auto=False
+save    fol: hid=1, irefs=({hid:3, vid:1}, {hid:4, vid:1}), orefs=({hid:None, vid:-1}), isreg=True, auto=False"""
 
         self.assertEqual(alog_str, expected)
 
@@ -369,8 +369,8 @@ save    fol: hid=1, irefs=({hid:2, vid:1}, {hid:3, vid:1}), orefs=({hid:None, vi
         alog_str = portal_archivist.get_log()
 
         expected = """retrieve fol: hid=1, selector=0
-retrieve doc1_inside: hid=2, selector=0
-retrieve doc2_inside: hid=3, selector=0"""
+retrieve doc1_inside: hid=3, selector=0
+retrieve doc2_inside: hid=4, selector=0"""
         self.assertEqual(alog_str, expected)
 
         # check result

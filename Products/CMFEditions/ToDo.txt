@@ -23,9 +23,6 @@ ToDo for 1.0beta1
 - package and publish 1.0alpha3
 - merge with trunk before doing 1.0beta1
 
-23. The ArchivistTool shall store the path at save time (in 
-    getPhysicalPath format). [CHECK FIRST IF DISRUPTIVE FOR STORAGE]
-
 29. Solve all XXX or replace them by TODO's where apropriate.
 
 47. Retrieving an old version of an object with a different id shall retain
@@ -303,5 +300,10 @@ Done
 
 42. Solve problem in line 142 of test_CopyModifyMergeRepositoryTool.py
     (test03_..., part marked with XXX) [CHECK]
+
+23. The ArchivistTool shall store the path at save time (in 
+    getPhysicalPath format). Remark: This is useless as at retrieve
+    time the names of the parents may have changed. But there is a
+    need to store a version aware reference to the parent.
 
 - fixed bug that prevented version preview to show the correct content
