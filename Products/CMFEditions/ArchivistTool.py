@@ -358,8 +358,6 @@ InitializeClass(ArchivistTool)
 
 
 def getUserId():
-    # XXX This is way too simple. 
-    # Needn't this be something unique over time?
     return getSecurityManager().getUser().getUserName()
 
 

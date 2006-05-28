@@ -23,8 +23,6 @@
 #########################################################################
 """Intercepts/modifies saving/retrieving of versions to/from the repository.
 
-XXX
-
 $Id: IModifier.py,v 1.7 2005/06/24 11:42:01 gregweb Exp $
 """
 
@@ -270,8 +268,6 @@ class IBulkEditableModifierRegistry(Interface):
                         modifier.
             editable -- A flag signalizing if the subscribers are 
                         editable
-                        
-            XXX ???
         """
     
     def setModifiers(ids, pos, before_save, after_retrieve, on_clone):

@@ -14,8 +14,8 @@ Roadmap
 ToDo for 1.0beta1
 -----------------
 
-- check numbered todo's below
 - check answers about rollback versus revert and take a decission
+- check numbered todo's below
 - Some complex integration test with deleted version. (purge support)
 - check name change opinions and take a decission
 - storage migration from alpha3 (purge support)
@@ -23,7 +23,8 @@ ToDo for 1.0beta1
 - package and publish 1.0alpha3
 - merge with trunk before doing 1.0beta1
 
-29. Solve all XXX or replace them by TODO's where apropriate.
+55. packaging: make ZVC 0.3.1 downloadable from the collective
+    update DEPENDENCIES.txt
 
 47. Retrieving an old version of an object with a different id shall retain
     the current id. What about the children ids when recursing into?
@@ -46,22 +47,18 @@ ToDo for 1.0beta1
     
     This is the wrong place. A modifier shall do that.
 
-55. packaging: make ZVC 0.3.1 downloadable from the collective
-
-46. Discuss naming: ``revert`` <--> ``rollback``
-
 
 
 ToDo for 1.0rc1
 ---------------
 
-- Fix outstanding failing tests (before rc)
+- Fix outstanding failing tests
 
 
 ToDo for 1.0.0
 --------------
 
-- fix new bugs
+- fix new bugs reported from rc1
 
 
 
@@ -305,5 +302,9 @@ Done
     getPhysicalPath format). Remark: This is useless as at retrieve
     time the names of the parents may have changed. But there is a
     need to store a version aware reference to the parent.
+
+29. Solve all XXX or replace them by TODO's where apropriate.
+
+46. Discuss naming: ``revert`` <--> ``rollback``
 
 - fixed bug that prevented version preview to show the correct content

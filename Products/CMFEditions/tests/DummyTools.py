@@ -251,7 +251,7 @@ class VersionAwareReference:
         portal_archivist = getToolByName(target_obj, 'portal_archivist')
         self.history_id = portal_hidhandler.queryUid(target_obj)
         self.version_id = len(portal_archivist.queryHistory(target_obj))-1
-        self.location_id = 1 # XXX only one location possible currently
+        self.location_id = 1 # only one location possible currently
         if remove_info and hasattr(self, 'info'):
             self.info = None
 

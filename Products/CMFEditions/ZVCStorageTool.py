@@ -110,10 +110,6 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     # the ZVC repository ("the" version storage)
     zvc_repo = None
     
-    # XXX obsolete
-    _history_id_mapping = None
-    _history_id_purgeCounters = None
-    
     security = ClassSecurityInfo()
     
     # -------------------------------------------------------------------
@@ -210,11 +206,6 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
             if policy is not None:
                 data = policy.retrieveSubstitute(history_id, selector, 
                                                  default=data)
-#        print "-----"
-#        print data.object.object.version_id
-#        print data.object.object.title
-#        print data.object.object.__annotations__['Archetypes.storage.AnnotationStorage-text'].raw
-#        print data.object.object._md['description'].raw
         return data
 
     security.declarePrivate('getHistory')
@@ -236,7 +227,6 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     # methods implementing IPurgeSupport
     # -------------------------------------------------------------------
 
-    # XXX check permission: shall not be private?
     security.declarePrivate('purge')
     def purge(self, history_id, selector, comment="", metadata={}, 
               countPurged=True):
@@ -460,7 +450,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         
         # fake the version to be able to save a retrieved version later
         zvc_repo = self._getZVCRepo()
-        obj.__vc_info__ = vc_info # getVersionIds needs it (XXX check)
+        obj.__vc_info__ = vc_info
         vc_info.version_id = str(len(zvc_repo.getVersionIds(obj)))
         return vc_info
 

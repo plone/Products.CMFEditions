@@ -156,20 +156,6 @@ def setup_content_actions(self, write):
         write("added versions tab")
     if 'portal_repository' not in at.listActionProviders():
         at.addActionProvider('portal_repository')
-    # XXX is this view override stuff really necessary?
-#     ftis = tt.listTypeInfo()
-#     targets = filter(lambda a : a.getId() in VERSIONING_ACTIONS,
-#                      ftis)
-#     for fti in targets:
-#         url = VERSIONING_ACTIONS[fti.getId()]
-#         fti.addAction('version_view',
-#                        'version_view',
-#                        'string:${object_url}/' + url,
-#                        '',
-#                        'Modify portal content',
-#                        'object',
-#                        None)
-#         write("added version view for " + fti.content_meta_type)
 
 def setup_cpanel(self, write):
     try:

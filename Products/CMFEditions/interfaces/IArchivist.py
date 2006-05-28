@@ -331,7 +331,8 @@ class IVersionData(Interface):
         
         - timestamp: save time
         - principal: the actor that did the save
-        - XXX path: the path at store time (in getPhysicalPath format)
+        - parent: Dictionary with ``history_id``, ``version_id`` and 
+          ``location_id``
         """)
         
     app_metadata = Attribute(
@@ -354,7 +355,7 @@ class IHistory(Interface):
         """Returns the length of the history.
         """
 
-    def __getattr__(version_id): # XXX or get or both?
+    def __getattr__(version_id):
         """Returns the version of an object corresponding to the version id.
         
         The object returned is of 'IVersionData'.

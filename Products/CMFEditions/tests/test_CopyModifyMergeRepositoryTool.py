@@ -236,8 +236,8 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         # delete the object we want to retrieve later
         doc_type = doc.getPortalTypeName()
         self.portal.manage_delObjects(ids=['doc'])
-        self.portal.invokeFactory(doc_type, 'XXX')
-        doc = self.portal.XXX
+        self.portal.invokeFactory(doc_type, 'doc_tmp')
+        doc = self.portal.doc_tmp
         portal_hidhandler.setUid(doc, history_id, check_uniqueness=True)
         vdata = portal_repository.retrieve(doc, selector=0)
         self.failUnless(verifyObject(IVersionData, vdata))
@@ -324,8 +324,6 @@ class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):
         portal_repository.save(fol, comment='save no 2')
 
         # check if correctly recursing and setting reference data correctly
-        # XXX the result depends on a history id handler returning
-        #     numbers staring with 1 (see 'hid')
         alog_str = portal_archivist.get_log()
         expected = """
 prepare fol: hid=1, refs=(doc1_inside, doc2_inside, doc3_outside)

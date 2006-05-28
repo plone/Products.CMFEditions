@@ -67,7 +67,7 @@ Features added
   [alecm]
 
 
-CMFEditions 1.0alpha2 (XXX date?)
----------------------------------
+CMFEditions 1.0alpha2 (Sept or Oct 2005)
+----------------------------------------
 
 no changes recorded

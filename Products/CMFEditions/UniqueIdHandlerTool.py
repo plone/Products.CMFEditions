@@ -60,7 +60,6 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem, ActionProviderBase):
     
     # make the uid attribute name available for the unit tests
     # not meant to be altered as long you don't know what you do!!!
-    # XXX make a 'getUidAttributeName' method out of it
     UID_ATTRIBUTE_NAME = UID_ATTRIBUTE_NAME
     
     # make the exception class available through the tool
@@ -69,8 +68,7 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem, ActionProviderBase):
     security = ClassSecurityInfo()
     
     # ----------------------------------------------------------------
-    # XXX TODO:
-    # the following methods have to be made version_id aware to allow
+    # The following methods have to be made location_id aware to allow
     # applications beeing version_id aware also.
     # ----------------------------------------------------------------
     

@@ -35,7 +35,6 @@ try:
     from Interface.Verify import verifyObject
 except ImportError:
     # for Zope versions before 2.6.0
-    # XXX not sure if 'objectImplements' is correct
     from Interface import objectImplements as verifyObject
 
 from Testing import ZopeTestCase

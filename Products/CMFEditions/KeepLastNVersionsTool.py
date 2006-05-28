@@ -97,6 +97,7 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager, ActionPro
         
         If there isn't a next older one returns the next newer one.
         """
+        selector = int(selector)
         storage = getToolByName(self, 'portal_historiesstorage')
         savedSelector = selector
         while selector:

@@ -176,7 +176,6 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         portal_storage.save(1, ObjectData(obj3), 
                             metadata=self.buildMetadata('saved v3'))
         
-        # XXX need to test for history[selector].data and history[selector].metadata
         history = portal_storage.getHistory(history_id=1)
         length = len(history)
         
@@ -185,10 +184,13 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         
         # iterating over the history
         for i, vdata in enumerate(history):
-            self.assertEquals(vdata.object.object.text, 
-                              'v%s of text' % (i+1))
-            self.assertEqual(self.getComment(vdata.metadata), 
-                             'saved v%s' % (i+1))
+            expected_test = 'v%s of text' % (i+1)
+            self.assertEquals(vdata.object.object.text, expected_test)
+            self.assertEquals(history[i].object.object.text, expected_test)
+            
+            expected_comment = 'saved v%s' % (i+1)
+            self.assertEqual(self.getComment(vdata.metadata), expected_comment)
+            self.assertEqual(self.getComment(history[i].metadata), expected_comment)
             
         # accessing the versions
         self.assertEquals(history[0].object.object.text, "v1 of text")

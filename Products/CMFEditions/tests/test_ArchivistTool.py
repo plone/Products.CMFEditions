@@ -297,7 +297,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.failUnless('timestamp' in prep.metadata['sys_metadata'])
         self.failUnless('principal' in prep.metadata['sys_metadata'])
         
-        # XXX necessary?
         self._setDummyTool(DummyModifier())
 
     def test08_retrieveWithReferences(self):
@@ -374,10 +373,6 @@ class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):
    def installStorageTool(self):
        """Test with a real ZODB storage overriding the storage installation
           in the super class.
-
-          XXX we should approach this the opposite way round making the super
-          class using the ZODB storage and this make this class working on the
-          dummy storage.
        """
        pass
 

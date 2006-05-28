@@ -18,7 +18,7 @@
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
-"""XXX
+"""Registry of Modifiers
 
 $Id: ModifierRegistryTool.py,v 1.17 2005/06/24 11:42:01 gregweb Exp $
 """
@@ -31,6 +31,7 @@ import re
 
 from Interface.Verify import verifyObject
 from Globals import InitializeClass
+from Missing import MV
 
 from Acquisition import aq_base
 from AccessControl import ClassSecurityInfo, getSecurityManager
@@ -243,9 +244,8 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder, ActionProviderBase):
         _marker = []
         preserved = {}
         for key in preserve:
-            v = getattr(repo_clone, key, _marker) # XXX return MV.missing instead of ignoring it
-            if v is not _marker:
-                preserved[key] = v
+            v = getattr(repo_clone, key, MV)
+            preserved[key] = v
 
         orig_preserved = preserved.copy()
         # just loop over all modifiers in reverse order

@@ -64,7 +64,7 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder, ActionProviderBase):
     def invokeFactory(self, repo_clone, source, selector=None):
         """See IReferenceFactories
         """
-        # XXX: Just assuming ObjectManager behaviour for now
+        # Just assuming ObjectManager behaviour for now
         portal_hidhandler = getToolByName(self, 'portal_historyidhandler')
         portal_archivist = getToolByName(self, 'portal_archivist')
         portal_type = repo_clone.getPortalTypeName()
