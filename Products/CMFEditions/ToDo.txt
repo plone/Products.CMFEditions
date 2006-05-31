@@ -11,18 +11,25 @@ RFC (to list)
 Roadmap
 =======
 
-ToDo for 1.0alpha3 and 1.0beta1
--------------------------------
+ToDo for 1.0alpha3
+------------------
 
-- check tracker issues on plone.org and assign to alpha3, beta1 or rc1
-- update DEPENDENCIES.txt for alpha and beta
-55. packaging: make ZVC 0.3.1 downloadable from the collective
+55. packaging: make ZVC 0.3.1 downloadable from the collective (await 
+    tres answer)
+- update DEPENDENCIES.txt/CHANGES.txt
+- check responses for tracker issues for alpha3
 - package and publish 1.0alpha3
 
+
+ToDo for 1.0beta1
+-----------------
+
+- update DEPENDENCIES.txt/CHANGES.txt/README.txt
 - check answers about rollback versus revert and take a decission
 - Some complex integration test with deleted version. (purge support)
 - check name change opinions and take a decission
 - storage migration from alpha3 (purge support)
+- fix bugs scheduled for 1.0beta1
 
 - merge with trunk before doing 1.0beta1
 
@@ -309,3 +316,4 @@ Done
 46. Discuss naming: ``revert`` <--> ``rollback``
 
 - fixed bug that prevented version preview to show the correct content
+- check tracker issues on plone.org and assign to alpha3, beta1 or rc1
