@@ -5,10 +5,69 @@ CMFEditons Changes
 This file contains change information for the CMFEditions releases.
 
 
-Current
--------
+CMFEditions 1.0alpha3 (2006-06-02)
+----------------------------------
 
 Bugs fixed
+
+- Fixed tracker issue #15 [alecm, gregweb]
+
+- When previewing a version the expandable history link is removed as this 
+  doesn't make sense at all and caused double fetching of history items.
+  [gregweb]
+
+- Use the default view of the retrieved object, as it may be different from 
+  that of the current object. [alecm]
+
+- Fixed for tracker issues #10 and #11, thanks to Andrew Lewis for the 
+  patches and reports. [Andrew Lewis, alecm]
+
+- The expandable version link is only shown for users having the permission 
+  to view the history. [rafrombrc]
+
+- Added RetainATRefs modifier [vds]
+
+- Fixed broken ``isUpToDate`` [gregweb]
+
+- ``version_id`` wasn't correctly set at the working copy at save time. 
+  Because of this it may happen that the wrong version info was saved 
+  with the version aware reference. The version_id is now set at the end 
+  of the save operation. [alecm, gregweb]
+
+- Handle usecase where an inside reference is moved outside its container.
+  Still need to handle case where it has been replaced by another object 
+  with the same id.  [alecm]
+  
+- Changed API for Archivist methods and the dereference utility method so 
+  that they now accept an optional history_id, rather than implicitly 
+  allowing the 'obj' parameter to be a history_id. As side effect this
+  will help in supporting multi location checkout in the future. 
+  [alecm, gregweb]
+
+- Fixed various UI issues. [rlemmi, vds, alecm]
+
+- Fixed SF issue #1376836. [alecm]
+
+- restored at's extra_buttons slot (some others slots are still missing 
+  because of this template override) [syt]
+
+- Totally refactored recursive retrieve of an ancient version of an object.
+  Fixed a lot of folderish bugs with this refactoring. [gregweb]
+
+- Corrected a hairy acquisition bug that caused wrong security evaluations
+  (ArchivistTool.py). Acquisition is a monster feature! [gregweb]
+
+- The storage now returns obj.modified() instead of 
+  obj.getModificationDate() because it's more fine graned. [gregweb]
+
+- Added ReferenceFactoriesTool.py which in essence knows how to 
+  instatiate a reference. The current implementation is inflexible and
+  knows only how to instantiate object into an ObjectManager. This
+  is the first step in preparation for AT reference handling. [gregweb]
+
+- Added modifier to copy permissions from working copy onto retrieved 
+  versions, otherwise retaining workflow can have some very strange 
+  consequences. [alecm]
 
 - Fixed a number of bugs involving handling of adding and deleting subobjects
   of versioned folders.
@@ -28,18 +87,33 @@ Bugs fixed
   modifier registry avoiding the review state and the workflow history 
   from beeing retained on retrieve and revert. 
 
+
 Features added
+
+- Added danish translation. [stonor]
+
+- Retrieving an object just for preview (without replacing the working copy) 
+  caused a lot of headaches and got more and more complex und ununderstandable.
+  Everything got much simpler by just using a savepoint/abort pair at the right 
+  place while retrieving. [alecm]
 
 - I18N tuned (diff-legend untested), french added
   [Gpgi, gotcha]
 
+- Added more tests to improve coverage. [azy, vds, alecm]
+
+- Added support for ATCT (Archetypes Content Types). [azy]
+
+- Added ZMI interface for modifiers. [rlemmi]
+
+- It's now possible to save a new version in the edit view. As soon as a 
+  version sahll be saved a comment field is inserted to add a comment.
+  [rlemmi]
+
+- Added expandable version history to document_byline. [rlemmi]
+
 - Made the ModifierRegistryTool make use of any preserve dict passed back to
   it by afterRetrieveModifiers.
-  [alecm]
-
-- Added modifier to copy permissions from working copy onto retrieved
-  versions, otherwise retaining workflow can have some very strange
-  consequences.
   [alecm]
 
 - Added optional CMFDiffTool support for generating diffs between object
@@ -67,7 +141,7 @@ Features added
   [alecm]
 
 
-CMFEditions 1.0alpha2 (XXX date?)
----------------------------------
+CMFEditions 1.0alpha2 (around June 2005)
+----------------------------------------
 
 no changes recorded
