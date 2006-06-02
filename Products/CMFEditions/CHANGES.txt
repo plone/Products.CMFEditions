@@ -5,8 +5,8 @@ CMFEditons Changes
 This file contains change information for the CMFEditions releases.
 
 
-CMFEditions 1.0alpha3 (paned: 2006-06-02)
------------------------------------------
+CMFEditions 1.0alpha3 (2006-06-03)
+----------------------------------
 
 Bugs fixed
 
@@ -18,9 +18,6 @@ Bugs fixed
 
 - Use the default view of the retrieved object, as it may be different from 
   that of the current object. [alecm]
-
-- Fixed for tracker issues #10 and #11, thanks to Andrew Lewis for the 
-  patches and reports. [Andrew Lewis, alecm]
 
 - The expandable version link is only shown for users having the permission 
   to view the history. [rafrombrc]
@@ -65,6 +62,12 @@ Bugs fixed
   knows only how to instantiate object into an ObjectManager. This
   is the first step in preparation for AT reference handling. [gregweb]
 
+- Fixed tracker issue #16 RuntimeError: maximum recursion depth exceeded.
+  I (gregweb) suspect it got fixed by: [alecm]
+
+- Fixed identical tracker issues #5, #6, #7, #8. I (gregweb) suspect it got 
+  fixed by: [alecm]
+
 - Added modifier to copy permissions from working copy onto retrieved 
   versions, otherwise retaining workflow can have some very strange 
   consequences. [alecm]
@@ -80,8 +83,8 @@ Bugs fixed
 
 - Made quickinstalled product reinstall/uninstall work without issue.  Fixed
   unit tests for Plone 2.1.  Use mutators in templates and tests where
-  applicable rather than direct attribute access.
-  [alecm]
+  applicable rather than direct attribute access. Was Issue #9, #10 and #11.
+  Thanks to Andrew Lewis for the patches and reports. [Andrew Lewis, alecm]
 
 - Corrected bugs in ``RetainWorkflowStateAndHistory`` modifier and the
   modifier registry avoiding the review state and the workflow history 
