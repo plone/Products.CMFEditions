@@ -1,1 +1,1 @@
-1.0alpha3
+1.0alpha3+ (unreleased, $Revision$ ($Date$): $HeadURL$)
