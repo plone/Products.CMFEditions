@@ -12,11 +12,12 @@ ToDo for 1.0beta1
 - Script for Paul (published items in history only).
 
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt
-- check answers about rollback versus revert and take a decission
+- check answers about rollback versus revert and take a decission 
+  --> rename to revert
 - Some complex integration test with deleted version. (purge support)
+- fix bugs scheduled for 1.0beta1: #1, #2
 - check name change opinions and take a decission
 - storage migration from alpha3 (purge support)
-- fix bugs scheduled for 1.0beta1
 - addons: propose usage and download of diff in release description
 
 - merge with trunk before doing 1.0beta1
