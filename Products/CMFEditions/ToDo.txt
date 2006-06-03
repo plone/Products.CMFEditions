@@ -5,24 +5,15 @@ ToDos
 RFC (to list)
 =============
 
-- addons: propose usage of diff
 
 
 Roadmap
 =======
 
-ToDo for 1.0alpha3
-------------------
-
-55. packaging: make ZVC 0.3.1 downloadable from the collective (await 
-    tres answer)
-- update DEPENDENCIES.txt/CHANGES.txt
-- check responses for tracker issues for alpha3
-- package and publish 1.0alpha3
-
-
 ToDo for 1.0beta1
 -----------------
+
+- Script for Paul (published items in history only).
 
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt
 - check answers about rollback versus revert and take a decission
@@ -30,6 +21,7 @@ ToDo for 1.0beta1
 - check name change opinions and take a decission
 - storage migration from alpha3 (purge support)
 - fix bugs scheduled for 1.0beta1
+- addons: propose usage and download of diff in release description
 
 - merge with trunk before doing 1.0beta1
 
@@ -66,7 +58,8 @@ ToDo for 1.0.0
 --------------
 
 - fix new bugs reported from rc1
-- extensive credits list (using svn blame)
+- extensive credits list (using svn blame) and sponsoring list (checking
+  with vds, asking purge sponsor)
 
 
 
@@ -317,3 +310,9 @@ Done
 
 - fixed bug that prevented version preview to show the correct content
 - check tracker issues on plone.org and assign to alpha3, beta1 or rc1
+
+55. packaging: make ZVC 0.3.1 downloadable from the collective (await 
+    tres answer)
+
+- check responses for tracker issues for alpha3
+- package and publish 1.0alpha3
