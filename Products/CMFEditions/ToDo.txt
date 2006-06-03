@@ -2,10 +2,6 @@
 ToDos
 ======
 
-RFC (to list)
-=============
-
-
 
 Roadmap
 =======
