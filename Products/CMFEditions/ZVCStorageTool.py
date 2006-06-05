@@ -498,6 +498,63 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
             'physicalPath': (),
         }
 
+
+    # -------------------------------------------------------------------
+    # Migration Support
+    #
+    # - Migration from 1.0alpha3 --> 1.0beta1
+    # -------------------------------------------------------------------
+
+    def _is10alpha3Layout(self):
+        """Returns True if Storage is of 1.0alpha3 layout
+        """
+        return bool(getattr(self, "_history_id_mapping", None))
+    
+    def migrateStorage(self):
+        """Migrate the Storage to new layout
+        """
+        if not self._is10alpha3Layout():
+            return None
+        
+        startTime = time.time()
+        from Products.ZopeVersionControl.Utility import VersionInfo
+        
+        # build reverse mapping
+        hidMapping = self._history_id_mapping
+        hidReverseMapping = {}
+        for hid, zvcHid in hidMapping.items():
+            hidReverseMapping[zvcHid.history_id] = hid
+        
+        nbrOfMigratedHistories = 0
+        nbrOfMigratedVersions = 0
+        
+        repo = self._getZVCRepo()
+        for zvcHid in repo._histories.keys():
+            zvcHistory = repo.getVersionHistory(zvcHid)
+            history_id = hidReverseMapping[zvcHid]
+            zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
+                     "migrating history %s (ZVC: %s)" % (history_id, zvcHid))
+            nbrOfMigratedHistories += 1
+            for zvcVid in zvcHistory.getVersionIds():
+                obj = zvcHistory.getVersionById(zvcVid)
+                vc_info = VersionInfo(zvcHid, zvcVid, VersionInfo.CHECKED_IN)
+                vc_info.timestamp = obj.date_created
+                shadowInfo = {
+                    "vc_info": deepCopy(vc_info),
+                }
+                self._saveShadowInfo(history_id, shadowInfo)
+                zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
+                         "  migrating version %s" % (int(zvcVid)-1))
+                nbrOfMigratedVersions += 1
+        
+        del self._history_id_mapping
+        totalTime = round(time.time() - startTime, 1)
+        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
+                 "migrated %s histories and a total of %s versions in %.1f seconds" 
+                 % (nbrOfMigratedHistories, nbrOfMigratedVersions, totalTime))
+        return (nbrOfMigratedHistories, nbrOfMigratedVersions, totalTime)
+
+
 InitializeClass(ZVCStorageTool)
 
 
