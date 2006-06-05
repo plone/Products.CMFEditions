@@ -596,6 +596,17 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                     obj._setObject(temp_id, child)
                     all_ids.append(temp_id)
 
+    # -------------------------------------------------------------------
+    # diagnostics support
+    # -------------------------------------------------------------------
+    
+    def createTestHierarchy(self, context):
+        """Create a Content Test Hierarchy
+        """
+        # XXX to be allowed in test mode only
+        from StorageMigrationSupport import createTestHierarchy
+        createTestHierarchy(context)
+
 
 class VersionData:
     """
