@@ -225,14 +225,16 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder, ActionProviderBase):
         """
         inside_crefs = []
         outside_crefs = []
+        metadata = {}
         
         # just loop over all modifiers
         for ignored_id, mod in self._collectModifiers(obj, ISaveRetrieveModifier):
-            icrefs, ocrefs = mod.beforeSaveModifier(obj, obj_clone)
+            mdata, icrefs, ocrefs = mod.beforeSaveModifier(obj, obj_clone)
             inside_crefs.extend(icrefs)
             outside_crefs.extend(ocrefs)
+            metadata.update(mdata)
         
-        return inside_crefs, outside_crefs
+        return metadata, inside_crefs, outside_crefs
     
     security.declarePrivate('afterRetrieveModifier')
     def afterRetrieveModifier(self, obj, repo_clone, preserve=[]):

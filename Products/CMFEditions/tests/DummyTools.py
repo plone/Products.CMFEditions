@@ -261,7 +261,7 @@ class DummyModifier(DummyBaseTool):
     id = 'portal_modifier'
 
     def beforeSaveModifier(self, obj, clone):
-        return {}, {}
+        return {}, [], [] # XXX 2nd and 3rd shall be lists
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         preserved = {}
@@ -361,7 +361,7 @@ class FolderishContentObjectModifier(DummyBaseTool):
             elif name.endswith('_outside'):
                 outside_refs.append(AttributeAdapter(clone, name))
 
-        return inside_refs, outside_refs
+        return {}, inside_refs, outside_refs
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         preserved = {}

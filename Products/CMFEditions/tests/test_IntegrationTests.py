@@ -189,6 +189,11 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(doc.Title(), "v4")
         self.assertEqual(self.portal.doc.Title(), "v4")
 
+        # since 1.0beta1 the workflows review state is saved to the
+        # system metadata by a modifier. We asssume here the default
+        # review state is "visible"
+        self.assertEqual(retrieved_doc.sys_metadata["review_state"], "visible")
+
     def test07_cloneObjectUnderVersionControlRemovesOriginalsHistory(self):
         portal_repo = self.portal.portal_repository
         portal_historyidhandler = self.portal.portal_historyidhandler

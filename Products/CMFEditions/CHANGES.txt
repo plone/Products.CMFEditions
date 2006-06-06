@@ -14,7 +14,9 @@ Bugs fixed
   avoiding wrong information is attached to a working copy when 
   previewing a version. Fix for ToDo.txt item #48. [gregweb]
 
-- Replaced all occurences of ``rollback`` with ``revert``. [gregweb]
+- Replaced all occurences of ``rollback`` with ``revert``. Brought into
+  sync internal names with UI. Rollback may suggest a transaction 
+  rollback which is something different. [gregweb]
 
 - Minor refactorings of the version history view. Notable replaced
   ``(show below)`` by ``preview`` without jumping to the preview target
@@ -27,6 +29,14 @@ Bugs fixed
 
 Features Added
 
+- ``RetainWorkflowStateAndHistory`` now adds the ``review_state`` to the
+  ``sys_metadata`` at save time because at retreive time the workflow tool 
+  picks the working copies state. I didn't find any other way to do it 
+  without digging into workflows internals (which would have been a bad 
+  idea anyway). Had to extend the ``IModifier.ISaveRetrieveModifier``
+  interface to allow a modifier enhance ``sys_metadata`` at save time. 
+  [gregweb]
+  
 - Added purge support [gregweb]:
 
   - Enhanced storage API with a ``purge`` method that inevitabely
@@ -96,6 +106,9 @@ Features Added
 
 
 Internal Changes
+
+- Added migration code for 1.0alpha3 --> 1.0beta1 storage migrations
+  [gregweb]
 
 - Adding purge support caused heavy refactoring the version storage.
   ZVC is still used to store the contents history but now additional 

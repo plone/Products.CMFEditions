@@ -244,7 +244,12 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         # 3. modify the clone further
         referenced_data = modifier.getReferencedAttributes(obj)
         clone, inside_orefs, outside_orefs = self._cloneByPickle(obj)
-        inside_crefs, outside_crefs = modifier.beforeSaveModifier(obj, clone)
+        metadata, inside_crefs, outside_crefs = \
+            modifier.beforeSaveModifier(obj, clone)
+        
+        # extend the ``sys_metadata`` by the metadata returned by the
+        # ``beforeSaveModifier`` modifier
+        sys_metadata.update(metadata)
         
         # set the version id of the clone to be saved to the repository
         # location_id and history_id are the same as on the working copy
@@ -379,10 +384,6 @@ class PreparedObject:
     
     def __init__(self, history_id, original, clone, referenced_data, 
                  app_metadata, sys_metadata, is_registered):
-        # extend metadata information
-        comment = sys_metadata.get('comment', '')
-        timestamp = sys_metadata.get('timestamp', int(time.time()))
-        originator = sys_metadata.get('originator', None)
         
         # parent reference (register the parent with the unique id handler)
         # register with sys_metadata as there is no other possibility
@@ -390,18 +391,21 @@ class PreparedObject:
         parent = aq_parent(aq_inner(obj))
         portal_uidhandler = getToolByName(obj, 'portal_uidhandler')
         
+        # set defaults if missing
+        sys_metadata['comment'] = sys_metadata.get('comment', '')
+        sys_metadata['timestamp'] = sys_metadata.get('timestamp', 
+                                                     int(time.time()))
+        sys_metadata['originator'] = sys_metadata.get('originator', None)
+        sys_metadata['principal'] = getUserId()
+        sys_metadata['parent'] = {
+            'history_id': portal_uidhandler.register(parent),
+            'version_id': getattr(parent, "version_id", None),
+            'location_id': getattr(parent, "location_id", None),
+        }
+        
+        # bundle application and system metadata in different namespaces
         metadata = {
-            'sys_metadata': {
-                'comment': comment,
-                'timestamp': timestamp,
-                'originator': originator,
-                'principal': getUserId(),
-                'parent': {
-                    'history_id': portal_uidhandler.register(parent),
-                    'version_id': getattr(parent, "version_id", None),
-                    'location_id': getattr(parent, "location_id", None),
-                }
-            },
+            'sys_metadata': sys_metadata,
             'app_metadata': app_metadata,
         }
         

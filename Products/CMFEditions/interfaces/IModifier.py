@@ -95,7 +95,8 @@ class ISaveRetrieveModifier(Interface):
               versionable at all) and wasn't removed already by the
               'getOnCloneModifiers'.
 
-        Returns two lists of 'IAttributeAdapter' objects adapting to a
+        Returns a dict with metadata to be added to the sys_metadata dict
+        and two lists of 'IAttributeAdapter' objects adapting to a
         'IVersionAwareReference' objects (inside references and outside
         references).
 
