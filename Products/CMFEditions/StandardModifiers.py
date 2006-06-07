@@ -527,7 +527,7 @@ class RetainATRefs:
         setattr(repo_clone, REFERENCE_ANNOTATION, orig_refs_container)
         return [], [], {}
 
-InitializeClass(RetainUIDs)
+InitializeClass(RetainATRefs)
 
 class SaveFileDataInFileTypeByReference:
     """Standard modifier avoiding unnecessary cloning of the file data.
