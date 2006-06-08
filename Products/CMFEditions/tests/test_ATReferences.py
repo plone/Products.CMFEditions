@@ -54,7 +54,8 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         self.portal.fol.invokeFactory('Document', 'doc2')
 
     def test_referencesDataGetSavedAndRestored(self):
-
+        # this case checks restoring a version with a reference to
+        # a working copy with no reference
         repo = self.portal.portal_repository
         fol = self.portal.fol
         doc1 = self.portal.fol.doc1
@@ -80,6 +81,8 @@ class TestATReferences(PloneTestCase.PloneTestCase):
                          after_retrieve_refs[0].relationship)
 
     def test_referencesAreSavedAndRestored(self):
+        # this case checks restoring a version with a reference to
+        # a working copy with no reference
 
         repo = self.portal.portal_repository
         fol = self.portal.fol
@@ -96,6 +99,57 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         self.failIf(doc1.getReferences(targetObject=doc2))
         repo.revert(doc1, 1)
         self.assertEqual(doc1.getReferences(targetObject=doc2), [doc2])
+
+    def test_referencesDataGetSavedAndRestored2(self):
+        # this case checks restoring a version with no refs, to a workin copy
+        # with a ref, without using RetainATRefs
+
+        repo = self.portal.portal_repository
+        fol = self.portal.fol
+        doc1 = self.portal.fol.doc1
+        doc2 = self.portal.fol.doc2
+
+        repo.applyVersionControl(doc1)
+        repo.applyVersionControl(doc2)
+        doc1.setTitle('v1')
+        repo.save(doc1)
+        relationship = 'dumb_relationship'
+        doc1.addReference(doc2, relationship=relationship)
+        doc1.setTitle('v2')
+        from Products.Archetypes.config import REFERENCE_ANNOTATION as \
+             refs_container_name
+        refs = getattr(doc1, refs_container_name).objectValues()
+
+        repo.revert(doc1, 1)
+        should_be_empty_now = getattr(doc1, refs_container_name).objectValues()
+        self.failIf(should_be_empty_now)
+
+    def test_referencesAreSavedAndRestored2(self):
+        # this case checks restoring a version with no refs, to a workin copy
+        # with a ref, without using RetainATRefs
+
+        repo = self.portal.portal_repository
+        fol = self.portal.fol
+        doc1 = self.portal.fol.doc1
+        doc2 = self.portal.fol.doc2
+
+        repo.applyVersionControl(doc1)
+        repo.applyVersionControl(doc2)
+
+        doc1.setTitle('v1')
+        repo.save(doc1)
+        doc1.addReference(doc2)
+        self.assertEqual(doc1.getReferences(targetObject=doc2), [doc2])
+        repo.revert(doc1, 1)
+        self.failIf(doc1.getReferences(targetObject=doc2))
+        # The above does not fail because ReferenceCatalog.getReferences calls
+        # _resolveBrains after a catalog query to get the reference objects - so
+        # the returned list is empty. But the reference_catalog still has the reference
+        # indexed:
+        rc = self.portal.reference_catalog
+        self.failIf(rc(sourceUID=doc1.UID()))
+        
+        
 
     def test_contentReferencesAreSavedAndRestored(self):
 
