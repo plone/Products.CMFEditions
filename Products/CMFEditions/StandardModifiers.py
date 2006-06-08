@@ -45,10 +45,13 @@ from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
 try:
+    from Products.Archetypes.interfaces.referenceable import IReferenceable
     from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
+    WRONG_AT=False
 except ImportError:
+    WRONG_AT=True
     UUID_ATTR = None
-    REFERENCE_ANNOTATION
+    REFERENCE_ANNOTATION = None
     
 #----------------------------------------------------------------------
 # Product initialziation, installation and factory stuff
@@ -137,6 +140,21 @@ def manage_addRetainATRefs(self, id, title=None, REQUEST=None):
     """Add a modifier retaining AT References upon retrieve.
     """
     modifier = RetainATRefs()
+    self._setObject(id, ConditionalTalesModifier(id, modifier, title))
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+manage_NotRetainATRefsModifierAddForm =  \
+               PageTemplateFile('www/NotRetainATRefsModifierAddForm.pt',
+                                globals(),
+                                __name__='manage_NotRetainUIDsModifierAddForm')
+
+def manage_addNotRetainATRefs(self, id, title=None, REQUEST=None):
+    """Add a modifier that removes Archetypes references of the working
+       copy when reverting to a previous version without those references.
+    """
+    modifier = NotRetainATRefs()
     self._setObject(id, ConditionalTalesModifier(id, modifier, title))
 
     if REQUEST is not None:
@@ -529,6 +547,43 @@ class RetainATRefs:
 
 InitializeClass(RetainATRefs)
 
+class NotRetainATRefs:
+    """Modifier which removes Archetypes references of the working
+       copy when reverting to a previous version without those references.
+       We need to remove them explicitly by calling deleteReference() to
+       keep the reference_catalog in sync, and to call the delHook().
+    """
+
+    __implements__ = (ISaveRetrieveModifier, )
+
+    def beforeSaveModifier(self, obj, clone):
+        return [], []
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        # check if the modifier is called with a valid working copy
+        if obj is None:
+            return [], [], {}
+
+        if not WRONG_AT:
+            if IReferenceable.isImplementedBy(obj) and hasattr(aq_base(obj), REFERENCE_ANNOTATION) \
+            and hasattr(aq_base(repo_clone), REFERENCE_ANNOTATION):
+                #Remove AT references that no longer exists in the retrived version
+                orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
+                repo_clone_refs_container = getattr(aq_base(repo_clone), REFERENCE_ANNOTATION)
+                ref_objs = orig_refs_container.objectValues()
+                repo_clone_ref_ids = repo_clone_refs_container.objectIds()
+
+                reference_catalog = getToolByName(obj, 'reference_catalog')
+                if reference_catalog:
+                    for ref in ref_objs:
+                        if ref.getId() not in repo_clone_ref_ids:
+                            reference_catalog.deleteReference(ref.sourceUID, ref.targetUID,
+                                                              ref.relationship)
+                
+        return [], [], {}
+
+InitializeClass(NotRetainATRefs)
+
 class SaveFileDataInFileTypeByReference:
     """Standard modifier avoiding unnecessary cloning of the file data.
 
@@ -596,6 +651,17 @@ modifiers = (
         'modifier': RetainATRefs,
         'form': manage_RetainATRefsModifierAddForm,
         'factory': manage_addRetainATRefs,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'NotRetainATRefs',
+        'title': "Handles removal of AT refs that no longer exists when reverting",
+        'enabled': True,
+        'condition': 'python: True',
+        'wrapper': ConditionalTalesModifier,
+        'modifier': NotRetainATRefs,
+        'form': manage_NotRetainATRefsModifierAddForm,
+        'factory': manage_addNotRetainATRefs,
         'icon': 'www/modifier.gif',
     },
     {
