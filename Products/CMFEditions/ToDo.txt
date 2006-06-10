@@ -11,6 +11,8 @@ ToDo for 1.0beta1
 
 - adding modification time to sys_metadata
 - adding size of data to sys_metadata (archivist shall pass it to storage)
+- adding additional translation
+- eventually add german translation
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt
 
 - prepare release documentation
