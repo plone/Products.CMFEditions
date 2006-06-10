@@ -9,10 +9,14 @@ Roadmap
 ToDo for 1.0beta1
 -----------------
 
-- storage migration from alpha3 (purge support)
-
+- adding modification time to sys_metadata
+- adding size of data to sys_metadata (archivist shall pass it to storage)
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt
-- addons: propose usage and download of diff in release description
+
+- prepare release documentation
+  - addons: propose usage and download of diff in release description
+  - credits
+- check changes on trunk and update CHANGES.txt
 - merge with trunk before doing 1.0beta1
 
 
@@ -57,38 +61,6 @@ ToDo for 1.0.0
 - fix new bugs reported from rc1
 - extensive credits list (using svn blame) and sponsoring list (checking
   with vds, asking purge sponsor)
-
-
-
-Done (purge support)
---------------------
-
-- Check what the problem is with retrieve in the version view (not purge 
-  support related, to be checked before 1.0 rc or better before beta1
-  as long as it doesn't delay beta1 to much).
-- move ``oldestFirst`` parameter before the ``preserve`` parameter 
-  (purge support)
-- Test history with ``oldestFirst=True/False`` (purge support)
-- manual purge support implementation on storage level (incl tests)
-- Implement save policy support allowing automatic deleting of version 
-  at save time(testing with dummy purge policy)
-- Write tests for IHistory (__iter__, __getattr__, __len__)
-- Check what happens if __len__ would only return the length of not 
-  purged versions. Decide what to do: This is necessary!
-- refatored storage massively
-- refactor Archivist such that it allows propagating purge support to 
-  repo layer.
-- What shall getModificationDate return in case of purged versions? 
-  Answer and decide what to do. Answer: the date of a substitute. Done.
-- Add reverse iterator for history (eventually change default behaviour)
-- Implement a purge policy tool (last n, enable/disable)
-- Do first UI Tests
-- replace (show below) by (preview)
-- versions_history_form: changed i18n label: 
-  label_show_below --> preview_version
-- Add enable/disable purge in case there is no purge policy (Storage Impl.)
-  (purge support)
-- Add a purge permission (purge support)
 
 ----------------------------------------------------------------------
 
@@ -317,3 +289,31 @@ Done
   --> rename to revert
 - check name change opinions and take a decission
   --> no name change (lack of time, too risky)
+- storage migration from alpha3 (purge support)
+- Check what the problem is with retrieve in the version view (not purge 
+  support related, to be checked before 1.0 rc or better before beta1
+  as long as it doesn't delay beta1 to much).
+- move ``oldestFirst`` parameter before the ``preserve`` parameter 
+  (purge support)
+- Test history with ``oldestFirst=True/False`` (purge support)
+- manual purge support implementation on storage level (incl tests)
+- Implement save policy support allowing automatic deleting of version 
+  at save time(testing with dummy purge policy)
+- Write tests for IHistory (__iter__, __getattr__, __len__)
+- Check what happens if __len__ would only return the length of not 
+  purged versions. Decide what to do: This is necessary!
+- refatored storage massively
+- refactor Archivist such that it allows propagating purge support to 
+  repo layer.
+- What shall getModificationDate return in case of purged versions? 
+  Answer and decide what to do. Answer: the date of a substitute. Done.
+- Add reverse iterator for history (eventually change default behaviour)
+- Implement a purge policy tool (last n, enable/disable)
+- Do first UI Tests
+- replace (show below) by (preview)
+- versions_history_form: changed i18n label: 
+  label_show_below --> preview_version
+- Add enable/disable purge in case there is no purge policy (Storage Impl.)
+  (purge support)
+- Add a purge permission (purge support)
+
