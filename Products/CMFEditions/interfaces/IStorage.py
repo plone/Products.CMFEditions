@@ -276,3 +276,7 @@ class StorageSaveError(StorageError):
 class StorageUnregisteredError(StorageError):
     """Raised if trying to save an unregistered resource.
     """
+
+class StoragePurgeError(StorageError):
+    """Raised if tried to purge a non existent version of a resource.
+    """
