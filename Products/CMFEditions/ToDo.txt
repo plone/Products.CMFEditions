@@ -11,16 +11,21 @@ ToDo for 1.0beta1
 
 - Script for Paul (published items in history only).
 
-- Some complex integration test with deleted version. (purge support)
 - storage migration from alpha3 (purge support)
-- fix bugs scheduled for 1.0beta1: #1, #2
+
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt
 - check answers about rollback versus revert and take a decission 
   --> rename to revert
 - check name change opinions and take a decission
 - addons: propose usage and download of diff in release description
-
 - merge with trunk before doing 1.0beta1
+
+
+ToDo for 1.0rc1
+---------------
+
+- Some complex integration test with deleted version. (purge support)
+- fix bugs scheduled for 1.0beta1: #1, #2
 
 47. Retrieving an old version of an object with a different id shall retain
     the current id. What about the children ids when recursing into?
