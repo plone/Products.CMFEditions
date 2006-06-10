@@ -5,7 +5,7 @@
 ##bind script=script
 ##bind subpath=traverse_subpath
 ##parameters=
-##title=Rollback version
+##title=get cmfeditions ftests
 ##
 selenium = context.portal_selenium
 suite = selenium.getSuite()

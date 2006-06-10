@@ -98,9 +98,9 @@
                         <li>
                             <a href=""
                                style="text-decoration: none"
-                               tal:attributes="href string:$here_url/rollbackversion?version_id=${id}"
-                               i18n:translate="label_rollback">
-                        rollback
+                               tal:attributes="href string:$here_url/revertversion?version_id=${id}"
+                               i18n:translate="label_revert">
+                        revert
                             </a>
                         </li>
                     </ul>

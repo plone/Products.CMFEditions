@@ -83,7 +83,7 @@ msgid "label_versioning_policies"
 msgstr "Politique de gestion des versions"
 
 #versions_history_form.pt 
-msgid "label_rollback"
+msgid "label_revert"
 msgstr "Revenir à cette version"
 
 #versions_history_form.pt 

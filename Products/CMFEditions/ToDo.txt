@@ -9,14 +9,9 @@ Roadmap
 ToDo for 1.0beta1
 -----------------
 
-- Script for Paul (published items in history only).
-
 - storage migration from alpha3 (purge support)
 
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt
-- check answers about rollback versus revert and take a decission 
-  --> rename to revert
-- check name change opinions and take a decission
 - addons: propose usage and download of diff in release description
 - merge with trunk before doing 1.0beta1
 
@@ -318,3 +313,7 @@ Done
 
 - check responses for tracker issues for alpha3
 - package and publish 1.0alpha3
+- check answers about rollback versus revert and take a decission 
+  --> rename to revert
+- check name change opinions and take a decission
+  --> no name change (lack of time, too risky)

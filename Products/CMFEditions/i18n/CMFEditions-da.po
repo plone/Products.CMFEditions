@@ -86,7 +86,7 @@ msgid "label_versioning_policies"
 msgstr "Regler for versionering"
 
 #versions_history_form.pt 
-msgid "label_rollback"
+msgid "label_revert"
 msgstr "Rul tilbage"
 
 #versions_history_form.pt 

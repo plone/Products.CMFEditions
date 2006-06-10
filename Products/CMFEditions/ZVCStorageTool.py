@@ -392,7 +392,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         # fake sticky information (no branches)
         vc_info.sticky = None
         
-        # On rollback operations the repository expects the object 
+        # On revert operations the repository expects the object 
         # to be in CHECKED_IN state.
         if set_checked_in:
             vc_info.status = vc_info.CHECKED_IN

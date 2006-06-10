@@ -64,8 +64,8 @@ VERSIONING_ACTIONS = {'Document':'version_document_view',
 DEF_POLICIES = (('at_edit_autoversion',
                     'Create version on edit (AT objects only)',
                      ATVersionOnEditPolicy),
-                 ('version_on_rollback',
-                    'Create version on version rollback'),   )
+                 ('version_on_revert',
+                    'Create version on version revert'),   )
 
 
 def Install(self, tools=tools):

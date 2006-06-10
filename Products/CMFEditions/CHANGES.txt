@@ -16,7 +16,9 @@ Bugs fixed
 
 - Replaced all occurences of ``rollback`` with ``revert``. Brought into
   sync internal names with UI. Rollback may suggest a transaction 
-  rollback which is something different. [gregweb]
+  rollback which is something different. Including i18n label
+  ``label_rollback`` which is now ``label_revert``. Added backwards 
+  compatibility code for configuration. [gregweb]
 
 - Minor refactorings of the version history view. Notable replaced
   ``(show below)`` by ``preview`` without jumping to the preview target

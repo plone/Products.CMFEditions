@@ -74,8 +74,8 @@
                       style="text-decoration: none"
                       tal:define="id string:${vdata/object/version_id}"
                       tal:condition="python:here.portal_repository.isUpToDate(here,id)==False"
-                      tal:attributes="href string:$here_url/rollbackversion?version_id=${vdata/object/version_id}">
-                        rollback
+                      tal:attributes="href string:$here_url/revertversion?version_id=${vdata/object/version_id}">
+                        revert
                     </a>
                   </td>
                 </tr>

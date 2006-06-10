@@ -160,6 +160,12 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     security.declarePublic('supportsPolicy')
     def supportsPolicy(self, obj, policy):
         content_type = obj.portal_type
+        # in 1.0alpha3 and earlier ``version_on_revert`` was 
+        # ``version_on_rollback``. Convert to new name.
+        config = self._version_policy_mapping.get(content_type, [])
+        if "version_on_rollback" in config:
+            config[config.index("version_on_rollback")] = "version_on_revert"
+        
         return policy in self._version_policy_mapping.get(content_type, [])
 
     security.declarePublic('hasPolicy')
