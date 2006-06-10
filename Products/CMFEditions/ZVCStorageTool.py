@@ -34,6 +34,7 @@ import zLOG
 
 from Globals import InitializeClass
 from BTrees.OOBTree import OOBTree
+from BTrees.IOBTree import IOBTree
 from Persistence import Persistent
 from AccessControl import ClassSecurityInfo, getSecurityManager
 
@@ -56,7 +57,8 @@ from Products.CMFEditions.interfaces.IStorage import StorageRegisterError
 from Products.CMFEditions.interfaces.IStorage import StorageSaveError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
-    
+from Products.CMFEditions.interfaces.IStorage import StoragePurgeError
+
 
 def deepCopy(obj):
     stream = StringIO()
@@ -159,9 +161,8 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
                 % history_id)
         
         # retrieve the ZVC info from the youngest version
-        history = self._getShadowHistory(history_id)
-        shadowInfo = history.retrieve(history_id, selector=None, 
-                                      countPurged=True)
+        history = self._getShadowHistory(history_id, autoAdd=True)
+        shadowInfo = history.retrieve(selector=None, countPurged=True)
         
         zvc_method = self._getZVCRepo().checkinResource
         try:
@@ -180,19 +181,26 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         """See ``IStorage`` and Comments in ``IPurgePolicy``
         """
         zvc_repo = self._getZVCRepo()
-        zvc_histid = self._getZVCHistoryId(history_id, countPurged)
-        zvc_selector = self._getZVCSelector(history_id, selector, countPurged)
+        zvc_histid, zvc_selector = \
+            self._getZVCAccessInfo(history_id, selector, countPurged)
+        
+        if zvc_histid is None:
+            raise StorageRetrieveError(
+                "Retrieving version '%s' of object with history id '%s' "
+                "failed. A history with the given history id does not exist."
+                % (selector, history_id))
+        
         if zvc_selector is None:
             raise StorageRetrieveError(
                 "Retrieving version '%s' of object with history id '%s' "
-                "failed. The version does not exist. " 
+                "failed. The version does not exist."
                 % (selector, history_id))
         
         # retrieve the object
         try:
             zvc_obj = zvc_repo.getVersionOfResource(zvc_histid, zvc_selector)
         except VersionControlError:
-            # this shouldn't really happen
+            # this should never happen
             raise StorageRetrieveError(
                 "Retrieving version '%s' of object with history id '%s' "
                 "failed. The underlying storage implementation reported "
@@ -244,10 +252,16 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         """See ``IPurgeSupport``
         """
         zvc_repo = self._getZVCRepo()
-        zvc_histid = self._getZVCHistoryId(history_id, countPurged)
-        zvc_selector = self._getZVCSelector(history_id, selector, countPurged)
+        zvc_histid, zvc_selector = \
+            self._getZVCAccessInfo(history_id, selector, countPurged)
+        if zvc_histid is None:
+            raise StoragePurgeError(
+                "Purging version '%s' of object with history id '%s' "
+                "failed. A history with the given history id does not exist."
+                % (selector, history_id))
+        
         if zvc_selector is None:
-            raise StorageRetrieveError(
+            raise StoragePurgeError(
                 "Purging version '%s' of object with history id '%s' "
                 "failed. The version does not exist." 
                 % (selector, history_id))
@@ -318,7 +332,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         shadowInfo = {
             "vc_info": deepCopy(zvc_obj.__vc_info__),
         }
-        history = self._getShadowHistory(history_id)
+        history = self._getShadowHistory(history_id, autoAdd=True)
         return history.save(shadowInfo)
 
     def _getShadowStorage(self, autoAdd=True):
@@ -346,23 +360,27 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
             self.zvc_repo = ZopeRepository('repo', 'ZVC Storage')
         return self.zvc_repo
 
-    def _getZVCHistoryId(self, history_id, selector, countPurged):
-        """Returns the ZVC history id
-        """
-        history = self._getShadowHistory(history_id)
-        shadowInfo = history.retrieve(selector, countPurged)
-        return shadowInfo["vc_info"].history_id
-
-    def _getZVCSelector(self, history_id, selector, countPurged):
-        """Converts the CMFEditions selector into a ZVC selector
-        """
-        history = self._getShadowHistory(history_id)
-        selector = history.getVersionId(selector, countPurged)
-        if selector is None:
-            return None
+    def _getZVCAccessInfo(self, history_id, selector, countPurged):
+        """Returns the ZVC history id and selector
         
-        # ZVC's first version is version 1 and is of type string
-        return str(selector + 1)
+        Returns a tuple with the ZVC history id and selector.
+        Returns None as history id if such history doesn't exist.
+        Returns None as selector if the version does not exist.
+        """
+        history = self._getShadowHistory(history_id)
+        if history is None:
+            # no history
+            return None, None
+        
+        shadowInfo = history.retrieve(selector, countPurged)
+        if shadowInfo is None:
+            # no version
+            return False, None
+        
+        # history and version exists
+        zvc_hid = shadowInfo["vc_info"].history_id
+        zvc_vid = str(history.getVersionId(selector, countPurged) + 1)
+        return zvc_hid, zvc_vid
 
     def _getVcInfo(self, obj, shadowInfo, set_checked_in=False):
         """Recalls ZVC Related Informations and Attaches them to the Object
@@ -472,7 +490,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         for zvcHid in repo._histories.keys():
             zvcHistory = repo.getVersionHistory(zvcHid)
             history_id = hidReverseMapping[zvcHid]
-            history = self._getShadowHistory(history_id)
+            history = self._getShadowHistory(history_id, autoAdd=True)
             zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
                      "migrating history %s (ZVC: %s)" % (history_id, zvcHid))
             nbrOfMigratedHistories += 1
@@ -494,9 +512,9 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         del self._history_id_mapping
         
         # log a summary
-        totalTime = round(time.time() - startTime, 1)
+        totalTime = round(time.time() - startTime, 2)
         zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                 "migrated %s histories and a total of %s versions in %.1f seconds" 
+                 "migrated %s histories and a total of %s versions in %.2f seconds" 
                  % (nbrOfMigratedHistories, nbrOfMigratedVersions, totalTime))
         
         # XXX have to add purge policy
@@ -526,13 +544,13 @@ class ShadowStorage(Persistent):
     def getHistory(self, history_id, autoAdd=False):
         """Returns the History Object of the Given ``history_id``.
         
-        Raises a ``KeyError`` if ``autoAdd`` is False and the history 
+        Returns None if ``autoAdd`` is False and the history 
         does not exist. Else prepares and returns an empty history.
         """
         # Create a new history if there isn't one yet
         if autoAdd and not self.isRegistered(history_id):
             self._storage[history_id] = ShadowHistory()
-        return self._storage[history_id]
+        return self._storage.get(history_id, None)
 
 InitializeClass(ShadowStorage)
 
@@ -567,9 +585,11 @@ class ShadowHistory(Persistent):
     def retrieve(self, selector, countPurged):
         """Retrieves the Selected Data From the History
         
-        Raises a ``KeyError`` if the selected version does not exist.
+        Returns None if the selected version does not exist.
         """
         version_id = self.getVersionId(selector, countPurged)
+        if version_id is None:
+            return None
         return self._full[version_id]
 
     def purge(self, selector, countPurged):
@@ -591,18 +611,30 @@ class ShadowHistory(Persistent):
         
         Returns ``None`` if the selected version does not exist.
         """
-        if countPurged:
-            if selector is None:
-                # version counting starts with 0
-                selector = self.getLength(countPurged=True) - 1
-            return int(selector)
+        if selector is not None:
+            selector = int(selector)
         
+        ##### looking at special selectors first (None, negative)
+        length = self.getLength(countPurged)
+        # checking for ``None`` selector (youngest version)
         if selector is None:
-            # version counting starts with 0
-            selector = self.getLength(countPurged=False) - 1
+            return length - 1
+        # checking if positive selector tries to look into future
+        if selector >= length:
+            return None
+        # check if negative selector and if it looks to far into past
+        if selector < 0:
+            selector = length - selector
+            if selector < 0:
+                return None
         
-        # selector is a position information
-        return self._available.get(int(selector), None)
+        #### normal cases (0 <= selectors < length)
+        if countPurged:
+            # selector is a normal selector
+            return selector
+        else:
+            # selector is a positional selector
+            return self._available[selector]
 
     def _getVersionPos(self, selector, countPurged):
         """Returns the Position in the Version History 
@@ -690,10 +722,14 @@ class LazyHistory:
     def __init__(self, storage, history_id, countPurged=True, substitute=True):
         """See IHistory.
         """
+        history = storage._getShadowHistory(history_id)
+        if history is None:
+            self._length = 0
+        else:
+            self._length = history.getLength(countPurged)
         self._history_id = history_id
         self._countPurged = countPurged
         self._substitute = substitute
-        self._length = storage._getShadowHistory().getLength(countPurged)
         self._retrieve = storage.retrieve
 
     def __len__(self):
