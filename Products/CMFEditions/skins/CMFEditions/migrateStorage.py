@@ -13,5 +13,5 @@ result = storage.migrateStorage()
 if result is None:
     return "no storage migration necessary: nothing done"
 
-return "migrated %s histories and a total of %s versions in in %.1f seconds" \
+return "migrated %s histories and a total of %s versions in in %.2f seconds" \
        % result
