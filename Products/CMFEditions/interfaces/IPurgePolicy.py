@@ -32,8 +32,8 @@ from Interface import Interface, Attribute
 class IPurgePolicy(Interface):
     """Purge Policy
     
-    Purge versions in a history according a policy. The methods decalred
-    are called from the storage.
+    Purge versions in a history according a policy. The methods declared
+    are called by a ``IStorage`` implementation.
     """
 
     def beforeSaveHook(history_id, obj, metadata={}):
@@ -46,12 +46,8 @@ class IPurgePolicy(Interface):
         The metadata passed is the metadata that was passed to the 
         ``save`` method.
         
-        ``obj`` is the object that will be saved afterwards.
-        
-        Hint:
-        
-        This method is called before the current version get saved. 
-        Signalize not to save the current version by returning ``False``.
+        Return True if ``obj`` has to be saved by the ``IStorage`` 
+        implementation. Return ``False`` if the object has to be discared.
         """
 
     def retrieveSubstitute(history_id, selector, default=None):
@@ -61,5 +57,5 @@ class IPurgePolicy(Interface):
         Implement the policy in case a client tries to retrieve a purged
         version.
         
-        Return a 'IVersionData' object.
+        Return a substitute of ``IVersionData`` type.
         """
