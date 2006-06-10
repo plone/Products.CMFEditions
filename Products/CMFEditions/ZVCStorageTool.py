@@ -650,7 +650,7 @@ class ShadowHistory(Persistent):
         # Lets search from the end of the available list as it is more 
         # likely that a younger versions position has to be returned.
         # Let's work on a copy to not trigger an unecessary ZODB store
-        # operation
+        # operations.
         history = self._available[:]
         history.reverse()
         try:
