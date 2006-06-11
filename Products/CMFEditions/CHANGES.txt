@@ -4,16 +4,19 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
-ToDo
-----
-
-- update translations (see changes for 1.0beta1) for: fr, da, pl
-
 
 Upcoming CMFEditions 1.0beta1 (2006-06-XX)
 ---------------------------------
 
+ToDo
+
+- update translations (see changes in 1.0beta1 sections) for: fr, da, pl
+
+
 Bugs fixed
+
+- Security Policy was for ``manage_setPolicies`` but the method name 
+  was ``manage_setTypePolicies``. Corrected. [gregweb]
 
 - The storage now stores ZVC's ``__vc_info__`` for every version 
   avoiding wrong information is attached to a working copy when 

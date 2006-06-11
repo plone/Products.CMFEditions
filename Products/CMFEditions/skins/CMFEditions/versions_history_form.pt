@@ -147,27 +147,25 @@
 
     </form>
 
-    <label for="description" 
-           tal:condition="version_id"
-           i18n:translate="label_preview_version">
-      Preview of Version <span tal:replace="version_id">0</span>
-    </label>
+    <a name="version_preview">
+      <label for="description" 
+             tal:condition="version_id"
+             i18n:translate="label_preview_version">
+        Preview of Version <span i18n:name="version_id" tal:replace="version_id">0</span>
+      </label>
+    </a>
     <div style="border:solid 1px gray"
          tal:condition="version_id">
-      <a name="version_preview"
-         tal:define="vdata python:pr.retrieve(here,version_id);
-                     version_view_macro python: here.get_macros(vdata);">
-
-
-        <tal:block define="here nocall:vdata/object;
-                           context nocall:here;
-                           portal_type python:here.getPortalTypeName().lower().replace(' ', '_');
-                           object_title here/Title;
-                           suppress_preview python:True;
-                           view_macro python:version_view_macro;">
-              <metal:use_body use-macro="view_macro" />
-        </tal:block>
-      </a>
+      <tal:block define="vdata python:pr.retrieve(here,version_id);
+                         version_view_macro python: here.get_macros(vdata);
+                         here nocall:vdata/object;
+                         context nocall:here;
+                         portal_type python:here.getPortalTypeName().lower().replace(' ', '_');
+                         object_title here/Title;
+                         suppress_preview python:True;
+                         view_macro python:version_view_macro;">
+        <metal:use_body use-macro="view_macro" />
+      </tal:block>
     </div>
 
   </div>

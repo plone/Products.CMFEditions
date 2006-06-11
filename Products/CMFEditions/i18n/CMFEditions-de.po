@@ -1,13 +1,21 @@
 msgid ""
 msgstr ""
 "POT-Creation-Date: 2005-05-17 15:00-100\n"
-"Last-Translator: Grégoire Weber <gregweb-AT-incept.ch>"
-"Content-Type: text/plain; charset=utf-8\n"
+"Last-Translator: GrÃ©goire Weber <gregweb@incept.ch>\n"
 "Language-code: de\n"
 "Language-name: Deutsch\n"
 "Preferred-encodings: utf-8 latin1\n"
 "Domain: cmfeditions\n"
 "X-is-fallback-for: de-ch de-de de-at de-li de-lu\n"
+"Project-Id-Version: CMFEditions\n"
+"PO-Revision-Date: 2006-06-11 19:26+0100\n"
+"Language-Team: GrÃ©goire Weber <gregweb@incept.ch>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: utf-8\n"
 
 #. Save as new version
 #: edit_macros.pt
@@ -22,7 +30,7 @@ msgstr "Neue Version"
 #.  At any moment you can save the content you just edited as a new version. Enter below a comment to identify the version and hit the "Save as new version" button.
 #: versions_history_form.pt
 msgid "help_versioncomment"
-msgstr "Sie können die gerade edititierte Version als Version speichern. Dazu setzen Sie ein Häckchen bei "Speichern als Version". Zur besseren Wiederauffindbarkeit lohnt es sich einen einen Kommentar zu schreiben"
+msgstr "Sie kÃ¶nnen die gerade edititierte Version als Version speichern.  Zur besseren Wiederauffindbarkeit lohnt es sich einen einen Kommentar zu schreiben. DrÃ¼cken Sie dann den \"Speichern als Version\"-Knopf."
 
 #. Last modified
 #: versions_history_form.pt
@@ -67,7 +75,7 @@ msgstr "Konfiguration Versionierung"
 #. Choose the versionable portal type
 #: versioning_config_form.pt
 msgid "label_form_help"
-msgstr "Wählen Sie versionierbare Inhaltstypen"
+msgstr "WÃ¤hlen Sie versionierbare Inhaltstypen"
 
 #. Versionable content types
 #: versioning_config_form.pt
@@ -102,7 +110,7 @@ msgstr "Strategien"
 #. revert
 #: versions_history_form.pt
 msgid "label_revert"
-msgstr "zurückholen"
+msgstr "zurÃ¼ckholen"
 
 #. Diff from last
 #: versions_history_form.pt
@@ -117,22 +125,22 @@ msgstr "Differenz zur aktuellen"
 #. (preview)
 #: versions_history_form.pt
 msgid "label_preview_version_link"
-msgstr "(Vorschau)"
+msgstr "(anzeigen)"
 
-#. XXX 1
+#. (jump down)
 #: versions_history_form.pt
 msgid "label_preview_version_below"
-msgstr "XXX 1"
+msgstr "(runterspringen)"
 
-#. XXX 2
+#. Preview of Version
 #: versions_history_form.pt
 msgid "label_preview_version"
-msgstr "XXX 2"
+msgstr "Vorschau von Version ${version_id}"
 
 #. Insert a comment
 #: versions_history_form.pt
 msgid "label_insert_a_comment"
-msgstr "Kommentar einfügen"
+msgstr "Kommentar einfÃ¼gen"
 
 #. Save as new wersion
 #: versions_history_form.pt
@@ -147,27 +155,27 @@ msgstr "Legende"
 #. Changed
 #: diff_legend.pt
 msgid "label_diff_changed"
-msgstr "Geändert"
+msgstr "GeÃ¤ndert"
 
 #. (+) Added
 #: diff_legend.pt
 msgid "label_diff_added"
-msgstr "(+) Zugefügt"
+msgstr "(+) ZugefÃ¼gt"
 
 #. (-) Deleted
 #: diff_legend.pt
 msgid "label_diff_deleted"
-msgstr "(-) Gelöscht"
+msgstr "(-) GeÃ¶scht"
 
 #. Tag Added
 #: diff_legend.pt
 msgid "label_diff_tag_added"
-msgstr "Markierung zugefügt"
+msgstr "Markierung zugefÃ¼gt"
 
 #. Tag Deleted
 #: diff_legend.pt
 msgid "label_diff_tag_deleted"
-msgstr "Markierung gelöscht"
+msgstr "Markierung gelÃ¶scht"
 
 #. Select to make a version of the current content.
 #: edit_macro.pt
@@ -182,7 +190,7 @@ msgstr "Kommentar"
 #. Enter a comment below to describe the changes you've made.
 #: edit_macro.pt
 msgid "help_version_comment"
-msgstr "Beschreiben Sie Ihre Änderungen untenstehend."
+msgstr "Beschreiben Sie Ihre Ã„nderungen untenstehend."
 
 #. Save as new version
 #: versions_history_form.pt
@@ -197,7 +205,7 @@ msgstr "Versionen von ${title}"
 #. show versions
 #: versions_history.pt
 msgid "label_show_version"
-msgstr "Zeige Versionen"
+msgstr "anzeigen"
 
 #. Versioning properties
 #: versions_config_form.pt

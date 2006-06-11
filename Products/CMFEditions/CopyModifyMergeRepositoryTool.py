@@ -173,7 +173,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         content_type = obj.portal_type
         return bool(self._version_policy_mapping.get(content_type, None))
 
-    security.declareProtected(ManageVersioningPolicies, 'manage_setPolicies')
+    security.declareProtected(ManageVersioningPolicies, 'manage_setTypePolicies')
     def manage_setTypePolicies(self, policy_map, **kw):
         assert isinstance(policy_map, dict)
         for p_type, policies in self._version_policy_mapping.items():
