@@ -1,0 +1,13 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2005-05-17 15:00-100\n"
+"Last-Translator: Grégoire Weber <gregweb-AT-incept.ch>"
+"Content-Type: text/plain; charset=utf-8\n"
+"Language-code: de\n"
+"Language-name: Deutsch\n"
+"Preferred-encodings: utf-8 latin1\n"
+"Domain: cmfeditions\n"
+"X-is-fallback-for: de-ch de-de de-at de-li de-lu\n"
+
+msgid "Versions"
+msgstr "Versionen"

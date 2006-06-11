@@ -98,7 +98,7 @@ msgid "label_diff_to_current"
 msgstr "Vis forskellen fra nuværende"
 
 #versions_history_form.pt 
-msgid "label_show_below"
+msgid "label_preview_version_link"
 msgstr "Smugkig (nedenfor)"
 
 #versions_history_form.pt 

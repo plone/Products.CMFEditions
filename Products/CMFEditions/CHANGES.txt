@@ -4,6 +4,11 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+ToDo
+----
+
+- update translations (see changes for 1.0beta1) for: fr, da, pl
+
 
 Upcoming CMFEditions 1.0beta1 (2006-06-XX)
 ---------------------------------
@@ -18,7 +23,8 @@ Bugs fixed
   sync internal names with UI. Rollback may suggest a transaction 
   rollback which is something different. Including i18n label
   ``label_rollback`` which is now ``label_revert``. Added backwards 
-  compatibility code for configuration. [gregweb]
+  compatibility code for configuration. Translations not updated.
+  [gregweb]
 
 - Minor refactorings of the version history view. Notable replaced
   ``(show below)`` by ``preview`` without jumping to the preview target
@@ -30,6 +36,10 @@ Bugs fixed
 
 
 Features Added
+
+- Added German translations [gregweb]
+
+- Added Polish translations provided by Piotr Furman [Piotr Furman, gregweb]
 
 - ``RetainWorkflowStateAndHistory`` now adds the ``review_state`` to the
   ``sys_metadata`` at save time because at retreive time the workflow tool 
@@ -100,11 +110,11 @@ Features Added
   that are using ``preserve`` (None know at the moment, it's better to
   change now than later). [gregweb]
 
-- Added two new i18n labels: label_preview_version_below, 
-  label_preview_version [gregweb]
+- Added two new i18n labels: ``label_preview_version_below``, 
+  ``label_preview_version`` (no translations yet) [gregweb]
 
-- Renamed i18n label: label_show_below to label_preview_version_link
-  [gregweb]
+- Renamed i18n label: ``label_show_below`` to ``label_preview_version_link``
+  (updated labels in po-files but not the translations) [gregweb]
 
 
 Internal Changes
