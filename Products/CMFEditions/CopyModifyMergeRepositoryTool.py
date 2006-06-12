@@ -59,6 +59,7 @@ from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
 try:
     from Products.Archetypes.interfaces.referenceable import IReferenceable
     from Products.Archetypes.config import REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
+    from Products.Archetypes.exceptions import ReferenceException
     WRONG_AT=False
 except ImportError:
     WRONG_AT=True
@@ -550,15 +551,39 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     def _fixupATReferences(self, obj):
         """reindex AT reference data, we need to reindex
-        reference_catalog too"""
+        reference_catalog too.
+
+        This also deletes references implementations when the target
+        doesn't exist anymore. This is done at the end of the
+        recursiveRetrieve operation to avoid deleting refs to targets
+        that will be retrieved later in the recursiveRetrive. It
+        doesn't call refcatalog.deleteReference as that method uses
+        brains to retrieve references implementations but if the
+        target doesn't exists, so are even the brains for for
+        implementations which points to it.
+
+        This manually calls reference.delHook to let it finalyze
+        correctly but traps ReferenceException eventually emitted in
+        the process and forces the deletion, because leaving the
+        reference impl. there will lead to have refcatalog in an
+        incosistent state.
+        """
 
         if IReferenceable.isImplementedBy(obj) and hasattr(obj, REFERENCES_CONTAINER_NAME):
             # Delete refs if their target doesn't exists anymore
             ref_folder = getattr(obj, REFERENCES_CONTAINER_NAME)
             uid_catalog = getToolByName(self, 'uid_catalog')
+            ref_catalog = getToolByName(self, 'reference_catalog')
             ref_objs = ref_folder.objectValues()
             for ref in ref_objs:
                 if not uid_catalog(UID=ref.targetUID):
+                    try:
+                        # at's _deleteReference passes the catalog
+                        # itself, the source and target obj... i'm
+                        # going to emulate it as much as i can
+                        ref.delHook(ref_catalog, obj, None)
+                    except ReferenceException:
+                        pass
                     ref_folder.manage_delObjects(ref.getId())
             # then reindex references
             container = aq_parent(aq_inner(obj))
