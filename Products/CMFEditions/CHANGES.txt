@@ -4,13 +4,19 @@ CMFEditons Changes
 
 This file contains change information for the CMFEditions releases.
 
+Upcoming CMFEditions 1.0beta1 (2006-06-XX)
+---------------------------------
+
+Features added
+
+- Added stoprage statistics ZMI view [gregweb]
+
+
 
 CMFEditions 1.0alpha3 (2006-06-03)
 ----------------------------------
 
 Bugs fixed
-
-- Added stoprage statistics ZMI view [gregweb]
 
 - Fixed tracker issue #15 [alecm, gregweb]
 
