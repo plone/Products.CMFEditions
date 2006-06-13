@@ -40,6 +40,8 @@ Bugs fixed
 
 Features Added
 
+- Added stoprage statistics ZMI view [gregweb]
+
 - Added German translations [gregweb]
 
 - Added Polish translations provided by Piotr Furman [Piotr Furman, gregweb]
