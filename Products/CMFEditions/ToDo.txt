@@ -4,7 +4,7 @@ ToDos
 
 Numbers don't indicate any importance and order in implementation.
 
-next number: 54
+next number: 55
 
 Inbox
 =====
@@ -157,6 +157,7 @@ CMFEditions 1.0final
 
 
 
+
 CMFEditions 1.0+ (1.1 or later)
 ===============================
 
@@ -175,6 +176,11 @@ CMFEditions 1.0+ (1.1 or later)
 
 40. Support branching.
 
+54. Implement a new layer of modifiers with hooks which get called
+    when each object is applied to the working tree (the revert
+    operation) and before and after the overall recursive revert. With
+    it we can get rid of all the _fixup stuff inside
+    CopyModifyMergerRepositoryTool.
 
 Done
 ====

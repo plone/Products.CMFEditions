@@ -221,6 +221,7 @@ class TestATContents(PloneTestCase.PloneTestCase):
             (2, [image2.UID()]),
             (3, bothLinks)
             ]
+
         for version, explinks in expected:
             portal_repository.revert(faq, version)
 
@@ -238,8 +239,8 @@ class TestATContents(PloneTestCase.PloneTestCase):
             # XXX This assertion checks that the reference engine has
             # not been corrupted, but currently it fails.
             # XXX
-#             self.assertEquals(folderLinks, links,
-#                 "Version %d: links on object do not match reference catalog\nfolder %r, links %r" % (version, explinks, links))
+            self.assertEquals(folderLinks, links,
+                 "Version %d: links on object do not match reference catalog\nfolder %r, links %r" % (version, explinks, links))
             
             explinks.sort()
             self.assertEquals(explinks, folderLinks,
