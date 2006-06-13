@@ -331,30 +331,48 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
             length = len(history)
             workingCopy = hidhandler.queryObject(hid)
             if workingCopy is not None:
-                path = workingCopy.absolute_url()[portal_paths_len:]
+                url = workingCopy.absolute_url()
+                path = url[portal_paths_len:]
                 portal_type = workingCopy.getPortalTypeName()
             else:
                 path = None
+                url = None
                 retrieved = self.retrieve(hid).object.object
                 portal_type = retrieved.getPortalTypeName()
-            histData = {"history_id": hid, "length": length, "path": path,
-                        "portal_type": portal_type}
+            histData = {"history_id": hid, "length": length, "url": url, 
+                        "path": path, "portal_type": portal_type}
             histories.append(histData)
         
         # collect history ids with still existing working copies
         existing = []
+        existingHistories = 0
+        existingVersions = 0
         deleted = []
+        deletedHistories = 0
+        deletedVersions = 0
         for histData in histories:
             if histData["path"] is None:
                 deleted.append(histData)
+                deletedHistories += 1
+                deletedVersions += histData["length"]
             else:
                 existing.append(histData)
+                existingHistories += 1
+                existingVersions += histData["length"]
         
         processingTime = "%.2f" % round(time.time() - startTime, 2)
         return {
             "existing": existing, 
             "deleted": deleted, 
-            "time": processingTime,
+            "summaries": {
+                "time": processingTime,
+                "totalHistories": existingHistories+deletedHistories,
+                "totalVersions": existingVersions+deletedVersions,
+                "existingHistories": existingHistories,
+                "existingVersions": existingVersions,
+                "deletedHistories": deletedHistories,
+                "deletedVersions": deletedVersions,
+            }
         }
 
 class ZVCAwareWrapper(Persistent):

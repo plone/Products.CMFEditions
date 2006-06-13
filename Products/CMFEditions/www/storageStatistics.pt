@@ -4,11 +4,51 @@
 <tal:block define="statistics here/zmi_getStorageStatistics;
                    existing statistics/existing;
                    deleted statistics/deleted;
-                   time statistics/time;
+                   summaries statistics/summaries;
                    ">
 <h2>Storage Statistics</h2>
 
-<p>Calculating the statistics took <span tal:replace="time" /> seconds.</p>
+<p>Calculating the statistics took <span tal:replace="summaries/time" /> seconds.</p>
+
+<table border="0" cellspacing="0" tal:condition="existing">
+  <tr>
+    <th colspan="2" align="left">Number of Histories:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/totalHistories"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of existing items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/existingHistories"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of deleted items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/deletedHistories"></td>
+  </tr>
+  <tr>
+    <th colspan="4"></th>
+  </tr>
+  <tr>
+    <th colspan="2" align="left">Number of Versions:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/totalVersions"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of existing items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/existingVersions"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of deleted items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/deletedVersions"></td>
+  </tr>
+</table>
 
 <h3>Existing Working Copies</h3>
 
@@ -34,7 +74,8 @@
       <td tal:content="histData/history_id">history id</td>
       <td tal:content="histData/length">length</td>
       <td tal:content="histData/portal_type">portal type</td>
-      <td tal:content="histData/path">current path</td>
+      <td><a tal:attributes="href histData/url" 
+             tal:content="histData/path">current path</a></td>
     </tr>
 
   </table>
