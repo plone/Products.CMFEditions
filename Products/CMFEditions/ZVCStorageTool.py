@@ -377,7 +377,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         
         if deletedHistories:
             deletedAverage = "%.1f" % \
-                round(float(existingVersions)/deletdHistories, 1)
+                round(float(existingVersions)/deletedHistories, 1)
         else:
             deletedAverage = "n/a"
         
