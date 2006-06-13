@@ -37,10 +37,12 @@ from Persistence import Persistent
 from AccessControl import ClassSecurityInfo, getSecurityManager
 
 from OFS.SimpleItem import SimpleItem
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.interfaces import IOpaqueItems
+from Products.CMFCore.CMFCorePermissions import ManagePortal
 
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
 from Products.ZopeVersionControl.Utility import VersionControlError
@@ -79,10 +81,16 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     
     meta_type = 'CMFEditions Portal ZVC based Histories Storage Tool'
     
+    storageStatistics = PageTemplateFile('www/storageStatistics.pt',
+                                         globals(),
+                                         __name__='modifierEditForm')
+    manage_options = ActionProviderBase.manage_options[:] \
+                     + ({'label' : 'Statistics (may take time)', 'action' : 'storageStatistics'}, ) \
+                     + SimpleItem.manage_options[:]
+
     # make exceptions available trough the tool
     StorageError = StorageError
     StorageRetrieveError = StorageRetrieveError
-    
     
     _history_id_mapping = None
     zvc_repo = None
@@ -300,6 +308,30 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         vdata = self.retrieve(history_id, selector)
 #        return vdata.object.object.ModificationDate()
         return vdata.object.object.modified()
+
+    # -------------------------------------------------------------------
+    # ZMI methods
+    # -------------------------------------------------------------------
+
+    security.declareProtected(ManagePortal, 'zmi_getHistoriesData')
+    def zmi_getHistoriesData(self):
+        """
+        """
+        historyIds = self._getHistoryIdMapping()
+        result = []
+        hidhandler = getToolByName(self, "portal_historyidhandler")
+        for hid in historyIds:
+            history = self.getHistory(hid)
+            length = len(history)
+            workingCopy = hidhandler.queryObject(hid)
+            if workingCopy is not None:
+                path = workingCopy.absolute_url()
+            else:
+                path ="n/a"
+            histData = {"history_id": hid, "length": length, "path": path}
+            result.append(histData)
+            
+        return result
 
 class ZVCAwareWrapper(Persistent):
     """ZVC assumes the stored object has a getPhysicalPath method.

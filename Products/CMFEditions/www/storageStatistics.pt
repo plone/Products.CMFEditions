@@ -1,0 +1,33 @@
+<p tal:replace="structure here/manage_page_header" omit-tag="">Header</p>
+<p tal:replace="structure here/manage_tabs" omit-tag="">tabs</p>
+
+
+<h2>Storage Statistics</h2>
+
+<form action="edit" method="post">
+
+  <table border="0">
+
+    <tr>
+      <th align="left">
+        history id
+      </th>
+      <th align="left">
+        versions
+      </th>
+      <th align="left">
+        current path
+      </th>
+    </tr>
+
+    <tr tal:repeat="histData here/portal_historiesstorage/zmi_getHistoriesData">
+      <td tal:content="histData/history_id">history id</td>
+      <td tal:content="histData/length">length</td>
+      <td tal:content="histData/path">current path</td>
+    </tr>
+
+    </table>
+
+</form>
+
+<p tal:replace="structure here/manage_page_footer" omit-tag="">Footer</p>
