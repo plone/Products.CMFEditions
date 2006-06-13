@@ -398,6 +398,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
             }
         }
 
+
 class ZVCAwareWrapper(Persistent):
     """ZVC assumes the stored object has a getPhysicalPath method.
     
