@@ -48,6 +48,26 @@
     <td>&nbsp;&nbsp;</td>
     <td tal:content="summaries/deletedVersions"></td>
   </tr>
+  <tr>
+    <th colspan="4"></th>
+  </tr>
+  <tr>
+    <th colspan="2" align="left">Average Versions per History:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/totalAverage"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of existing items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/existingAverage"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of deleted items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/deletedAverage"></td>
+  </tr>
 </table>
 
 <h3>Existing Working Copies</h3>

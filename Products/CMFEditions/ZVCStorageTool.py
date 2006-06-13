@@ -361,17 +361,40 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
                 existingVersions += histData["length"]
         
         processingTime = "%.2f" % round(time.time() - startTime, 2)
+        histories = existingHistories+deletedHistories
+        versions = existingVersions+deletedVersions
+        
+        if histories:
+            totalAverage = "%.1f" % round(float(versions)/histories, 1)
+        else:
+            totalAverage = "n/a"
+        
+        if existingHistories:
+            existingAverage = "%.1f" % \
+                round(float(existingVersions)/existingHistories, 1)
+        else:
+            existingAverage = "n/a"
+        
+        if deletedHistories:
+            deletedAverage = "%.1f" % \
+                round(float(existingVersions)/deletdHistories, 1)
+        else:
+            deletedAverage = "n/a"
+        
         return {
             "existing": existing, 
             "deleted": deleted, 
             "summaries": {
                 "time": processingTime,
-                "totalHistories": existingHistories+deletedHistories,
-                "totalVersions": existingVersions+deletedVersions,
+                "totalHistories": histories,
+                "totalVersions": versions,
+                "totalAverage": totalAverage,
                 "existingHistories": existingHistories,
                 "existingVersions": existingVersions,
+                "existingAverage": existingAverage,
                 "deletedHistories": deletedHistories,
                 "deletedVersions": deletedVersions,
+                "deletedAverage": deletedAverage,
             }
         }
 
