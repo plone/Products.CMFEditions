@@ -335,7 +335,8 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
                 portal_type = workingCopy.getPortalTypeName()
             else:
                 path = None
-                portal_type = self.retrieve(hid).object.getPortalTypeName()
+                retrieved = self.retrieve(hid).object.object
+                portal_type = retrieved.getPortalTypeName()
             histData = {"history_id": hid, "length": length, "path": path,
                         "portal_type": portal_type}
             histories.append(histData)
