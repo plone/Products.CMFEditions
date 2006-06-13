@@ -550,22 +550,22 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # to handle their cataloging in special ways.
 
     def _fixupATReferences(self, obj):
-        """reindex AT reference data, we need to reindex
-        reference_catalog too.
+        """Reindex AT reference data, and delete reference
+        implementations when the target
+        doesn't exist anymore.
 
-        This also deletes references implementations when the target
-        doesn't exist anymore. This is done at the end of the
+        Deletion of references is done at the end of the
         recursiveRetrieve operation to avoid deleting refs to targets
         that will be retrieved later in the recursiveRetrive. It
         doesn't call refcatalog.deleteReference as that method uses
-        brains to retrieve references implementations but if the
-        target doesn't exists, so are even the brains for for
-        implementations which points to it.
+        brains to retrieve reference implementations. If the
+        target doesn't exist, brains for references pointing to it
+        do not exist either.
 
-        This manually calls reference.delHook to let it finalyze
+        This manually calls reference.delHook to let it finalize
         correctly but traps ReferenceException eventually emitted in
         the process and forces the deletion, because leaving the
-        reference impl. there will lead to have refcatalog in an
+        reference impl. there will leave refcatalog in an
         incosistent state.
         """
 

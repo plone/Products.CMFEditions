@@ -540,9 +540,12 @@ class RetainATRefs:
         if obj is None:
             return [], [], {}
 
-        #Preserve AT references
-        orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
-        setattr(repo_clone, REFERENCE_ANNOTATION, orig_refs_container)
+        if not WRONG_AT:
+            if IReferenceable.isImplementedBy(obj) \
+                and hasattr(aq_base(obj), REFERENCE_ANNOTATION):
+                #Preserve AT references
+                orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
+                setattr(repo_clone, REFERENCE_ANNOTATION, orig_refs_container)
         return [], [], {}
 
 InitializeClass(RetainATRefs)
