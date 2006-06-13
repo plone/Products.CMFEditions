@@ -326,7 +326,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         
         # collect interesting informations
         histories = []
-        for hid in historyIds:
+        for hid in historyIds.keys():
             history = self.getHistory(hid)
             length = len(history)
             workingCopy = hidhandler.queryObject(hid)
