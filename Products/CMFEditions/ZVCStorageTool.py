@@ -26,6 +26,7 @@ __version__ = "$Revision: 1.18 $"
 
 import traceback
 import sys
+import time
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
 
@@ -313,25 +314,47 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     # ZMI methods
     # -------------------------------------------------------------------
 
-    security.declareProtected(ManagePortal, 'zmi_getHistoriesData')
-    def zmi_getHistoriesData(self):
+    security.declareProtected(ManagePortal, 'zmi_getStorageStatistics')
+    def zmi_getStorageStatistics(self):
         """
         """
+        startTime = time.time()
+        # get all history ids (incl. such that were deleted in the portal)
         historyIds = self._getHistoryIdMapping()
-        result = []
         hidhandler = getToolByName(self, "portal_historyidhandler")
+        portal_paths_len = len(getToolByName(self, "portal_url")())
+        
+        # collect interesting informations
+        histories = []
         for hid in historyIds:
             history = self.getHistory(hid)
             length = len(history)
             workingCopy = hidhandler.queryObject(hid)
             if workingCopy is not None:
-                path = workingCopy.absolute_url()
+                path = workingCopy.absolute_url()[portal_paths_len:]
+                portal_type = workingCopy.getPortalTypeName()
             else:
-                path ="n/a"
-            histData = {"history_id": hid, "length": length, "path": path}
-            result.append(histData)
-            
-        return result
+                path = None
+                portal_type = self.retrieve(hid).object.getPortalTypeName()
+            histData = {"history_id": hid, "length": length, "path": path,
+                        "portal_type": portal_type}
+            histories.append(histData)
+        
+        # collect history ids with still existing working copies
+        existing = []
+        deleted = []
+        for histData in histories:
+            if histData["path"] is None:
+                deleted.append(histData)
+            else:
+                existing.append(histData)
+        
+        processingTime = "%.2f" % round(time.time() - startTime, 2)
+        return {
+            "existing": existing, 
+            "deleted": deleted, 
+            "time": processingTime,
+        }
 
 class ZVCAwareWrapper(Persistent):
     """ZVC assumes the stored object has a getPhysicalPath method.

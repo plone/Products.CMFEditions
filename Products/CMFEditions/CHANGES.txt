@@ -10,6 +10,8 @@ CMFEditions 1.0alpha3 (2006-06-03)
 
 Bugs fixed
 
+- Added stoprage statistics ZMI view [gregweb]
+
 - Fixed tracker issue #15 [alecm, gregweb]
 
 - When previewing a version the expandable history link is removed as this 

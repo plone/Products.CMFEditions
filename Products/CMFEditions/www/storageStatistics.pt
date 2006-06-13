@@ -1,12 +1,19 @@
 <p tal:replace="structure here/manage_page_header" omit-tag="">Header</p>
 <p tal:replace="structure here/manage_tabs" omit-tag="">tabs</p>
 
-
+<tal:block define="statistics here/zmi_getStorageStatistics;
+                   existing statistics/existing;
+                   deleted statistics/deleted;
+                   time statistics/time;
+                   ">
 <h2>Storage Statistics</h2>
 
-<form action="edit" method="post">
+<p>Calculating the statistics took <span tal:replace="time" /> seconds.</p>
 
-  <table border="0">
+<h3>Existing Working Copies</h3>
+
+  <p tal:condition="not:existing">None</p>
+  <table border="1" cellspacing="0" tal:condition="existing">
 
     <tr>
       <th align="left">
@@ -16,18 +23,47 @@
         versions
       </th>
       <th align="left">
-        current path
+        portal type
+      </th>
+      <th align="left">
+        current path (counting from the portals root)
       </th>
     </tr>
 
-    <tr tal:repeat="histData here/portal_historiesstorage/zmi_getHistoriesData">
+    <tr tal:repeat="histData existing">
       <td tal:content="histData/history_id">history id</td>
       <td tal:content="histData/length">length</td>
+      <td tal:content="histData/portal_type">portal type</td>
       <td tal:content="histData/path">current path</td>
     </tr>
 
-    </table>
+  </table>
 
-</form>
+<h3>Deleted Working Copies</h3>
+
+  <p tal:condition="not:deleted">None</p>
+  <table border="1" cellspacing="0" tal:condition="deleted">
+
+    <tr>
+      <th align="left">
+        history id
+      </th>
+      <th align="left">
+        versions
+      </th>
+      <th align="left">
+        portal type
+      </th>
+    </tr>
+
+    <tr tal:repeat="histData deleted">
+      <td tal:content="histData/history_id">history id</td>
+      <td tal:content="histData/length">length</td>
+      <td tal:content="histData/portal_type">portal type</td>
+    </tr>
+
+  </table>
+
+</tal:block>
 
 <p tal:replace="structure here/manage_page_footer" omit-tag="">Footer</p>
