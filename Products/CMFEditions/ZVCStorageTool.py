@@ -39,10 +39,12 @@ from Persistence import Persistent
 from AccessControl import ClassSecurityInfo, getSecurityManager
 
 from OFS.SimpleItem import SimpleItem
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.interfaces import IOpaqueItems
+from Products.CMFCore.CMFCorePermissions import ManagePortal
 
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
 from Products.ZopeVersionControl.Utility import VersionControlError
@@ -101,6 +103,13 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     
     meta_type = 'CMFEditions Portal ZVC based Histories Storage Tool'
     
+    storageStatistics = PageTemplateFile('www/storageStatistics.pt',
+                                         globals(),
+                                         __name__='modifierEditForm')
+    manage_options = ActionProviderBase.manage_options[:] \
+                     + ({'label' : 'Statistics (may take time)', 'action' : 'storageStatistics'}, ) \
+                     + SimpleItem.manage_options[:]
+
     # make exceptions available trough the tool
     StorageError = StorageError
     StorageRetrieveError = StorageRetrieveError
@@ -521,6 +530,97 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         
         return (nbrOfMigratedHistories, nbrOfMigratedVersions, totalTime)
 
+    # -------------------------------------------------------------------
+    # ZMI methods
+    # -------------------------------------------------------------------
+
+    security.declareProtected(ManagePortal, 'zmi_getStorageStatistics')
+    def zmi_getStorageStatistics(self):
+        """
+        """
+        startTime = time.time()
+        # get all history ids (incl. such that were deleted in the portal)
+        storage = self._getShadowStorage(autoAdd=False)
+        if storage is not None:
+            historyIds = storage._storage
+        else:
+            historyIds = {}
+        hidhandler = getToolByName(self, "portal_historyidhandler")
+        portal_paths_len = len(getToolByName(self, "portal_url")())
+        
+        # collect interesting informations
+        histories = []
+        for hid in historyIds.keys():
+            history = self.getHistory(hid)
+            length = len(history)
+            workingCopy = hidhandler.queryObject(hid)
+            if workingCopy is not None:
+                url = workingCopy.absolute_url()
+                path = url[portal_paths_len:]
+                portal_type = workingCopy.getPortalTypeName()
+            else:
+                path = None
+                url = None
+                retrieved = self.retrieve(hid).object.object
+                portal_type = retrieved.getPortalTypeName()
+            histData = {"history_id": hid, "length": length, "url": url, 
+                        "path": path, "portal_type": portal_type}
+            histories.append(histData)
+        
+        # collect history ids with still existing working copies
+        existing = []
+        existingHistories = 0
+        existingVersions = 0
+        deleted = []
+        deletedHistories = 0
+        deletedVersions = 0
+        for histData in histories:
+            if histData["path"] is None:
+                deleted.append(histData)
+                deletedHistories += 1
+                deletedVersions += histData["length"]
+            else:
+                existing.append(histData)
+                existingHistories += 1
+                existingVersions += histData["length"]
+        
+        processingTime = "%.2f" % round(time.time() - startTime, 2)
+        histories = existingHistories+deletedHistories
+        versions = existingVersions+deletedVersions
+        
+        if histories:
+            totalAverage = "%.1f" % round(float(versions)/histories, 1)
+        else:
+            totalAverage = "n/a"
+        
+        if existingHistories:
+            existingAverage = "%.1f" % \
+                round(float(existingVersions)/existingHistories, 1)
+        else:
+            existingAverage = "n/a"
+        
+        if deletedHistories:
+            deletedAverage = "%.1f" % \
+                round(float(deletedVersions)/deletedHistories, 1)
+        else:
+            deletedAverage = "n/a"
+        
+        return {
+            "existing": existing, 
+            "deleted": deleted, 
+            "summaries": {
+                "time": processingTime,
+                "totalHistories": histories,
+                "totalVersions": versions,
+                "totalAverage": totalAverage,
+                "existingHistories": existingHistories,
+                "existingVersions": existingVersions,
+                "existingAverage": existingAverage,
+                "deletedHistories": deletedHistories,
+                "deletedVersions": deletedVersions,
+                "deletedAverage": deletedAverage,
+            }
+        }
 
 InitializeClass(ZVCStorageTool)
 
