@@ -11,13 +11,6 @@ Upcoming CMFEditions 1.0beta1 (2006-06-XX)
 ToDo
 
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt
-
-
-CMFEditions 1.0beta0 (2006-06-15, not published)
-------------------------------------------------
-
-Known Bugs
-
 - some translations are not yet updated (see changes below for fr, da, pl)
 - migration from CMFEditions 1.0alpha3 doesn't work correctly
 
