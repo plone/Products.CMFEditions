@@ -9,9 +9,7 @@ Roadmap
 ToDo for 1.0beta1
 -----------------
 
-- fix migration
-- fix retrieve of files and images
-- update DEPENDENCIES.txt/CHANGES.txt/README.txt
+- see also todo's in CHANGES.txt
 
 - prepare release documentation
   - addons: propose usage and download of diff in release description
