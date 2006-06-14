@@ -1,1 +1,1 @@
-1.0beta0+ (weber-delete_support, HEAD, unreleased)
+1.0beta0 (2006-06-15, weber-delete_support, not published)
