@@ -1,0 +1,42 @@
+Multisite Tool
+
+ The multisite tool assumes a structure where content is produced in a
+ single CMS and then published to one or more public sites. It doesn't
+ (yet) support use cases where content is editable on more than one
+ site. The public sites can have a totally different site structure
+ than the CMS including pages prepared on the public site, but these
+ cannot be published back into the CMS.
+
+ Content prepared on the CMS is automatically subscribed to a
+ 'preferred' list of public sites taken from a folder property.
+ Subscribable content also gains a 'sites' tab which allows the user to
+ change the subscription list, view the published content, or preview
+ the content on a site prior to publishing. Site managers also have
+ access to the sites tab in the CMS so that they can retract unwanted
+ content from their site or add subscriptions for additional content
+ that they want.
+
+ Publishing and retracting is intended to be linked into the workflow
+ so that when an item is published it is automatically pushed onto all
+ public sites where it is subscribed, and when it is retracted it is
+ pulled off the public sites (but you can have another workflow
+ transition that takes it out of the published state without retracting
+ if you want to allow revisions). It is intended that this will
+ eventually be linked to the versioning support of CMEEditions.
+
+ Content pushed to public sites has the same UID as the master copy on
+ the CMS. Only Archetypes objects can be published in this way (since
+ we use the archetypes reference catalog). References are copied where
+ possible: e.g.
+
+    If A refers to B and B is on the public site, publishing A will
+    preserve the reference, but if B is not on the public site the
+    reference is lost until B is also published at which point the
+    reference will be reestablished.
+
+ An object pushed to the public site is put in a default folder
+ (selected according to the object meta_type) unless the object is
+ already on the public site in which case it is replaced in situ. When
+ a published object is replaced in this way references to the published
+ object from other objects (e.g. navigation pages created on the public
+ site) on the public site are preserved.

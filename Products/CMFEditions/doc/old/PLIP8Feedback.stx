@@ -1,0 +1,431 @@
+Staging and Versioning
+
+   **Formal note**
+
+   - This is the editable copy of the read only [PLIP8] Proposal.
+     Please add your comments, corrections or questions right 
+     inside of the document or at the bottom.
+
+   - Previous revisons saved for historical reasons:
+
+      - [PLIP8v1] and [PLIP8v1Feedback]
+
+   Thanks!
+
+----------------------------------------------------------------
+
+- **Title** - Plone Staging/Versioning
+
+- **Description** - One big missing feature in Plone is that you can't 
+  work on published content in private. At the moment you either have 
+  to do your changes in public or you have to unpublish the content 
+  item which renders it invisible to anonymous users during editing 
+  time. The Plone Staging/Versioning Project will find a remedy for 
+  that issue.
+
+- **PLIP** - 8
+
+- **Proposer** - "gregweb":/Members/gregweb/
+
+- **Seconder** - azazel
+
+- **Status** - IsWorkInProgress
+
+Contents
+
+   1. "Definitions":#definitions
+
+   2. "Proposal":#proposal
+
+   3. "Motivation":#motivation
+
+   4. "Implementation":#implementation
+
+   5. "Deliverables":#deliverables
+
+   6. "Risks":#risks
+   
+   7. "FAQ":#faqs
+
+<a name="definitions">Definition of Terms</a>
+
+   Note that the terms defined below help us in structuring our brains 
+   and dividing concerns. Especially be aware of the following two pairs of 
+   concepts to be distinguished correctly:
+   
+    - **staging/editions** and **versioning/versions:** Staging is about 
+      having more than one incarnation (or edition) of a content item 
+      beeing available in the site tree (e.g. one incarnation is 
+      published and an other one can be worked on). Versioning is about 
+      saving versions of objects for later retrieval. Editions live in 
+      stages (accessible by a url) where as versions live in a 
+      repository (usually not meant to be accessible by a url). Staging 
+      is more related to workflows where as versioning is more related 
+      to archiving and change tracking/reporting.
+      
+   *Important Note:* For the end users most of these concepts would be 
+   irrelevant. The aim is to integrate staging into Plone in a manner 
+   user do not realize there are some staging mechanisms doing the hard 
+   work for them. End users would probably only have to deal with the 
+   concept of versions which we assume could be intuitively understood.
+   
+   *Warning:* The following definitions of terms may suggest staging/versioning 
+              to be overly complex. It's not the case! Continue with the 
+              "proposal":#proposal in case of confusion :-).
+
+   Stage -- A stage is the place where a certain incarnation (edition) 
+            of a content item lives. To be more concrete: This proposal 
+            proposes a *live stage* that holds "published" editions of 
+            content items and the *edit stage* that holds the editions 
+            of content items for beeing edited by users. Compare this 
+            with (bigger) theaters usually having stages for actors to 
+            practice and having live stages for performing in front of 
+            the public. Got it?
+            
+   edition -- An edition is one incarnation of a content item (I want 
+              to avoid the term version here :-). There can be more
+              than one incarnation of a content item. Think of having 
+              one edition beeing published and another one you're 
+              currently working on. The one you're working on will 
+              replace the one been currently published once a day. 
+              As mentioned above editions live in stages.
+              
+   repository -- The repository holds different versions of a content 
+                 item. They'll be saved for later retrieval.
+                 
+   version -- A version represents a snapshot of a content item at a 
+              given time. If the version is saved to a repository it 
+              can be retrieved later on. 
+              
+   content item -- A content item can be a document, an image, etc. It 
+                   can also be folderish. A content item can have more 
+                   than one physical representation incarnating as 
+                   different editions.
+                   
+   object -- Everything is an object! Hit me if I'm using this term in 
+             this proposal to avoid clearness!
+             
+   publish -- Saying "publishing a content item or a working edition" 
+              means that the working edition is cloned from the work 
+              stage to the live stage by some mechanism.
+
+
+<a name="proposal">Proposal</a>
+
+   This proposal describes how a implementation would look like that 
+   allows users to edit a content item without affecting the currently 
+   published edition of it.
+   
+   Staging will closely integrate with workflows. Therefore most of 
+   normal day users even won't realize there is a staging mechanism 
+   behind. One goal of this proposal is to discuss possible staging 
+   policies.
+   
+   Another goal is to be able to version content items. Users would 
+   then be able to recover previously saved or published versions of 
+   a content item.
+
+   Demarcation
+
+      This proposal covers the first step into staging and versioning 
+      world for Plone. It's about staging and versioning of one content 
+      item at a time. Staging and versioning of a whole site or a 
+      subsite is not subject of this proposal.
+   
+      This proposal is about *staging and versioning of content*. 
+      It doesn't cover staging/migrating from one version of sites
+      implementation (code and templates) to another.
+
+      This proposal isn't about Locking (WebDAV locking) which can
+      bee seen as disjunctive feature.
+
+<a name="motivation">Motivation</a>
+
+   In the eyes of a lot of potential customers a major drawback of Plone
+   is the missing "versioning" feature. 
+   
+   What most of them mean with that is that you can't work on published 
+   content in private. At the moment you either have to do your changes 
+   in public or you have to unpublish the content item which renders it 
+   invisible to anonymous users during editing time. 
+   
+   The Plone Staging/Versioning Project will find a remedy for that 
+   issue.
+   
+   Another less demanded but nevertheless convenient features is to be 
+   able to recover former versions of a content item. 
+
+
+<a name="implementation">Implementation</a>
+
+   As staging and versioning can be seen as two completely different 
+   things we split them in two parts which would probably be implemented 
+   in two phases.
+   
+   <a name="partIStaging">Part I: Staging</a>
+   
+      Plone would ship with two stages witch we name 'live stage' and 
+      'work stage':
+      
+       - **live stage**: This is the place where published editions of 
+         content items live. Editions in the live stage will be replaced 
+         by editions from the work stage by publishing the work edition. 
+         They won't be directly editable by the users.
+      
+       - **work stage**: This is the place where users create and edit 
+         their content. If an item is already published in the live 
+         stage editing the work edition doesn't affect the life edition 
+         of the content item.
+       
+      "publish":img:/Members/gregweb/versioning/publish.gif 
+      "publish with effective date":img:/Members/gregweb/versioning/publishEffective.gif
+    
+      Where the stages live
+     
+         Plone would ship with two stages in the Plone root. Content 
+         objects (index_html and Members) will be moved to the work 
+         stage. They'll initialy live in the work stage as work 
+         editions. An empty Plone would look like this:
+         "initialPloneInstance":img:/Members/gregweb/versioning/initialPloneInstance.gif
+        
+      Where existing tools live
+     
+         The place of existing and new tools won't change. They'll live 
+         in the Plone root as before. Some of the tools implementations
+         have to be changed to (e.g. Memberdata Tool). More about that
+         see below.
+
+      How immediate publishing works
+     
+         The process of publishing editions to the live stage is driven
+         by workflows. The 'publish' transitions manage replacement
+         of the live edition by the work edition. The 'retract' 
+         transition manages deletion of published objects from the live
+         stage. 
+        
+      How publishing works if an effective date is supplied
+        
+         If a work edition with an effective date gets published by a 
+         user it will be copied to the live stage if at least one of 
+         the following conditions is met:
+        
+            - there no edition in the live stage (independently of
+              the effective date, first publishing)
+              
+            - the effective date is in the past
+          
+         In all other cases on publishing a work edition no copy/clone 
+         activity gets started. At the live edition the 'pullDate' 
+         attribute would be set to the value of the 'effective_date' 
+         attribute from the work edition. The first access to the live 
+         edition having a expired 'pullDate' triggers cloning 
+         (overwriting) of the work edition to the live stage.
+        
+         The condition for this 
+         use case is:
+         
+            - the effective date is in the future and there is 
+              already living a edition in the live stage
+         
+         For more use cases have a look at the 
+         StagingVersioningUseCases document.
+         
+      Minimalistic Reference Workflow
+      
+         "Workflow":img:/Members/gregweb/versioning/Workflow.gif
+         
+         Users editing a published content item transparently trigger a 
+         new 'revise' transition ("see open question #1":#open1).
+        
+         The transitions 'submit', 'publish' and 'revise' from a usual 
+         publishing cycle for reiterative updating of content items.
+        
+         Additional comments on 
+         transitions:
+         
+            - *submit*: no staging operation performed
+            
+            - *publish*: either clones the work edition to the live 
+              stage or sets the 'pullDate' attribute on the live 
+              edition if 'effective_date' is set on the work edition.
+              
+            - *revise*: can be performed on saving changes, thus is 
+              some kind of implicit. Deletes the 'pullDate' attribute 
+              on the live edition if available.
+              
+            - *retract*: deletes the live edition
+         
+         A live edition is always in the 'published' state or does 
+         not exist. Take care not to confound 'pending' and 'sceduled'!
+         
+      How the User Interface changes
+     
+         We propose an additional view tab to view the live 
+         edition. It probably makes sense to think also about the 
+         name of the 'view' tab.
+         
+         Proposition 
+         ("see open question #2":#open2)
+         
+          - change 'view' to 'preview'
+          
+          - add 'live edition' to view the currently published 
+            edition
+         
+         "ViewTabs":img:/Members/gregweb/versioning/ViewTabs.gif
+         
+         The 'preview' tab should be visible only if the working 
+         edition differs from the live edition. The 'live edition' 
+         would be absent if the content item has no live edition 
+         (not yet published).
+        
+      Deleting and renaming of work editions
+      
+         Deleting or renaming a work edition should also delete or 
+         rename editions in the live stage. So deleting and renaimg 
+         can be seen as operation on content item level. This way 
+         the different editions remain consistent.
+         
+         Different policies would be possible 
+         ("open question #3":open3):
+         
+          - Users are able to delete or rename published editions 
+            even in cases they're not able to publish to the life 
+            stage (status quo).
+            
+          - Users are only able to propose deletion or renaming of 
+            content items. Users with appropriate rights then have 
+            to decide upon deletion or renaming. Real deletion and 
+            renaming will affect the editions in all stages. This 
+            solution needs additional workflow states and changes 
+            in the UI (folder_view, folder_contents, etc.).
+            
+            Which we think should not be subject of this proposal.
+         
+      Use Cases
+     
+         See above and the StagingVersioningUseCases document.
+        
+      Implementation details
+      
+         A layered approach will be chosen:
+         
+         "Layering":img:/Members/gregweb/versioning/Layering.gif
+         
+         CMFEditions will contain Plone indepandant functionality 
+         whereas PloneEditions will contain Plone specific code to 
+         ease access from templates and scripts.
+         
+         By using CMFStaging a ZopeVersionControl repository has to
+         be installed. So on every publish a current version of the
+         content item gets stored in the repository. This could be 
+         seen as waste of disk space. 
+         
+         Fact is that with "Part II: Versioning":#partIIVersioning 
+         we need the repository anyway. Another reason to use it 
+         nevertheless is that the CMFStaging functionality helps us
+         implementing staging functionality faster and with less 
+         risks.
+         
+      Necessary changes in the existing infrastructure (Tools, Skins, etc.)
+      
+         Below my notes written down a month ago showing problems
+         in tool and necessary changes:
+      
+         CMFPlone.MembershipTool.py, method 'createMemberarea'
+         
+            member folder added explicitely to the root
+            
+         CMFDefault.MembershipTool.py, method 'getHomeFolder'
+         
+            gets member folder from the root (getMembersFolder)
+         
+         CMFCore.MembershipTool.py, method 'createMemberarea'
+         
+            hardcoded 'Members' (not relevant)
+            
+         CMFPlone.MigrationsTool.py
+         
+            probably no dependency but have to write migration code
+            
+         CMFPlone.PloneBatch.py
+         
+            Must reflect fact that more than one edition exists for
+            one item. We should make a tool out of it.
+            
+         The emaining tools seem not to have any dependency on the
+         location of the member folder.
+
+
+   <a name="partIIVersioning">Part II: Versioning</a>
+
+      XXX To be done!
+
+   Open questions
+   
+    1. UI guys: When should the <a name="open1">on save or edit</a> 
+       transition be fired? Probably locking should possibly be done 
+       on the same occasion.
+       
+    2. UI guys: There are probably <a name "open2">better names</a> 
+       for the pair 'preview'/'live edition'. Another idea would be 
+       to put all in one tab: 'view: _work_, _live_'. 
+       Suggestions are welcome.
+       
+    3. What about <a name "open3">deleting and renaming</a> content 
+       items? It's probably necessary to extend existing workflows. 
+       Actually this is not really a staging issue although it 
+       could make sense to solve this problem in parallel.
+
+<a name="deliverables">Deliverables</a>
+
+   - Overhaul IEditions.py interface (split in staging and 
+     versioning part (IStaging, IVersioning))
+
+   XXX To be done! 
+
+<a name="risks">Risk Factors</a>
+
+   What are the risks of implementing this proposal, what incompatibilies can it cause?
+   
+   - handling of non versionable content (RDBMS content)
+   
+   - Migration can be hairy. Especially for production environments
+     behind Apache/Squid as RewriteRules have to be changed also.
+     
+   - What about contentish objects not inheriting from object 
+     manager (ZopeVersionControl does some MonkeyPatching of 
+     ObjectManager XXX really?).
+
+   - **2003/12/12, gregweb in discussion with zwork**: 
+     CMFEditions and the underlying CMFStaging and ZVC-Code must 
+     not call manage_afterAdd hook while checking out a version 
+     from the repository. 
+     Unfortunately the StagingTool uses _setObject (line 233).
+     This breaks UID implementation of Archetypes and others.
+
+   - **2003/12/12, gregweb in discussion with zwork**: We have 
+     to think about UIDs and stages deeper, as AT assuems only 
+     one object with a given uid exists which is understandable.
+     An idea is to add the stage name to the AT uid.
+
+     The ATs UID engine has to be separated from ATs 
+     schema part. And this requires a change in the opaqueItems
+     code of the CMF (code changes are known and work) to allow
+     opaque items manage_afterAdd hooks beeing called.
+
+     Now this is achieved in AT by relying on the fact all
+     content is AT content (inheriting from BaseObject).
+
+   - XXX more?
+   
+<a name="faqs">FAQ</a>
+
+   Why a New Approach of Staging? Why not extend the existing staging solution?
+   
+     The existing way as PloneStaging is doing staging is not the 
+     right way. Triplicating Plone instances cause a lot of 
+     configuration problems holding configurations in sync. 
+     There are also workflow related problems.
+
+   More to come...
