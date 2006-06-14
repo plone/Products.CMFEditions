@@ -4,12 +4,23 @@ CMFEditons Changes
 
 This file contains change information for the CMFEditions releases.
 
+
 Upcoming CMFEditions 1.0beta1 (2006-06-XX)
 ---------------------------------
 
+Bugs fixed
+
+- fixed bug with AT references causing ref catalog having been inconsistent
+  [sunew]
+
+
 Features added
 
-- Added stoprage statistics ZMI view [gregweb]
+- Comment is now taken from request if any. [sunew]
+
+- Added storage statistics ZMI view. [gregweb]
+
+- Added functionality to create a test hierarchy. [gregweb]
 
 
 
