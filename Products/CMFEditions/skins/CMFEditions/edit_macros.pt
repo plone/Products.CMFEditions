@@ -82,7 +82,8 @@
                           name="cmfeditions_version_comment"
                           id="cmfeditions_version_comment"
                           rows="4"
-                          tal:attributes="tabindex tabindex/next;"></textarea>
+                          tal:attributes="tabindex tabindex/next;" 
+                          tal:content="request/form/cmfeditions_version_comment | nothing"></textarea>
             </div>
 
 
