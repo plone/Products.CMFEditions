@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="Docutils 0.3.7: http://docutils.sourceforge.net/" />
+<title>CMFEditions: Versioning in Plone</title>
+<meta name="author" content="Grégoire Weber (gregweb)" />
+<meta name="author" content="... (please fill in your name here)" />
+<meta name="date" content="2005-03-22" />
+<meta name="copyright" content="Grégoire Weber" />
+</head>
+<body>
+<div class="document" id="cmfeditions-versioning-in-plone">
+<h1 class="title">CMFEditions: Versioning in Plone</h1>
+<h2 class="subtitle" id="developer-documentation">Developer Documentation</h2>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Author:</th>
+<td>Grégoire Weber (gregweb)</td></tr>
+<tr><th class="docinfo-name">Author:</th>
+<td>... (please fill in your name here)</td></tr>
+<tr><th class="docinfo-name">Contact:</th>
+<td><a class="first last reference" href="mailto:gregweb&#64;incept.ch">gregweb&#64;incept.ch</a></td></tr>
+<tr><th class="docinfo-name">Date:</th>
+<td>2005-03-22</td></tr>
+<tr><th class="docinfo-name">Revision:</th>
+<td>1.4</td></tr>
+<tr><th class="docinfo-name">Copyright:</th>
+<td>Grégoire Weber</td></tr>
+<tr class="field"><th class="docinfo-name">License:</th><td class="field-body">GNU Free Documentation License</td>
+</tr>
+<tr><th class="docinfo-name">Status:</th>
+<td>Draft</td></tr>
+<tr class="field"><th class="docinfo-name">Audience:</th><td class="field-body">Developers</td>
+</tr>
+</tbody>
+</table>
+<div class="abstract topic">
+<p class="topic-title first">Abstract</p>
+<p>The CMFEditions architecture looks like beeing overly complex.
+The complexity has it's reasons in Python itself but also in the goal
+of CMFEditions not to rely on specific behaviour of content objects. 
+This document shall help developers to grok the architecture and ideas 
+behind CMFEditions by unfolding one aspect after the other.</p>
+<p>This document emerged from the notes for a presentation for PyCon 2005
+I (gregweb) couldn't hold because of a flu.</p>
+</div>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title first"><a name="table-of-contents">Table of Contents</a></p>
+<ul class="simple">
+<li><a class="reference" href="#about-versioning" id="id7" name="id7">About Versioning</a></li>
+<li><a class="reference" href="#what-is-a-python-object" id="id8" name="id8">What is a Python Object?</a></li>
+<li><a class="reference" href="#folderish-objects-folder" id="id9" name="id9">Folderish Objects: Folder</a></li>
+<li><a class="reference" href="#folderish-objects-f-a-q-page" id="id10" name="id10">Folderish Objects: F.A.Q.-Page</a></li>
+<li><a class="reference" href="#object-attributes-and-inside-and-outside-references" id="id11" name="id11">Object Attributes and Inside and Outside References</a></li>
+<li><a class="reference" href="#the-copy-mechanism" id="id12" name="id12">The Copy Mechanism</a><ul>
+<li><a class="reference" href="#modifers" id="id13" name="id13">Modifers</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#overwiew-over-the-architecture" id="id14" name="id14">Overwiew over the Architecture</a></li>
+<li><a class="reference" href="#further-reading" id="id15" name="id15">Further Reading</a></li>
+</ul>
+</div>
+<div class="section" id="about-versioning">
+<h1><a class="toc-backref" href="#id7" name="about-versioning">About Versioning</a></h1>
+<p>Just some words about what we talk about when we're saying &quot;versioning&quot;.</p>
+<blockquote>
+<p>Versioning essentially means:</p>
+<ul class="simple">
+<li>save the state of an object for later retrieval</li>
+<li>retrieve a former state of an object</li>
+<li>do some management stuff like showing the history, if an object is up 
+to date, etc.</li>
+</ul>
+</blockquote>
+<p>In this document we concentrate on the first two points (<em>save</em> and 
+<em>retreive</em> the state of something). But what does save <em>save the current 
+state</em> mean?</p>
+<p>Imagine you don't have access to a CVS or SVN repository but you're writing
+an article. What are you usually doing to preserve important milestones of
+your article? From time to time you make a copy of your document 
+(article.rst), append a number to it (article_003.rst) and move it 
+to an <tt class="docutils literal"><span class="pre">old_versions</span></tt> folder.</p>
+<p>Versioning just means that! The copy operation above is a deep copy as you 
+like to have preserved the whole state to be able to retrieve it entirely 
+later.</p>
+</div>
+<div class="section" id="what-is-a-python-object">
+<h1><a class="toc-backref" href="#id8" name="what-is-a-python-object">What is a Python Object?</a></h1>
+<p>First let's start with something well known:</p>
+<p>A python object is a dictionary:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; class A: pass
+...
+&gt;&gt;&gt; a = A()
+&gt;&gt;&gt; a.__dict__
+{}
+</pre>
+<p>The data the object carries need not be soley set by code of the class 
+implementation:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; a.x=5
+&gt;&gt;&gt; a.__dict__
+{'x': 5}
+&gt;&gt;&gt;
+</pre>
+<p>So there is in fact no control over who stores what for information in the 
+object. In Zope setting attributes at &quot;foreign&quot; objects is quite normal.
+A versioning solution has to handle that (by simply saving away a copy of
+the <tt class="docutils literal"><span class="pre">__dict__</span></tt>).</p>
+<p>So let's have a look at real Zope (2.x) object. As expected, every data
+the object carries is found in the objects <tt class="docutils literal"><span class="pre">__dict__</span></tt>:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; PrettyPrinter().pprint(doc.__dict__)
+{
+  '_Access_contents_information_Permission': ['Anonymous',
+                                             'Manager',
+                                             'Reviewer'],
+  '_Change_portal_events_Permission': ('Manager', 'Owner'),
+  '_Modify_portal_content_Permission': ('Manager', 'Owner'),
+  '_View_Permission': ['Anonymous', 'Manager', 'Reviewer'],
+  '__ac_local_roles__': {'gregweb': ['Owner']},
+  '_last_safety_belt': '',
+  '_last_safety_belt_editor': 'gregweb',
+  '_safety_belt': 'None',
+  'contributors': (),
+  'cooked_text': '',
+  'creation_date': DateTime('2005/02/14 20:03:37.234 GMT+1'),
+  'description': '',
+  'effective_date': None,
+  'expiration_date': None,
+  'id': 'index_html',
+  'language': '',
+  'modification_date': DateTime('2005/02/14 20:03:37.265 GMT+1'),
+  'portal_type': 'Document',
+  'rights': '',
+  'subject': (),
+  'text': '',
+  'text_format': 'structured-text',
+  'title': 'Home page for gregweb',
+  'workflow_history': {'plone_workflow': ({'action': None, 
+    'review_state': 'visible', 'comments': '', 'actor': 'gregweb', 
+    'time': DateTime('2005/02/14 20:03:37.250 GMT+1')},)}
+}
+</pre>
+<p>Looks quite meaningfull! To store a version just make a (deep) copy of 
+<tt class="docutils literal"><span class="pre">doc</span></tt> and store the copy away for later retrieval.</p>
+</div>
+<div class="section" id="folderish-objects-folder">
+<h1><a class="toc-backref" href="#id9" name="folderish-objects-folder">Folderish Objects: Folder</a></h1>
+<p>No let us have a look at a folderish object:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from pprint import PrettyPrinter
+&gt;&gt;&gt; PrettyPrinter().pprint(folder.__dict__)
+{
+  '_Access_contents_information_Permission': ['Anonymous',
+                                              'Manager',
+                                              'Reviewer'],
+  '_List_folder_contents_Permission': ('Manager', 'Owner', 'Member'),
+  '_Modify_portal_content_Permission': ('Manager', 'Owner'),
+  '_View_Permission': ['Anonymous', 'Manager', 'Reviewer'],
+  '__ac_local_roles__': {'gregweb': ['Owner']},
+  '_objects': ({'meta_type': 'Document', 'id': 'doc1'},
+               {'meta_type': 'Document', 'id': 'doc2'}),
+  'contributors': (),
+  'creation_date': DateTime('2005/02/14 20:03:37.171 GMT+1'),
+  'description': 'Dies ist der Mitglieder-Ordner.',
+  'doc1': &lt;Document at doc1&gt;,
+  'doc2': &lt;Document at doc2&gt;,
+  'effective_date': None,
+  'expiration_date': None,
+  'format': 'text/html',
+  'id': 'folder',
+  'language': '',
+  'modification_date': DateTime('2005/02/14 20:03:37.203 GMT+1'),
+  'portal_type': 'Folder',
+  'rights': '',
+  'subject': (),
+  'title': &quot;Documents&quot;,
+  'workflow_history': {'folder_workflow': ({'action': None, 
+    'review_state': 'visible', 'comments': '', 'actor': 'gregweb', 
+    'time': DateTime('2005/02/14 20:03:37.187 GMT+1')},)}
+}
+</pre>
+<p>It looks a little unclear what some of the stuff here is for! Ok as Zope 
+geek you know what's interesting and what isn't. Let's just strip away the 
+unimportant stuff:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from pprint import PrettyPrinter
+&gt;&gt;&gt; PrettyPrinter().pprint(folder.__dict__)
+{
+  'title': &quot;gregweb's Home&quot;,
+  'doc1': &lt;Document at doc1&gt;,
+  'doc2': &lt;Document at doc1&gt;,
+  '_objects': ({'meta_type': 'Document', 'id': 'doc1'},
+               {'meta_type': 'Document', 'id': 'doc2'}),
+  ...
+}
+</pre>
+<p>From the <tt class="docutils literal"><span class="pre">_objects</span></tt> attribute we conclude it is an ObjectManager (the 
+Zope base class for folderish content types).</p>
+<p>So lets just make a deep copy of everything. <strong>Stop!</strong> What if a folder 
+would conaitn another folder and this subfolder will contain a whole site 
+with hundreds of folders?</p>
+<p>We just would version the whole subtree! Ok, we have to copy deeply but
+have to stop at some point!</p>
+<p>Ok, it looks like the <tt class="docutils literal"><span class="pre">_objects</span></tt> contains the ids of the subobjects of
+the folder. So let's write down what has to be done:</p>
+<ul class="simple">
+<li>deep copy all the stuff except the <tt class="docutils literal"><span class="pre">doc1</span></tt> and the <tt class="docutils literal"><span class="pre">doc2</span></tt> attribute.</li>
+<li>recurse into the subobjects and version them separately. 
+<strong>Stop!</strong> The same problem as before arrises. We just version the whole 
+subtree!</li>
+<li>And we forgot to think about how to track the subobjects from the 
+viewpoint of the folder.</li>
+</ul>
+<p>Ok, the solution is:</p>
+<ol class="arabic">
+<li><p class="first">Replace the hard python references to the subobjects 
+(<tt class="docutils literal"><span class="pre">&lt;Document</span> <span class="pre">at</span> <span class="pre">doc1&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;Document</span> <span class="pre">at</span> <span class="pre">doc2&gt;</span></tt>) by a version aware 
+week reference. In CMFEditions this is done by replacing the <tt class="docutils literal"><span class="pre">doc1</span></tt> 
+resp. the <tt class="docutils literal"><span class="pre">doc2</span></tt> attribute by an object holding the so called 
+<tt class="docutils literal"><span class="pre">history_id</span></tt> (a unique id within at least the portal) and 
+<tt class="docutils literal"><span class="pre">version_id</span></tt> (another unique id within the subobjects history):</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from pprint import PrettyPrinter
+&gt;&gt;&gt; PrettyPrinter().pprint(folder.__dict__)
+{
+  'title': &quot;gregweb's Home&quot;,
+  'doc1': &lt;VersionAwareRef history_id=5, version_id=2&gt;,
+  'doc2': &lt;VersionAwareRef history_id=7, version_id=4&gt;,
+  '_objects': ({'meta_type': 'Document', 'id': 'doc1'},
+               {'meta_type': 'Document', 'id': 'doc2'}),
+  ...
+}
+</pre>
+</li>
+<li><p class="first">We just assume the subobjects got already versioned before. For the 
+moment let us assume that just to make life simpler. So <tt class="docutils literal"><span class="pre">doc1</span></tt> looks
+like this:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; PrettyPrinter().pprint(doc1.__dict__)
+{
+  'title': &quot;Document 1&quot;,
+  'history_id': 5,
+  'version_id': 2,
+  ...
+}
+</pre>
+</li>
+<li><p class="first">Save the object.</p>
+</li>
+</ol>
+<p>Ok, that's quite right but not 100%. There is a problem remaining:</p>
+<ul class="simple">
+<li>We can not replace the python references to the subobjects on the 
+original (and changing the working copy in the Zope tree).</li>
+<li>But we can't first copy and then replace the subobjects neither.</li>
+</ul>
+<p>The solution:</p>
+<ul class="simple">
+<li>Replace the python reference to the subobjects during the copy 
+mechanism. Let's have a look at this later at <a class="reference" href="#the-copy-mechanism">The Copy Mechanism</a>.</li>
+</ul>
+</div>
+<div class="section" id="folderish-objects-f-a-q-page">
+<h1><a class="toc-backref" href="#id10" name="folderish-objects-f-a-q-page">Folderish Objects: F.A.Q.-Page</a></h1>
+<p>Now let's assume we customized the <tt class="docutils literal"><span class="pre">Folder</span></tt> content type in a way we 
+can use it for F.A.Q.-Page (this is a commonly used pattern in CMF/Plone 
+sites, it's just done by defining that the <tt class="docutils literal"><span class="pre">title</span></tt> and the 
+<tt class="docutils literal"><span class="pre">description</span></tt> of a document are the question part and the <tt class="docutils literal"><span class="pre">body</span></tt> is 
+the answer part. Additionaly a template <tt class="docutils literal"><span class="pre">faq_view</span></tt> showing all 
+questions at once has to be added).</p>
+<p>In step 2. above we assumed the subobjects don't get saved on a save 
+operation of the folder. This assumption is now wrong for the F.A.Q.-Page. 
+We wan't the subobjects be saved in case we save the whole F.A.Q.-Page. 
+But how to distinguish the F.A.Q.-Page form a normal folder? The 
+F.A.Q.-Page uses the same underlying code as the <tt class="docutils literal"><span class="pre">Folder</span></tt>. Ok, the 
+<tt class="docutils literal"><span class="pre">portal_type</span></tt> attribute has a different value (e.g. <tt class="docutils literal"><span class="pre">FAQPage</span></tt>), so
+the F.A.Q.-Page is distinguishable from a normal folder by the 
+versioning system.</p>
+</div>
+<div class="section" id="object-attributes-and-inside-and-outside-references">
+<h1><a class="toc-backref" href="#id11" name="object-attributes-and-inside-and-outside-references">Object Attributes and Inside and Outside References</a></h1>
+<p>In CMFEditions there are three &quot;areas&quot; where information may live in 
+an object:</p>
+<ol class="loweralpha simple">
+<li>in the <em>core</em> of the object like e.g. the <tt class="docutils literal"><span class="pre">title</span></tt> attributes 
+(usually everything except content objects)</li>
+<li>outside of the core of the object but nevertheless <em>closely related</em> 
+to the object. We gave them the name <em>inside references</em>. In the 
+examples above the document subobjects in a F.A.Q.-Page are of such 
+type.</li>
+<li>outside of the core of the object and <em>loosely related</em> to the object.
+We gave them the name <em>outside references</em>. In the examples
+above the document subobjects in a folder are of such type.</li>
+</ol>
+<div class="image"><img alt="The different areas where information can live." height="132" src="img/areas.gif" width="138" /></div>
+<p>We didn't talk about the criterias that decide to what onionskin an 
+attribute belongs. See <a class="reference" href="#modifers">Modifers</a> for this.</p>
+</div>
+<div class="section" id="the-copy-mechanism">
+<h1><a class="toc-backref" href="#id12" name="the-copy-mechanism">The Copy Mechanism</a></h1>
+<p>Just to remember:</p>
+<blockquote>
+We can not deeply copy an object and then cut at the necessary places as
+the deepcopy operation could be very costy (probably cloning a whole 
+subsite). We can't cut before the copy operation neither as this would
+change the original.</blockquote>
+<p>So we need to intercept the copy mechanism!</p>
+<p>This can be done by using one of Pythons serializer: <tt class="docutils literal"><span class="pre">pickle</span></tt></p>
+<p>Before continueing please read the <a class="reference" href="http://python.org/doc/2.4/lib/module-pickle.html">chapter about pickling</a> in the python 
+documentation. For those who like to have a look at the &quot;real code&quot; see
+<tt class="docutils literal"><span class="pre">class</span> <span class="pre">OMBaseModifier</span></tt> in <a class="reference" href="http://cvs.sourceforge.net/viewcvs.py/collective/CMFEditions/StandardModifiers.py?rev=1.4&amp;view=auto">StandardModifier.py</a>.</p>
+<p>Just a short resume about pickling:</p>
+<ul class="simple">
+<li>There is a hook called <tt class="docutils literal"><span class="pre">persistent_id</span></tt> that get's called upon every
+object during the serialization process.</li>
+<li>In this hook you can decide if the object just has to be serialized as 
+usual or you may return your own serialization of it.</li>
+<li>There is another hook <tt class="docutils literal"><span class="pre">persistent_load</span></tt> that get's called upon every
+custom serialized object during the deserialization process.</li>
+</ul>
+<p>In case of a folder we know which of the attributes are the subobjects.
+We just keep their python id <a class="footnote-reference" href="#id3" id="id1" name="id1">[1]</a> in &quot;mind&quot;. In the <tt class="docutils literal"><span class="pre">persistent_id</span></tt> hook 
+the currently passed objects <tt class="docutils literal"><span class="pre">id</span></tt> get checked if it is one of the
+memorized <tt class="docutils literal"><span class="pre">id</span></tt>s. In that case just nothing get's serialized and all the 
+subobjects information will be lost (which is by intention).</p>
+<p>During the deserializing process the <tt class="docutils literal"><span class="pre">persistent_load</span></tt> hook get's called
+upon every subobject. We just return an empty version aware weak reference
+that will be initialized correctly later <a class="footnote-reference" href="#id4" id="id2" name="id2">[2]</a>.</p>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1" name="id3">[1]</a></td><td><tt class="docutils literal"><span class="pre">id(&lt;object&gt;)</span></tt> returns the python identity of <tt class="docutils literal"><span class="pre">&lt;object&gt;</span></tt>. 
+<tt class="docutils literal"><span class="pre">id()</span></tt> had to be used as types like dicts can not be used as hash keys.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2" name="id4">[2]</a></td><td>this is actually an implementation detail and isn't of any 
+importance here.</td></tr>
+</tbody>
+</table>
+<p>As a result the original object and the clone object look the following 
+(non interesting parts are just removed):</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from pprint import PrettyPrinter
+&gt;&gt;&gt; PrettyPrinter().pprint(folder_original.__dict__)
+{
+  'title': &quot;gregweb's Home&quot;,
+  'doc1': &lt;Document at doc1&gt;,
+  'doc2': &lt;Document at doc1&gt;,
+  '_objects': ({'meta_type': 'Document', 'id': 'doc1'},
+               {'meta_type': 'Document', 'id': 'doc2'}),
+  ...
+}
+&gt;&gt;&gt; PrettyPrinter().pprint(folder_clone.__dict__)
+{
+  'title': &quot;gregweb's Home&quot;,
+  'doc1': &lt;VersionAwareRef history_id=5, version_id=2&gt;,
+  'doc2': &lt;VersionAwareRef history_id=7, version_id=4&gt;,
+  '_objects': ({'meta_type': 'Document', 'id': 'doc1'},
+               {'meta_type': 'Document', 'id': 'doc2'}),
+  ...
+}
+</pre>
+<div class="section" id="modifers">
+<h2><a class="toc-backref" href="#id13" name="modifers">Modifers</a></h2>
+<p>The above job about deciding what attributes belong to the <em>core</em> and what 
+attributes are <em>inside</em> or <em>outside references</em> is done by the so called
+<tt class="docutils literal"><span class="pre">Modifiers</span></tt>. <tt class="docutils literal"><span class="pre">Modifiers</span></tt> are plug ins and thus replaceable. This way 
+everything application/use case specific can be hold outside of the core
+versioning framework.</p>
+</div>
+</div>
+<div class="section" id="overwiew-over-the-architecture">
+<h1><a class="toc-backref" href="#id14" name="overwiew-over-the-architecture">Overwiew over the Architecture</a></h1>
+<p>CMFEditions make heavily usage of the CMF(-Framework). The functionality 
+is split into four tools to allow easy future replacement of the individual
+tools:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">portal_repository</span></tt>/<tt class="docutils literal"><span class="pre">IRepository.py</span></tt> implemented by <tt class="docutils literal"><span class="pre">CopyModifyMergeRepositoryTool.py</span></tt></dt>
+<dd>This is the main API for doing versioning. The implementation depends
+heavyly on the <strong>applications use cases/policies</strong>.</dd>
+<dt><tt class="docutils literal"><span class="pre">portal_archivist</span></tt>/<tt class="docutils literal"><span class="pre">IArchivist.py</span></tt> implemented by <tt class="docutils literal"><span class="pre">ArchivistTool.py</span></tt></dt>
+<dd>The <tt class="docutils literal"><span class="pre">Archivist</span></tt> <strong>knows how to copy</strong> a python object. It needs the 
+help of the <tt class="docutils literal"><span class="pre">portal_modifier</span></tt> to find the boundaries of an object. 
+This is an internal API.</dd>
+<dt><tt class="docutils literal"><span class="pre">portal_modifier</span></tt>/<tt class="docutils literal"><span class="pre">IModifier.py</span></tt> implemented by <tt class="docutils literal"><span class="pre">ModifierRegistryTool.py</span></tt></dt>
+<dd>This is a registry for <tt class="docutils literal"><span class="pre">modifier</span></tt> plug ins. The modifiers themselves
+<strong>know how to handle different aspects of objects</strong> during the versioning
+process. This is an internal API.</dd>
+<dt><tt class="docutils literal"><span class="pre">portal_historiesstorage</span></tt>/<tt class="docutils literal"><span class="pre">IStorage.py</span></tt> implemented by <tt class="docutils literal"><span class="pre">ZVCStorage.py</span></tt></dt>
+<dd>This is the storage layer. The passed copies of the individualized 
+objects may just be stored. Handling references between objects is 
+already done and the storage doesn't have to care about it anymore.
+The goal was that the storage layer just has to <strong>handle storage related 
+stuff</strong> like accessing a possibly external data base, doing XML 
+marshalling, etc. <tt class="docutils literal"><span class="pre">ZVCStorage.py</span></tt> is currently the default storage 
+using <tt class="docutils literal"><span class="pre">ZopeVersionControl</span></tt> to store data <a class="footnote-reference" href="#id6" id="id5" name="id5">[3]</a>. This is an internal API.</dd>
+</dl>
+<div class="image"><img alt="Overview over the architecture and flow of information on save." height="508" src="img/architecture.gif" width="781" /></div>
+<p>Have also a look at the <a class="reference" href="architecture.pdf">high resolution version</a> of the architecture.</p>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5" name="id6">[3]</a></td><td>This isn't the most efficient and simple way of a ZODB storage.
+If somebody is interested in replacing this with a simple ZODB storage
+just show up on the <a class="reference" href="mailto:collective-versioning&#64;lists.sourceforge.net">Versioning Mailing-List</a>.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="further-reading">
+<h1><a class="toc-backref" href="#id15" name="further-reading">Further Reading</a></h1>
+<p>For more information please consult:</p>
+<ul class="simple">
+<li>the interfaces</li>
+<li>the unit tests</li>
+<li>the code :-)</li>
+</ul>
+</div>
+</div>
+<hr class="docutils footer" />
+<div class="footer">
+<a class="reference" href="DevelDoc.txt">View document source</a>.
+Generated on: 2005-03-22 22:42 UTC.
+Generated by <a class="reference" href="http://docutils.sourceforge.net/">Docutils</a> from <a class="reference" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> source.
+</div>
+</body>
+</html>

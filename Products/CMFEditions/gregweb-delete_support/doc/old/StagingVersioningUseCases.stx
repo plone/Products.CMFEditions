@@ -1,0 +1,294 @@
+Staging Use Cases
+
+   Abreviations: *R:* stands for remark and *Qx:* for question 
+   discussed in the "Open Questions" section.
+
+   Daily Usage Use Cases
+   
+      1) User publishes item w/o effective date (first time publish) 
+      
+         - The user initiates a workflow transition which triggers 
+           publishing.
+           
+         - The EditionsTool, using CMFStaging for the underlying 
+           operations, saves the working copy as a new version.
+           
+         - Subsequently, the EditionsTool *clones* (or *checkouts*) 
+           the new version to the live stage.
+           
+         * Q1: What happens if an item gets published living in a 
+           unpublished folder?
+           
+      2) User edits a published item 
+      
+         - The user follows the 'edit' tab and edits the item and
+           saves his changes.
+           
+         - The users save action triggers a workflow transition to 
+           a state which allows editing the item.
+           
+      3) User discards all changes done to the working edition since the last publish
+      
+         - The user follows a not-yet-defined 'discard working 
+           edition' UI element.
+           
+         - The EditionsTool, using CMFStaging for the underlying 
+           operations, *checkouts* the published version to the 
+           work stage.
+           
+         - After this operation the content item is in the 
+           'published' state.
+           
+      4) User publishes item w/o effective date replacing a previously published item
+      
+         - The user initiates a workflow transition which triggers 
+           publishing.
+           
+         - The EditionsTool, using CMFStaging for the underlying 
+           operations, saves the working copy as a new version.
+           
+         - Subsequently, the EditionsTool *clones* (or *checkouts*) 
+           the new version to the live stage.
+           
+      5) User retracts a published item
+      
+         - The user initiates a workflow transition which triggers 
+           retracting.
+           
+         - The EditionsTool deletes the live edition.
+           
+         - The work edition remains untouched.
+           
+         * Q1: What happens if the item contains subitems? Shall 
+               they be retracted also? Or shall the folderish items
+               'expiration_date' be set to now?
+         
+         * Q2: Shall we save the published version as a version (or
+               better set a label only)?
+               
+      6) User publishes item the first time with effective date in future
+      
+         - The user initiates a workflow transition which triggers 
+           publishing.
+           
+         - The EditionsTool, using CMFStaging for the underlying 
+           operations, saves the working copy as a new version.
+           
+         - Subsequently, the EditionsTool *clones* (or *checkouts*) 
+           the new version to the live stage (remember the 
+           effective date is set to a future date).
+           
+      7) User publishes item with effective date in future replacing a already published item
+      
+         - The user initiates a workflow transition which triggers 
+           publishing.
+           
+         - The EditionsTool sets a 'pullDate' attribute on the live 
+           edition to the value of the 'effective_date' of the work
+           edition.
+           
+         - The EditionsTool, using CMFStaging for the underlying 
+           operations, saves the working copy as a new version.
+           
+      8) User publishes item with effective date in future replacing a already published but expired item
+      
+         - The user initiates a workflow transition which triggers 
+           publishing.
+           
+         - The EditionsTool, using CMFStaging for the underlying 
+           operations, saves the working copy as a new version.
+           
+         - Subsequently, the EditionsTool *clones* (or *checkouts*) 
+           the new version to the live stage (remember the 
+           effective date is set to a future date).
+           
+      9) Visitor accesses an item which should just be replaced by a more actual one
+      
+         - The visitor accesses an item at time 'now > pullDate' 
+           (set to expired by a subsequent version of the item).
+         
+         - The EditionsTool recognizes that the work edition has to  
+           be pulled to the live stage before returning the item
+           (by *checking out*).
+           
+      10) User retracts a published item while there is a sceduled item in the work stage
+      
+         - The user retracts the item.
+         
+         - The EditionTool interpretes that as retraction of the 
+           currently published edition in the live stage and the 
+           retraction of the sceduled work item.
+           
+         - The EditionsTool deletes the live edition and sets
+           the correct state on the work edition.
+         
+         * R: There seems to be a need for an additional workflow 
+              transition 'published -- transition:revise --> 
+              editable'.
+              
+         * Q3: What happens if the user doesn't like to retract the 
+               sceduled work edition? Should the sceduled work 
+               edition been published to the live stage? Or should 
+               the user be asked?
+        
+      11) User decides to publish a already sceduled item immediately (first time publish)
+      
+         - The user follows the edit tab and changes the effective 
+           date and saves his changes.
+           
+         - The users save action triggers a workflow transition to 
+           a state which allows editing the item.
+           
+         - The user initiates a workflow transition which triggers 
+           publishing.
+           
+         - The EditionsTool, using CMFStaging for the underlying 
+           operations, saves the working copy as a new version.
+           
+         - Subsequently, the EditionsTool *clones* (or *checkouts*) 
+           the new version to the live stage.
+           
+      12) User decides to publish a sceduled item immediately replacing a previously published item
+      
+         - The user follows the edit tab and changes the effective 
+           date and saves his changes.
+           
+         - The users save action triggers a workflow transition to 
+           a state which allows editing the item.
+           
+         - The user initiates a workflow transition which triggers 
+           publishing.
+           
+         - The EditionsTool, using CMFStaging for the underlying 
+           operations, saves the working copy as a new version.
+           
+         - Subsequently, the EditionsTool *clones* (or *checkouts*) 
+           the new version to the live stage (replacing the 
+           previously published edition).
+           
+      13) User decides to "retract" a sceduled item while there is a published one
+      
+         - The user follows the edit tab and changes the effective 
+           date to 'None' and saves his changes.
+           
+         - The users save action triggers a workflow transition to               
+           a state which allows editing the item.
+           
+         * R: This use case is not really the natural way of doing 
+              the achieved goal.
+      
+      
+   Abnormal But Nevertheless Possible Use Cases
+      
+      14) User publishes item the first time with effective date in the past
+      
+         * R: same as: 'User publishes item w/o effective date 
+              (first time publish)'
+           
+         * R: 'effective_date' should be set to 'None' before 
+              saving as a version.
+      
+      15) User publishes item with effective date in the past replacing a already published item
+      
+         * R: same as: 'User publishes item w/o effective date 
+              replacing a previously published item'
+           
+         * R: 'effective_date' should be set to 'None' before 
+              saving as a version.
+      
+      
+   Other Special Use Cases
+      
+      16) User deletes published item
+      
+         - The user deletes an item (the one in the work stage).
+         
+         - The EditionTool deletes also the live edition of the 
+           item.
+      
+         * Q4: How does the repository handle deleted items?
+         
+      17) User renames a already published item
+      
+         - The user renames an item (the one in the work stage).
+         
+         - The EditionTool renames also the live edition of the item.
+         
+         * Q4: How does the repository handle renaming?
+      
+      18) Visitor searches for a sceduled item just gotten effective
+      
+         * Q5: Don't know current behaviour of not yet 
+               effective/sceduled items beeing processed on search 
+               results?
+      
+      
+Open Questions
+
+   1. What should happen if a user publishes an item living in a 
+      folder not having a representation in the live stage (e.g. 
+      never beeing published before)? Should the user even be 
+      allowed to do that?
+      
+      Possible solutions:
+      
+         a) Automatically publish all yet unpublished parent items.
+            What happens with parent items beeing not yet 
+            effective?
+            
+         b) Ask the user if he wants to publish all parents or         
+            abort the operation. But what happens with folderish 
+            parent items with a unreached 'effective_date'?
+            
+         c) Disable the ability of publishing the item.
+         
+      We discussed that at the castle sprint and tend to 
+      solution b). But it probably seems better to disallow 
+      publishing child items of unpublished parent items 
+      (solution c). 
+      
+      We should think about mass publishing and mass retracting 
+      more consequently to not force a UI behaviour which has to 
+      be changed later.
+      
+   2. Usage of comments and labels. Should think about that. Does 
+      CMFStaging support labels?
+     
+      **azazel**: I don't remember if CMFStaging supprorts it, i 
+      think it does in a simpler way like cvs tags. This depends 
+      much more by the *type* of the repository. ZVC supports it, 
+      and also much richer version's annotations. I think we should 
+      develop an interface to obtain version's informations 
+      directly by the Repository, because CMFStaging lacks such 
+      *service*. Or we can extend CMFStaging.
+ 
+      Labels and other informations can be used to categorize the 
+      various *kinds* of object's versions (live, work, or 'waiting 
+      to be effective') in order to clarify and better handle the 
+      work on them in conjuction with workflow operations. This can 
+      be useful to the user also, that can *vertically* look at the 
+      object, being able to recognize past versions of each kind.
+      
+      **gregweb**: I agree we should save the reason why a new 
+      version was saved to the repository to allow generating 
+      activity reports.
+
+   3. Retracting a published item also retracts a sceduled item. Do
+      we want this behaviour? I (gregweb) tend to this behaviour as
+      this way the UI will be simpler.
+      
+   4. How should we handle deletion and renaming of content items
+      on UI level? How does ZVC handle deletion and renaming?
+      
+   5. We have to investigate (or ask) about the behaviour of 
+      Plone 2.0 concerning items with 'effective_date' not beeing 
+      'None'. Is 'effective_date' currently effective?
+      
+ToDo
+
+   - Draw reference website workflow (something like the current 
+     Plone workflow).
+     
+   - Describe intranet scenario without staging.
+     
+   - Describe versioning use cases

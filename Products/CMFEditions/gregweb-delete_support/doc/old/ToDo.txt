@@ -1,0 +1,144 @@
+===============
+ToDo Versioning
+===============
+
+- Create a web site section (wiki usw.)
+
+- 'getVersion': Add a method to get a version without updating the
+  object in the tree, add this to the interface [prio 1]
+- Versioning-UI [prio 1]
+- more unit tests for the current implementation: especially on 
+  folderish behaviour (e.g. BTrees) [prio 1]
+- add hooks to process things before saving and after retrieving 
+  versions [prio 2]:
+
+  - UI for registering fixup's / hooks
+  - UI for the folderish content item registry (we bound that to the
+    versioning tool for now although this should be a core plone thing)
+  - UI for different configuration aspects (e.g. name of the repository)
+
+- We should subclass somehow the 'ZopeVersionControl' [prio2]
+- VersionTool: add method security stuff (private, protected, public, 
+  etc., check ZVC security policy) [prio -2]
+- 'isUpToDate' method [prio -1]
+
+
+add hooks to process things before saving and after retrieving versions
+----------------------------------------------------------------------
+
+When saving to and retrieving versions from a repository third party
+code must be able to hook in so it can fixup things before saving
+and after retrieving.
+
+How does it work:
+
+
+    - there is a before save and a after retrieve hook
+    
+    - the before save hook is called with a copy of the object
+      in the tree before it gets saved to the repository
+      
+    - the after retrieve hook is called after having retrieved the
+      object from the repository and before it replaces the current
+      object in the tree
+      
+    - The hooks have full control over what is saved, retrieved and
+      merged back to the object in the tree 
+
+    - there is a configurable list of TAL expressions that get evaluated:
+    
+      - the order the TAL expressions are called can be changed
+    
+      - every hook consists of three TAL expressions, the first
+        deciding if the second has to be called on save and the 
+        third has to be called on retrieve
+        
+      - the first expression is called with the following extensions
+        to the default expression context 
+        (CMFCore.Expression.createExprContext):
+      
+        - the version tool
+        - maybe other tools
+        - the object variable is a reference to the object in the tree
+        
+        Expected return values: True or False
+        Example: python:object.isPrincipiaFolderish()
+      
+      - the second expression is called before save with the following 
+        extensions to the default expression context 
+        (CMFCore.Expression.createExprContext):
+      
+        - the version tool
+        - object_copy: this is a "deep" copy of the object in the tree
+          ("deep" in this context means without object manager childrens,
+           let's choose a better name if there is one). The copy isn't 
+           acquisition wrapped anymore. The TAL expression
+           works on that copy and decides which aspects should be 
+           versioned! If the TAL expression sets 'object_copy' to None
+           nothing gets versioned. [Is this possible? If not expression 
+           could return the copy]
+
+        - object: as usual is the acquisition wrapped object (in the tree)
+
+      - the third expression is called after retrieve with the following 
+        extensions to the default expression context 
+        (CMFCore.Expression.createExprContext):
+      
+        - the version tool
+        - repo_copy: this is a deep copy of the object in the repository
+          It isn't yet an acquisition wrapped. The TAL expression
+          works on that copy and decides which aspects should be 
+          additionaly added. After the processing the 'repo_copy' will 
+          be the object that replaces the current object in the tree 
+          ('object').
+        - object: as usual is the acquisition wrapped object (in the tree)
+
+
+terms
+-----
+
+retrieve a version: the operation getting a version out of the repository
+    (e.g. used by rollback and getVersion)
+
+===============
+ToDo Multisite
+===============
+
+(done) * Add UI for customising DEFAULT_OWNER and ROOT in multisite
+tool
+
+(partially done) * More tests
+
+(done) * Preview should ignore 'checkUserCanPullContent' (i.e. can
+preview even if not allowed to publish to site)
+
+* Integrate with versioning (published_sites attribute should not be
+versioned)
+
+(done) * Report bug in Archetypes: CatalogMultiplex is not passing
+calls through to base classes
+
+* Change request for CMF: _canCopy should be forwarded like
+manage_beforeDelete
+
+* Documentation
+
+* Icon for configuration
+
+* Pushed content should have an action linking back to the CMS master
+copy (e.g. site tab)
+
+(done) * Sites tab should have a single table combining both the current
+tables
+
+   - If have access as contributor/reviewer see all sites
+   - If access only as site manager, see only managed sites
+
+   - Option to subscribe/unsubscribe
+   - button to retract only if manager for site (and item is on site)
+
+(done) * Add integrity check to ensure that monitors and
+published_sites attribute are up to date.
+
+* Add published_sites index to cms catalog. Force reindexing of 
+content whenever the attribute is changed.
