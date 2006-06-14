@@ -1,0 +1,1 @@
+1.0beta0+ (weber-delete_support, HEAD, unreleased)
