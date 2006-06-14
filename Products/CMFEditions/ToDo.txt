@@ -6,13 +6,16 @@ ToDos
 Roadmap
 =======
 
+ToDo for 1.0beta0
+-----------------
+
+- check changes on trunk and update CHANGES.txt
+- release 1.0beta0
+
+
 ToDo for 1.0beta1
 -----------------
 
-- adding modification time to sys_metadata
-- adding size of data to sys_metadata (archivist shall pass it to storage)
-- adding additional translation
-- eventually add german translation
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt
 
 - prepare release documentation
@@ -318,4 +321,11 @@ Done
 - Add enable/disable purge in case there is no purge policy (Storage Impl.)
   (purge support)
 - Add a purge permission (purge support)
+- adding polish translations
+- eventually add german translation
+
+- adding modification time to sys_metadata
+- also store all metadata in shadow storage
+- adding size of data to sys_metadata (archivist shall pass it to storage)
+
 

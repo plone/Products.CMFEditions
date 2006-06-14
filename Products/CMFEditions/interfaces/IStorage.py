@@ -142,8 +142,7 @@ class IPurgeSupport(Interface):
         version retrieved: 0, 1, 2, 5, 6, 7, 8, 9, e, e
     """
     
-    def purge(history_id, selector, comment="", metadata={}, 
-              countPurged=True):
+    def purge(history_id, selector, metadata={}, countPurged=True):
         """Purge a Version from a Resources History
         
         If ``countPurged`` is ``True`` version numbering counts purged
@@ -250,11 +249,15 @@ class IStreamableReference(Interface):
     """
     
     def __init__(self, obj):
-        """Wrap the object to be passed to the storage.
+        """Wrap the object to be passed to the storage
         """
     
     def getObject(self):
-        """Returns the object.
+        """Return the object
+        """
+
+    def getSize(self):
+        """Return the size of the streamable object or None
         """
 
 class StorageError(Exception):

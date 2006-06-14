@@ -164,8 +164,8 @@ class IPurgeSupport(Interface):
         version retrieved: 0, 1, 2, 5, 6, 7, 8, 9, e, e
     """
     
-    def purge(obj=None, history_id=None, selector=None, comment="", 
-              metadata={}, countPurged=True):
+    def purge(obj=None, history_id=None, selector=None, metadata={}, 
+              countPurged=True):
         """Purge a version of a content object.
         
         Requires either an object which is the working copy, or a history_id

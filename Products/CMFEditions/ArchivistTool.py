@@ -201,11 +201,12 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         if callbacks is not None:
             p.persistent_id = pers_id
         p.dump(aq_base(obj))
+        approxSize = stream.tell()
         stream.seek(0)
         u = Unpickler(stream)
         if callbacks is not None:
             u.persistent_load = pers_load
-        return u.load(), inside_orefs, outside_orefs
+        return approxSize, u.load(), inside_orefs, outside_orefs
 
 
     # -------------------------------------------------------------------
@@ -243,7 +244,8 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         # 2. clone the object with some modifications
         # 3. modify the clone further
         referenced_data = modifier.getReferencedAttributes(obj)
-        clone, inside_orefs, outside_orefs = self._cloneByPickle(obj)
+        approxSize, clone, inside_orefs, outside_orefs = \
+            self._cloneByPickle(obj)
         metadata, inside_crefs, outside_crefs = \
             modifier.beforeSaveModifier(obj, clone)
         
@@ -261,7 +263,7 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         obj_info = ObjectData(obj, inside_orefs, outside_orefs)
         return PreparedObject(history_id, obj_info, clone_info, 
                               referenced_data, app_metadata, 
-                              sys_metadata, is_registered)
+                              sys_metadata, is_registered, approxSize)
         
     security.declarePrivate('register')
     def register(self, prepared_obj):
@@ -297,13 +299,13 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
     # -------------------------------------------------------------------
 
     security.declarePrivate('purge')
-    def purge(self, obj=None, history_id=None, selector=None, comment="", 
-              metadata={}, countPurged=True):
+    def purge(self, obj=None, history_id=None, selector=None, metadata={}, 
+              countPurged=True):
         """See IPurgeSupport.
         """
         storage = getToolByName(self, 'portal_historiesstorage')
         obj, history_id = dereference(obj, history_id, self)
-        storage.purge(history_id, selector, comment, metadata, countPurged)
+        storage.purge(history_id, selector, metadata, countPurged)
 
     security.declarePrivate('retrieve')
     def retrieve(self, obj=None, history_id=None, selector=None, preserve=(),
@@ -383,7 +385,7 @@ class PreparedObject:
     __implements__ = (IPreparedObject, )
     
     def __init__(self, history_id, original, clone, referenced_data, 
-                 app_metadata, sys_metadata, is_registered):
+                 app_metadata, sys_metadata, is_registered, approxSize):
         
         # parent reference (register the parent with the unique id handler)
         # register with sys_metadata as there is no other possibility
@@ -397,6 +399,7 @@ class PreparedObject:
                                                      int(time.time()))
         sys_metadata['originator'] = sys_metadata.get('originator', None)
         sys_metadata['principal'] = getUserId()
+        sys_metadata['approxSize'] = approxSize
         sys_metadata['parent'] = {
             'history_id': portal_uidhandler.register(parent),
             'version_id': getattr(parent, "version_id", None),

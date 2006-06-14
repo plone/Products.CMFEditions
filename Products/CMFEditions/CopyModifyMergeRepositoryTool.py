@@ -300,6 +300,10 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         portal_archivist = getToolByName(self, 'portal_archivist')
         # just hand over to the archivist for the moment (recursive purging
         # may be implemented in a future release)
+        metadata = {
+            "app_metadata": metadata,
+            "sys_metadata": self._prepareSysMetadata(comment),
+        }
         portal_archivist.purge(obj=obj, selector=selector, comment=comment, 
                                metadata=metadata, countPurged=countPurged)
 
@@ -392,9 +396,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             'comment': comment,
             # setting a timestamp here set the same timestamp at all
             # recursively saved objects
-            'timestamp': int(time.time()),
+            'timestamp': time.time(),
             # None means the current object is the originator of the
-            # save operation
+            # save or purge operation
             'originator': None,
         }
 
@@ -642,6 +646,17 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                     child.id = temp_id
                     obj._setObject(temp_id, child)
                     all_ids.append(temp_id)
+
+    # -------------------------------------------------------------------
+    # diagnostics support
+    # -------------------------------------------------------------------
+    
+    def createTestHierarchy(self, context):
+        """Create a Content Test Hierarchy
+        """
+        # XXX to be allowed in test mode only
+        from StorageMigrationSupport import createTestHierarchy
+        createTestHierarchy(context)
 
 
 class VersionData:

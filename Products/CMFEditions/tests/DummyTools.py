@@ -144,8 +144,10 @@ class DummyArchivist(SimpleItem):
         original_info = ObjectData(obj, iorefs, oorefs)
         clone_info = ObjectData(clone, icrefs, ocrefs)
 
+        approxSize = None
+
         return PreparedObject(history_id, original_info, clone_info, (),
-                              app_metadata, sys_metadata, is_registered)
+                              app_metadata, sys_metadata, is_registered, approxSize)
 
     def register(self, prepared_obj):
         # log
@@ -544,8 +546,7 @@ class MemoryStorage(DummyBaseTool):
         vdata = self.retrieve(history_id, selector, countPurged, substitute)
         return vdata.object.object.modified()
 
-    def purge(self, history_id, selector, comment="", metadata={}, 
-              countPurged=True):
+    def purge(self, history_id, selector, metadata={}, countPurged=True):
         """See ``IPurgeSupport``
         """
         histories = self._histories
@@ -555,10 +556,6 @@ class MemoryStorage(DummyBaseTool):
         selector = history.index(vdata)
         if not isinstance(vdata.object, Removed):
             # prepare replacement for the deleted object and metadata
-            metadata = {
-                "app_metadata": metadata,
-                "sys_metadata": {"comment": comment},
-            }
             removedInfo = Removed("purged", metadata)
             
             # digging into ZVC internals: remove the stored object
@@ -622,8 +619,8 @@ class DummyPurgePolicy(DummyBaseTool):
             if length < 2:
                 break
             comment = "purged on save of version %s" % currentVersion
-            storage.purge(history_id, 0, comment, metadata={}, 
-                          countPurged=False)
+            metadata = {"sys_metadata": {"comment": comment}}
+            storage.purge(history_id, 0, metadata, countPurged=False)
         
         return True
     

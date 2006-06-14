@@ -27,6 +27,7 @@ __version__ = "$Revision: 1.18 $"
 import traceback
 import sys
 import time
+import types
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
 
@@ -54,6 +55,8 @@ from Products.CMFEditions.interfaces.IStorage import IStorage
 from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import IHistory
 from Products.CMFEditions.interfaces.IStorage import IVersionData
+from Products.CMFEditions.interfaces.IStorage import IStreamableReference
+
 from Products.CMFEditions.interfaces.IStorage import StorageError
 from Products.CMFEditions.interfaces.IStorage import StorageRegisterError
 from Products.CMFEditions.interfaces.IStorage import StorageSaveError
@@ -69,6 +72,42 @@ def deepCopy(obj):
     stream.seek(0)
     u = Unpickler(stream)
     return u.load()
+
+def getSize(obj):
+    """Calculate the size as cheap as possible
+    """
+    # Try the cheap variants first.
+    # Actually the checks ensure the code never fails but beeing sure
+    # is better.
+    try:
+        # check if ``IStreamableReference``
+        if IStreamableReference.isImplementedBy(obj):
+            size = obj.getSize()
+            if size is not None:
+                return size
+        
+        # string
+        if isinstance(obj, types.StringTypes):
+            return len(obj)
+        
+        # file like object
+        methods = dir(obj)
+        if "seek" in methods and "tell" in methods:
+            currentPos = obj.tell()
+            obj.seek(0, 2)
+            size = obj.tell()
+            obj.seek(currentPos)
+            return size
+    except:
+        pass
+    
+    # fallback: pickling the object
+    stream = StringIO()
+    p = Pickler(stream, 1)
+    p.dump(obj)
+    size = stream.tell()
+    
+    return size
 
 
 class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
@@ -217,6 +256,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         
         # retrieve metadata
         logEntry = self._retrieveZVCLogEntry(zvc_histid, zvc_selector)
+        # TODO: read this from the shadow storage directly
         metadata = self._decodeZVCMessage(logEntry.message)
         
         # wrap object and referenced data
@@ -256,8 +296,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     # -------------------------------------------------------------------
 
     security.declarePrivate('purge')
-    def purge(self, history_id, selector, comment="", metadata={}, 
-              countPurged=True):
+    def purge(self, history_id, selector, metadata={}, countPurged=True):
         """See ``IPurgeSupport``
         """
         zvc_repo = self._getZVCRepo()
@@ -283,20 +322,18 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         # ZVCs ``getVersionOfResource`` is quite more complex. But as we 
         # do not use labeling and branches it is not a problem to get the
         # version in the following simple way.
-        history = zvc_repo.getVersionHistory(zvc_histid)
-        version = history.getVersionById(zvc_selector)
+        zvc_history = zvc_repo.getVersionHistory(zvc_histid)
+        version = zvc_history.getVersionById(zvc_selector)
         data = version._data
         
         if not isinstance(data.getWrappedObject(), Removed):
             # purge version in shadow storages history
             history = self._getShadowHistory(history_id)
-            history.purge(selector, countPurged)
+            
+            # update administrative data
+            history.purge(selector, metadata, countPurged)
             
             # prepare replacement for the deleted object and metadata
-            metadata = {
-                "app_metadata": metadata,
-                "sys_metadata": self._prepareSysMetadata(comment),
-            }
             removedInfo = Removed("purged", metadata)
             
             # digging into ZVC internals: remove the stored object
@@ -324,6 +361,12 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
                 # returning None signalizes that the version wasn't saved
                 return None
         
+        # calculate the approximate size taking into account the object 
+        # and the referenced_data (overwriting the archivists size as the
+        # storage knows it better)
+        approxSize = getSize(object) + getSize(referenced_data)
+        metadata["sys_metadata"]["approxSize"] = approxSize
+        
         # prepare the object for beeing saved with ZVC
         #
         # - Recall the ``__vc_info__`` from the most current version
@@ -338,8 +381,10 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         zvc_method(zvc_obj, message)
         
         # save the ``__vc_info__`` attached by the zvc call from above
+        # and cache the metadata in the shadow storage
         shadowInfo = {
-            "vc_info": deepCopy(zvc_obj.__vc_info__),
+            "vc_info": zvc_obj.__vc_info__,
+            "metadata": metadata,
         }
         history = self._getShadowHistory(history_id, autoAdd=True)
         return history.save(shadowInfo)
@@ -449,17 +494,6 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     def _decodeZVCMessage(self, message):
         return loads(message.split('\x00\n', 1)[1])
 
-    def _prepareSysMetadata(self, comment):
-        return {
-            # comment is system metadata
-            'comment': comment,
-            # setting a timestamp here set the same timestamp at all
-            # recursively saved objects
-            'timestamp': int(time.time()),
-            # ZVC needs a physical path (may be root)
-            'physicalPath': (),
-        }
-
 
     # -------------------------------------------------------------------
     # Migration Support
@@ -510,7 +544,8 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
                 vc_info = VersionInfo(zvcHid, zvcVid, VersionInfo.CHECKED_IN)
                 vc_info.timestamp = obj.date_created
                 shadowInfo = {
-                    "vc_info": deepCopy(vc_info),
+                    "vc_info": vc_info,
+                    # XXX pass metadata retreived
                 }
                 history.save(shadowInfo)
                 zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
@@ -553,6 +588,12 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         for hid in historyIds.keys():
             history = self.getHistory(hid)
             length = len(history)
+            shadowStorage = self._getShadowHistory(hid)
+            size = 0
+            sizeState = "n/a"
+            if shadowStorage is not None:
+                size, sizeState = shadowStorage.getSize()
+            
             workingCopy = hidhandler.queryObject(hid)
             if workingCopy is not None:
                 url = workingCopy.absolute_url()
@@ -563,26 +604,37 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
                 url = None
                 retrieved = self.retrieve(hid).object.object
                 portal_type = retrieved.getPortalTypeName()
-            histData = {"history_id": hid, "length": length, "url": url, 
-                        "path": path, "portal_type": portal_type}
+            histData = {
+                "history_id": hid, 
+                "length": length, 
+                "url": url, 
+                "path": path, 
+                "portal_type": portal_type, 
+                "size": size,
+                "sizeState": sizeState,
+            }
             histories.append(histData)
         
         # collect history ids with still existing working copies
         existing = []
         existingHistories = 0
         existingVersions = 0
+        existingSize = 0
         deleted = []
         deletedHistories = 0
         deletedVersions = 0
+        deletedSize = 0
         for histData in histories:
             if histData["path"] is None:
                 deleted.append(histData)
                 deletedHistories += 1
                 deletedVersions += histData["length"]
+                deletedSize += 0 # TODO
             else:
                 existing.append(histData)
                 existingHistories += 1
                 existingVersions += histData["length"]
+                existingSize += 0 # TODO
         
         processingTime = "%.2f" % round(time.time() - startTime, 2)
         histories = existingHistories+deletedHistories
@@ -667,6 +719,10 @@ class ShadowHistory(Persistent):
         
         # Indexes to the full histories versions
         self._available = []
+        
+        # aproximative size of the history
+        self._approxSize = 0
+        self._sizeInaccurate = False
 
     def save(self, data):
         """Saves data in the history
@@ -674,16 +730,26 @@ class ShadowHistory(Persistent):
         Returns the version id of the saved version.
         """
         version_id = self.nextVersionId
-        self._full[version_id] = data
+        self._full[version_id] = deepCopy(data)
         self._available.append(version_id)
         # Provokes a write conflict if two saves happen the same
         # time. That's exactly what's desired.
         self.nextVersionId += 1
         
+        # update the histories size:
+        size = data["metadata"]["sys_metadata"].get("approxSize", None)
+        if size is None:
+            self._sizeInaccurate = True
+        else:
+            self._approxSize += size
+        
         return version_id
 
     def retrieve(self, selector, countPurged):
         """Retrieves the Selected Data From the History
+        
+        The caller has to make a copy if he passed the data to another 
+        caller.
         
         Returns None if the selected version does not exist.
         """
@@ -692,11 +758,28 @@ class ShadowHistory(Persistent):
             return None
         return self._full[version_id]
 
-    def purge(self, selector, countPurged):
+    def purge(self, selector, data, countPurged):
         """Purge selected version from the history
         """
-        selector = self._getVersionPos(selector, countPurged)
-        del self._available[selector]
+        # find the position to purge
+        version_pos = self._getVersionPos(selector, countPurged)
+        version_id = self._available[version_pos]
+        
+        # update the histories size
+        sys_metadata = self._full[version_id]["metadata"]["sys_metadata"]
+        size = sys_metadata.get("approxSize", None)
+        if size is None:
+            self._sizeInaccurate = True
+        else:
+            self._approxSize -= size
+            if self._approxSize < 0:
+                self._approxSize = 0
+                self._sizeInaccurate = True
+        
+        # update the metadata
+        self._full[version_id]["metadata"] = deepCopy(data)
+        # purge the reference
+        del self._available[version_pos]
 
     def getLength(self, countPurged):
         """Length of the History Either Counting Purged Versions or Not
@@ -705,6 +788,17 @@ class ShadowHistory(Persistent):
             return self.nextVersionId
         else:
             return len(self._available)
+
+    def getSize(self):
+        """Returns the size including the quality of the size
+        """
+        # don't like exceptions taking down CMFEditions
+        if getattr(self, "_sizeInaccurate", None) is None:
+            return 0, "not available"
+        if self._sizeInaccurate:
+            return self._approxSize, "inaccurate"
+        else:
+            return self._approxSize, "approximate"
 
     def getVersionId(self, selector, countPurged):
         """Returns the Effective Version id depending the selector type

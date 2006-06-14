@@ -13,6 +13,15 @@ ToDo
 - update translations (see changes in 1.0beta1 sections) for: fr, da, pl
 
 
+
+CMFEditions 1.0beta0 (2006-06-14, not published)
+------------------------------------------------
+
+Known Bugs
+
+- migration from CMFEditions 1.0alpha3 doesn't work correctly
+
+
 Bugs fixed
 
 - Security Policy was for ``manage_setPolicies`` but the method name 
@@ -37,10 +46,14 @@ Bugs fixed
 - The storage is now more immune against non int selectors. [gregweb]
 
 
-
 Features Added
 
-- Added stoprage statistics ZMI view [gregweb]
+- The approximate size of a version is now recorded also at save time.
+  [gregweb]
+
+- Added functionality to create a test hierarchy. [gregweb]
+
+- Added storage statistics ZMI view [gregweb]
 
 - Added German translations [gregweb]
 
@@ -123,6 +136,9 @@ Features Added
 
 
 Internal Changes
+
+- Now save all metadata also in shadow storage. On retrieve the metadata 
+  is still feteched from the ZVC storage. [gregweb]
 
 - Added migration code for 1.0alpha3 --> 1.0beta1 storage migrations
   [gregweb]

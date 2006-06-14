@@ -83,6 +83,12 @@
         versions
       </th>
       <th align="left">
+        size
+      </th>
+      <th align="left">
+        size state
+      </th>
+      <th align="left">
         portal type
       </th>
       <th align="left">
@@ -93,6 +99,8 @@
     <tr tal:repeat="histData existing">
       <td tal:content="histData/history_id">history id</td>
       <td tal:content="histData/length">length</td>
+      <td align="right" tal:content="histData/size">size</td>
+      <td align="right" tal:content="histData/sizeState">size state</td>
       <td tal:content="histData/portal_type">portal type</td>
       <td><a tal:attributes="href histData/url" 
              tal:content="histData/path">current path</a></td>
@@ -113,6 +121,12 @@
         versions
       </th>
       <th align="left">
+        size
+      </th>
+      <th align="left">
+        size state
+      </th>
+      <th align="left">
         portal type
       </th>
     </tr>
@@ -120,6 +134,8 @@
     <tr tal:repeat="histData deleted">
       <td tal:content="histData/history_id">history id</td>
       <td tal:content="histData/length">length</td>
+      <td align="right" tal:content="histData/size">size</td>
+      <td align="right" tal:content="histData/sizeState">size state</td>
       <td tal:content="histData/portal_type">portal type</td>
     </tr>
 
