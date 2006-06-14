@@ -12,13 +12,6 @@ ToDo
 
 - update translations (see changes in 1.0beta1 sections) for: fr, da, pl
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt
-
-
-CMFEditions 1.0beta0 (2006-06-14, not published)
-------------------------------------------------
-
-Known Bugs
-
 - migration from CMFEditions 1.0alpha3 doesn't work correctly
 - fix retrieve of files and images
 
