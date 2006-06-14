@@ -6,16 +6,11 @@ ToDos
 Roadmap
 =======
 
-ToDo for 1.0beta0
------------------
-
-- check changes on trunk and update CHANGES.txt
-- release 1.0beta0
-
-
 ToDo for 1.0beta1
 -----------------
 
+- fix migration
+- fix retrieve of files and images
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt
 
 - prepare release documentation
