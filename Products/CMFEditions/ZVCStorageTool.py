@@ -557,9 +557,24 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
                     "vc_info": vc_info,
                     "metadata": metadata,
                 }
-                history.save(shadowInfo)
                 zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
                          "    migrating version %s" % (int(zvcVid)-1))
+                history.save(shadowInfo)
+                
+                app_metadata = metadata.get("app_metadata", {})
+                if app_metadata:
+                    zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
+                             "      application metadata:")
+                    for item in app_metadata.items():
+                        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
+                                 "        %s = %s" % item)
+                sys_metadata = metadata.get("sys_metadata", {})
+                if sys_metadata:
+                    zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
+                             "      system metadata:")
+                    for item in sys_metadata.items():
+                        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
+                                 "        %s = %s" % item)
                 nbrOfMigratedVersions += 1
         
         # delete the old metadata
