@@ -255,9 +255,8 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
                 "an error." % (selector, history_id))
         
         # retrieve metadata
-        logEntry = self._retrieveZVCLogEntry(zvc_histid, zvc_selector)
         # TODO: read this from the shadow storage directly
-        metadata = self._decodeZVCMessage(logEntry.message)
+        metadata = self._retrieveMetadataFromZVC(zvc_histid, zvc_selector)
         
         # wrap object and referenced data
         object = zvc_obj.getWrappedObject()
@@ -491,8 +490,10 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
             comment = ''
         return '\x00\n'.join((comment, dumps(metadata, HIGHEST_PROTOCOL)))
 
-    def _decodeZVCMessage(self, message):
-        return loads(message.split('\x00\n', 1)[1])
+    def _retrieveMetadataFromZVC(self, zvc_histid, zvc_selector):
+        logEntry = self._retrieveZVCLogEntry(zvc_histid, zvc_selector)
+        metadata = loads(logEntry.message.split('\x00\n', 1)[1])
+        return metadata
 
 
     # -------------------------------------------------------------------
@@ -504,7 +505,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     def _is10alpha3Layout(self):
         """Returns True if Storage is of 1.0alpha3 layout
         """
-        return bool(getattr(self, "_history_id_mapping", None))
+        return getattr(self, "_history_id_mapping", None) is not None
     
     def migrateStorage(self):
         """Migrate the Storage to Newest Layout
@@ -512,7 +513,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         # check if already done
         if not self._is10alpha3Layout():
             zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                     "tried to migrate an already migrated storage")
+                     "Storage already migrated.")
             return None
         
         startTime = time.time()
@@ -521,35 +522,44 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         from Products.ZopeVersionControl.Utility import VersionInfo
         
         # build reverse mapping: zvc history id --> CMFEditions history id
+        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
+                 "preparing history mapping CMFEditions <--> ZVC")
         hidMapping = self._history_id_mapping
         hidReverseMapping = {}
         for hid, zvcHid in hidMapping.items():
             hidReverseMapping[zvcHid.history_id] = hid
+            zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
+                     "  %6i <--> %s" % (hid, zvcHid.history_id))
         
         # iterate over all histories
+        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
+                 "iterating over all histories:")
         nbrOfMigratedHistories = 0
         nbrOfMigratedVersions = 0
         repo = self._getZVCRepo()
         for zvcHid in repo._histories.keys():
             zvcHistory = repo.getVersionHistory(zvcHid)
+            zvcVersionIds = zvcHistory.getVersionIds()
             history_id = hidReverseMapping[zvcHid]
             history = self._getShadowHistory(history_id, autoAdd=True)
             zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                     "migrating history %s (ZVC: %s)" % (history_id, zvcHid))
+                     "  migrating %s versions of history %s (ZVC: %s)" 
+                     % (len(zvcVersionIds), history_id, zvcHid))
             nbrOfMigratedHistories += 1
             
             # iterate over all versions
-            for zvcVid in zvcHistory.getVersionIds():
+            for zvcVid in zvcVersionIds:
                 obj = zvcHistory.getVersionById(zvcVid)
                 vc_info = VersionInfo(zvcHid, zvcVid, VersionInfo.CHECKED_IN)
                 vc_info.timestamp = obj.date_created
+                metadata = self._retrieveMetadataFromZVC(zvcHid, zvcVid)
                 shadowInfo = {
                     "vc_info": vc_info,
-                    # XXX pass metadata retreived
+                    "metadata": metadata,
                 }
                 history.save(shadowInfo)
                 zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                         "  migrating version %s" % (int(zvcVid)-1))
+                         "    migrating version %s" % (int(zvcVid)-1))
                 nbrOfMigratedVersions += 1
         
         # delete the old metadata

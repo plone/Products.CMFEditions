@@ -20,6 +20,8 @@
 #########################################################################
 """Storage Migration Support
 
+Creating a test hierarchy for migration tests.
+
 $Id$
 """
 import os.path
