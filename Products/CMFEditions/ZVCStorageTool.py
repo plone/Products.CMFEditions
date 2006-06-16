@@ -80,16 +80,29 @@ def getSize(obj):
     # Actually the checks ensure the code never fails but beeing sure
     # is better.
     try:
+        # check if to return zero (length is zero)
+        if len(obj) == 0:
+            return 0
+    except:
+        pass
+        
+    try:
         # check if ``IStreamableReference``
         if IStreamableReference.isImplementedBy(obj):
             size = obj.getSize()
             if size is not None:
                 return size
+    except:
+        pass
         
+    try:
         # string
         if isinstance(obj, types.StringTypes):
             return len(obj)
+    except:
+        pass
         
+    try:
         # file like object
         methods = dir(obj)
         if "seek" in methods and "tell" in methods:
@@ -101,11 +114,14 @@ def getSize(obj):
     except:
         pass
     
-    # fallback: pickling the object
-    stream = StringIO()
-    p = Pickler(stream, 1)
-    p.dump(obj)
-    size = stream.tell()
+    try:
+        # fallback: pickling the object
+        stream = StringIO()
+        p = Pickler(stream, 1)
+        p.dump(obj)
+        size = stream.tell()
+    except:
+        size = None
     
     return size
 
@@ -553,12 +569,26 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
                 vc_info = VersionInfo(zvcHid, zvcVid, VersionInfo.CHECKED_IN)
                 vc_info.timestamp = obj.date_created
                 metadata = self._retrieveMetadataFromZVC(zvcHid, zvcVid)
+                
+                # calculating approximate size
+                zvc_obj = repo.getVersionOfResource(zvcHid, zvcVid)
+                obj = zvc_obj.getWrappedObject()
+                referenced_data = zvc_obj.getReferencedData()
+                approxSize = getSize(obj) + getSize(referenced_data)
+                metadata["sys_metadata"]["approxSize"] = approxSize
+                
+                # we do not calculate version aware parent references
+                # (it's possible but rather complicated)
+                
+                # preparing administrative data
                 shadowInfo = {
                     "vc_info": vc_info,
                     "metadata": metadata,
                 }
+                
+                # save metadata in shadow history
                 zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                         "    migrating version %s" % (int(zvcVid)-1))
+                         "    migrating version %s:" % (int(zvcVid)-1))
                 history.save(shadowInfo)
                 
                 app_metadata = metadata.get("app_metadata", {})
