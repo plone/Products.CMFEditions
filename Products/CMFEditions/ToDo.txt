@@ -1,6 +1,6 @@
-======
-ToDos
-======
+======================
+Notes, ToDos and Ideas
+======================
 
 
 Roadmap
@@ -9,52 +9,37 @@ Roadmap
 ToDo for 1.0beta1
 -----------------
 
-- see also todo's in CHANGES.txt
+- update DEPENDENCIES.txt/CHANGES.txt/README.txt
+- prepare release documentation
+  - addons: propose usage and download of diff in release description
+  - credits
+  - sponsors
+- check changes on trunk and update CHANGES.txt
+- move this document to the doc folder
+
+At the moment we're confident that migrations work:
+
+- merge with trunk before doing 1.0beta1
+- e-mail to list that no new features should be added and be taken care
+  with changes
+
+
+ToDo for 1.0rc1
+---------------
+
+- see feature todo's in CHANGES.txt
 
 - prepare release documentation
   - addons: propose usage and download of diff in release description
   - credits
+  - sponsors
 - check changes on trunk and update CHANGES.txt
-- merge with trunk before doing 1.0beta1
-
-
-ToDo for 1.0rc1
----------------
-
-- Some complex integration test with deleted version. (purge support)
-- fix bugs scheduled for 1.0beta1: #1, #2
-
-47. Retrieving an old version of an object with a different id shall retain
-    the current id. What about the children ids when recursing into?
-    The current implementation replaces the id in 
-    ``copymodifymergerepositorytool.py``::
-    
-        > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\copymodifymergerepositorytool.py(272)revert()
-        (Pdb) l
-        267             """
-        268             """
-        269             original_id = obj.getId()
-        270             self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
-        271             parent = aq_parent(aq_inner(obj))
-        272             self._recursiveRetrieve(obj, parent, selector, preserve=(),
-        273                                     inplace=True)
-        274  ->         if obj.getId() != original_id:
-        275                 obj._setId(original_id)
-        276                 #parent.manage_renameObject(obj.getId(), original_id)
-        277                 #parent._setObject(original_id, obj, set_owner=0)
-    
-    This is the wrong place. A modifier shall do that.
-
-
-
-ToDo for 1.0rc1
----------------
-
-- Fix outstanding failing tests
 
 
 ToDo for 1.0.0
 --------------
+
+- see also todo's in CHANGES.txt
 
 - fix new bugs reported from rc1
 - extensive credits list (using svn blame) and sponsoring list (checking

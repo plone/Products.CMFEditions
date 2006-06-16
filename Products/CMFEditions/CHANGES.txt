@@ -5,13 +5,44 @@ CMFEditions Changes
 This file contains change information for the CMFEditions releases.
 
 
+Upcoming CMFEditions 1.0rc1 (2006-06-XX)
+-------------------------------
+
+ToDo
+
+- some translations are not yet updated: contact translators (for changes see 
+  below. Affected translations: fr, da, pl)
+- Fix outstanding failing tests
+- Some complex integration test with deleted version. (purge support)
+- fix bugs scheduled for 1.0beta1: #1, #2
+
+47. Retrieving an old version of an object with a different id shall retain
+    the current id. What about the children ids when recursing into?
+    The current implementation replaces the id in 
+    ``copymodifymergerepositorytool.py``::
+    
+        > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\copymodifymergerepositorytool.py(272)revert()
+        (Pdb) l
+        267             """
+        268             """
+        269             original_id = obj.getId()
+        270             self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
+        271             parent = aq_parent(aq_inner(obj))
+        272             self._recursiveRetrieve(obj, parent, selector, preserve=(),
+        273                                     inplace=True)
+        274  ->         if obj.getId() != original_id:
+        275                 obj._setId(original_id)
+        276                 #parent.manage_renameObject(obj.getId(), original_id)
+        277                 #parent._setObject(original_id, obj, set_owner=0)
+    
+    This is the wrong place. A modifier shall do that.
+
+
 Upcoming CMFEditions 1.0beta1 (2006-06-XX)
 ---------------------------------
 
 ToDo
 
-- update DEPENDENCIES.txt/CHANGES.txt/README.txt
-- some translations are not yet updated (see changes below for fr, da, pl)
 - migration from CMFEditions 1.0alpha3 doesn't work correctly
 
 
@@ -43,7 +74,8 @@ Bugs fixed
 
 Features Added
 
-- The approximate size of a version is now recorded also at save time.
+- The approximate size of a version is now recorded also at save time
+  (and calculated at storage migartion).
   [gregweb]
 
 - Added functionality to create a test hierarchy. [gregweb]
@@ -132,8 +164,8 @@ Features Added
 
 Internal Changes
 
-- Now save all metadata also in shadow storage. On retrieve the metadata 
-  is still feteched from the ZVC storage. [gregweb]
+- Now save all metadata also in shadow storage. But currently on retrieve 
+  the metadata is still feteched from the ZVC storage. [gregweb]
 
 - Added migration code for 1.0alpha3 --> 1.0beta1 storage migrations
   [gregweb]
