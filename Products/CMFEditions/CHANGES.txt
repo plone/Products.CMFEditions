@@ -60,7 +60,7 @@ Bugs fixed
   compatibility code for configuration. Translations not updated.
   [gregweb]
 
-- Minor refactorings of the version history view. Notable replaced
+- Minor refactorings of the version history view. Notably replaced
   ``(show below)`` by ``preview`` without jumping to the preview target
   on the page by default. Instead the link name of the previewed version
   changes to ``jump down``. [gregweb]
