@@ -10,6 +10,7 @@ Upcoming CMFEditions 1.0rc1 (2006-06-XX)
 
 ToDo
 
+- migration from CMFEditions 1.0alpha3 doesn't work correctly
 - some translations are not yet updated: contact translators (for changes see 
   below. Affected translations: fr, da, pl)
 - Fix outstanding failing tests
@@ -40,11 +41,6 @@ ToDo
 
 Upcoming CMFEditions 1.0beta1 (2006-06-XX)
 ---------------------------------
-
-ToDo
-
-- migration from CMFEditions 1.0alpha3 doesn't work correctly
-
 
 Bugs fixed
 

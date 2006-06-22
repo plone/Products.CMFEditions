@@ -9,16 +9,11 @@ Roadmap
 ToDo for 1.0beta1
 -----------------
 
-- update DEPENDENCIES.txt/CHANGES.txt/README.txt
 - prepare release documentation
   - addons: propose usage and download of diff in release description
   - credits
   - sponsors
 - check changes on trunk and update CHANGES.txt
-- move this document to the doc folder
-
-At the moment we're confident that migrations work:
-
 - merge with trunk before doing 1.0beta1
 - e-mail to list that no new features should be added and be taken care
   with changes
@@ -27,7 +22,7 @@ At the moment we're confident that migrations work:
 ToDo for 1.0rc1
 ---------------
 
-- see feature todo's in CHANGES.txt
+- see todo's in CHANGES.txt
 
 - prepare release documentation
   - addons: propose usage and download of diff in release description
@@ -305,5 +300,5 @@ Done
 - adding modification time to sys_metadata
 - also store all metadata in shadow storage
 - adding size of data to sys_metadata (archivist shall pass it to storage)
-
-
+- update DEPENDENCIES.txt/CHANGES.txt/README.txt/CREDITS.txt
+- move this document to the doc folder
