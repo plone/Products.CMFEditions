@@ -43,8 +43,8 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder, ActionProviderBase):
     __doc__ = __doc__ # copy from module
 
     __implements__ = (
-        OrderedFolder.__implements__,   # hide underspecified interfaces :-(
         IReferenceFactories,
+        OrderedFolder.__implements__,   # hide underspecified interfaces :-(
     )
     
     id = 'portal_referencefactories'
@@ -64,7 +64,7 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder, ActionProviderBase):
     def invokeFactory(self, repo_clone, source, selector=None):
         """See IReferenceFactories
         """
-        # XXX: Just assuming ObjectManager behaviour for now
+        # Just assuming ObjectManager behaviour for now
         portal_hidhandler = getToolByName(self, 'portal_historyidhandler')
         portal_archivist = getToolByName(self, 'portal_archivist')
         portal_type = repo_clone.getPortalTypeName()

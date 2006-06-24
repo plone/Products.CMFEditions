@@ -18,19 +18,22 @@
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
-"""Intercepts/modifies saving/retrieving of versions to/from the repository.
+"""Manages Storing and Retrieving Version to and from the Storage
 
-XXX
+``IStorage`` defines the fundamental storage operations wheras 
+``IPurgePolicy`` defines support for purging versions from the
+storage. The other interface definitions are defintions for types
+returned by storage methods.
 
-$Id: IStorage.py,v 1.5 2005/03/11 11:05:13 varun-rastogi Exp $
+$Id$
 """
 
 from Interface import Interface, Attribute
 
 class IStorage(Interface):
-    """Manages storing and retrieving of histroy entries.
+    """Manages Storing and Retrieving Version to and from the Storage
     
-    
+    Every resource has it's own history.
     """
     
     def isRegistered(history_id):
@@ -58,8 +61,8 @@ class IStorage(Interface):
         
         May veto the registering proces by raising a 'StorageError' 
         exception. No action is performed on repeated registering.
-
-	Returns the value of the newest version(selector).
+        
+        Returns the value of the newest version(selector).
         """
     
     def save(history_id, object, referenced_data={}, metadata={}):
@@ -78,8 +81,8 @@ class IStorage(Interface):
         
         'metadata' must be a (nested) dictionary. If a 'comment' key exists
         the implementation may assume it is a human readable string.
-
-	Returns the value of the newest version(selector).
+        
+        Returns the value of the newest version(selector).
         """
 
     def retrieve(history_id, selector):
@@ -90,7 +93,7 @@ class IStorage(Interface):
         """
 
     def getHistory(history_id):
-        """Returns the history of an object by the given history id.
+        """Return the history of an object by the given history id.
         
         Returns a 'IHistory' object.
         """
@@ -101,26 +104,114 @@ class IStorage(Interface):
 
         If selected is None, the most recent version (HEAD) is taken.
         """
-         
+
+
+class IPurgeSupport(Interface):
+    """Storage Purge Support
+    
+    Purging a version from the storage removes that version irrevocably.
+    
+    Adds ``purge`` and extends the signature of ``retrieve``, ``getHistory``
+    and ``getModificationDate``. The defaults of the extended methods 
+    mimique the standard behaviour of the original methods.
+    
+    With the introduction of purging two selection scheme exist for 
+    retrieving versions. Either purged versions are taken into account 
+    or not:
+    
+    - By passing ``countPurged=True`` purged versions are taken into
+      account when accessing a version. When a purged version is accessed
+      the storage tool decides what to do.
+    - By passing ``countPurged=False`` purged versions are **not taken into
+      account** when accessing a version.
+    
+    Example: 
+    
+    An object got saved ten times. Two versions got purged in earlier 
+    calls. The history looks like this (``s`` means: depends on storage,
+    ``e`` means: exception raised)::
+    
+      countPurged==True:
+      
+        selector:          0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+        version retrieved: 0, 1, 2, s, s, 5, 6, 7, 8, 9
+        
+      countPurged==False:
+       
+        selector:          0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+        version retrieved: 0, 1, 2, 5, 6, 7, 8, 9, e, e
+    """
+    
+    def purge(history_id, selector, metadata={}, countPurged=True):
+        """Purge a Version from a Resources History
+        
+        If ``countPurged`` is ``True`` version numbering counts purged
+        versions also. If ``False`` purged versiona are not taken into 
+        account.
+        
+        Purge the given version from the given history. The metadata
+        passed may be used to store informations about the reasons of
+        the purging.
+        """
+
+    def retrieve(history_id, selector, countPurged=True, substitute=True):
+        """Return the Version of the Resource with the given History Id
+        
+        If ``countPurged`` is ``True`` purged versions are taken into
+        account also. If ``False`` purged versions are ignored and not
+        taken into account in counting.
+        
+        If ``substitute`` is ``True`` a substitute is returned in case
+        the requested version was purged before.
+        
+        Return a ``IVersionData`` object.
+        """
+
+    def getHistory(history_id, countPurged=True, substitute=True):
+        """Return the history of an object by the given history id.
+        
+        If ``countPurged`` is ``True`` purged versions are returned also. 
+        If ``False`` purged versions aren't returned.
+        
+        If ``substitute`` is ``True`` a substitute is returned in case
+        the requested version was purged before.
+        
+        Return a ``IHistory`` object.
+        """
+
+    def getModificationDate(history_id, selector=None, countPurged=True, 
+                            substitute=True):
+        """ Returns the modification date of the selected version of object
+            which has the given history id.
+        
+        If ``countPurged`` is ``True`` purged versions are returned also. 
+        If ``False`` purged versions aren't returned.
+        
+        If ``substitute`` is ``True`` a substitute is returned in case
+        the requested version was purged before.
+        
+        If selected is None, the most recent version (HEAD) is taken.
+        """
+
 
 class IHistory(Interface):
     """Iterable version history.
     """
     
     def __len__():
-        """Returns the length of the history.
+        """Return the length of the history.
         """
     
     def __getattr__(version_id):
-        """Returns the version of an object corresponding to the version id.
+        """Return the version of an object corresponding to the version id.
         
-        The item returned is of 'IVersionData'.
+        The item returned is of ``IVersionData``.
         """
     
     def __iter__():
-        """Returns an ordered set of versions for being looped over.
+        """Iterator returning the versions.
         
-        The returned iterator returns 'IVersionData' objects.
+        The iterators ``next`` method returns ``IVersionData`` objects.
         """
 
 
@@ -158,34 +249,37 @@ class IStreamableReference(Interface):
     """
     
     def __init__(self, obj):
-        """Wrap the object to be passed to the storage.
+        """Wrap the object to be passed to the storage
         """
     
     def getObject(self):
-        """Returns the object.
+        """Return the object
+        """
+
+    def getSize(self):
+        """Return the size of the streamable object or None
         """
 
 class StorageError(Exception):
     """History storage exception.
     """
-    pass
 
 class StorageRetrieveError(StorageError):
     """Raised if tried to retrieve a non existent version of a resource.
     """
-    pass
 
 class StorageRegisterError(StorageError):
     """Raised if registering the resource failed.
     """
-    pass
     
 class StorageSaveError(StorageError):
     """Raised if saving a new version of a resource failed.
     """
-    pass
     
 class StorageUnregisteredError(StorageError):
     """Raised if trying to save an unregistered resource.
     """
-    pass
+
+class StoragePurgeError(StorageError):
+    """Raised if tried to purge a non existent version of a resource.
+    """

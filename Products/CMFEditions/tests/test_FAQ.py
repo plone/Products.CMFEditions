@@ -225,7 +225,7 @@ class TestATContents(PloneTestCase.PloneTestCase):
         for version, explinks in expected:
             portal_repository.revert(faq, version)
 
-            # Rolling back rolls back the references
+            # Reverting reverts back the references
             links = faq.getRawLinks()
             links.sort()
 

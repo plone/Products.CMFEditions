@@ -35,7 +35,6 @@ try:
     from Interface.Verify import verifyObject
 except ImportError:
     # for Zope versions before 2.6.0
-    # XXX not sure if 'objectImplements' is correct
     from Interface import objectImplements as verifyObject
 
 from Testing import ZopeTestCase
@@ -83,7 +82,7 @@ class SimpleModifierBase:
         except AttributeError:
             bsm = 1
         setattr(copy_obj, self.beforeSaveModifierAttribute, bsm)
-        return [], []
+        return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_obj):
         try:
@@ -146,7 +145,7 @@ class LoggingModifierBase:
 
     def beforeSaveModifier(self, obj, obj_clone):
         mlog.append("%s.beforeSaveModifier" % (self.__class__.__name__))
-        return [], []
+        return {}, [], []
         
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         mlog.append("%s.afterRetrieveModifier" % (self.__class__.__name__))

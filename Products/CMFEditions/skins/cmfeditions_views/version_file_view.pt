@@ -6,68 +6,76 @@
 <body>
 
 <div metal:fill-slot="main">
-    <tal:main-macro metal:define-macro="main"
-               tal:define="size python:here.getObjSize(here);
-                           content_type here/content_type;">
-
-        <h1 tal:content="here/title_or_id" class="documentFirstHeading">
-            Title or id
-        </h1>
-
-        <div class="documentDescription"
-             tal:content="here/Description">
-            description
+    <tal:main-macro metal:define-macro="main" 
+           tal:define="size python:here.getObjSize(here);
+                       content_type here/get_content_type|here/Format;
+                      ">
+        <div metal:use-macro="here/document_actions/macros/document_actions">
+            Document actions (print, sendto etc)
         </div>
 
+        <h1 tal:content="object_title" class="documentFirstHeading">
+            Title or id
+        </h1>
+    
+        <p class="documentDescription"
+           tal:content="here/Description"
+           tal:condition="here/Description">
+            Description
+        </p>
+    
         <p>
             <a href=""
-               notal:attributes="href string:$here_url"
                tal:attributes="href string:$here_url/file_download_version?version_id=${version_id}">
-<!--                <img src="" tal:attributes="src string:${here/getIcon}; alt string:${here/getFileType} file" alt="" /> -->
+                <img src="" tal:attributes="src string:${portal_url}/file_icon.gif" alt="" />
                 <tal:block i18n:translate="label_click_to_get_file">
                 Click here to get the file
                 </tal:block>
             </a>
         </p>
-
+    
         <small class="discreet">
             <span i18n:translate="label_size">
             Size
             </span>
-
+            
             <span tal:condition="size"
                 tal:content="size">
             257 KB
             </span>
-
+    
             <span tal:condition="python:test(size,0,1)" i18n:translate="no_file_uploaded">
               (No file has been uploaded yet)
             </span>
-
+    
             -
-
+            
             <span i18n:translate="label_file_type">
             File type
             </span>
-
-            <span tal:content="here/getFileType|here/content_type">
+    
+            <span tal:content="content_type">
             Content type
             </span>
         </small>
-
+    
         <div class="row"
              tal:condition="python:test(content_type.find('text')>-1, 1,0)">
-
+    
                 <h2 i18n:translate="heading_file_contents">File contents</h2>
-
+    
                 <pre tal:content="here/get_data|here/data|nothing">
                 </pre>
+
         </div>
 
-        <metal:metadata use-macro="here/version_metadata_view/macros/metadata">
-            Metadata
-        </metal:metadata>
-
+        <div metal:use-macro="here/document_relateditems/macros/relatedItems">
+            show related items if they exist
+        </div>
+    
+        <div metal:use-macro="here/document_byline/macros/byline">
+          Get the byline - contains details about author and modification date.
+        </div>
     </tal:main-macro>
 </div>
 

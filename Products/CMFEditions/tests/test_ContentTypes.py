@@ -247,7 +247,7 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = self.folder.folder
-        # XXX: Use private method because webDAV locking is tripping this up
+        # Use private method because webDAV locking is tripping this up
         # using the public method and ATCT
         content._editMetadata(title='content',
                               subject=['content'],

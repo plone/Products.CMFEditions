@@ -64,8 +64,8 @@ VERSIONING_ACTIONS = {'Document':'version_document_view',
 DEF_POLICIES = (('at_edit_autoversion',
                     'Create version on edit (AT objects only)',
                      ATVersionOnEditPolicy),
-                 ('version_on_rollback',
-                    'Create version on version rollback'),   )
+                 ('version_on_revert',
+                    'Create version on version revert'),   )
 
 
 def Install(self, tools=tools):
@@ -156,20 +156,6 @@ def setup_content_actions(self, write):
         write("added versions tab")
     if 'portal_repository' not in at.listActionProviders():
         at.addActionProvider('portal_repository')
-    # XXX is this view override stuff really necessary?
-#     ftis = tt.listTypeInfo()
-#     targets = filter(lambda a : a.getId() in VERSIONING_ACTIONS,
-#                      ftis)
-#     for fti in targets:
-#         url = VERSIONING_ACTIONS[fti.getId()]
-#         fti.addAction('version_view',
-#                        'version_view',
-#                        'string:${object_url}/' + url,
-#                        '',
-#                        'Modify portal content',
-#                        'object',
-#                        None)
-#         write("added version view for " + fti.content_meta_type)
 
 def setup_cpanel(self, write):
     try:
@@ -229,7 +215,7 @@ def uninstall(self, tools=tools, reinstall=False):
     p_defs = rt._policy_defs
     for policy_id in list(p_defs.keys()):
         rt.removePolicy(policy_id)
-    
+   
     at.deleteActionProvider('portal_repository')
     # rename our uid tool back to the original name if the new tool was
     # removed

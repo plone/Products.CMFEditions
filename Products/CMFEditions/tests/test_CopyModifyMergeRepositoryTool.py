@@ -51,6 +51,8 @@ from Products.CMFCore.utils import getToolByName
 
 from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
+from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
+from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionSupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData
@@ -120,14 +122,15 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         doc = self.portal.doc
 
         # test the tools interface conformance
-        self.failUnless(verifyObject(ICopyModifyMergeRepository, portal_repository))
+        verifyObject(ICopyModifyMergeRepository, portal_repository)
+        verifyObject(IPurgeSupport, portal_repository)
 
         # test the version data interface conformance
         doc.text = 'text v1'
         portal_repository.applyVersionControl(doc, comment='save no 1')
 
         vdata = portal_repository.retrieve(doc)
-        self.failUnless(verifyObject(IVersionData, vdata))
+        verifyObject(IVersionData, vdata)
 
     def test01_saveVersionableAspects(self):
         portal_repository = self.portal.portal_repository
@@ -233,8 +236,8 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         # delete the object we want to retrieve later
         doc_type = doc.getPortalTypeName()
         self.portal.manage_delObjects(ids=['doc'])
-        self.portal.invokeFactory(doc_type, 'XXX')
-        doc = self.portal.XXX
+        self.portal.invokeFactory(doc_type, 'doc_tmp')
+        doc = self.portal.doc_tmp
         portal_hidhandler.setUid(doc, history_id, check_uniqueness=True)
         vdata = portal_repository.retrieve(doc, selector=0)
         self.failUnless(verifyObject(IVersionData, vdata))
@@ -283,6 +286,22 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         restored = self.portal.doc2
         self.assertEqual(restored.text, 'text v1')
 
+    def test08_purgingDisallowedWithoutPurgingPolicy(self):
+        portal_repository = self.portal.portal_repository
+        doc = self.portal.doc
+        
+        # remove purge policy for this test
+        portal_purgepolicy = self.portal.portal_purgepolicy
+        del self.portal.portal_purgepolicy
+
+        doc.text = 'text v1'
+        portal_repository.applyVersionControl(doc, comment='save no 1')
+
+        self.assertRaises(RepositoryPurgeError,
+                          portal_repository.purge, doc, selector=0)
+
+        self.portal.portal_purgepolicy = portal_purgepolicy
+
 
 class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):
 
@@ -305,23 +324,21 @@ class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):
         portal_repository.save(fol, comment='save no 2')
 
         # check if correctly recursing and setting reference data correctly
-        # XXX the result depends on a history id handler returning
-        #     numbers staring with 1 (see 'hid')
         alog_str = portal_archivist.get_log()
         expected = """
 prepare fol: hid=1, refs=(doc1_inside, doc2_inside, doc3_outside)
-  prepare doc1_inside: hid=2
-  save    doc1_inside: hid=2, isreg=False, auto=True
-  prepare doc2_inside: hid=3
-  save    doc2_inside: hid=3, isreg=False, auto=True
-save    fol: hid=1, irefs=({hid:2, vid:0}, {hid:3, vid:0}), orefs=({hid:None, vid:-1}), isreg=False, auto=True
+  prepare doc1_inside: hid=3
+  save    doc1_inside: hid=3, isreg=False, auto=True
+  prepare doc2_inside: hid=4
+  save    doc2_inside: hid=4, isreg=False, auto=True
+save    fol: hid=1, irefs=({hid:3, vid:0}, {hid:4, vid:0}), orefs=({hid:None, vid:-1}), isreg=False, auto=True
 
 prepare fol: hid=1, refs=(doc1_inside, doc2_inside, doc3_outside)
-  prepare doc1_inside: hid=2
-  save    doc1_inside: hid=2, isreg=True, auto=False
-  prepare doc2_inside: hid=3
-  save    doc2_inside: hid=3, isreg=True, auto=False
-save    fol: hid=1, irefs=({hid:2, vid:1}, {hid:3, vid:1}), orefs=({hid:None, vid:-1}), isreg=True, auto=False"""
+  prepare doc1_inside: hid=3
+  save    doc1_inside: hid=3, isreg=True, auto=False
+  prepare doc2_inside: hid=4
+  save    doc2_inside: hid=4, isreg=True, auto=False
+save    fol: hid=1, irefs=({hid:3, vid:1}, {hid:4, vid:1}), orefs=({hid:None, vid:-1}), isreg=True, auto=False"""
 
         self.assertEqual(alog_str, expected)
 
@@ -350,8 +367,8 @@ save    fol: hid=1, irefs=({hid:2, vid:1}, {hid:3, vid:1}), orefs=({hid:None, vi
         alog_str = portal_archivist.get_log()
 
         expected = """retrieve fol: hid=1, selector=0
-retrieve doc1_inside: hid=2, selector=0
-retrieve doc2_inside: hid=3, selector=0"""
+retrieve doc1_inside: hid=3, selector=0
+retrieve doc2_inside: hid=4, selector=0"""
         self.assertEqual(alog_str, expected)
 
         # check result
@@ -618,6 +635,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                                      ATVersionOnEditPolicy)
         self.failUnless(self.isFCActionInPlace('validate_integrity',
                                                      'success', None, None))
+
 
 if __name__ == '__main__':
     framework()

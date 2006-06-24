@@ -1,12 +1,188 @@
-==================
-CMFEditons Changes
-==================
+===================
+CMFEditions Changes
+===================
 
 This file contains change information for the CMFEditions releases.
 
 
-Upcoming CMFEditions 1.0beta1 (2006-06-XX)
+Upcoming CMFEditions 1.0rc1
+-------------------------------
+
+ToDo
+
+- migration from CMFEditions 1.0alpha3 doesn't work correctly
+- some translations are not yet updated: contact translators (for changes see 
+  below. Affected translations: fr, da, pl)
+- Fix outstanding failing tests
+- Some complex integration test with deleted version. (purge support)
+- fix bugs scheduled for 1.0beta1: #1, #2
+- allow adding test hierarchy only if in debug mode
+- allow migration in debug mode only
+
+47. Retrieving an old version of an object with a different id shall retain
+    the current id. What about the children ids when recursing into?
+    The current implementation replaces the id in 
+    ``copymodifymergerepositorytool.py``::
+    
+        > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\copymodifymergerepositorytool.py(272)revert()
+        (Pdb) l
+        267             """
+        268             """
+        269             original_id = obj.getId()
+        270             self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
+        271             parent = aq_parent(aq_inner(obj))
+        272             self._recursiveRetrieve(obj, parent, selector, preserve=(),
+        273                                     inplace=True)
+        274  ->         if obj.getId() != original_id:
+        275                 obj._setId(original_id)
+        276                 #parent.manage_renameObject(obj.getId(), original_id)
+        277                 #parent._setObject(original_id, obj, set_owner=0)
+    
+    This is the wrong place. A modifier shall do that.
+
+
+CMFEditions 1.0beta1 (2006-06-24)
 ---------------------------------
+
+Bugs fixed
+
+- Fixed previewing (retrieving) files and images. [gregweb]
+
+- Security Policy was for ``manage_setPolicies`` but the method name 
+  was ``manage_setTypePolicies``. Corrected. [gregweb]
+
+- The storage now stores ZVC's ``__vc_info__`` for every version 
+  avoiding wrong information is attached to a working copy when 
+  previewing a version. Fix for ToDo.txt item #48. [gregweb]
+
+- Replaced all occurences of ``rollback`` with ``revert``. Brought into
+  sync internal names with UI. Rollback may suggest a transaction 
+  rollback which is something different. Including i18n label
+  ``label_rollback`` which is now ``label_revert``. Added backwards 
+  compatibility code for configuration. Translations not updated.
+  [gregweb]
+
+- Minor refactorings of the version history view. Notably replaced
+  ``(show below)`` by ``preview`` without jumping to the preview target
+  on the page by default. Instead the link name of the previewed version
+  changes to ``jump down``. [gregweb]
+
+- The storage is now more immune against non int selectors. [gregweb]
+
+
+Features Added
+
+- The approximate size of a version is now recorded also at save time
+  (and calculated at storage migartion).
+  [gregweb]
+
+- Added size information to storage statistics ZMI view [gregweb]
+
+- Added German translations [gregweb]
+
+- Added Polish translations provided by Piotr Furman [Piotr Furman, gregweb]
+
+- ``RetainWorkflowStateAndHistory`` now adds the ``review_state`` to the
+  ``sys_metadata`` at save time because at retreive time the workflow tool 
+  picks the working copies state. I didn't find any other way to do it 
+  without digging into workflows internals (which would have been a bad 
+  idea anyway). Had to extend the ``IModifier.ISaveRetrieveModifier``
+  interface to allow a modifier enhance ``sys_metadata`` at save time. 
+  [gregweb]
+  
+- Added purge support [gregweb]:
+
+  - Enhanced storage API with a ``purge`` method that inevitabely
+    removes a version from the history. See added ``IPurgeSupport``
+    and ``IPurgePolicy`` interfaces.
+  - Purging raises an exception if no purge policy is installed. This
+    will avoid a lot of future tracker items caused by people having
+    removed the purge policy but nevertheless providing purge support 
+    to users. The reason is that the archivist and repo layer can't 
+    handle yet the empty placeholder object beeing returned by the 
+    storage for the purged version. This rule may be relaxed in future 
+    versions if the archivist and repo layer support handling of those 
+    empty placeholder objects.
+  - The UI doesn't expose manual purge functionality. Through the ZMI a
+    number n may be configured representing the maximum number of
+    version per content item that have to be preserved. Older ones are
+    automatically purged from the storage at save time.
+  - There is a new purge permission that may be used to restrict purging
+    to special roles if necessary (applicable to manual purging only).
+  - On the repo layer (``portal_repository``) retrieving an object or 
+    iterating over the history always returns a valid (unpurged) 
+    version. The returned object may be a substitute. Two numbering 
+    schematas exist. Numbering counting purged versions and not 
+    counting purged versions (passing True or False to ``countPurged``).
+    The default numbering schema is ``countPurged=True``. The UI 
+    history onyl shows unpurged versions (``countPurged=False``).
+  - If the storage is asked to retreive a removed version it may be
+    instructed to return a substitute for the removed version. The
+    substitution policy itself is implemented in the new purge policy
+    tool. This strategy allows to keep most purge implementation 
+    details out of the upper layers (archivist, modifiers, repository).
+  - The new purge policy tool may be instructed to only keep n versions 
+    of a content item. Thus at save time the oldest version is purged 
+    if the save operation would result in more than n version reside in 
+    the storage.
+  - The new purge policy tool substitutes a removed version with the
+    next older version. If no other version is available the next 
+    newer is used as substitute. If none is available ... well this 
+    isn't yet tested :-)
+  - The archivist and storage may be asked to also retreive the empty
+    placeholder of a purged version. This functionality is yet exposed 
+    to the repo layer. This may change in a future release.
+  - Added ``isValid`` method on the vdata object that allows to ask if 
+    the retrieved object it is valid or not (empty placeholder object 
+    or a real version).
+    
+- At save time a version aware reference to the parent node is saved
+  also. Without it would be very ineffective or even impossible to 
+  find out the parents which potentially would prevent adding usefull
+  features like retrieving the a whole site from one object in the 
+  tree. [gregweb]
+
+- The histories default order has changed: It now returns the newest 
+  version as first item and the oldest as last item. The old behaviour
+  is still available by passing ``oldestFirst=True``. [gregweb]
+
+- Inserted the ``oldestFirst`` parameter before the already existing
+  ``preserve`` parameter. This will cause changes of 3rd party products
+  that are using ``preserve`` (None know at the moment, it's better to
+  change now than later). [gregweb]
+
+- Added two new i18n labels: ``label_preview_version_below``, 
+  ``label_preview_version`` (no translations yet) [gregweb]
+
+- Renamed i18n label: ``label_show_below`` to ``label_preview_version_link``
+  (updated labels in po-files but not the translations) [gregweb]
+
+
+Internal Changes
+
+- Now save all metadata also in shadow storage. But currently on retrieve 
+  the metadata is still feteched from the ZVC storage. [gregweb]
+
+- Added migration code for 1.0alpha3 --> 1.0beta1 storage migrations
+  [gregweb]
+
+- Adding purge support caused heavy refactoring the version storage.
+  ZVC is still used to store the contents history but now additional 
+  data is stored in a parallel shadow storage. The layout of the data
+  in the ZVC didn't change, only ZVC and purge related metadata has 
+  been added to the parallel shadow storage. [gregweb]
+
+- Garbage collected a lot of code that was commented out, outdated 
+  triple-X's and items in ``ToDo.txt``. [gregweb]
+
+- The storage tests now tests ZVCSTorageTool only once and additionally
+  tests the dummy memory storage. This was the intended behaviour but
+  a bug prevented running the tests with the dummy storage and instead
+  run the tests with ZVCStorageToll twice. [gregweb]
+
+
+CMFEditions 1.0alpha4 (2006-06-24)
+----------------------------------
 
 Bugs fixed
 
@@ -21,7 +197,6 @@ Features added
 - Added storage statistics ZMI view. [gregweb]
 
 - Added functionality to create a test hierarchy. [gregweb]
-
 
 
 CMFEditions 1.0alpha3 (2006-06-03)

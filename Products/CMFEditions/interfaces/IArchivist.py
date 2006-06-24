@@ -69,10 +69,12 @@ class IArchivist(Interface):
         """
 
     def isUpToDate(obj=None, history_id=None, selector=None):
-        """Returns True if the working copy has changed since the last save
-           or revert compared to the selected version. If selector is None,
-           the comparison is done with the HEAD.
-                                                                                                                             
+        """Check if the corking copy is up to date.
+        
+        Returns True if the working copy has changed since the last save
+        or revert compared to the selected version. If selector is None,
+        the comparison is done with the HEAD.
+        
         The working copy is up to date if the modification date is the
         identical to the selected version.
         """
@@ -98,7 +100,7 @@ class IArchivist(Interface):
         """
 
     def getHistory(obj=None, history_id=None, preserve=()):
-        """Returns the history of an object.
+        """Return the history of an object.
         
         The history is a 'IHistory' object.
         
@@ -118,16 +120,92 @@ class IArchivist(Interface):
         """
 
     def queryHistory(obj=None, history_id=None, preserve=(), default=[]):
-        """Returns the history of an object.
+        """Return the history of an object.
+        
+        Does the same as ``getHistory`` with the difference of returning
+        the value supplied with ``default`` instead of raising an exception.
+        """
+
+
+class IPurgeSupport(Interface):
+    """Repository Purge Support
+    
+    Purging a version removes that version irrevocably.
+    
+    Adds ``purge`` method and extends the signature of the ``isUpToDate``, 
+    ``retrieve``, ``getHistory`` and ``queryHistory`` methods.
+    The defaults of the extended methods mimique the standard behaviour of 
+    the original methods.
+    
+    With the introduction of purging two selection scheme exist for 
+    retrieving versions. Either purged versions are taken into account 
+    or not:
+    
+    - By passing ``countPurged=True`` purged versions are taken into
+      account when accessing a version. When a purged version is accessed
+      the storage tool decides what to do.
+    - By passing ``countPurged=False`` purged versions are **not taken into
+      account** when accessing a version.
+    
+    Example: 
+    
+    An object got saved ten times. Two versions got purged in earlier 
+    calls. The history looks like this (``s`` means: depends on storage,
+    ``e`` means: exception raised)::
+    
+      countPurged==True:
+      
+        selector:          0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+        version retrieved: 0, 1, 2, s, s, 5, 6, 7, 8, 9
+        
+      countPurged==False:
+       
+        selector:          0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+        version retrieved: 0, 1, 2, 5, 6, 7, 8, 9, e, e
+    """
+    
+    def purge(obj=None, history_id=None, selector=None, metadata={}, 
+              countPurged=True):
+        """Purge a version of a content object.
         
         Requires either an object which is the working copy, or a history_id
         for an object if no history_id is provided the history_id will be 
         obtained from the working copy object.
         
-        The history is a 'IHistory' object.
+        The comment and metadata passed may be used to store informations 
+        about the reasons of the purging.
         
-        Returns the default value if the given object doesn't have a 
-        history.
+        Also counts purged versions if ``True`` is passed to ``countPurged``
+        (see interface documentation for details).
+        """
+
+    def isUpToDate(obj=None, history_id=None, selector=None, 
+                   countPurged=True):
+        """Check if the corking copy is up to date.
+        
+        Returns True if the working copy has changed since the last save
+        or revert compared to the selected version. If selector is None,
+        the comparison is done with the HEAD.
+        
+        The working copy is up to date if the modification date is the
+        identical to the selected version.
+        
+        Also counts purged versions if ``True`` is passed to ``countPurged``
+        (see interface documentation for details).
+        """
+
+    def retrieve(obj=None, history_id=None, selector=None, preserve=(), 
+                 countPurged=True):
+        """Retrieve a former state of an object.
+        
+        Requires either an object which is the working copy, or a history_id
+        for an object if no history_id is provided the history_id will be 
+        obtained from the working copy object.
+        
+        Returns an 'IVersionData' object.
+        
+        Set the selector to None if you like to retrieve the most actual
+        version.
         
         Modifiers may overwrite some aspects of the retrieved version by
         the equivalent aspects of the working copy. Sometimes the 
@@ -135,6 +213,43 @@ class IArchivist(Interface):
         subattributes) beeing from interest can be passed with the
         'preserve' argument. 
         E.g. preserve=('family_name', 'nick_name', 'real_name')
+        
+        Also counts purged versions if ``True`` is passed to ``countPurged``
+        (see interface documentation for details).
+        """
+
+    def getHistory(obj=None, history_id=None, preserve=(), countPurged=True):
+        """Return the history of an object.
+        
+        The history is a 'IHistory' object.
+        
+        Requires either an object which is the working copy, or a history_id
+        for an object if no history_id is provided the history_id will be 
+        obtained from the working copy object.
+        
+        Raises an 'ArchivistError' exception if the given object doesn't
+        have a history.
+        
+        Modifiers may overwrite some aspects of the retrieved version by
+        the equivalent aspects of the working copy. Sometimes the 
+        overwritten information is from interest. Attributes (and 
+        subattributes) beeing from interest can be passed with the
+        'preserve' argument. 
+        E.g. preserve=('family_name', 'nick_name', 'real_name')
+        
+        Also counts purged versions if ``True`` is passed to ``countPurged``
+        (see interface documentation for details).
+        """
+
+    def queryHistory(obj=None, history_id=None, preserve=(), default=[], 
+                     countPurged=True):
+        """Return the history of an object.
+        
+        Does the same as ``getHistory`` with the difference of returning
+        the value supplied with ``default`` instead of raising an exception.
+        
+        Also counts purged versions if ``True`` is passed to ``countPurged``
+        (see interface documentation for details).
         """
 
 
@@ -216,7 +331,8 @@ class IVersionData(Interface):
         
         - timestamp: save time
         - principal: the actor that did the save
-        - XXX path: the path at store time (in getPhysicalPath format)
+        - parent: Dictionary with ``history_id``, ``version_id`` and 
+          ``location_id``
         """)
         
     app_metadata = Attribute(
@@ -239,7 +355,7 @@ class IHistory(Interface):
         """Returns the length of the history.
         """
 
-    def __getattr__(version_id): # XXX or get or both?
+    def __getattr__(version_id):
         """Returns the version of an object corresponding to the version id.
         
         The object returned is of 'IVersionData'.

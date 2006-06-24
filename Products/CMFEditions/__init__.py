@@ -18,7 +18,7 @@
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
-"""XXX
+"""CMFEditions Globals
 
 $Id: __init__.py,v 1.17 2005/02/07 22:09:08 gregweb Exp $
 """
@@ -38,6 +38,8 @@ from Products.CMFEditions import ArchivistTool
 from Products.CMFEditions import ZVCStorageTool
 from Products.CMFEditions import CopyModifyMergeRepositoryTool
 from Products.CMFEditions import ReferenceFactoriesTool
+from Products.CMFEditions import KeepLastNVersionsTool
+
 from Products.CMFEditions import StandardModifiers
 
 PACKAGE_HOME = package_home(globals())
@@ -49,6 +51,7 @@ tools = (
     ZVCStorageTool.ZVCStorageTool,
     CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool,
     ReferenceFactoriesTool.ReferenceFactoriesTool,
+    KeepLastNVersionsTool.KeepLastNVersionsTool,
     )
 
 bases = tools
@@ -77,12 +80,3 @@ def initialize(context):
         
     # initialize standard modifiers to make them addable through the ZMI
     StandardModifiers.initialize(context)
-
-
-# XXX
-# compare stuff
-# from AccessControl import ModuleSecurityInfo, allow_module, allow_class
-# allow_module('Products.CMFEditions.textdiff')
-#
-# from Products.CMFEditions.textdiff import TextDiff
-# allow_class(TextDiff)

@@ -40,6 +40,7 @@ from Products.CMFCore.utils import getToolByName
 #from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
+from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
 from DummyTools import notifyModified
@@ -85,6 +86,12 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
 
         self.installStorageTool()
 
+        # delete purge policy if there is one installed
+        try:
+            del self.portal.portal_purgepolicy
+        except AttributeError:
+            pass
+
     def installStorageTool(self):
         self._setDummyTool(MemoryStorage())
 
@@ -94,6 +101,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
     def test00_interface(self):
         portal_archivist = self.portal.portal_archivist
         verifyObject(IArchivist, portal_archivist)
+        verifyObject(IPurgeSupport, portal_archivist)
 
     def test01_registerAttachesAHistoryId(self):
         portal_archivist = self.portal.portal_archivist
@@ -197,6 +205,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         portal_archivist.save(prep)
 
         counter = 0
+        
         for vdata in portal_archivist.getHistory(doc):
             counter += 1
             self.assertEqual(vdata.data.object.text, 'text v%s' % counter)
@@ -288,7 +297,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.failUnless('timestamp' in prep.metadata['sys_metadata'])
         self.failUnless('principal' in prep.metadata['sys_metadata'])
         
-        # XXX necessary?
         self._setDummyTool(DummyModifier())
 
     def test08_retrieveWithReferences(self):
@@ -365,10 +373,6 @@ class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):
    def installStorageTool(self):
        """Test with a real ZODB storage overriding the storage installation
           in the super class.
-
-          XXX we should approach this the opposite way round making the super
-          class using the ZODB storage and this make this class working on the
-          dummy storage.
        """
        pass
 

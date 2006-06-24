@@ -23,8 +23,6 @@
 #########################################################################
 """Intercepts/modifies saving/retrieving of versions to/from the repository.
 
-XXX
-
 $Id: IModifier.py,v 1.7 2005/06/24 11:42:01 gregweb Exp $
 """
 
@@ -97,7 +95,8 @@ class ISaveRetrieveModifier(Interface):
               versionable at all) and wasn't removed already by the
               'getOnCloneModifiers'.
 
-        Returns two lists of 'IAttributeAdapter' objects adapting to a
+        Returns a dict with metadata to be added to the sys_metadata dict
+        and two lists of 'IAttributeAdapter' objects adapting to a
         'IVersionAwareReference' objects (inside references and outside
         references).
 
@@ -270,8 +269,6 @@ class IBulkEditableModifierRegistry(Interface):
                         modifier.
             editable -- A flag signalizing if the subscribers are 
                         editable
-                        
-            XXX ???
         """
     
     def setModifiers(ids, pos, before_save, after_retrieve, on_clone):

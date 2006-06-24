@@ -44,12 +44,15 @@ from Products.CMFEditions.utilities import dereference, wrap
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
+from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
+from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.interfaces.IRepository import IHistory
 
 from Products.CMFEditions.Permissions import ApplyVersionControl
 from Products.CMFEditions.Permissions import SaveNewVersion
+from Products.CMFEditions.Permissions import PurgeVersion
 from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.CMFEditions.Permissions import RevertToPreviousVersions
 from Products.CMFEditions.Permissions import CheckoutToLocation
@@ -79,10 +82,12 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     """See ICopyModifyMergeRepository
     """
 
-    __implements__ = (SimpleItem.__implements__,
-                      ICopyModifyMergeRepository,
-                      IContentTypeVersionPolicySupport,
-                      )
+    __implements__ = (
+        SimpleItem.__implements__,
+        IPurgeSupport, 
+        ICopyModifyMergeRepository,
+        IContentTypeVersionPolicySupport,
+        )
 
     id = 'portal_repository'
     alternative_id = 'portal_copymergerepository'
@@ -156,6 +161,12 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     security.declarePublic('supportsPolicy')
     def supportsPolicy(self, obj, policy):
         content_type = obj.portal_type
+        # in 1.0alpha3 and earlier ``version_on_revert`` was 
+        # ``version_on_rollback``. Convert to new name.
+        config = self._version_policy_mapping.get(content_type, [])
+        if "version_on_rollback" in config:
+            config[config.index("version_on_rollback")] = "version_on_revert"
+        
         return policy in self._version_policy_mapping.get(content_type, [])
 
     security.declarePublic('hasPolicy')
@@ -163,7 +174,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         content_type = obj.portal_type
         return bool(self._version_policy_mapping.get(content_type, None))
 
-    security.declareProtected(ManageVersioningPolicies, 'manage_setPolicies')
+    security.declareProtected(ManageVersioningPolicies, 'manage_setTypePolicies')
     def manage_setTypePolicies(self, policy_map, **kw):
         assert isinstance(policy_map, dict)
         for p_type, policies in self._version_policy_mapping.items():
@@ -244,16 +255,15 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     # methods implementing ICopyModifyMergeRepository
     # -------------------------------------------------------------------
 
-
     security.declareProtected(ApplyVersionControl, 'setAutoApplyMode')
     def setAutoApplyMode(self, autoapply):
-        """
+        """See ICopyModifyMergeRepository.
         """
         self.autoapply = autoapply
 
     security.declarePublic('ApplyVersionControl')
     def applyVersionControl(self, obj, comment='', metadata={}):
-        """See interface.
+        """See ICopyModifyMergeRepository.
         """
         self._assertAuthorized(obj, ApplyVersionControl, 'applyVersionControl')
         self._recursiveSave(obj, metadata,
@@ -262,23 +272,54 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     security.declarePublic('save')
     def save(self, obj, comment='', metadata={}):
-        """See interface.
+        """See ICopyModifyMergeRepository.
         """
         self._assertAuthorized(obj, SaveNewVersion, 'save')
         self._recursiveSave(obj, metadata,
                             self._prepareSysMetadata(comment),
                             autoapply=self.autoapply)
 
+    # -------------------------------------------------------------------
+    # methods implementing IPurgeSupport
+    # -------------------------------------------------------------------
+
+    security.declarePublic('purge')
+    def purge(self, obj, selector, comment="", metadata={}, countPurged=True):
+        """See IPurgeSupport.
+        """
+        self._assertAuthorized(obj, PurgeVersion, 'purge')
+        
+        # Trying to avoid mess with purged versions which we don't offer
+        # support yet when passed to the repository layer due to a missing
+        # purge policy. The problem would occure on revert and retrieve.
+        pp = getToolByName(self, 'portal_purgepolicy', None)
+        if pp is None:
+            raise RepositoryPurgeError("Purging a version is not possible. "
+                                       "Purge is only possible with a purge "
+                                       "policy installed.")
+
+        portal_archivist = getToolByName(self, 'portal_archivist')
+        # just hand over to the archivist for the moment (recursive purging
+        # may be implemented in a future release)
+        metadata = {
+            "app_metadata": metadata,
+            "sys_metadata": self._prepareSysMetadata(comment),
+        }
+        portal_archivist.purge(obj=obj, selector=selector, comment=comment, 
+                               metadata=metadata, countPurged=countPurged)
+
     security.declarePublic('revert')
-    def revert(self, obj, selector=None):
-        """See interface.
+    def revert(self, obj, selector=None, countPurged=True):
+        """See IPurgeSupport.
         """
         # XXX this should go away if _recursiveRetrieve is correctly implemented
         original_id = obj.getId()
 
         self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
         fixup_queue = []
-        self._recursiveRetrieve(obj=obj, selector=selector, inplace=True, fixup_queue=fixup_queue)
+        self._recursiveRetrieve(obj=obj, selector=selector, inplace=True, 
+                                fixup_queue=fixup_queue, 
+                                countPurged=countPurged)
         # XXX this should go away if _recursiveRetrieve is correctly implemented
         if obj.getId() != original_id:
             obj._setId(original_id)
@@ -289,15 +330,16 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         self._doInplaceFixups(fixup_queue, True)
 
     security.declarePublic('retrieve')
-    def retrieve(self, obj, selector=None, preserve=()):
-        """See interface.
+    def retrieve(self, obj, selector=None, preserve=(), countPurged=True):
+        """See IPurgeSupport.
         """
         self._assertAuthorized(obj, AccessPreviousVersions, 'retrieve')
-        return self._retrieve(obj, selector, preserve)
+        return self._retrieve(obj, selector, preserve, countPurged)
 
     security.declarePublic('restore')
-    def restore(self, history_id, selector, container, new_id=None):
-        """See interface.
+    def restore(self, history_id, selector, container, new_id=None, 
+                countPurged=True):
+        """See IPurgeSupport.
         """
 
         self._assertAuthorized(container, RevertToPreviousVersions, 'revert')
@@ -306,7 +348,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                                         selector=selector, inplace=True,
                                         source=container,
                                         fixup_queue=fixup_queue,
-                                        ignore_existing=True)
+                                        ignore_existing=True,
+                                        countPurged=countPurged)
 
         # Set the id to the desired value
         orig_id = vdata.data.object.getId()
@@ -319,19 +362,21 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # run fixups
         self._doInplaceFixups(fixup_queue, True)
 
-    security.declarePublic('isUpToDate')
-    def isUpToDate(self, obj, selector=None):
-        """See interface.
-        """
-        portal_archivist = getToolByName(self, 'portal_archivist')
-        return portal_archivist.isUpToDate(obj=obj, selector=selector)
-
     security.declarePublic('getHistory')
-    def getHistory(self, obj, preserve=()):
-        """See interface.
+    def getHistory(self, obj, oldestFirst=False, preserve=(), 
+                   countPurged=True):
+        """See IPurgeSupport.
         """
         self._assertAuthorized(obj, AccessPreviousVersions, 'getHistory')
-        return LazyHistory(self, obj, preserve)
+        return LazyHistory(self, obj, oldestFirst, preserve, countPurged)
+
+    security.declarePublic('isUpToDate')
+    def isUpToDate(self, obj, selector=None, countPurged=True):
+        """See IPurgeSupport.
+        """
+        portal_archivist = getToolByName(self, 'portal_archivist')
+        return portal_archivist.isUpToDate(obj=obj, selector=selector,
+                                           countPurged=countPurged)
 
 
     # -------------------------------------------------------------------
@@ -352,9 +397,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             'comment': comment,
             # setting a timestamp here set the same timestamp at all
             # recursively saved objects
-            'timestamp': int(time.time()),
+            'timestamp': time.time(),
             # None means the current object is the originator of the
-            # save operation
+            # save or purge operation
             'originator': None,
         }
 
@@ -396,7 +441,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # ``verision_id``
         prep.copyVersionIdFromClone()
 
-    def _retrieve(self, obj, selector=None, preserve=()):
+    def _retrieve(self, obj, selector, preserve, countPurged):
         """Retrieve a former state.
 
         Puts the returned version into same context as the working copy is
@@ -409,7 +454,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # complex transactions.
         saved = transaction.savepoint()
         vd = self._recursiveRetrieve(obj=obj, selector=selector,
-                                     preserve=preserve, inplace=False)
+                                     preserve=preserve, inplace=False,
+                                     countPurged=countPurged)
         saved.rollback()
         wrapped = wrap(vd.data.object, aq_parent(aq_inner(obj)))
         return VersionData(wrapped, vd.preserved_data,
@@ -417,7 +463,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     def _recursiveRetrieve(self, obj=None, history_id=None, selector=None, preserve=(),
                            inplace=False, source=None, fixup_queue=None,
-                           ignore_existing=False):
+                           ignore_existing=False, countPurged=True):
         """This is the real workhorse pulling objects out recursively.
         """
         portal_archivist = getToolByName(self, 'portal_archivist')
@@ -439,7 +485,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         if hasBeenDeleted:
             # if the object to retreive doesn't have a counterpart in the tree
             # build a new one before retrieving an old state
-            vdata = portal_archivist.retrieve(obj=obj, history_id=history_id, selector=selector, preserve=preserve)
+            vdata = portal_archivist.retrieve(obj, history_id, selector, 
+                                              preserve, countPurged)
             repo_clone = vdata.data.object
             obj = portal_reffactories.invokeFactory(repo_clone, source)
             hasBeenMoved = False
@@ -458,15 +505,17 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
         if hasBeenMoved:
             if getattr(aq_base(source), obj.getId(), None) is None:
-                vdata = portal_archivist.retrieve(obj=obj, history_id=history_id, selector=selector, preserve=preserve)
+                vdata = portal_archivist.retrieve(obj, history_id, selector, 
+                                                  preserve, countPurged)
                 repo_clone = vdata.data.object
                 obj = portal_reffactories.invokeFactory(repo_clone, source)
             else:
                 # What is the desired behavior
                 pass
-
-        vdata = portal_archivist.retrieve(obj, history_id, selector, preserve)
-
+        
+        vdata = portal_archivist.retrieve(obj, history_id, selector, 
+                                          preserve, countPurged)
+        
         # Replace the objects attributes retaining identity.
         _missing = object()
         attrs_to_leave = vdata.attr_handling_references
@@ -491,14 +540,16 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             va_ref = attr_ref.getAttribute()
             history_id = va_ref.history_id
 
-            # retrieve the referenced version
+            # retrieve the referenced version (always count purged versions
+            # also!)
             ref_vdata= self._recursiveRetrieve(history_id=history_id,
                                                selector=va_ref.version_id,
                                                preserve=(),
                                                inplace=inplace,
                                                source=obj,
                                                fixup_queue=fixup_queue,
-                                               ignore_existing=ignore_existing)
+                                               ignore_existing=ignore_existing,
+                                               countPurged=True)
 
             # reattach the python reference
             attr_ref.setAttribute(ref_vdata.data.object)
@@ -662,31 +713,43 @@ class LazyHistory:
 
     __allow_access_to_unprotected_subobjects__ = 1
 
-    def __init__(self, repository, obj, parent, preserve=()):
+    def __init__(self, repository, obj, oldestFirst, preserve, countPurged):
+        archivist = getToolByName(repository, 'portal_archivist')
         self._repo = repository
         self._obj = obj
+        self._oldestFirst = oldestFirst
         self._preserve = preserve
+        self._countPurged = countPurged
         self._retrieve = repository._retrieve
+        self._length = len(archivist.queryHistory(obj=obj, preserve=preserve,
+                                                  countPurged=countPurged))
 
     def __len__(self):
         """See IHistory
         """
-        portal_archivist = getToolByName(self._repo, 'portal_archivist')
-        return len(portal_archivist.queryHistory(self._obj))
+        return self._length
 
     def __getitem__(self, selector):
         """See IHistory
         """
-        return self._retrieve(self._obj, selector=selector, preserve=self._preserve)
+        if not self._oldestFirst and selector < self._length:
+            if selector >= 0:
+                selector = self._length - 1 - selector
+            else:
+                selector = - (selector + 1)
+            
+        return self._retrieve(self._obj, selector, self._preserve, 
+                              self._countPurged)
 
     def __iter__(self):
-        """See IHistory
+        """See IHistory.
         """
-        return Iterator(self.__getitem__, ArchivistRetrieveError)
+        return GetItemIterator(self.__getitem__,
+                               stopExceptions=(ArchivistRetrieveError,))
 
 
-class Iterator:
-    """Iterator object using the passed getitem implementation.
+class GetItemIterator:
+    """Iterator object using a getitem implementation to iterate over.
     """
     def __init__(self, getItem, stopExceptions):
         self._getItem = getItem
@@ -695,10 +758,10 @@ class Iterator:
 
     def __iter__(self):
         return self
-
+        
     def next(self):
+        self._pos += 1
         try:
-            self._pos += 1
             return self._getItem(self._pos)
         except self._stopExceptions:
             raise StopIteration()

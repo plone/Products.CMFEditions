@@ -5,7 +5,7 @@
 ##bind script=script
 ##bind subpath=traverse_subpath
 ##parameters=version_id=1
-##title=Image download version
+##title=File download version
 ##
 request = container.REQUEST
 RESPONSE =  request.RESPONSE

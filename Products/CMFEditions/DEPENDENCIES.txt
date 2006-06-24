@@ -2,57 +2,78 @@
 Dependencies
 ============
 
+This package is tested with the following releases:
 
-----------------------------------------------
-Dependencies for use of CMFEditions with Plone
-----------------------------------------------
+Plone 2.1 Series
+================
 
-- ZopeVersionControl:
+- `Zope 2.8.6 <http://www.zope.org/Products/Zope/2.8.6>`
+- `Plone 2.1.2 <http://plone.org/products/plone/releases/2.1>`
+- `ZopeVersionControl 0.3.2 
+  <http://plone.org/products/cmfeditions/releases/1.0beta1>`
+- `CMFDiffTool XXX <>` (by XXX)
 
-  - if you use Zope 2.7 : 0.3.1 (provided in the alpha2 release of CMFEditions)
+.. Note::
 
-  - if you use Zope 2.8 : you need to checkout HEAD of ZopeVersionControl-0_3_1
-    branch
+   CMFEditions does **not** work with Zope 2.7 and older!
 
+Plone 2.5 Series
+================
+
+(final not yet released at this writing)
+
+CMFEditions is expected to work with Plone 2.5 without any major 
+problems. But this isn't tested yet. You may help us with giving us
+feedback about your experiences and by reporting bugs.
+See README.txt.
+
+
+----
+
+
+Additional Dependency Informations (For Historical Reasons)
+===========================================================
 
 If you're using Plone 2.0
 -------------------------
 
-- Plone 2.0.5 (older 2.0.x releases are untested)
-  <http://plone.org/products/plone/releases/2.0.5>
-- CMFUid-1.5.0.2 release from the sourceforge collective
-  http://prdownloads.sourceforge.net/collective/CMFUid-1_5_0_2.tgz?download
-  XXX have to upload a newer release!
-- Archetypes 1.3.4 (replace the Archetypes version shiped with Plone 2.0.5)
-  <http://plone.org/products/archetypes/releases>
+This release may work with Plone 2.0.x, but is not explicitely tested 
+for it anymore. You're on your own! If you like to backport CMFEditions
+to Plone 2.0.x and have questions please contact us over the `mailing
+list <mailto:collective-versioning@lists.sourceforge.net>`.
+
+- You need to use Zope 2.8.x at least!
+- `Plone 2.0.5 (older 2.0.x releases are untested)
+  <http://plone.org/products/plone/releases/2.0.5>`
+- `CMFUid-1.5.0.2 release from the sourceforge collective
+  <http://prdownloads.sourceforge.net/collective/CMFUid-1_5_0_2.tgz?download>`
+- `Archetypes 1.3.4 (replace the Archetypes version shiped with Plone 2.0.5)
+  <http://plone.org/products/archetypes/releases>`
 
 
-If you're using Plone 2.1
+If you're using stock CMF
 -------------------------
 
-- Plone 2.1
-  <http://plone.org/products/plone/releases/2.1>
-
-
---------------------------------------------------
-Dependencies for use of CMFEditions with Stock CMF
---------------------------------------------------
-
-As all the templates are designed for Plone they may or may not work with
-stock CMF. The underlying tools depend on CMF only. It should be easy to 
-port the templates to CMF.
+As all the templates are designed for Plone they probably do not work with
+stock CMF. The underlying tools depend on CMF tools only. It should be easy 
+to port the templates to CMF.
 
 
 CMF 1.4
--------
+~~~~~~~
 
-- CMF 1.4.7 release
+- CMF 1.4.7 or newer release
 - CMFUid-1.5.0.2 release from the sourceforge collective
   <http://prdownloads.sourceforge.net/collective/CMFUid-1_5_0_2.tgz?download>
-  XXX have to upload a newer release!
 
 
 CMF 1.5
--------
+~~~~~~~
 
-- CMF 1.5.4
+- CMF 1.5.4 or newer release
+
+
+CMF 1.6
+~~~~~~~
+
+- not tested yet (should work)

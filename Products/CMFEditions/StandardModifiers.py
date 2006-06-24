@@ -286,7 +286,7 @@ class OMOutsideChildrensModifier(OMBaseModifier):
         This allways goes in conjunction with 'getOnCloneModifiers'.
         """
         outside_refs = self._beforeSaveModifier(obj, clone)
-        return [], outside_refs
+        return {}, [], outside_refs
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         ref_names = self._getAttributeNamesHandlingSubObjects(obj, repo_clone)
@@ -339,7 +339,7 @@ class OMInsideChildrensModifier(OMBaseModifier):
         This allways goes in conjunction with 'getOnCloneModifiers'.
         """
         inside_refs = self._beforeSaveModifier(obj, clone)
-        return inside_refs, []
+        return {}, inside_refs, []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         # check if the modifier is called with a valid working copy
@@ -433,7 +433,20 @@ class RetainWorkflowStateAndHistory:
     __implements__ = (ISaveRetrieveModifier, )
 
     def beforeSaveModifier(self, obj, clone):
-        return [], []
+        # Saving the ``review_state`` as this is hard to achieve at retreive
+        # (or because I'm dumb). What happened is that ``getInfoFor`` always
+        # returned the state of the working copy although the retrieved 
+        # temporary object was passed to it.
+        #
+        # Anyway the review state may be a very interesting piece of 
+        # information for a hypothetic purge policy ...
+        wflow = getToolByName(obj, "portal_workflow", None)
+        if wflow is not None:
+            review_state = wflow.getInfoFor(obj, "review_state")
+        else:
+            review_state = None
+        
+        return {"review_state": review_state}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         # check if the modifier is called with a valid working copy
@@ -467,7 +480,7 @@ class RetainPermissionsSettings:
     __implements__ = (ISaveRetrieveModifier, )
 
     def beforeSaveModifier(self, obj, clone):
-        return [], []
+        return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         # check if the modifier is called with a valid working copy
@@ -493,7 +506,7 @@ class RetainUIDs:
     __implements__ = (ISaveRetrieveModifier, )
 
     def beforeSaveModifier(self, obj, clone):
-        return [], []
+        return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         # check if the modifier is called with a valid working copy
@@ -533,7 +546,7 @@ class RetainATRefs:
     __implements__ = (ISaveRetrieveModifier, )
 
     def beforeSaveModifier(self, obj, clone):
-        return [], []
+        return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         # check if the modifier is called with a valid working copy
@@ -560,7 +573,7 @@ class NotRetainATRefs:
     __implements__ = (ISaveRetrieveModifier, )
 
     def beforeSaveModifier(self, obj, clone):
-        return [], []
+        return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         # check if the modifier is called with a valid working copy

@@ -34,7 +34,7 @@ import zLOG
 
 from Globals import InitializeClass
 from Persistence import Persistent
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, getSecurityManager
 from ZODB.PersistentList import PersistentList
 from OFS.SimpleItem import SimpleItem
@@ -51,6 +51,7 @@ from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
+from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
 from Products.CMFEditions.interfaces.IArchivist import IHistory
 from Products.CMFEditions.interfaces.IArchivist import IVersionData
 from Products.CMFEditions.interfaces.IArchivist import IPreparedObject
@@ -146,7 +147,7 @@ class VersionAwareReference(Persistent):
             # XXX we really need a isUpToDate/isChanged methods!
             
         if remove_info and hasattr(self, 'info'):
-            self.info = None
+            del self.info
 
 
 class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
@@ -154,8 +155,9 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
     """
 
     __implements__ = (
-        SimpleItem.__implements__,
+        IPurgeSupport, 
         IArchivist,
+        SimpleItem.__implements__,
     )
         
     id = 'portal_archivist'
@@ -199,11 +201,12 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         if callbacks is not None:
             p.persistent_id = pers_id
         p.dump(aq_base(obj))
+        approxSize = stream.tell()
         stream.seek(0)
         u = Unpickler(stream)
         if callbacks is not None:
             u.persistent_load = pers_load
-        return u.load(), inside_orefs, outside_orefs
+        return approxSize, u.load(), inside_orefs, outside_orefs
 
 
     # -------------------------------------------------------------------
@@ -212,7 +215,7 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     security.declarePrivate('prepare')
     def prepare(self, obj, app_metadata=None, sys_metadata={}):
-        """
+        """See IArchivist.
         """
         storage = getToolByName(self, 'portal_historiesstorage')
         modifier = getToolByName(self, 'portal_modifier')
@@ -241,8 +244,14 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         # 2. clone the object with some modifications
         # 3. modify the clone further
         referenced_data = modifier.getReferencedAttributes(obj)
-        clone, inside_orefs, outside_orefs = self._cloneByPickle(obj)
-        inside_crefs, outside_crefs = modifier.beforeSaveModifier(obj, clone)
+        approxSize, clone, inside_orefs, outside_orefs = \
+            self._cloneByPickle(obj)
+        metadata, inside_crefs, outside_crefs = \
+            modifier.beforeSaveModifier(obj, clone)
+        
+        # extend the ``sys_metadata`` by the metadata returned by the
+        # ``beforeSaveModifier`` modifier
+        sys_metadata.update(metadata)
         
         # set the version id of the clone to be saved to the repository
         # location_id and history_id are the same as on the working copy
@@ -254,11 +263,11 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
         obj_info = ObjectData(obj, inside_orefs, outside_orefs)
         return PreparedObject(history_id, obj_info, clone_info, 
                               referenced_data, app_metadata, 
-                              sys_metadata, is_registered)
+                              sys_metadata, is_registered, approxSize)
         
     security.declarePrivate('register')
     def register(self, prepared_obj):
-        """
+        """See IArchivist.
         """
         # only register at the storage layer if not yet registered
         if not prepared_obj.is_registered:
@@ -268,22 +277,9 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
                                     prepared_obj.referenced_data,
                                     prepared_obj.metadata)
 
-    security.declarePrivate('isUpToDate')
-    def isUpToDate(self, obj=None, history_id=None, selector=None):
-        """
-        """
-        storage = getToolByName(self, 'portal_historiesstorage')
-        obj, history_id = dereference(obj, history_id, self)
-        if not storage.isRegistered(history_id):
-            raise ArchivistUnregisteredError(
-                "The object %s is not registered" % obj)
-        
-        modified = storage.getModificationDate(history_id, selector)
-        return modified == obj.modified()
-
     security.declarePrivate('save')
     def save(self, prepared_obj, autoregister=None):
-        """
+        """See IArchivist.
         """
         if not prepared_obj.is_registered:
             if autoregister:
@@ -297,15 +293,30 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
                             prepared_obj.clone, 
                             prepared_obj.referenced_data, 
                             prepared_obj.metadata)
-            
+
+    # -------------------------------------------------------------------
+    # methods implementing IPurgeSupport
+    # -------------------------------------------------------------------
+
+    security.declarePrivate('purge')
+    def purge(self, obj=None, history_id=None, selector=None, metadata={}, 
+              countPurged=True):
+        """See IPurgeSupport.
+        """
+        storage = getToolByName(self, 'portal_historiesstorage')
+        obj, history_id = dereference(obj, history_id, self)
+        storage.purge(history_id, selector, metadata, countPurged)
+
     security.declarePrivate('retrieve')
-    def retrieve(self, obj=None, history_id=None, selector=None, preserve=()):
+    def retrieve(self, obj=None, history_id=None, selector=None, preserve=(),
+                 countPurged=True):
+        """See IPurgeSupport.
         """
-        """
-        # retrieve the object by accessing the right history entry
+        # retrieve the object by accessing the right history entry 
+        # (counting from the oldest version)
         # the histories storage called by LazyHistory knows what to do
         # with a None selector
-        history = self.getHistory(obj, history_id, preserve)
+        history = self.getHistory(obj, history_id, preserve, countPurged)
         try:
             return history[selector]
         except StorageRetrieveError:
@@ -314,30 +325,46 @@ class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
                 % (obj, selector))
     
     security.declarePrivate('getHistory')
-    def getHistory(self, obj=None, history_id=None, preserve=()):
-        """
+    def getHistory(self, obj=None, history_id=None, preserve=(), 
+                   countPurged=True):
+        """See IPurgeSupport.
         """
         try:
-            return LazyHistory(self, obj, history_id, preserve)
+            return LazyHistory(self, obj, history_id, preserve, countPurged)
         except StorageUnregisteredError:
             raise ArchivistUnregisteredError(
                 "Retrieving a version of an unregistered object is not "
                 "possible. Register the object '%s' first. " % obj)
         
     security.declarePrivate('queryHistory')
-    def queryHistory(self, obj=None, history_id=None, preserve=(), default=[]):
-        """
+    def queryHistory(self, obj=None, history_id=None, preserve=(), default=[],
+                     countPurged=True):
+        """See IPurgeSupport.
         """
         try:
-            return LazyHistory(self, obj, history_id, preserve)
+            return LazyHistory(self, obj, history_id, preserve, countPurged)
         except StorageUnregisteredError:
             return default
 
+    security.declarePrivate('isUpToDate')
+    def isUpToDate(self, obj=None, history_id=None, selector=None, 
+                   countPurged=True):
+        """See IPurgeSupport.
+        """
+        storage = getToolByName(self, 'portal_historiesstorage')
+        obj, history_id = dereference(obj, history_id, self)
+        if not storage.isRegistered(history_id):
+            raise ArchivistUnregisteredError(
+                "The object %s is not registered" % obj)
+        
+        modified = storage.getModificationDate(history_id, selector,
+                                               countPurged)
+        return modified == obj.modified()
+
 InitializeClass(ArchivistTool)
 
+
 def getUserId():
-    # XXX This is way too simple. 
-    # Needn't this be something unique over time?
     return getSecurityManager().getUser().getUserName()
 
 
@@ -358,18 +385,30 @@ class PreparedObject:
     __implements__ = (IPreparedObject, )
     
     def __init__(self, history_id, original, clone, referenced_data, 
-                 app_metadata, sys_metadata, is_registered):
-        # extend metadata information
-        comment = sys_metadata.get('comment', '')
-        timestamp = sys_metadata.get('timestamp', int(time.time()))
-        originator = sys_metadata.get('originator', None)
+                 app_metadata, sys_metadata, is_registered, approxSize):
+        
+        # parent reference (register the parent with the unique id handler)
+        # register with sys_metadata as there is no other possibility
+        obj = original.object
+        parent = aq_parent(aq_inner(obj))
+        portal_uidhandler = getToolByName(obj, 'portal_uidhandler')
+        
+        # set defaults if missing
+        sys_metadata['comment'] = sys_metadata.get('comment', '')
+        sys_metadata['timestamp'] = sys_metadata.get('timestamp', 
+                                                     int(time.time()))
+        sys_metadata['originator'] = sys_metadata.get('originator', None)
+        sys_metadata['principal'] = getUserId()
+        sys_metadata['approxSize'] = approxSize
+        sys_metadata['parent'] = {
+            'history_id': portal_uidhandler.register(parent),
+            'version_id': getattr(parent, "version_id", None),
+            'location_id': getattr(parent, "location_id", None),
+        }
+        
+        # bundle application and system metadata in different namespaces
         metadata = {
-            'sys_metadata': {
-                'comment': comment,
-                'timestamp': timestamp,
-                'originator': originator,
-                'principal': getUserId(),
-            },
+            'sys_metadata': sys_metadata,
             'app_metadata': app_metadata,
         }
         
@@ -389,24 +428,26 @@ class LazyHistory:
     """
     __implements__ = (IHistory, )
     
-    def __init__(self, archivist, obj, history_id, preserve=()):
-        """Sets up a lazy history. Takes an object which should be the original object
-           in the portal, and a history_id for the storage lookup.  If the history id
-           is omitted then the history_id will be determined by dereferencing the obj.
-           If the obj is omitted, then the obj will be obtained by ddereferencing the
-           history_id.
+    def __init__(self, archivist, obj, history_id, preserve, countPurged):
+        """Sets up a lazy history. 
+        
+        Takes an object which should be the original object in the portal, 
+        and a history_id for the storage lookup. If the history id is 
+        omitted then the history_id will be determined by dereferencing 
+        the obj. If the obj is omitted, then the obj will be obtained by 
+        dereferencing the history_id.
         """
         self._modifier = getToolByName(archivist, 'portal_modifier')
         storage = getToolByName(archivist, 'portal_historiesstorage')
         self._obj, history_id = dereference(obj, history_id, archivist)
         self._preserve = preserve
-        self._history = storage.getHistory(history_id)
+        self._history = storage.getHistory(history_id, countPurged)
         
     def __len__(self):
         """See IHistory
         """
         return len(self._history)
-        
+    
     def __getitem__(self, selector):
         """See IHistory
         """
@@ -438,15 +479,16 @@ class LazyHistory:
         return VersionData(data, refs_to_be_deleted, 
                            attr_handling_references, preserved_data, 
                            metadata)
-        
+
     def __iter__(self):
-        """See IHistory
+        """See IHistory.
         """
-        return Iterator(self.__getitem__, StorageRetrieveError)
+        return GetItemIterator(self.__getitem__,
+                               stopExceptions=(StorageRetrieveError,))
 
 
-class Iterator:
-    """Iterator object using the passed getitem implementation.
+class GetItemIterator:
+    """Iterator object using a getitem implementation to iterate over.
     """
     def __init__(self, getItem, stopExceptions):
         self._getItem = getItem
@@ -457,8 +499,8 @@ class Iterator:
         return self
         
     def next(self):
+        self._pos += 1
         try:
-            self._pos += 1
             return self._getItem(self._pos)
         except self._stopExceptions:
             raise StopIteration()

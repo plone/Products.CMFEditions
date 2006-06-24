@@ -2,7 +2,7 @@
       metal:define-macro="versions_history"
       i18n:domain="cmfeditions">
 <tal:history      tal:define="pr nocall:here/portal_repository;
-                  history python:pr.getHistory(here)"
+                  history python:pr.getHistory(here, countPurged=False)"
                   tal:condition="python: history and pr.isVersionable(context)">
       <dl id="versions" class="collapsible inline collapsedOnLoad">
         <dt class="collapsibleHeader" i18n:translate="label_versions">Versions</dt>

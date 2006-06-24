@@ -18,7 +18,7 @@
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
-"""XXX
+"""Registry of Modifiers
 
 $Id: ModifierRegistryTool.py,v 1.17 2005/06/24 11:42:01 gregweb Exp $
 """
@@ -31,6 +31,7 @@ import re
 
 from Interface.Verify import verifyObject
 from Globals import InitializeClass
+from Missing import MV
 
 from Acquisition import aq_base
 from AccessControl import ClassSecurityInfo, getSecurityManager
@@ -224,14 +225,16 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder, ActionProviderBase):
         """
         inside_crefs = []
         outside_crefs = []
+        metadata = {}
         
         # just loop over all modifiers
         for ignored_id, mod in self._collectModifiers(obj, ISaveRetrieveModifier):
-            icrefs, ocrefs = mod.beforeSaveModifier(obj, obj_clone)
+            mdata, icrefs, ocrefs = mod.beforeSaveModifier(obj, obj_clone)
             inside_crefs.extend(icrefs)
             outside_crefs.extend(ocrefs)
+            metadata.update(mdata)
         
-        return inside_crefs, outside_crefs
+        return metadata, inside_crefs, outside_crefs
     
     security.declarePrivate('afterRetrieveModifier')
     def afterRetrieveModifier(self, obj, repo_clone, preserve=[]):
@@ -243,9 +246,8 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder, ActionProviderBase):
         _marker = []
         preserved = {}
         for key in preserve:
-            v = getattr(repo_clone, key, _marker) # XXX return MV.missing instead of ignoring it
-            if v is not _marker:
-                preserved[key] = v
+            v = getattr(repo_clone, key, MV)
+            preserved[key] = v
 
         orig_preserved = preserved.copy()
         # just loop over all modifiers in reverse order
