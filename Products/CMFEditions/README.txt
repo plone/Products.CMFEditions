@@ -13,12 +13,13 @@ CMFEditions adds versioning to Plone.
 
 After a long alpha phase and already working in some productive sites 
 this is the first beta release of CMFEditions. For a detailed list of
-changes since the 1.0alpha2 have a look at CHNAGES.txt
+changes since the 1.0alpha2 have a look at CHANGES.txt
 
 .. Note::
 
-   Migrating from older versions of CMFEditions: See notes at the end
-   of this document!
+   - Migrating from older versions of CMFEditions: See notes at the end
+     of this document!
+   - CMFEditions requires Zope 2.8.6 or higher! Really!
 
 
 Out Of The Box Experience
@@ -41,6 +42,7 @@ type:
 
 - enable or disable versioning
 - auto-versioning on save
+- auto-versioning on retrieve
 
 By default the contents of a folder is versioned independently of 
 the folder. This may be changed through the ZMI and for specific 
@@ -52,8 +54,6 @@ The current strategy is to save everything of the content item
 some of these information are filtered out. This policy may 
 completely be changed depending on specific needs (see modifiers 
 below). 
-
-This leeds us to the following topic: Extensibility.
 
 
 Extensibility
@@ -89,20 +89,20 @@ in mind. A handfull of tools are providing the whole functionality:
 Additional Documentation
 ========================
 
-A couple of presentations and ReSt documents may be found in the ``doc``
-folder of CMFEditions.
+A couple of presentations and ReSt documents may be found in 
+documentation package that has to be downloaded separately (or the 
+``doc`` folder of CMFEditions).
 
-The CMFEditions team also started adding `documentation to the download 
+The CMFEditions team also started adding `documentation in the download 
 area <http://plone.org/products/cmfeditions/documentation>` of plone.org.
-
-You're welcome to help out
+You're welcome to help out.
 
 
 Dependencies
 ============
 
 It is important to note that CMFEditions requires Zope 2.8.x or higher
-and Plone 2.1.2 and higher to be installed.
+and Plone 2.1.2 and higher to be installed plus some add on products.
 
 For details see DEPENDENCIES.txt
 
@@ -112,7 +112,7 @@ Migrating from Older Versions of CMFEditions
 
 We know there are problems when migrating from 1.0alpha3, 1.0alpha4 
 or trunk checkout from May 2006 and before.
-Pleas `contact us <mailto:collective-versioning@lists.sourceforge.net>` 
+Please `contact us <mailto:collective-versioning@lists.sourceforge.net>` 
 for assitance. We're interested in making migrations bullet proof.
 
 

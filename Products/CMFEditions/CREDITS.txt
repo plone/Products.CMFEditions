@@ -1,0 +1,37 @@
+===================
+CMFEditions Credits
+===================
+
+Contributors
+============
+
+Code and Templates
+------------------
+
+- Alec Mitchel (alecm)
+- Alberto Berti (azy)
+- Duncan Booth (duncan)
+- Francesco Ciriaci (ilbestio)
+- Gregoire Weber (gregweb)
+- Riccardo Lemmi (rlemmi)
+- Rob Miller (rafrombrc)
+- Sune Broendum Woeller (sunew)
+- Sylvain Thenault (syt)
+- Tomek Meka (tomek)
+- Varun Rastogi (varun)
+- Vincenzo Di Somma (vds)
+
+
+Translations
+------------
+
+- French: Godefroid Chapelle (godchap)
+- Polish: Piotr Furman
+- German: Gregoire Weber (gregweb)
+- Danish: Anton Stonor
+
+
+Sponsors
+========
+
+to be prepared for 1.0rc1 or 1.0final

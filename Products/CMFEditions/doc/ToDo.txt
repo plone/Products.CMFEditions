@@ -6,21 +6,6 @@ Notes, ToDos and Ideas
 Roadmap
 =======
 
-ToDo for 1.0beta1
------------------
-
-- also tag/branch and prepare a 1.0alpa4 release before merging
-- check which tracker issues to be solved in 1.0beta1
-- prepare release documentation
-  - addons: propose usage and download of diff in release description
-  - credits
-  - sponsors
-- merge with trunk before doing 1.0beta1
-- e-mail to list that no new features should be added and be taken care
-  with changes
-- send e-mails to translators
-
-
 ToDo for 1.0rc1
 ---------------
 
@@ -305,3 +290,13 @@ Done
 - update DEPENDENCIES.txt/CHANGES.txt/README.txt/CREDITS.txt
 - move this document to the doc folder
 - check changes on trunk and update CHANGES.txt
+- also tag/branch and prepare a 1.0alpa4 release before merging
+- check which tracker issues to be solved in 1.0beta1
+- merge with trunk before doing 1.0beta1
+- prepare release documentation
+  - addons: propose usage and download of diff in release description
+  - credits
+  - sponsors
+- e-mail to list that no new features should be added and be taken care
+  with changes
+- send e-mails to translators
