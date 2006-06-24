@@ -5,7 +5,7 @@ CMFEditions Changes
 This file contains change information for the CMFEditions releases.
 
 
-Upcoming CMFEditions 1.0rc1
+Upcoming CMFEditions 1.0rc1 (unreleased)
 -------------------------------
 
 ToDo

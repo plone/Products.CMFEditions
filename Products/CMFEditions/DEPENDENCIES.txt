@@ -9,23 +9,24 @@ Plone 2.1 Series
 
 - `Zope 2.8.6 <http://www.zope.org/Products/Zope/2.8.6>`
 - `Plone 2.1.2 <http://plone.org/products/plone/releases/2.1>`
-- `ZopeVersionControl 0.3.2 
+- `ZopeVersionControl 0.3.2 (by Zope Corporation)
   <http://plone.org/products/cmfeditions/releases/1.0beta1>`
-- `CMFDiffTool XXX <>` (by XXX)
+- `CMFDiffTool 0.2-beta1 
+  <http://plone.org/products/cmfdifftool/releases/0.2/CMFDiffTooll-0.2-beta1.tar.gz>`
+  (by Brent Hendricks)
 
 .. Note::
 
    CMFEditions does **not** work with Zope 2.7 and older!
+   You need Zope 2.8.6 or higher!
+   
 
 Plone 2.5 Series
 ================
 
-(final not yet released at this writing)
-
 CMFEditions is expected to work with Plone 2.5 without any major 
 problems. But this isn't tested yet. You may help us with giving us
-feedback about your experiences and by reporting bugs.
-See README.txt.
+feedback about your experiences and by reporting bugs (see README.txt).
 
 
 ----

@@ -34,7 +34,7 @@ version related functionality:
 - save new version
 - preview an old version
 - retrieve an old version (replacing the current state in the tree)
-- diffing version (if XXX CMFDiffTool is installed)
+- diffing version (if CMFDiffTool is installed)
 
 A content panel allows configuring the versioning poliicy by content 
 type:
