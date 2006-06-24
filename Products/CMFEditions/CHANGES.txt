@@ -5,13 +5,13 @@ CMFEditons Changes
 This file contains change information for the CMFEditions releases.
 
 
-Upcoming CMFEditions 1.0beta1 (2006-06-XX)
----------------------------------
+CMFEditions 1.0alpha4 (2006-06-24)
+----------------------------------
 
 Bugs fixed
 
-- fixed bug with AT references causing ref catalog having been inconsistent
-  [sunew]
+- fixed bug with AT references causing ref catalog having been 
+  inconsistent [sunew]
 
 
 Features added
