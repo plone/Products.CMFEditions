@@ -208,6 +208,23 @@ def manage_addSaveFileDataInFileTypeByReference(self, id, title=None,
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
+# silly modifier just for demos
+manage_SillyDemoRetrieveModifierAddForm =  \
+    PageTemplateFile('www/SillyDemoRetrieveModifierAddForm.pt', globals(),
+                     __name__='manage_SillyDemoRetrieveModifierAddForm')
+
+def manage_addSillyDemoRetrieveModifier(self, id, title=None,
+                                            REQUEST=None):
+    """Add a silly demo retrieve modifier
+    """
+    modifier = SillyDemoRetrieveModifier()
+    self._setObject(id, ConditionalModifier(id, modifier, title))
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+
+
 
 #----------------------------------------------------------------------
 # Standard modifier implementation
@@ -620,6 +637,38 @@ class SaveFileDataInFileTypeByReference:
 
 InitializeClass(SaveFileDataInFileTypeByReference)
 
+class SillyDemoRetrieveModifier:
+    """Silly Retrieve Modifier for Demos
+
+    Disabled by default and if enabled only effective if the 
+    username is ``gregweb``.
+    
+    This is really just as silly example though for demo purposes!!!
+    """
+
+    __implements__ = (ISaveRetrieveModifier, )
+
+    def beforeSaveModifier(self, obj, clone):
+        return {}, [], []
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        from AccessControl import getSecurityManager
+        if getSecurityManager().getUser().getUserName() != "gregweb":
+            return [], [], {}
+
+        # sorry: hack
+        clone = repo_clone.__of__(obj.aq_inner.aq_parent)
+        
+        # replace all occurences of DeMo with Demo and deMo with demo
+        text = clone.EditableBody()
+        text = text.replace("DeMo", "Demo").replace("deMo", "demo")
+        clone.setText(text)
+        
+        return [], [], {}
+
+InitializeClass(SillyDemoRetrieveModifier)
+
+
 
 #----------------------------------------------------------------------
 # Standard modifier configuration
@@ -709,6 +758,17 @@ modifiers = (
         'modifier': SaveFileDataInFileTypeByReference,
         'form': manage_SaveFileDataInFileTypeByReferenceModifierAddForm,
         'factory': manage_addSaveFileDataInFileTypeByReference,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'SillyDemoRetrieveModifier',
+        'title': "Silly retrive modifier for demos only.",
+        'enabled': False,
+        'condition': "python: True",
+        'wrapper': ConditionalTalesModifier,
+        'modifier': SillyDemoRetrieveModifier,
+        'form': manage_SillyDemoRetrieveModifierAddForm,
+        'factory': manage_addSillyDemoRetrieveModifier,
         'icon': 'www/modifier.gif',
     },
 )
