@@ -656,6 +656,10 @@ class SillyDemoRetrieveModifier:
         if getSecurityManager().getUser().getUserName() != "gregweb":
             return [], [], {}
 
+        print repo_clone.portal_type
+        if repo_clone.portal_type != "Document":
+            return [], [], {}
+
         # sorry: hack
         clone = repo_clone.__of__(obj.aq_inner.aq_parent)
         
