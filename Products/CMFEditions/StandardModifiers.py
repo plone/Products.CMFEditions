@@ -655,12 +655,7 @@ class SillyDemoRetrieveModifier:
         from AccessControl import getSecurityManager
         if getSecurityManager().getUser().getUserName() != "gregweb":
             return [], [], {}
-            
-        print repo_clone.portal_type
-        if repo_clone.portal_type != "Document":
-            return [], [], {}
 
-        print repo_clone.portal_type
         if repo_clone.portal_type != "Document":
             return [], [], {}
 
