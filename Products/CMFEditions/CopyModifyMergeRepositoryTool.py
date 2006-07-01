@@ -246,6 +246,14 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         return dict(self._version_policy_mapping)
 
     def _callPolicyHook(self, action, policy_id, *args, **kw):
+        # in 1.0alpha3 and earlier ``version_on_revert`` was 
+        # ``version_on_rollback``. Convert to new name.
+        if policy_id == "version_on_revert":
+            if "version_on_rollback" in self._policy_defs:
+                value = self._policy_defs["version_on_rollback"]
+                self._policy_defs["version_on_revert"] = value
+                del self._policy_defs["version_on_rollback"]
+        
         hook = getattr(self._policy_defs[policy_id], HOOKS[action], None)
         if hook is not None and callable(hook):
             portal = getToolByName(self, 'portal_url').getPortalObject()
