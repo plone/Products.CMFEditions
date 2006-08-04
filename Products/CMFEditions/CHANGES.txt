@@ -15,9 +15,13 @@ ToDo
   below. Affected translations: fr, da, pl)
 - Fix outstanding failing tests
 - Some complex integration test with deleted version. (purge support)
-- fix bugs scheduled for 1.0beta1: #1, #2
 - allow adding test hierarchy only if in debug mode
 - allow migration in debug mode only
+- fix issue #28
+- fix issue #25
+- fix issue #19
+- fix issue #17
+- fix issue #22
 
 47. Retrieving an old version of an object with a different id shall retain
     the current id. What about the children ids when recursing into?
