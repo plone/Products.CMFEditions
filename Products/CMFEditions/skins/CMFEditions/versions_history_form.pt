@@ -30,13 +30,13 @@
         tal:attributes="action string:$here_url/versions_history">
 
         <table id="sortable"
-                class="listing"
-                summary="Content history"
-                cellpadding="0" cellspacing="0"
-                >
+            class="listing"
+            summary="Content history"
+            cellpadding="0" cellspacing="0"
+            tal:define="current python:context.checkUpToDate(history)"
+            >
 
             <thead>
-
                 <tr>
                   <th><tal:title i18n:translate="listingheader_key"
                       >Version</tal:title></th>
@@ -52,9 +52,60 @@
             </thead>
 
             <tbody>
+                <tr class="navTreeCurrentItem"
+                    tal:define="isModified current/isModified;
+                                reverted_vid current/reverted_vid;
+                                isReverted current/isReverted"
+                    tal:condition="isModified">
+                  <td tal:define="id current/version_id;">
+                    <span tal:replace="id">1</span>
+                    <a href="#"
+                       class="version-table-version"
+                       tal:attributes="href here_url"
+                       i18n:translate="label_wcopy_version_link">(working copy)</a>
+                  </td>
+                  <td>
+                    <span tal:replace="here/Creator">user</span>
+                  </td>
+                  <td>
+                    <span tal:replace="python:here.toLocalizedTime(here.ModificationDate(),long_format=1)">2004/10/21 03:15 PM</span>
+                  </td>
+                  <td>
+                    <i tal:condition="python:isModified is None">
+                      not yet saved
+                    </i>
+                    <i tal:condition="python:isModified is not None">
+                      <span tal:condition="isReverted" tal:omit-tag="">
+                        modification from reverted version
+                        <span tal:replace="reverted_vid">13</span>
+                      </span>
+                      <span tal:condition="not:isReverted" tal:omit-tag="">
+                        modification of previous version
+                      </span>
+                    </i>
+                  </td>
+                  <td>
+                    <ul>
+                        <li condition="exists:here/portal_diff">
+                            <a href=""
+                               style="text-decoration: none"
+                               tal:attributes="href string:$here_url/version_diff?version_id1=current&version_id2=${reverted_vid}">
+                              <span tal:condition="isReverted">
+                                Diff to version 
+                                <span tal:replace="reverted_vid">
+                                </span>
+                              </span>
+                              <span tal:condition="not:isReverted">
+                                Diff to previous version 
+                              </span>
+                            </a>
+                        </li>
+                    </ul>
+                  </td>
+                </tr>
                 <tal:block repeat="vdata history">
-                <tr tal:define="id string:${vdata/version_id};
-                                current python:pr.isUpToDate(here,id);">
+                <tr tal:define="id string:${vdata/version_id};"
+                    tal:attributes="class python:not current['isModified'] and current['version_id']==vdata.version_id and 'navTreeCurrentItem' or None">
                   <td>
                     <span tal:content="id">1</span>
                     <a href="#"
