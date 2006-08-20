@@ -6,21 +6,26 @@
 ##bind subpath=traverse_subpath
 ##title=
 ##parameters=vdata
-from zLOG import LOG, INFO
+from Products.CMFPlone.utils import safe_hasattr
 
 # We need to get the view appropriate for the object in the history, not
 # the current object, which may differ due to some migration.
 type_info = context.portal_types.getTypeInfo(vdata.object)
 
 # build the name of special versions views
-versionPreviewMethodName = "version_%s" % type_info.getViewMethod(context)
+if safe_hasattr(type_info, 'getViewMethod'):
+    # Should use IBrowserDefault.getLayout ?
+    def_method_name = type_info.getViewMethod(context)
+else:
+    def_method_name = type_info.getActionInfo('object/view')['url'].split('/')[-1] or getattr(type_info, 'default_view', 'view')
+versionPreviewMethodName = 'version_%s'%def_method_name
 versionPreviewTemplate = getattr(context, versionPreviewMethodName, None)
 
 # check if a special version view exists
 if getattr(versionPreviewTemplate, 'macros', None) is None:
-    # use the plones default view template
-    # XXX This is a misuse of immediate view, also this needs to optionally
-    # support the new plone 2.1 default view machanisms.
-    versionPreviewTemplate = context.restrictedTraverse(context.immediate_view)
+    # Use the Plone's default view template
+    
+    versionPreviewTemplate = context.restrictedTraverse(def_method_name)
+    context.plone_log('%s %s'%(def_method_name, versionPreviewTemplate))
 
 return versionPreviewTemplate.macros['main']
