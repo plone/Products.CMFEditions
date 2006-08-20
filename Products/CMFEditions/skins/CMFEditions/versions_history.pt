@@ -2,10 +2,11 @@
       metal:define-macro="versions_history"
       i18n:domain="cmfeditions">
 <tal:history      tal:define="pr nocall:here/portal_repository;
-                  history python:pr.getHistory(here, countPurged=False)"
+                              history python:pr.getHistory(here, countPurged=False);
+                              revisions python:len(history)"
                   tal:condition="python: history and pr.isVersionable(context)">
       <dl id="versions" class="collapsible inline collapsedOnLoad">
-        <dt class="collapsibleHeader" i18n:translate="label_versions">Versions</dt>
+        <dt class="collapsibleHeader" i18n:translate="label_versions">Recent Versions</dt>
         <dd class="collapsibleContent">
 
         <table class="listing nosort" summary="Versions History"
@@ -19,7 +20,7 @@
             <th i18n:translate="listingheader_comment">Comment</th>
           </tr>
 
-          <metal:block tal:repeat="vdata history">
+          <metal:block tal:repeat="vdata python:[history[i] for i in range(revisions > 5 and 5 or revisions)]">
             <tr tal:define="odd repeat/vdata/odd;
                             id string:${vdata/version_id};"
                 tal:attributes="class python:test(odd, 'even', 'odd')">
