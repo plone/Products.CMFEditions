@@ -26,6 +26,5 @@ if getattr(versionPreviewTemplate, 'macros', None) is None:
     # Use the Plone's default view template
     
     versionPreviewTemplate = context.restrictedTraverse(def_method_name)
-    context.plone_log('%s %s'%(def_method_name, versionPreviewTemplate))
 
 return versionPreviewTemplate.macros['main']
