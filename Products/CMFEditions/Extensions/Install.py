@@ -108,6 +108,11 @@ def renameTool(portal, old_id, new_id):
     tool = getToolByName(portal, old_id)
     # just give it the portals connection if none available
     # XXX check if necessary also for non unit test installs
+    # Trigger a savepoint to allow for the rename, in case the
+    # rename happens during the same transaction as the tool
+    # creation
+    import transaction
+    transaction.savepoint(optimistic=True)
     saved_jar = tool._p_jar
     if saved_jar is None:
         tool._p_jar = portal._p_jar
