@@ -21,16 +21,14 @@
                    base_page_url string:${request/ACTUAL_URL}?version_id1=${id1}&amp;version_id2=${id2}">
 
     <h1 tal:content="here/title_or_id" />
-
-    <h3 tal:condition="python:id1=='current'">Changes since version <span tal:replace="id2"/></h3>
-    <h3 tal:condition="python:id2!='current'">Changes from version <span tal:replace="string:${id2} to version ${id1}"/></h3>
-    <em tal:condition="diffs/same">No changes</em>
+    <div>
+    <div metal:use-macro="here/diff_legend/macros/diff_legend" />
+    <h3 class="diff-head" tal:condition="python:id1=='current'">Changes since version <span tal:replace="id2"/></h3>
+    <h3 class="diff-head" tal:condition="python:id1!='current'">Changes from version <span tal:replace="string:${id2} to version ${id1}"/></h3>
     <form id="diffs"
           action="#"
           tal:condition="not:diffs/same" tal:repeat="d diffs/getDiffs">
-      <tal:legend condition="repeat/d/start">
-        <div metal:use-macro="here/diff_legend/macros/diff_legend" />
-      </tal:legend>
+      <em tal:condition="diffs/same">No changes</em>
       <div class="field"
            tal:condition="not:d/same"
            tal:define="unified exists:d/unified_diff;
@@ -79,6 +77,7 @@
         </tal:nodiff>
       </div>
     </form>
+    </div>
 
     <tal:block tal:condition="diffs/recursive">
     <h2>Changed files</h2>

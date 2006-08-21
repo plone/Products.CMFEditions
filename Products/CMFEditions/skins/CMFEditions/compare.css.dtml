@@ -10,34 +10,52 @@
 
 /* CSS for htmldiff.py inline diff view */
 
-/* FIXME this could be better */
-.diff-legend {
+/* BBB: this could be better */
+
+.diff-head {
+    padding-bottom: 1em
+}
+
+.diff-legend-label {
+    border-style: solid;
+    border-width: 1px;
+    text-align: center
+}
+
+#diff-legend {
     position: relative;
+}
+
+#diff-table {
+    float: right;
+    width: 22.5em;
     text-align: left;
-    width: 13%;
-    left: 87%;
-    top-padding: 0 px;
-    bottom-padding: 0 px;
-    top-margin: 0 px;
-    bottom-margin: 0 px;
-    font-size: 75%;
+    padding: 0px;
+    margin: 0px;
+    font-size: 85%;
 }
 
 .delete {
     background-color: #ffaaaa;
+    padding: 0px 2px 0px 2px;
 }
 
 .insert {
     background-color: #aaffaa;
+    padding: 0px 2px 0px 2px;
 }
 
 .tagInsert {
     background-color: #007700;
+    font-weight: bold;
+    padding: 0px 2px 0px 2px;
     color: #ffffff
 }
 
 .tagDelete {
     background-color: #770000;
+    font-weight: bold;
+    padding: 0px 2px 0px 2px;
     color: #ffffff
 }
 
