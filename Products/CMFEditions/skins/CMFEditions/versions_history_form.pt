@@ -80,7 +80,8 @@
                         <span tal:replace="reverted_vid">13</span>
                       </span>
                       <span tal:condition="not:isReverted" tal:omit-tag="">
-                        modification of previous version
+                        reverted to version
+                        <span tal:replace="reverted_vid">13</span>
                       </span>
                     </i>
                   </td>
