@@ -44,6 +44,13 @@ ToDo
     
     This is the wrong place. A modifier shall do that.
 
+CMFEditions (SVN)
+-----------------
+
+Bugs fixed
+
+- Fix OMInsideChildrensModifier InitializeClass [encolpe]
+
 
 CMFEditions 1.0beta1 (2006-06-24)
 ---------------------------------

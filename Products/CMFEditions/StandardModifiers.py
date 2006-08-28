@@ -402,7 +402,7 @@ class OMInsideChildrensModifier(OMBaseModifier):
         ref_names = self._getAttributeNamesHandlingSubObjects(obj, repo_clone)
         return refs_to_be_deleted, ref_names, {}
 
-InitializeClass(OMOutsideChildrensModifier)
+InitializeClass(OMInsideChildrensModifier)
 
 class OMSubObjectAdapter:
     """Adapter to an object manager children.
