@@ -18,6 +18,8 @@ ToDo
 
 Internal Changes
 
+- Two minor updates for CMF 2.1 compatibility. [hannosch]
+
 - Use a GenericSetup Extension profile for installation instead of an external
   method. [hannosch]
 

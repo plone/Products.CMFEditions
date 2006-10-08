@@ -25,6 +25,8 @@ Provides support for accessing unique ids on content object.
 $Id: UniqueIdHandlerTool.py,v 1.2 2005/01/06 14:25:44 gregweb Exp $
 """
 
+from zope.interface import implements
+
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
 
@@ -42,11 +44,8 @@ UID_ATTRIBUTE_NAME = 'cmf_uid'
 class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     __doc__ = __doc__ # copy from module
 
-    __implements__ = (
-        IUniqueIdHandler,
-        IUniqueIdBrainQuery,
-        SimpleItem.__implements__,
-    )
+    implements(IUniqueIdHandler, IUniqueIdBrainQuery)
+    __implements__ = (SimpleItem.__implements__,)
 
     id = 'portal_uidhandler'
     alternative_id = "portal_editions_uidhandler"
