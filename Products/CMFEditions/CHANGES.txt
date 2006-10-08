@@ -4,9 +4,32 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+CMFEditions 1.1 (SVN)
+---------------------
+
+Internal Changes
+
+- Updated dependency information for Plone 3.0 inclusion. [hannosch]
+
+CMFEditions 1.0 (SVN)
+---------------------
+
+Bugs fixed
+
+- Fixed OMInsideChildrensModifier InitializeClass. [encolpe]
+
+Internal Changes
+
+- Replaced usage of zLOG with Python's logging framework. [hannosch]
+
+- Removed lots of unused import statements, found by pyflakes. [hannosch]
+
+- Removed BBB code for old transaction handling. [hannosch]
+
+- Removed some BBB code for ZClasses and CMF 1.4. [hannosch]
 
 Upcoming CMFEditions 1.0rc1 (unreleased)
--------------------------------
+----------------------------------------
 
 ToDo
 
@@ -43,24 +66,6 @@ ToDo
         277                 #parent._setObject(original_id, obj, set_owner=0)
     
     This is the wrong place. A modifier shall do that.
-
-CMFEditions (SVN)
------------------
-
-Bugs fixed
-
-- Fixed OMInsideChildrensModifier InitializeClass. [encolpe]
-
-Internal Changes
-
-- Replaced usage of zLOG with Python's logging framework. [hannosch]
-
-- Removed lots of unused import statements, found by pyflakes. [hannosch]
-
-- Removed BBB code for old transaction handling. [hannosch]
-
-- Removed some BBB code for ZClasses and CMF 1.4. [hannosch]
-
 
 CMFEditions 1.0beta1 (2006-06-24)
 ---------------------------------

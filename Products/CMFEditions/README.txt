@@ -6,64 +6,55 @@ CMFEditions
 README
 ------
 
-CMFEditions adds versioning to Plone.
+CMFEditions provides versioning in Plone.
 
-- It works out of the box with a stock Plone site.
+- It works out of the box.
 - It's higly extensible for specific use cases.
-
-After a long alpha phase and already working in some productive sites 
-this is the first beta release of CMFEditions. For a detailed list of
-changes since the 1.0alpha2 have a look at CHANGES.txt
 
 .. Note::
 
    - Migrating from older versions of CMFEditions: See notes at the end
      of this document!
-   - CMFEditions requires Zope 2.8.6 or higher! Really!
 
 
 Out Of The Box Experience
 =========================
 
-Versionable content items edit views now allows saving a version 
-on save (automaticaly or manualy). The version history may be 
-accessed quickly from the view view.
+Versionable content items edit views now allows saving a version on save
+(automatically or manually). The version history may be accessed quickly from
+the view view.
 
-Versionable content types also have an additional tab with 
-version related functionality:
+Versionable content types also have an additional tab with version related
+functionality:
 
 - save new version
 - preview an old version
 - retrieve an old version (replacing the current state in the tree)
-- diffing version (if CMFDiffTool is installed)
+- diffing versions
 
-A content panel allows configuring the versioning poliicy by content 
-type:
+A content panel allows configuring the versioning policy by content type:
 
 - enable or disable versioning
 - auto-versioning on save
 - auto-versioning on retrieve
 
-By default the contents of a folder is versioned independently of 
-the folder. This may be changed through the ZMI and for specific 
-cases on python level. Basic support for Archetypes references is
-built in.
+By default the contents of a folder is versioned independently of the folder.
+This may be changed through the ZMI and for specific cases on python level.
+Basic support for Archetypes references is built in.
 
-The current strategy is to save everything of the content item 
-(incl. security information, workflow state, etc.). On retrieve
-some of these information are filtered out. This policy may 
-completely be changed depending on specific needs (see modifiers 
-below). 
-
+The current strategy is to save everything of the content item (incl. security
+information, workflow state, etc.). On retrieve some of these information are
+filtered out. This policy may completely be changed depending on specific needs
+(see modifiers below). 
 
 Extensibility
 =============
 
-CMFEditions from the beginning was developed with extensibility 
-in mind. A handfull of tools are providing the whole functionality:
+CMFEditions was from the beginning developed with extensibility in mind.
+A handful of tools provide the whole functionality:
 
 - repository layer: This is the public main API. The repository layer 
-  cares about recursive storing and retreiving of content items from/to
+  cares about recursive storing and retrieving of content items from/to
   Zope 2's Object File System (OFS).
 - archivist layer: It knows *how to clone* content items. The 
   archivist "is Mr. pickle".
@@ -82,8 +73,8 @@ in mind. A handfull of tools are providing the whole functionality:
   The current implementation may be configured to only hold the n 
   current versions by purging the older versions from the repository.
   This functionality is by default disabled. It may be disabled through 
-  the ZMI. You shoudl take care when you're saveing objects with a lot 
-  of interrelations. Puriging functionality is quite new!
+  the ZMI. You should take care when you're saving objects with a lot 
+  of interrelations. Purging functionality is quite new!
 
 
 Additional Documentation
@@ -101,10 +92,8 @@ You're welcome to help out.
 Dependencies
 ============
 
-It is important to note that CMFEditions requires Zope 2.8.x or higher
-and Plone 2.1.2 and higher to be installed plus some add on products.
-
-For details see DEPENDENCIES.txt
+CMFEditions is part of the Plone distribution and all dependencies are already
+included. Please refer to the dependency information of Plone for any details.
 
 
 Migrating from Older Versions of CMFEditions
@@ -113,7 +102,7 @@ Migrating from Older Versions of CMFEditions
 We know there are problems when migrating from 1.0alpha3, 1.0alpha4 
 or trunk checkout from May 2006 and before.
 Please `contact us <mailto:collective-versioning@lists.sourceforge.net>` 
-for assitance. We're interested in making migrations bullet proof.
+for assistance. We're interested in making migrations bullet proof.
 
 
 Feedback
