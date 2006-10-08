@@ -26,7 +26,6 @@
 $Id: StandardModifiers.py,v 1.13 2005/06/26 13:28:36 gregweb Exp $
 """
 
-from Persistence import Persistent
 from Globals import InitializeClass
 
 from Acquisition import aq_base

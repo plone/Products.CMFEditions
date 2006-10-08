@@ -32,14 +32,6 @@ if __name__ == '__main__':
 import transaction
 from Testing import ZopeTestCase
 
-from Interface.Verify import verifyObject
-from Acquisition import aq_base
-
-from OFS.ObjectManager import UNIQUE, REPLACEABLE
-
-from Products.CMFEditions.interfaces.IRepository \
-     import ICopyModifyMergeRepository
-
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions.tests import installProduct
 

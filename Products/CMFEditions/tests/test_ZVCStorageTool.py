@@ -32,23 +32,15 @@ if __name__ == '__main__':
 from Testing import ZopeTestCase
 
 from Interface.Verify import verifyObject
-from Acquisition import aq_base
 
-from OFS.SimpleItem import SimpleItem
 from OFS.ObjectManager import ObjectManager
 
-from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IStorage import IStorage
 from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 
-from Products.CMFEditions import UniqueIdHandlerTool
-from Products.CMFEditions import ModifierRegistryTool
-from Products.CMFEditions import ArchivistTool
 from Products.CMFEditions.ArchivistTool import ObjectData
-from Products.CMFEditions import ZVCStorageTool
-from Products.CMFEditions import CopyModifyMergeRepositoryTool
 from DummyTools import MemoryStorage
 from DummyTools import Dummy as Dummy
 from DummyTools import notifyModified

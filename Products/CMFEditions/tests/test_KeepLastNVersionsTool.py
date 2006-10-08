@@ -31,12 +31,9 @@ if __name__ == '__main__':
 from Testing import ZopeTestCase
 
 from Interface.Verify import verifyObject
-from Acquisition import aq_base
 
-from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
 
-from Products.CMFEditions import KeepLastNVersionsTool
 from DummyTools import PurgePolicyTestDummyStorage
 from DummyTools import DummyData, RemovedData
 

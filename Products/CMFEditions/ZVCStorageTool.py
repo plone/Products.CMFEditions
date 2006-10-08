@@ -24,8 +24,6 @@ $Id: ZVCStorageTool.py,v 1.18 2005/03/11 11:05:12 varun-rastogi Exp $
 """
 __version__ = "$Revision: 1.18 $"
 
-import traceback
-import sys
 import time
 import types
 from StringIO import StringIO
@@ -37,14 +35,13 @@ from Globals import InitializeClass
 from BTrees.OOBTree import OOBTree
 from BTrees.IOBTree import IOBTree
 from Persistence import Persistent
-from AccessControl import ClassSecurityInfo, getSecurityManager
+from AccessControl import ClassSecurityInfo
 
 from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
-from Products.CMFCore.interfaces import IOpaqueItems
 from Products.CMFCore.permissions import ManagePortal
 
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
@@ -492,7 +489,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         if len(entries) != 1:
             zLOG.LOG("CMFEditions ASSERT:", zLOG.INFO,
                      "Uups, an object has been stored %s times with the same "
-                     "history '%s'!!!" % (len(entry), zvc_selector))
+                     "history '%s'!!!" % (len(entries), zvc_selector))
         
         return entries[0]
 

@@ -27,7 +27,6 @@ import random
 
 from Persistence import Persistent
 from Acquisition import aq_base
-from OFS.CopySupport import CopySource
 from Products.CMFCore.utils import getToolByName
 
 STUB_OBJECT_PREFIX = '_CMFEditionsTempId'

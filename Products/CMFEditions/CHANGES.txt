@@ -53,6 +53,8 @@ Bugs fixed
 
 Internal Changes
 
+- Removed lots of unused import statements, found by pyflakes. [hannosch]
+
 - Removed BBB code for old transaction handling. [hannosch]
 
 - Removed some BBB code for ZClasses and CMF 1.4. [hannosch]

@@ -24,23 +24,15 @@ $Id: ModifierRegistryTool.py,v 1.17 2005/06/24 11:42:01 gregweb Exp $
 """
 __version__ = "$Revision: 1.17 $"
 
-import os, sys
-from StringIO import StringIO
-import traceback
-import re
-
-from Interface.Verify import verifyObject
 from Globals import InitializeClass
 from Missing import MV
 
 from Acquisition import aq_base
-from AccessControl import ClassSecurityInfo, getSecurityManager
-from ZODB.PersistentList import PersistentList
+from AccessControl import ClassSecurityInfo
 from OFS.OrderedFolder import OrderedFolder
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.permissions import ManagePortal
-from Products.CMFCore.Expression import Expression
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.utilities import KwAsAttributes
@@ -50,7 +42,6 @@ from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.interfaces.IModifier import IModifierRegistrySet
 from Products.CMFEditions.interfaces.IModifier import IModifierRegistryQuery
-from Products.CMFEditions.interfaces.IModifier import IBulkEditableModifierRegistry
 from Products.CMFEditions.interfaces.IModifier import IConditionalModifier
 from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
 

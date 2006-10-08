@@ -2,14 +2,13 @@ from Acquisition import aq_base
 from copy import deepcopy
 from StringIO import StringIO
 from OFS.SimpleItem import SimpleItem
-from OFS.CopySupport import CopySource
 from Products.CMFDefault.DublinCore import DefaultDublinCoreImpl
 from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.ArchivistTool import ObjectData
 from Products.CMFEditions.ArchivistTool import PreparedObject
 from Products.CMFEditions.ArchivistTool import AttributeAdapter
 from Products.CMFEditions.ArchivistTool import VersionData
-from Products.CMFEditions.interfaces.IArchivist import IArchivist
+from Products.CMFEditions.interfaces.IArchivist import ArchivistError
 from Products.CMFEditions.interfaces.IStorage import IStreamableReference
 from Products.CMFEditions.interfaces.IStorage import IStorage
 from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
@@ -18,7 +17,6 @@ from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFCore.utils import getToolByName
 from cPickle import Pickler, Unpickler
-from pickle import dumps, loads
 from DateTime import DateTime
 import types
 

@@ -23,30 +23,21 @@
 $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 """
 
-import os, sys
 import time
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler
-import traceback
-import re
-
-import zLOG
 
 from Globals import InitializeClass
 from Persistence import Persistent
 from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, getSecurityManager
-from ZODB.PersistentList import PersistentList
 from OFS.SimpleItem import SimpleItem
-from OFS.ObjectManager import ObjectManager
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
-from Products.CMFCore.interfaces import IOpaqueItems
 
 from Products.CMFEditions.utilities import KwAsAttributes
 from Products.CMFEditions.utilities import dereference
-from Products.CMFEditions.interfaces.IStorage import StorageError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
@@ -60,7 +51,6 @@ from Products.CMFEditions.interfaces.IArchivist import IVersionAwareReference
 from Products.CMFEditions.interfaces.IArchivist import IObjectData
 
 from Products.CMFEditions.interfaces.IArchivist import ArchivistError
-from Products.CMFEditions.interfaces.IArchivist import ArchivistRegisterError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistSaveError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredError

@@ -29,29 +29,18 @@ import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-import copy
-from StringIO import StringIO
-from cPickle import Pickler, Unpickler
-from pickle import dumps, loads
-
 import transaction
 from Testing import ZopeTestCase
 
 from Interface.Verify import verifyObject
-from Acquisition import aq_base
-
-from OFS.SimpleItem import SimpleItem
 
 from Products.CMFCore.utils import getToolByName
 
-from Products.CMFEditions.Extensions import Install
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
 from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
 from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
-from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionSupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData
-from Products.CMFEditions.interfaces.IArchivist import ArchivistError
 
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions.tests import installProduct

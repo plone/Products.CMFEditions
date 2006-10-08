@@ -31,9 +31,6 @@ import transaction
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from DateTime import DateTime
-from Acquisition import aq_base
-from DateTime import DateTime
 from Testing import ZopeTestCase
 from Products.PloneTestCase import PloneTestCase
 from Products.PloneTestCase.setup import PLONE21

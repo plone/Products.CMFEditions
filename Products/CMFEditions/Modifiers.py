@@ -23,7 +23,6 @@
 $Id: Modifiers.py,v 1.3 2005/06/09 13:07:28 duncanb Exp $
 """
 
-from Persistence import Persistent
 from Globals import InitializeClass
 from Acquisition import aq_base, aq_parent, aq_inner
 
@@ -34,7 +33,6 @@ from Products.PageTemplates.Expressions import getEngine
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.Expression import Expression
-from Products.CMFCore.permissions import ManagePortal
 
 from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
 from Products.CMFEditions.interfaces.IModifier import IConditionalModifier

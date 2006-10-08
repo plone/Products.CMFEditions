@@ -23,7 +23,7 @@
 $Id: $
 """
 
-from Interface import Interface, Attribute
+from Interface import Interface
 
 
 class IReferenceFactories(Interface):

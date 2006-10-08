@@ -24,13 +24,12 @@ $Id: __init__.py,v 1.17 2005/02/07 22:09:08 gregweb Exp $
 """
 __version__ = "$Revision: 1.17 $"
 
-import sys
 from Globals import package_home
 
 import patches
 
-from Products.CMFCore import utils, DirectoryView
-from Products.CMFCore.DirectoryView import registerFileExtension, registerDirectory
+from Products.CMFCore import utils
+from Products.CMFCore.DirectoryView import registerDirectory
 
 from Products.CMFEditions import UniqueIdHandlerTool
 from Products.CMFEditions import ModifierRegistryTool
@@ -58,8 +57,8 @@ tools = (
 # to set up CMFEditions in an existing CMF Site instance.
 product_globals = globals()
 
-DirectoryView.registerDirectory('skins', product_globals)
-DirectoryView.registerDirectory('skins/CMFEditions', product_globals)
+registerDirectory('skins', product_globals)
+registerDirectory('skins/CMFEditions', product_globals)
 
 def initialize(context):
     utils.ToolInit(meta_type='CMF Editions Tool', tools=tools,

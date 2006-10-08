@@ -1,19 +1,15 @@
 print 'Product FAQ installed'
 
-
 try:
     import CustomizationPolicy
 except ImportError:
     CustomizationPolicy=None
 
-from Globals import package_home
-from Products.CMFCore import utils, permissions, DirectoryView
-from Products.Archetypes.public import *
+from Products.CMFCore import utils, DirectoryView
+from Products.Archetypes.atapi import *
 from Products.Archetypes import listTypes
-from Products.Archetypes.utils import capitalize
 
-import os, os.path
-
+import os.path
 
 ADD_CONTENT_PERMISSION = '''Add FAQ content'''
 PROJECTNAME = "FAQ"
@@ -27,15 +23,9 @@ DirectoryView.registerDirectory('skins/faq', product_globals)
 def initialize(context):
     ##Import Types here to register them
 
-
-    import FAQ
-    import FAQQuestion
-
     content_types, constructors, ftis = process_types(
         listTypes(PROJECTNAME),
         PROJECTNAME)
-
-
 
     utils.ContentInit(
         PROJECTNAME + ' Content',
@@ -44,8 +34,6 @@ def initialize(context):
         extra_constructors = constructors,
         fti                = ftis,
         ).initialize(context)
-
-
 
     if CustomizationPolicy and hasattr(CustomizationPolicy,'register'):
         CustomizationPolicy.register(context)

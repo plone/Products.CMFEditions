@@ -24,14 +24,12 @@ $Id: $
 """
 
 from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo, getSecurityManager
+from AccessControl import ClassSecurityInfo
 
-from Acquisition import aq_parent, aq_inner, aq_base
-from ZODB.PersistentList import PersistentList
+from Acquisition import aq_parent, aq_inner
 from OFS.OrderedFolder import OrderedFolder
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
-from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.utilities import generateId

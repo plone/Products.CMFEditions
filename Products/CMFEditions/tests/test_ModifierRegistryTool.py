@@ -24,23 +24,17 @@ $Id: test_ModifierRegistryTool.py,v 1.12 2005/02/25 22:04:00 tomek1024 Exp $
 """
 
 import os, sys
-import time
 
 from pickle import dumps, loads, HIGHEST_PROTOCOL
 
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-try:
-    from Interface.Verify import verifyObject
-except ImportError:
-    # for Zope versions before 2.6.0
-    from Interface import objectImplements as verifyObject
+from Interface.Verify import verifyObject
 
 from Testing import ZopeTestCase
 
 from Acquisition import aq_base
-from OFS.ObjectManager import BadRequestException
 
 from Products.CMFCore.utils import getToolByName
 
@@ -49,8 +43,6 @@ from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import IModifierRegistryQuery
-from Products.CMFEditions.interfaces.IModifier \
-     import IBulkEditableModifierRegistry
 
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions.tests import installProduct

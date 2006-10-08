@@ -24,7 +24,6 @@
 $Id: test_ArchivistTool.py,v 1.10 2005/02/25 22:04:00 tomek1024 Exp $
 """
 
-import types
 import os, sys
 
 if __name__ == '__main__':
@@ -35,13 +34,8 @@ from Products.CMFEditions.tests import installProduct
 
 from Interface.Verify import verifyObject
 
-from Products.CMFCore.utils import getToolByName
-
-#from Products.CMFEditions.Extensions import Install
-from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
-from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
 from DummyTools import notifyModified
 

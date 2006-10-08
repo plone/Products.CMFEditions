@@ -26,7 +26,7 @@ __version__ = "$Revision$"
 
 
 from Globals import InitializeClass
-from AccessControl import ClassSecurityInfo, getSecurityManager
+from AccessControl import ClassSecurityInfo
 
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem

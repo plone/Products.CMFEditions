@@ -28,16 +28,13 @@ import time
 import transaction
 
 from Globals import InitializeClass
-from Persistence import Persistent
 from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem
-from OFS.ObjectManager import ObjectManager
 from BTrees.OOBTree import OOBTree
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
-from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.utilities import dereference, wrap
@@ -55,7 +52,6 @@ from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.CMFEditions.Permissions import PurgeVersion
 from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.CMFEditions.Permissions import RevertToPreviousVersions
-from Products.CMFEditions.Permissions import CheckoutToLocation
 from Products.CMFEditions.Permissions import ManageVersioningPolicies
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX

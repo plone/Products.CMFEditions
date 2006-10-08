@@ -25,12 +25,8 @@ Provides support for accessing unique ids on content object.
 $Id: UniqueIdHandlerTool.py,v 1.2 2005/01/06 14:25:44 gregweb Exp $
 """
 
-import Missing
-
-import zLOG
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
-from Acquisition import Implicit, aq_base
 
 from OFS.SimpleItem import SimpleItem
 

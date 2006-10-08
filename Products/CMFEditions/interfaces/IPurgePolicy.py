@@ -26,7 +26,7 @@ control over all versions from a resources history.
 $Id$
 """
 
-from Interface import Interface, Attribute
+from Interface import Interface
 
 
 class IPurgePolicy(Interface):

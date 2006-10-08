@@ -1,7 +1,6 @@
-from Products.CMFCore.utils import getToolByName,manage_addTool
+from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.DirectoryView import addDirectoryViews
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
-
 
 from Products.Archetypes.Extensions.utils import installTypes
 from Products.Archetypes import listTypes

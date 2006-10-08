@@ -28,8 +28,6 @@ from OFS.SimpleItem import SimpleItem
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IVersionPolicy import IVersionPolicy
 
-from Products.CMFEditions.Permissions import ManageVersioningPolicies
-
 
 class VersionPolicy(SimpleItem):
     """A simple class for storing version policy information"""
