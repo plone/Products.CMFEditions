@@ -34,12 +34,7 @@ from StringIO import StringIO
 from cPickle import Pickler, Unpickler
 from pickle import dumps, loads
 
-# BBB
-try:
-    import transaction
-except ImportError:
-    from Products.CMFEditions.bbb import transaction
-
+import transaction
 from Testing import ZopeTestCase
 
 from Interface.Verify import verifyObject
@@ -408,7 +403,7 @@ class TestRegressionTests(PloneTestCase.PloneTestCase):
         doc.text = 'text v1'
         portal_repository.applyVersionControl(doc, comment='save no 1')
         doc.text = 'text v2'
-        transaction.commit(1)
+        transaction.savepoint(optimistic=True)
         self.portal.manage_renameObject(doc.getId(), 'newdoc',)
         portal_repository.save(doc, comment='save no 2')
         portal_repository.revert(doc, 0)

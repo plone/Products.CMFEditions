@@ -6,11 +6,7 @@ import os, sys, time
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
-# BBB
-try:
-    import transaction
-except ImportError:
-    from Products.CMFEditions.bbb import transaction
+import transaction
 
 # Nastily patch Products to get FAQ accepted
 import Products

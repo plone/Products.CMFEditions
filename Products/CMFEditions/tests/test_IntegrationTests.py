@@ -27,14 +27,9 @@ $Id: test_IntegrationTests.py,v 1.15 2005/06/24 11:42:01 gregweb Exp $
 import os, sys
 
 if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))# BBB
+    execfile(os.path.join(sys.path[0], 'framework.py'))
 
-try:
-    import transaction
-except ImportError:
-    from Products.CMFEditions.bbb import transaction
-
-
+import transaction
 from Testing import ZopeTestCase
 
 from Interface.Verify import verifyObject
@@ -675,11 +670,11 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         portal_repo.applyVersionControl(fol, comment='first save')
         orig_uid = portal_historyidhandler.queryUid(doc1)
 
-        transaction.commit(1)
+        transaction.savepoint(optimistic=True)
         self.portal.manage_pasteObjects(fol.manage_cutObjects(ids=['doc1']))
         moved_doc = self.portal.doc1
         self.assertEqual(portal_historyidhandler.queryUid(moved_doc), orig_uid)
-        transaction.commit(1)
+        transaction.savepoint(optimistic=True)
 
         # retrieve should change the uid if it already exists
         retrieved_data = portal_repo.retrieve(fol, 0)
@@ -712,7 +707,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         portal_repo.applyVersionControl(doc1, comment='first save')
         portal_repo.applyVersionControl(doc2, comment='first save')
 
-        transaction.commit(1)
+        transaction.savepoint(optimistic=True)
         fol.manage_renameObjects(['doc1','doc2'],['doc1_renamed', 'doc1'])
 
         doc1 = fol.doc1_renamed
@@ -754,7 +749,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         portal_repo.applyVersionControl(fol, comment='first save')
 
         fol.manage_delObjects(['doc1'])
-        transaction.commit(1)
+        transaction.savepoint(optimistic=True)
         fol.manage_renameObjects(['doc2'],['doc1'])
 
         doc2 = fol.doc1
@@ -803,7 +798,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
         portal_repo.applyVersionControl(fol, comment='first save')
 
-        transaction.commit(1)
+        transaction.savepoint(optimistic=True)
         self.portal.manage_pasteObjects(fol.manage_cutObjects(['doc1']))
         fol.manage_renameObjects(['doc2'],['doc1'])
 

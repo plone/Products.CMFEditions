@@ -17,12 +17,6 @@ from Products.CMFEditions.interfaces.IRepository \
 from Products.PloneTestCase import PloneTestCase
 from Products.CMFEditions.tests import installProduct
 
-try:
-    from transaction import get_transaction
-except ImportError:
-    print "Are you using zope 2.7?"
-    pass
-
 PloneTestCase.setupPloneSite()
 ZopeTestCase.installProduct('CMFUid')
 ZopeTestCase.installProduct('CMFEditions')
