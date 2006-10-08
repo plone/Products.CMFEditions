@@ -36,7 +36,7 @@ from OFS.SimpleItem import SimpleItem
 
 from Products.CMFCore.utils import getToolByName, UniqueObject
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
-from Products.CMFCore.CMFCorePermissions import ManagePortal
+from Products.CMFCore.permissions import ManagePortal
 
 from Products.CMFUid.interfaces import IUniqueIdHandler
 from Products.CMFUid.interfaces import IUniqueIdBrainQuery

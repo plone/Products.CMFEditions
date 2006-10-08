@@ -29,7 +29,7 @@ from Globals import package_home
 
 import patches
 
-from Products.CMFCore import utils, CMFCorePermissions, DirectoryView
+from Products.CMFCore import utils, DirectoryView
 from Products.CMFCore.DirectoryView import registerFileExtension, registerDirectory
 
 from Products.CMFEditions import UniqueIdHandlerTool
@@ -54,10 +54,6 @@ tools = (
     KeepLastNVersionsTool.KeepLastNVersionsTool,
     )
 
-bases = tools
-
-z_bases = utils.initializeBasesPhase1(bases, sys.modules[ __name__ ])
-
 # This is used by a script (external method) that can be run
 # to set up CMFEditions in an existing CMF Site instance.
 product_globals = globals()
@@ -66,17 +62,8 @@ DirectoryView.registerDirectory('skins', product_globals)
 DirectoryView.registerDirectory('skins/CMFEditions', product_globals)
 
 def initialize(context):
-    utils.initializeBasesPhase2(z_bases, context)
-
-    # BBB: may be cleaned up when dropping CMF 1.4.x/Plone 2.0.x support
-    try:
-        utils.ToolInit(meta_type='CMF Editions Tool', tools=tools,
-                       icon='tool.gif').initialize(context)
-    except TypeError:
-        # CMF 1.4.x/Plone 2.0.x
-        utils.ToolInit(meta_type='CMF Editions Tool', tools=tools,
-                       product_name='CMFEditions', icon='tool.gif',
-                       ).initialize(context)
+    utils.ToolInit(meta_type='CMF Editions Tool', tools=tools,
+                   icon='tool.gif').initialize(context)
         
     # initialize standard modifiers to make them addable through the ZMI
     StandardModifiers.initialize(context)

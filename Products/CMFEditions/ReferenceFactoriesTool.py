@@ -31,7 +31,7 @@ from ZODB.PersistentList import PersistentList
 from OFS.OrderedFolder import OrderedFolder
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
-from Products.CMFCore.CMFCorePermissions import ManagePortal
+from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.utilities import generateId

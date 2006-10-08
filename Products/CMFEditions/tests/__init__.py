@@ -1,7 +1,5 @@
 """\
-Unit test package for CMFPlone
-
-To run all tests type 'python runalltests.py'
+Unit test package for CMFEditions
 """
 
 def installProduct(portal, name, optional=False):

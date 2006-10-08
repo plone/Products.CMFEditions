@@ -23,7 +23,7 @@
 $Id: Permissions.py,v 1.1 2005/02/13 11:52:58 gregweb Exp $
 """
 
-from Products.CMFCore.CMFCorePermissions import setDefaultRoles
+from Products.CMFCore.permissions import setDefaultRoles
 
 ApplyVersionControl = 'CMFEditions: Apply version control'
 setDefaultRoles(ApplyVersionControl, ('Manager',))

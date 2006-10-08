@@ -45,7 +45,7 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.interfaces import IOpaqueItems
-from Products.CMFCore.CMFCorePermissions import ManagePortal
+from Products.CMFCore.permissions import ManagePortal
 
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
 from Products.ZopeVersionControl.Utility import VersionControlError

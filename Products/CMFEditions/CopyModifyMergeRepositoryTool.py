@@ -37,7 +37,7 @@ from BTrees.OOBTree import OOBTree
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
-from Products.CMFCore.CMFCorePermissions import ModifyPortalContent
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.utilities import dereference, wrap

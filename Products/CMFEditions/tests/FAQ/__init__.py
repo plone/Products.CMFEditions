@@ -7,7 +7,7 @@ except ImportError:
     CustomizationPolicy=None
 
 from Globals import package_home
-from Products.CMFCore import utils, CMFCorePermissions, DirectoryView
+from Products.CMFCore import utils, permissions, DirectoryView
 from Products.Archetypes.public import *
 from Products.Archetypes import listTypes
 from Products.Archetypes.utils import capitalize

@@ -49,7 +49,11 @@ CMFEditions (SVN)
 
 Bugs fixed
 
-- Fix OMInsideChildrensModifier InitializeClass [encolpe]
+- Fixed OMInsideChildrensModifier InitializeClass. [encolpe]
+
+Internal Changes
+
+- Removed some BBB code for ZClasses and CMF 1.4. [hannosch]
 
 
 CMFEditions 1.0beta1 (2006-06-24)
