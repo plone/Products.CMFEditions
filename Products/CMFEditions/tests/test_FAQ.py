@@ -1,75 +1,17 @@
 # Tests which use the FAQ 'product' in this folder.
 # This is a folderish content type which also uses references.
 #
-import os, sys, time
-
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
-import transaction
-
 # Nastily patch Products to get FAQ accepted
+import os
 import Products
 Products.__path__.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.SecurityManagement import noSecurityManager
-from Testing import ZopeTestCase
 from Products.PloneTestCase import PloneTestCase
-from Products.PloneTestCase.setup import PLONE21
-from Products.CMFEditions.tests import installProduct
+
+PloneTestCase.installProduct('FAQ')
+PloneTestCase.setupPloneSite(products=('FAQ', ))
+
 from Products.CMFEditions import PACKAGE_HOME
-
-PloneTestCase.setupPloneSite()
-ZopeTestCase.installProduct('CMFUid')
-ZopeTestCase.installProduct('CMFEditions')
-
-ZopeTestCase.installProduct('Archetypes')
-ZopeTestCase.installProduct('PortalTransforms')
-ZopeTestCase.installProduct('MimetypesRegistry')
-ZopeTestCase.installProduct('ATContentTypes')
-ZopeTestCase.installProduct('FAQ')
-
-portal_owner = PloneTestCase.portal_owner
-portal_name = PloneTestCase.portal_name
-default_user = PloneTestCase.default_user
-
-types = {'image':'Image',
-         'document':'Document',
-         'file':'File',
-         'news':'News Item',
-         'folder':'Folder'}
-at_types = types.copy()
-cmf_types = types.copy()
-if not PLONE21:
-    for id in at_types.keys():
-        at_types[id] = 'AT'+types[id].replace(' ','')
-if PLONE21:
-    for id in cmf_types.keys():
-        cmf_types[id] = 'CMF '+types[id]
-
-def setupCMFEditions(app, portal_name, quiet):
-    portal = app[portal_name]
-    start = time.time()
-    if not quiet: ZopeTestCase._print('Adding CMFEditions ... ')
-    # Login as portal owner
-    user = app.acl_users.getUserById(portal_owner).__of__(app.acl_users)
-    newSecurityManager(None, user)
-    installProduct(portal, 'CMFEditions')
-    installProduct(portal, 'Archetypes', optional=True)
-    #if not hasattr(aq_base(portal), 'portal_transforms'):
-    installProduct(portal, 'PortalTransforms')
-    if not quiet: ZopeTestCase._print('Adding ATContentTypes ... ')
-    installProduct(portal, 'ATContentTypes')
-    installProduct(portal, 'FAQ')
-    # Log out
-    noSecurityManager()
-    transaction.commit()
-    if not quiet: ZopeTestCase._print('done (%.3fs)\n' % (time.time()-start,))
-
-
-ZopeTestCase.utils.appcall(setupCMFEditions, portal_name, quiet=0)
-
 
 class TestATContents(PloneTestCase.PloneTestCase):
 
@@ -181,8 +123,8 @@ class TestATContents(PloneTestCase.PloneTestCase):
             self.verifyQuestion(question, id+' v1')
 
     def createImage(self, id='image'):
-        self.folder.invokeFactory(at_types['image'], id=id)
-        img1 = open(os.path.join(PACKAGE_HOME, 'tests/img1.png'), 'rb').read()
+        self.folder.invokeFactory('Image', id=id)
+        img1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = getattr(self.folder, id)
@@ -244,7 +186,3 @@ def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(TestATContents))
     return suite
-
-
-if __name__ == '__main__':
-    framework()

@@ -24,44 +24,22 @@
 $Id: test_ZVCStorageTool.py,v 1.12 2005/02/24 21:53:44 tomek1024 Exp $
 """
 
-import os, sys
-
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
-from Testing import ZopeTestCase
+from Products.PloneTestCase import PloneTestCase
+PloneTestCase.setupPloneSite()
 
 from Interface.Verify import verifyObject
-
 from OFS.ObjectManager import ObjectManager
 
+from Products.CMFEditions.ArchivistTool import ObjectData
 from Products.CMFEditions.interfaces.IStorage import IStorage
 from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 
-from Products.CMFEditions.ArchivistTool import ObjectData
-from DummyTools import MemoryStorage
 from DummyTools import Dummy as Dummy
-from DummyTools import notifyModified
-
-from Products.PloneTestCase import PloneTestCase
-from Products.CMFEditions.tests import installProduct
-
 from DummyTools import DummyPurgePolicy
-
-PloneTestCase.setupPloneSite()
-ZopeTestCase.installProduct('CMFUid')
-ZopeTestCase.installProduct('CMFEditions')
-
-ZopeTestCase.installProduct('Archetypes')
-ZopeTestCase.installProduct('PortalTransforms')
-ZopeTestCase.installProduct('MimetypesRegistry')
-ZopeTestCase.installProduct('ATContentTypes')
-
-portal_owner = PloneTestCase.portal_owner
-portal_name = PloneTestCase.portal_name
-default_user = PloneTestCase.default_user
+from DummyTools import MemoryStorage
+from DummyTools import notifyModified
 
 class DummyOM(ObjectManager):
     pass
@@ -72,8 +50,7 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
-        # add the Editions Tool (this way we test the 'Install' script!)
-        installProduct(self.portal, 'CMFEditions')
+
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
@@ -453,12 +430,9 @@ class TestMemoryStorage(TestZVCStorageTool):
         tool = MemoryStorage()
         setattr(self.portal, tool.getId(), tool)
 
-if __name__ == '__main__':
-    framework()
-else:
-    from unittest import TestSuite, makeSuite
-    def test_suite():
-        suite = TestSuite()
-        suite.addTest(makeSuite(TestZVCStorageTool))
-        suite.addTest(makeSuite(TestMemoryStorage))
-        return suite
+from unittest import TestSuite, makeSuite
+def test_suite():
+    suite = TestSuite()
+    suite.addTest(makeSuite(TestZVCStorageTool))
+    suite.addTest(makeSuite(TestMemoryStorage))
+    return suite

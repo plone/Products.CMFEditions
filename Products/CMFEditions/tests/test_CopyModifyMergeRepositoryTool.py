@@ -24,16 +24,11 @@
 $Id: test_CopyModifyMergeRepositoryTool.py,v 1.17 2005/06/22 10:43:46 gregweb Exp $
 """
 
-import os, sys
-
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
+from Products.PloneTestCase import PloneTestCase
+PloneTestCase.setupPloneSite()
 
 import transaction
-from Testing import ZopeTestCase
-
 from Interface.Verify import verifyObject
-
 from Products.CMFCore.utils import getToolByName
 
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
@@ -41,9 +36,6 @@ from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
 from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData
-
-from Products.PloneTestCase import PloneTestCase
-from Products.CMFEditions.tests import installProduct
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.CMFEditions.VersionPolicies import ATVersionOnEditPolicy
 
@@ -64,14 +56,6 @@ class dummyPolicyWithHooks(VersionPolicy):
     def disablePolicyOnTypeHook(self, portal, p_type, out):
         out.append('disabled %s'%p_type)
 
-PloneTestCase.setupPloneSite()
-ZopeTestCase.installProduct('CMFUid')
-ZopeTestCase.installProduct('CMFEditions')
-
-portal_owner = PloneTestCase.portal_owner
-portal_name = PloneTestCase.portal_name
-default_user = PloneTestCase.default_user
-
 class TestCopyModifyMergeRepositoryToolBase(PloneTestCase.PloneTestCase):
 
     def afterSetUp(self):
@@ -84,7 +68,6 @@ class TestCopyModifyMergeRepositoryToolBase(PloneTestCase.PloneTestCase):
                                                 ['Manager'], '')
 
         # add test data
-        installProduct(self.portal, 'CMFEditions')
         self.portal.invokeFactory('Document', 'doc')
         self.portal.invokeFactory('Link', 'link')
         self.portal.invokeFactory('Folder', 'fol')
@@ -371,7 +354,6 @@ class TestRegressionTests(PloneTestCase.PloneTestCase):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
-        installProduct(self.portal, 'CMFEditions')
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
 
@@ -621,14 +603,11 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                                                      'success', None, None))
 
 
-if __name__ == '__main__':
-    framework()
-else:
-    from unittest import TestSuite, makeSuite
-    def test_suite():
-        suite = TestSuite()
-        suite.addTest(makeSuite(TestCopyModifyMergeRepositoryTool))
-        suite.addTest(makeSuite(TestRepositoryWithDummyArchivist))
-        suite.addTest(makeSuite(TestRegressionTests))
-        suite.addTest(makeSuite(TestPolicyVersioning))
-        return suite
+from unittest import TestSuite, makeSuite
+def test_suite():
+    suite = TestSuite()
+    suite.addTest(makeSuite(TestCopyModifyMergeRepositoryTool))
+    suite.addTest(makeSuite(TestRepositoryWithDummyArchivist))
+    suite.addTest(makeSuite(TestRegressionTests))
+    suite.addTest(makeSuite(TestPolicyVersioning))
+    return suite

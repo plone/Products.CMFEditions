@@ -24,38 +24,18 @@
 $Id: test_ArchivistTool.py,v 1.10 2005/02/25 22:04:00 tomek1024 Exp $
 """
 
-import os, sys
-
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-from Testing import ZopeTestCase
 from Products.PloneTestCase import PloneTestCase
-from Products.CMFEditions.tests import installProduct
+PloneTestCase.setupPloneSite()
 
 from Interface.Verify import verifyObject
 
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
 
-from DummyTools import notifyModified
-
-PloneTestCase.setupPloneSite()
-ZopeTestCase.installProduct('CMFUid')
-ZopeTestCase.installProduct('CMFEditions')
-
-ZopeTestCase.installProduct('Archetypes')
-ZopeTestCase.installProduct('PortalTransforms')
-ZopeTestCase.installProduct('MimetypesRegistry')
-ZopeTestCase.installProduct('ATContentTypes')
-
-portal_owner = PloneTestCase.portal_owner
-portal_name = PloneTestCase.portal_name
-default_user = PloneTestCase.default_user
-
-
 from DummyTools import DummyModifier
 from DummyTools import DummyHistoryIdHandler
 from DummyTools import MemoryStorage
+from DummyTools import notifyModified
 from DummyTools import FolderishContentObjectModifier
 
 
@@ -65,7 +45,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.setRoles(['Manager',])
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
-        installProduct(self.portal, 'CMFEditions')
         self.portal.invokeFactory('Document', 'doc')
         self.portal.invokeFactory('Folder', 'fol')
         self.portal.fol.invokeFactory('Document', 'doc1_inside')
@@ -371,12 +350,9 @@ class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):
        pass
 
 
-if __name__ == '__main__':
-    framework()
-else:
-    from unittest import TestSuite, makeSuite
-    def test_suite():
-        suite = TestSuite()
-        suite.addTest(makeSuite(TestArchivistToolMemoryStorage))
-        suite.addTest(makeSuite(TestArchivistToolZStorage))
-        return suite
+from unittest import TestSuite, makeSuite
+def test_suite():
+    suite = TestSuite()
+    suite.addTest(makeSuite(TestArchivistToolMemoryStorage))
+    suite.addTest(makeSuite(TestArchivistToolZStorage))
+    return suite

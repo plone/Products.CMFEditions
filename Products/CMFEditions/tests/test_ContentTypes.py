@@ -1,60 +1,10 @@
-import os, sys, time
+#
 
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
-import transaction
-
-from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.SecurityManagement import noSecurityManager
-from Testing import ZopeTestCase
 from Products.PloneTestCase import PloneTestCase
-from Products.CMFEditions import PACKAGE_HOME
-
-from Products.PloneTestCase.setup import PLONE21
-from Products.CMFEditions.tests import installProduct
-
-types = {'image':'Image',
-         'document':'Document',
-         'file':'File',
-         'news':'News Item',
-         'folder':'Folder'}
-if PLONE21:
-    for id in types.keys():
-        types[id] = 'CMF '+types[id]
-
 PloneTestCase.setupPloneSite()
-ZopeTestCase.installProduct('CMFUid')
-ZopeTestCase.installProduct('CMFEditions')
 
-ZopeTestCase.installProduct('Archetypes')
-ZopeTestCase.installProduct('PortalTransforms')
-ZopeTestCase.installProduct('MimetypesRegistry')
-
-portal_owner = PloneTestCase.portal_owner
-portal_name = PloneTestCase.portal_name
-default_user = PloneTestCase.default_user
-
-
-def setupCMFEditions(app, portal_name, quiet):
-    portal = app[portal_name]
-    start = time.time()
-    if not quiet: ZopeTestCase._print('Adding CMFEditions ... ')
-    # Login as portal owner
-    user = app.acl_users.getUserById(portal_owner).__of__(app.acl_users)
-    newSecurityManager(None, user)
-    installProduct(portal, 'CMFEditions')
-    installProduct(portal, 'Archetypes', optional=True)
-    installProduct(portal, 'PortalTransforms')
-    installProduct(portal, 'MimetypesRegistry', optional=True)
-    # Log out
-    noSecurityManager()
-    transaction.commit()
-    if not quiet: ZopeTestCase._print('done (%.3fs)\n' % (time.time()-start,))
-
-
-ZopeTestCase.utils.appcall(setupCMFEditions, portal_name, quiet=0)
-
+import os
+from Products.CMFEditions import PACKAGE_HOME
 
 class TestPloneContents(PloneTestCase.PloneTestCase):
 
@@ -64,12 +14,6 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         self.workflow = self.portal.portal_workflow
         self.portal_repository = self.portal.portal_repository
         self.portal_archivist = self.portal.portal_archivist
-        if PLONE21:
-            # Enable traditional CMF types in 2.1
-            p_types =self.portal.portal_types
-            for item in types.values():
-                fti = getattr(p_types, item)
-                fti.global_allow = 1
 
     def getPermissionsOfRole(self, role):
         perms = self.portal.permissionsOfRole(role)
@@ -92,7 +36,7 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         self.assertEqual(obj.Rights(), 'contentOK')
 
     def testDocument(self):
-        self.folder.invokeFactory(types['document'], id='doc')
+        self.folder.invokeFactory('Document', id='doc')
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = self.folder.doc
@@ -127,7 +71,7 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         self.metadata_test_one(content)
 
     def testNewsItem(self):
-        self.folder.invokeFactory(types['news'], id='news_one')
+        self.folder.invokeFactory('News Item', id='news_one')
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = self.folder.news_one
@@ -162,11 +106,11 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         self.metadata_test_one(content)
 
     def testImage(self):
-        self.folder.invokeFactory(types['image'], id='image')
+        self.folder.invokeFactory('Image', id='image')
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
-        img1 = open(os.path.join(PACKAGE_HOME, 'tests/img1.png'), 'rb').read()
-        img2 = open(os.path.join(PACKAGE_HOME, 'tests/img2.png'), 'rb').read()
+        img1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
+        img2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
         content = self.folder.image
         content.edit(file=img1)
         content.editMetadata(title='content',
@@ -199,9 +143,9 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         self.metadata_test_one(content)
 
     def testFile(self):
-        self.folder.invokeFactory(types['image'], id='file')
-        file1 = open(os.path.join(PACKAGE_HOME, 'tests/img1.png'), 'rb').read()
-        file2 = open(os.path.join(PACKAGE_HOME, 'tests/img2.png'), 'rb').read()
+        self.folder.invokeFactory('Image', id='file')
+        file1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
+        file2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = self.folder.file
@@ -236,7 +180,7 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         self.metadata_test_one(content)
 
     def testFolder(self):
-        self.folder.invokeFactory(types['image'], id='folder')
+        self.folder.invokeFactory('Image', id='folder')
         portal_repository = self.portal_repository
         portal_archivist = self.portal_archivist
         content = self.folder.folder
@@ -273,7 +217,3 @@ def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(TestPloneContents))
     return suite
-
-
-if __name__ == '__main__':
-    framework()

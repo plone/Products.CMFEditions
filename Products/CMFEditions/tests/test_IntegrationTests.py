@@ -24,29 +24,10 @@
 $Id: test_IntegrationTests.py,v 1.15 2005/06/24 11:42:01 gregweb Exp $
 """
 
-import os, sys
-
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
+from Products.PloneTestCase import PloneTestCase
+PloneTestCase.setupPloneSite()
 
 import transaction
-from Testing import ZopeTestCase
-
-from Products.PloneTestCase import PloneTestCase
-from Products.CMFEditions.tests import installProduct
-
-PloneTestCase.setupPloneSite()
-ZopeTestCase.installProduct('CMFUid')
-ZopeTestCase.installProduct('CMFEditions')
-
-ZopeTestCase.installProduct('Archetypes')
-ZopeTestCase.installProduct('PortalTransforms')
-ZopeTestCase.installProduct('MimetypesRegistry')
-ZopeTestCase.installProduct('ATContentTypes')
-
-portal_owner = PloneTestCase.portal_owner
-portal_name = PloneTestCase.portal_name
-default_user = PloneTestCase.default_user
 
 class TestIntegration(PloneTestCase.PloneTestCase):
 
@@ -54,7 +35,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
-        installProduct(self.portal, 'CMFEditions')
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
@@ -929,11 +909,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # the original uid exists
         self.failIf(portal_hidhandler.queryUid(res_doc) == history_id)
 
-if __name__ == '__main__':
-    framework()
-else:
-    from unittest import TestSuite, makeSuite
-    def test_suite():
-        suite = TestSuite()
-        suite.addTest(makeSuite(TestIntegration))
-        return suite
+from unittest import TestSuite, makeSuite
+def test_suite():
+    suite = TestSuite()
+    suite.addTest(makeSuite(TestIntegration))
+    return suite

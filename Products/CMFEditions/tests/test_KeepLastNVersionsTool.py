@@ -23,35 +23,14 @@
 $Id$
 """
 
-import os, sys
-
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
-from Testing import ZopeTestCase
+from Products.PloneTestCase import PloneTestCase
+PloneTestCase.setupPloneSite()
 
 from Interface.Verify import verifyObject
-
 from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
 
 from DummyTools import PurgePolicyTestDummyStorage
 from DummyTools import DummyData, RemovedData
-
-from Products.PloneTestCase import PloneTestCase
-from Products.CMFEditions.tests import installProduct
-
-PloneTestCase.setupPloneSite()
-ZopeTestCase.installProduct('CMFUid')
-ZopeTestCase.installProduct('CMFEditions')
-
-ZopeTestCase.installProduct('Archetypes')
-ZopeTestCase.installProduct('PortalTransforms')
-ZopeTestCase.installProduct('MimetypesRegistry')
-ZopeTestCase.installProduct('ATContentTypes')
-
-portal_owner = PloneTestCase.portal_owner
-portal_name = PloneTestCase.portal_name
-default_user = PloneTestCase.default_user
 
 
 class TestKeepLastNVersionsTool(PloneTestCase.PloneTestCase):
@@ -60,8 +39,6 @@ class TestKeepLastNVersionsTool(PloneTestCase.PloneTestCase):
         # we need to have the Manager role to be able to add things
         # to the portal root
         self.setRoles(['Manager',])
-        # add the Editions Tool (this way we test the 'Install' script!)
-        installProduct(self.portal, 'CMFEditions')
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
@@ -137,11 +114,8 @@ class TestKeepLastNVersionsTool(PloneTestCase.PloneTestCase):
         self.assertEquals(data.data, 1)
 
 
-if __name__ == '__main__':
-    framework()
-else:
-    from unittest import TestSuite, makeSuite
-    def test_suite():
-        suite = TestSuite()
-        suite.addTest(makeSuite(TestKeepLastNVersionsTool))
-        return suite
+from unittest import TestSuite, makeSuite
+def test_suite():
+    suite = TestSuite()
+    suite.addTest(makeSuite(TestKeepLastNVersionsTool))
+    return suite

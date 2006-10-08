@@ -1,15 +1,6 @@
-print 'Product FAQ installed'
-
-try:
-    import CustomizationPolicy
-except ImportError:
-    CustomizationPolicy=None
-
 from Products.CMFCore import utils, DirectoryView
 from Products.Archetypes.atapi import *
 from Products.Archetypes import listTypes
-
-import os.path
 
 ADD_CONTENT_PERMISSION = '''Add FAQ content'''
 PROJECTNAME = "FAQ"
@@ -34,7 +25,3 @@ def initialize(context):
         extra_constructors = constructors,
         fti                = ftis,
         ).initialize(context)
-
-    if CustomizationPolicy and hasattr(CustomizationPolicy,'register'):
-        CustomizationPolicy.register(context)
-        print 'Customizationpolicy for FAQ installed'

@@ -9,6 +9,9 @@ CMFEditions 1.1 (SVN)
 
 Internal Changes
 
+- Cleaned up tests. As these are based on PloneTestCase and Plone 3.0 we don't
+  have to set up anything special anymore. [hannosch]
+
 - Removed ActionProviderBase as a base class from all tools. In CMF 2.1 actions
   are usually only stored on the actions tool. [hannosch]
 

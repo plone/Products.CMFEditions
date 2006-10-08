@@ -147,7 +147,6 @@ def install(self):
     print >> out, "Successfully installed %s." % PROJECTNAME
     sr = PloneSkinRegistrar('skins', product_globals)
     print >> out,sr.install(self)
-    #sr = PloneSkinRegistrar('skins', product_globals)
     print >> out,sr.install(self,position='custom',mode='after',layerName=PROJECTNAME+'_public')
 
     #register folderish classes in use_folder_contents

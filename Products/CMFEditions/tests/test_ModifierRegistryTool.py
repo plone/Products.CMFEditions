@@ -23,17 +23,13 @@
 $Id: test_ModifierRegistryTool.py,v 1.12 2005/02/25 22:04:00 tomek1024 Exp $
 """
 
-import os, sys
+from Products.PloneTestCase import PloneTestCase
+PloneTestCase.setupPloneSite()
+
 
 from pickle import dumps, loads, HIGHEST_PROTOCOL
 
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 from Interface.Verify import verifyObject
-
-from Testing import ZopeTestCase
-
 from Acquisition import aq_base
 
 from Products.CMFCore.utils import getToolByName
@@ -44,15 +40,6 @@ from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import IModifierRegistryQuery
 
-from Products.PloneTestCase import PloneTestCase
-from Products.CMFEditions.tests import installProduct
-
-PloneTestCase.setupPloneSite()
-ZopeTestCase.installProduct('CMFUid')
-ZopeTestCase.installProduct('CMFEditions')
-portal_owner = PloneTestCase.portal_owner
-portal_name = PloneTestCase.portal_name
-default_user = PloneTestCase.default_user
 
 # provoke the warning messages before the first test
 from OFS.SimpleItem import SimpleItem
@@ -169,7 +156,6 @@ class TestModifierRegistryTool(PloneTestCase.PloneTestCase):
         # to the portal root
         self.setRoles(['Manager',])
 
-        installProduct(self.portal, 'CMFEditions')
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
@@ -377,11 +363,8 @@ class TestModifierRegistryTool(PloneTestCase.PloneTestCase):
         self.assertEqual(mlog_str, expected_result)
 
 
-if __name__ == '__main__':
-    framework()
-else:
-    from unittest import TestSuite, makeSuite
-    def test_suite():
-        suite = TestSuite()
-        suite.addTest(makeSuite(TestModifierRegistryTool))
-        return suite
+from unittest import TestSuite, makeSuite
+def test_suite():
+    suite = TestSuite()
+    suite.addTest(makeSuite(TestModifierRegistryTool))
+    return suite
