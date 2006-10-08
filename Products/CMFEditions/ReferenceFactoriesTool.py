@@ -30,14 +30,13 @@ from Acquisition import aq_parent, aq_inner
 from OFS.OrderedFolder import OrderedFolder
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
-from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.utilities import generateId
 
 from Products.CMFEditions.interfaces.IReferenceFactories \
     import IReferenceFactories
 
-class ReferenceFactoriesTool(UniqueObject, OrderedFolder, ActionProviderBase):
+class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
     __doc__ = __doc__ # copy from module
 
     __implements__ = (

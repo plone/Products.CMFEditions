@@ -34,7 +34,6 @@ from AccessControl import ClassSecurityInfo, getSecurityManager
 from OFS.SimpleItem import SimpleItem
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
-from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.utilities import KwAsAttributes
 from Products.CMFEditions.utilities import dereference
@@ -140,7 +139,7 @@ class VersionAwareReference(Persistent):
             del self.info
 
 
-class ArchivistTool(UniqueObject, SimpleItem, ActionProviderBase):
+class ArchivistTool(UniqueObject, SimpleItem):
     """
     """
 

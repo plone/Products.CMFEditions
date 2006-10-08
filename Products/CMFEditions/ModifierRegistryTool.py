@@ -33,7 +33,6 @@ from OFS.OrderedFolder import OrderedFolder
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.permissions import ManagePortal
-from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.utilities import KwAsAttributes
 
@@ -50,7 +49,7 @@ from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
 
-class ModifierRegistryTool(UniqueObject, OrderedFolder, ActionProviderBase):
+class ModifierRegistryTool(UniqueObject, OrderedFolder):
     __doc__ = __doc__ # copy from module
 
     __implements__ = (

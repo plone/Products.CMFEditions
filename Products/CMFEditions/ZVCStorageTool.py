@@ -40,7 +40,6 @@ from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
-from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.permissions import ManagePortal
 
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
@@ -123,7 +122,7 @@ def getSize(obj):
     return size
 
 
-class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
+class ZVCStorageTool(UniqueObject, SimpleItem):
     """Zope Version Control Based Version Storage
     
     There exist two selector schemas:
@@ -158,8 +157,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
     storageStatistics = PageTemplateFile('www/storageStatistics.pt',
                                          globals(),
                                          __name__='modifierEditForm')
-    manage_options = ActionProviderBase.manage_options[:] \
-                     + ({'label' : 'Statistics (may take time)', 'action' : 'storageStatistics'}, ) \
+    manage_options = ({'label' : 'Statistics (may take time)', 'action' : 'storageStatistics'}, ) \
                      + SimpleItem.manage_options[:]
 
     # make exceptions available trough the tool

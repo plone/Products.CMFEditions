@@ -35,7 +35,6 @@ from BTrees.OOBTree import OOBTree
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
-from Products.CMFCore.ActionProviderBase import ActionProviderBase
 
 from Products.CMFEditions.utilities import dereference, wrap
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
@@ -72,8 +71,7 @@ HOOKS = {'add': 'setupPolicyHook',
          'disable': 'disablePolicyOnTypeHook'}
 
 class CopyModifyMergeRepositoryTool(UniqueObject,
-                                    SimpleItem,
-                                    ActionProviderBase):
+                                    SimpleItem):
 
     """See ICopyModifyMergeRepository
     """
@@ -94,9 +92,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     security = ClassSecurityInfo()
 
-    manage_options = (ActionProviderBase.manage_options
-                     + SimpleItem.manage_options[1:]
-                     )
+    manage_options = SimpleItem.manage_options[1:]
 
     _versionable_content_types = VERSIONABLE_CONTENT_TYPES
     _version_policy_mapping = VERSION_POLICY_MAPPING

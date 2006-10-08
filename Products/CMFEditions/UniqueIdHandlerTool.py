@@ -31,7 +31,6 @@ from AccessControl import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 
 from Products.CMFCore.utils import getToolByName, UniqueObject
-from Products.CMFCore.ActionProviderBase import ActionProviderBase
 from Products.CMFCore.permissions import ManagePortal
 
 from Products.CMFUid.interfaces import IUniqueIdHandler
@@ -40,13 +39,12 @@ from Products.CMFUid.interfaces import UniqueIdError
 
 UID_ATTRIBUTE_NAME = 'cmf_uid'
 
-class UniqueIdHandlerTool(UniqueObject, SimpleItem, ActionProviderBase):
+class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     __doc__ = __doc__ # copy from module
 
     __implements__ = (
         IUniqueIdHandler,
         IUniqueIdBrainQuery,
-        ActionProviderBase.__implements__,
         SimpleItem.__implements__,
     )
 

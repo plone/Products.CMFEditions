@@ -150,17 +150,14 @@ def setup_skins(self, write):
 def setup_content_actions(self, write):
     at = getToolByName(self, 'portal_actions')
     tt = getToolByName(self, 'portal_types')
-    vt = getToolByName(self, 'portal_repository')
-    if 'Versions' not in [a.getId() for a in vt.listActions()]:
-        vt.addAction('Versions',
+    if 'Versions' not in [a.getId() for a in at.listActions()]:
+        at.addAction('Versions',
                      'Versions',
                      'string:${object_url}/versions_history_form',
                      'python:portal.portal_repository.isVersionable(object)',
                      'Modify portal content',
                      'object', )
         write("added versions tab")
-    if 'portal_repository' not in at.listActionProviders():
-        at.addActionProvider('portal_repository')
 
 def setup_cpanel(self, write):
     try:
@@ -221,7 +218,6 @@ def uninstall(self, tools=tools, reinstall=False):
     for policy_id in list(p_defs.keys()):
         rt.removePolicy(policy_id)
    
-    at.deleteActionProvider('portal_repository')
     # rename our uid tool back to the original name if the new tool was
     # removed
     if not reinstall and \
