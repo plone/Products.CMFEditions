@@ -24,11 +24,13 @@ Creating a test hierarchy for migration tests.
 
 $Id$
 """
+import logging
 import os.path
 import time
-from zLOG import LOG, INFO
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import PACKAGE_HOME
+
+logger = logging.getLogger('CMFEditions')
 
 def create(context, type, name):
     context.invokeFactory(type, name)
@@ -188,11 +190,11 @@ def createTestHierarchy(context):
     nbrOfEdits = 0
     nbrOfSaves = 0
     for name, type in hierarchy.items():
-        LOG("createTestHierarchy", INFO, "creating container %s(%s)" \
+        logger.log(logging.INFO "createTestHierarchy: creating container %s(%s)" \
             % (name, type[0]))
         folder = create(testRoot, type[0], name)
         nbrOfObjects += 1
-        LOG("createTestHierarchy", INFO, "  save #0")
+        logger.log(logging.INFO, "createTestHierarchy: save #0")
         repo.save(folder, comment="save #0")
         nbrOfSaves += 1
         for i in range(type[2]):
@@ -203,35 +205,34 @@ def createTestHierarchy(context):
                 
             # create and save
             objName = name[:-1]+str(i+1)+ext
-            LOG("createTestHierarchy", INFO, "creating %s(%s)" \
+            logger.log(logging.INFO, "createTestHierarchy: creating %s(%s)" \
                 % (objName, type[1]))
             obj = create(folder, type[1], objName)
             nbrOfObjects += 1
-            LOG("createTestHierarchy", INFO, "  save #0")
-#            import pdb; pdb.set_trace()
+            logger.log(logging.INFO, "createTestHierarchy: save #0")
             repo.save(obj, comment="save #0")
             nbrOfSaves += 1
             
             # edit and save a number of times
             for j in range(1, type[3]):
-                LOG("createTestHierarchy", INFO, "  editing")
+                logger.log(logging.INFO, "createTestHierarchy: editing")
                 edit(obj, j)
                 nbrOfEdits += 1
-                LOG("createTestHierarchy", INFO, "  save #%s" % j)
+                logger.log(logging.INFO, "createTestHierarchy: save #%s" % j)
                 repo.save(obj, comment="save #%s" % j)
                 nbrOfSaves += 1
                 
                 vers = j + i*(type[3]-1)
-                LOG("createTestHierarchy", INFO, "  editing parent")
+                logger.log(logging.INFO, "createTestHierarchy: editing parent")
                 edit(folder, vers)
                 nbrOfEdits += 1
-                LOG("createTestHierarchy", INFO, "  save parent #%s" % vers)
+                logger.log(logging.INFO, "createTestHierarchy: save parent #%s" % vers)
                 repo.save(folder, comment="save #%s" % vers)
                 nbrOfSaves += 1
     
     totalTime = time.time() - startTime
-    LOG("createTestHierarchy", INFO, 
-        "created %s objects, edited them %s times and saved %s versions in total in %.1f seconds" \
+    logger.log(logging.INFO,
+        "createTestHierarchy: created %s objects, edited them %s times and saved %s versions in total in %.1f seconds" \
         % (nbrOfObjects, nbrOfEdits, nbrOfSaves, round(totalTime, 1)))
     
     return testRoot

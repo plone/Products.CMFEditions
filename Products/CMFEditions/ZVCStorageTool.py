@@ -24,12 +24,11 @@ $Id: ZVCStorageTool.py,v 1.18 2005/03/11 11:05:12 varun-rastogi Exp $
 """
 __version__ = "$Revision: 1.18 $"
 
+import logging
 import time
 import types
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
-
-import zLOG
 
 from Globals import InitializeClass
 from BTrees.OOBTree import OOBTree
@@ -61,6 +60,7 @@ from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import StoragePurgeError
 
+logger = logging.getLogger('CMFEditions')
 
 def deepCopy(obj):
     stream = StringIO()
@@ -487,7 +487,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         
         # just make a log entry if something wrong happened
         if len(entries) != 1:
-            zLOG.LOG("CMFEditions ASSERT:", zLOG.INFO,
+            logger.log(logging.INFO, "CMFEditions ASSERT:"
                      "Uups, an object has been stored %s times with the same "
                      "history '%s'!!!" % (len(entries), zvc_selector))
         
@@ -525,28 +525,28 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         """
         # check if already done
         if not self._is10alpha3Layout():
-            zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                     "Storage already migrated.")
+            logger.log(logging.INFO, "CMFEditions storage migration:"
+                "Storage already migrated.")
             return None
         
         startTime = time.time()
-        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                 "started migrating the whole storage")
+        logger.log(logging.INFO, "CMFEditions storage migration:"
+            "started migrating the whole storage")
         from Products.ZopeVersionControl.Utility import VersionInfo
         
         # build reverse mapping: zvc history id --> CMFEditions history id
-        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                 "preparing history mapping CMFEditions <--> ZVC")
+        logger.log(logging.INFO, "CMFEditions storage migration:"
+            "preparing history mapping CMFEditions <--> ZVC")
         hidMapping = self._history_id_mapping
         hidReverseMapping = {}
         for hid, zvcHid in hidMapping.items():
             hidReverseMapping[zvcHid.history_id] = hid
-            zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                     "  %6i <--> %s" % (hid, zvcHid.history_id))
-        
+            logger.log(logging.INFO, "CMFEditions storage migration:"
+                " %6i <--> %s" % (hid, zvcHid.history_id))
+
         # iterate over all histories
-        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                 "iterating over all histories:")
+        logger.log(logging.INFO, "CMFEditions storage migration:"
+            "iterating over all histories:")
         nbrOfMigratedHistories = 0
         nbrOfMigratedVersions = 0
         repo = self._getZVCRepo()
@@ -555,9 +555,9 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
             zvcVersionIds = zvcHistory.getVersionIds()
             history_id = hidReverseMapping[zvcHid]
             history = self._getShadowHistory(history_id, autoAdd=True)
-            zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                     "  migrating %s versions of history %s (ZVC: %s)" 
-                     % (len(zvcVersionIds), history_id, zvcHid))
+            logger.log(logging.INFO, "CMFEditions storage migration:"
+                " migrating %s versions of history %s (ZVC: %s)" 
+                % (len(zvcVersionIds), history_id, zvcHid))
             nbrOfMigratedHistories += 1
             
             # iterate over all versions
@@ -584,24 +584,24 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
                 }
                 
                 # save metadata in shadow history
-                zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                         "    migrating version %s:" % (int(zvcVid)-1))
+                logger.log(logging.INFO, "CMFEditions storage migration:"
+                    " migrating version %s:" % (int(zvcVid)-1))
                 history.save(shadowInfo)
                 
                 app_metadata = metadata.get("app_metadata", {})
                 if app_metadata:
-                    zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                             "      application metadata:")
+                    logger.log(logging.INFO, "CMFEditions storage migration:"
+                        " application metadata:")
                     for item in app_metadata.items():
-                        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                                 "        %s = %s" % item)
+                        logger.log(logging.INFO,
+                            "CMFEditions storage migration: %s = %s" % item)
                 sys_metadata = metadata.get("sys_metadata", {})
                 if sys_metadata:
-                    zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                             "      system metadata:")
+                    logger.log(logging.INFO, "CMFEditions storage migration:"
+                        " system metadata:")
                     for item in sys_metadata.items():
-                        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                                 "        %s = %s" % item)
+                        logger.log(logging.INFO,
+                            "CMFEditions storage migration: %s = %s" % item)
                 nbrOfMigratedVersions += 1
         
         # delete the old metadata
@@ -609,9 +609,9 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         
         # log a summary
         totalTime = round(time.time() - startTime, 2)
-        zLOG.LOG("CMFEditions storage migration:", zLOG.INFO,
-                 "migrated %s histories and a total of %s versions in %.2f seconds" 
-                 % (nbrOfMigratedHistories, nbrOfMigratedVersions, totalTime))
+        logger.log(logging.INFO, "CMFEditions storage migration:"
+            "migrated %s histories and a total of %s versions in %.2f seconds" 
+            % (nbrOfMigratedHistories, nbrOfMigratedVersions, totalTime))
         
         # XXX have to add purge policy
         

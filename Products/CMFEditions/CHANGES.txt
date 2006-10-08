@@ -53,6 +53,8 @@ Bugs fixed
 
 Internal Changes
 
+- Replaced usage of zLOG with Python's logging framework. [hannosch]
+
 - Removed lots of unused import statements, found by pyflakes. [hannosch]
 
 - Removed BBB code for old transaction handling. [hannosch]

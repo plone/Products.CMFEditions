@@ -39,7 +39,7 @@ default_user = PloneTestCase.default_user
 def setupCMFEditions(app, portal_name, quiet):
     portal = app[portal_name]
     start = time.time()
-    if not quiet: ZopeTestCase._print('Adding CMFEdtions ... ')
+    if not quiet: ZopeTestCase._print('Adding CMFEditions ... ')
     # Login as portal owner
     user = app.acl_users.getUserById(portal_owner).__of__(app.acl_users)
     newSecurityManager(None, user)
