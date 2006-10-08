@@ -7,7 +7,19 @@ This file contains change information for the CMFEditions releases.
 CMFEditions 1.1 (SVN)
 ---------------------
 
+ToDo
+
+- Finish exportimport handlers for portal_repository and portal_modifier thus
+  making setuphandlers importVarious unnecessary again.
+
+- Add back special portal_historyidhandler / portal_uidhandler handling. If a
+  portal_uidhandler tool is found during install, it should be renamed to
+  portal_historyidhandler. The missing tools should be created as normal then.
+
 Internal Changes
+
+- Use a GenericSetup Extension profile for installation instead of an external
+  method. [hannosch]
 
 - Cleaned up tests. As these are based on PloneTestCase and Plone 3.0 we don't
   have to set up anything special anymore. [hannosch]

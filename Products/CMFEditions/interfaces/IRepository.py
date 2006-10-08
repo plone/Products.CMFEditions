@@ -41,6 +41,7 @@ former version
 $Id: IRepository.py,v 1.8 2005/04/01 17:41:56 disommav Exp $
 """
 
+from zope.interface import Interface as Z3Interface
 from Interface import Interface, Attribute
 
 
@@ -362,11 +363,18 @@ class IHistory(Interface):
     def __iter__():
         """ Returns an iterator returning 'IVersionData' object.
         """
-        
+
+
+class IRepositoryTool(Z3Interface):
+    """Marker interface for the repository tool used in GenericSetup
+       exportimport handlers.
+    """
+
 
 class RepositoryError(Exception):
     """Repository exception.
     """
+
 
 class RepositoryPurgeError(RepositoryError):
     """Purge is only possible with a purge policy installed.

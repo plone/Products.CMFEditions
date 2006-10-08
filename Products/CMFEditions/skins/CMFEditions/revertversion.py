@@ -12,7 +12,7 @@ RESPONSE = context.REQUEST.RESPONSE
 pr = container.portal_repository
 pr.revert(context, version_id)
 view_url = '%s/%s' % (context.absolute_url(),
-                      context.getTypeInfo().getActionById('view')
+                      context.getTypeInfo().getActionInfo('object/view')['url']
                      )
 msg = 'portal_status_message=\'%s\' has been reverted to version %s' % (context.title_or_id(), version_id)
 if pr.supportsPolicy(context, 'version_on_revert'):
