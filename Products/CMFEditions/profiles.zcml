@@ -7,7 +7,7 @@
       name="CMFEditions"
       title="CMFEditions"
       directory="profiles/default"
-      description="Extension profile for default CMFEdtiions setup."
+      description="Extension profile for default CMFEditions setup."
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
