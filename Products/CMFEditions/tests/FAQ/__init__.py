@@ -12,7 +12,9 @@ DirectoryView.registerDirectory('skins/faq', product_globals)
 
 
 def initialize(context):
-    ##Import Types here to register them
+    ##Import Types here to register them (were removed by pyflake check!)
+    import FAQ
+    import FAQQuestion
 
     content_types, constructors, ftis = process_types(
         listTypes(PROJECTNAME),
