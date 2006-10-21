@@ -1,5 +1,7 @@
 print 'Product FAQ installed'
 
+import os.path
+
 try:
     import CustomizationPolicy
 except ImportError:
@@ -9,7 +11,9 @@ from Products.CMFCore import utils, DirectoryView
 from Products.Archetypes.atapi import *
 from Products.Archetypes import listTypes
 
-import os.path
+##Import Types here to register them (were removed by pyflake check!)
+import FAQ
+import FAQQuestion
 
 ADD_CONTENT_PERMISSION = '''Add FAQ content'''
 PROJECTNAME = "FAQ"
