@@ -32,20 +32,24 @@
                     function switchComment(ev) {
                         var save_version = document.getElementById('cmfeditions_save_new_version');
                         var comment = document.getElementById('cmfeditions_version_comment_block');
-                        if (save_version.checked) {
-                          comment.style.display = 'block';
-                        } else {
-                          comment.style.display = 'none';
+                        if (save_version && comment) {
+                          if (save_version.checked) {
+                            comment.style.display = 'block';
+                          } else {
+                            comment.style.display = 'none';
+                          }
                         }
                     }
                     function setupSaveNewVersion(ev) {
                         var save_version = document.getElementById('cmfeditions_save_new_version');
                         var comment = document.getElementById('cmfeditions_version_comment_block');
 
-                        if (save_version.checked) {
-                          comment.style.display = 'block';
-                        } else {
-                          comment.style.display = 'none';
+                        if (save_version && comment) {
+                          if (save_version.checked) {
+                            comment.style.display = 'block';
+                          } else {
+                            comment.style.display = 'none';
+                          }
                         }
                         registerEventListener(save_version, "click", switchComment);
                     }
