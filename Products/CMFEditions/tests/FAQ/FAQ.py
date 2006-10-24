@@ -28,6 +28,7 @@ __docformat__ = 'plaintext'
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
+from Products.CMFDynamicViewFTI.fti import DynamicViewTypeInformation
 
 
 ##code-section module-header #fill in your manual code here
@@ -39,6 +40,7 @@ class FAQ(OrderedBaseFolder):
     portal_type = meta_type = 'FAQ' 
     archetype_name = 'FAQ'   #this name appears in the 'add' box 
     allowed_content_types = ['FAQQuestion'] 
+    _at_fti_meta_type = DynamicViewTypeInformation.meta_type
 
     __implements__ = getattr(OrderedBaseFolder,'__implements__',())
 
