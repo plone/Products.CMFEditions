@@ -57,7 +57,7 @@ A handful of tools provide the whole functionality:
   cares about recursive storing and retrieving of content items from/to
   Zope 2's Object File System (OFS).
 - archivist layer: It knows *how to clone* content items. The 
-  archivist "is Mr. pickle".
+  archivist "is Mr. Pickle".
 - modifiers: They're invoked by the archivist and know *what to clone*.
   This the main customization point. A modifier knows about what 
   information on an object is a reference and if the referenced object
@@ -99,8 +99,8 @@ included. Please refer to the dependency information of Plone for any details.
 Migrating from Older Versions of CMFEditions
 ============================================
 
-We know there are problems when migrating from 1.0alpha3, 1.0alpha4 
-or trunk checkout from May 2006 and before.
+We know there are severe problems when migrating from 1.0alpha3, 
+1.0alpha4 or trunk checkout from May 2006 and before.
 Please `contact us <mailto:collective-versioning@lists.sourceforge.net>` 
 for assistance. We're interested in making migrations bullet proof.
 

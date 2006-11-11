@@ -2,30 +2,6 @@
 Notes, ToDos and Ideas
 ======================
 
-
-Roadmap
-=======
-
-ToDo for 1.0rc1
----------------
-
-- see todo's in CHANGES.txt
-
-- prepare release documentation
-  - addons: propose usage and download of diff in release description
-  - extensive credits list (using svn blame)
-  - complete sponsoring list (checking with vds)
-- check changes on trunk and update CHANGES.txt
-
-
-ToDo for 1.0.0
---------------
-
-- see also todo's in CHANGES.txt
-- fix new bugs reported from rc1
-
-----------------------------------------------------------------------
-
 next number: 56
 
 
