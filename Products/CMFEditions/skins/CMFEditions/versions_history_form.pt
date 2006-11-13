@@ -52,7 +52,7 @@
             </thead>
 
             <tbody>
-                <tr class="navTreeCurrentItem"
+                <tr class="even"
                     tal:define="isModified current/isModified;
                                 reverted_vid current/reverted_vid;
                                 isReverted current/isReverted"
@@ -106,7 +106,7 @@
                 </tr>
                 <tal:block repeat="vdata history">
                 <tr tal:define="id string:${vdata/version_id};"
-                    tal:attributes="class python:not current['isModified'] and current['version_id']==vdata.version_id and 'navTreeCurrentItem' or None">
+                    tal:attributes="class python:not current['isModified'] and current['version_id']==vdata.version_id and 'even' or None">
                   <td>
                     <span tal:content="id">1</span>
                     <a href="#"
@@ -135,7 +135,7 @@
                             <a href=""
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/version_diff?version_id1=current&version_id2=${id}">
-                            Diff to current
+                            Compare to current revision
                             </a>
                         </li>
                         <li tal:condition="not:repeat/vdata/end">
@@ -143,7 +143,7 @@
                                style="text-decoration: none"
                                tal:define="prev_ver python:str(int(id)-1)"
                                tal:attributes="href string:$here_url/version_diff?version_id1=${id}&version_id2=${prev_ver}">
-                            Diff from last
+                            Compare to previous revision
                             </a>
                         </li>
                         </tal:diffs>
@@ -152,7 +152,7 @@
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/revertversion?version_id=${id}"
                                i18n:translate="label_revert">
-                        revert
+                        Revert to this revision
                             </a>
                         </li>
                     </ul>
@@ -183,8 +183,7 @@
                         tabindex=""
                         id="versioncomment"
                         name="versioncomment"
-                        i18n:translate="label_insert_a_comment"
-                        >Insert a comment.</textarea>
+                        ></textarea>
             </div>
 
             <input class="context"
