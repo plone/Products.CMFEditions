@@ -16,6 +16,9 @@ ToDo
   portal_uidhandler tool is found during install, it should be renamed to
   portal_historyidhandler. The missing tools should be created as normal then.
 
+CMFEditions 1.1-alpha2 (November 22, 2006)
+------------------------------------------
+
 Internal Changes
 
 - Two minor updates for CMF 2.1 compatibility. [hannosch]
@@ -24,7 +27,7 @@ Internal Changes
   method. [hannosch]
 
 - Cleaned up tests. As these are based on PloneTestCase and Plone 3.0 we don't
-  have to set up anything special anymore. [hannosch]
+  have to set up anything special anymore. [hannosch, alecm]
 
 - Removed ActionProviderBase as a base class from all tools. In CMF 2.1 actions
   are usually only stored on the actions tool. [hannosch]
