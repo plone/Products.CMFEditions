@@ -1,1 +1,1 @@
-1.1 (svn/unreleased)
+1.1-alpha1
