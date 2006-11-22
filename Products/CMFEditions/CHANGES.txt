@@ -16,7 +16,7 @@ ToDo
   portal_uidhandler tool is found during install, it should be renamed to
   portal_historyidhandler. The missing tools should be created as normal then.
 
-CMFEditions 1.1-alpha2 (November 22, 2006)
+CMFEditions 1.1-alpha1 (November 22, 2006)
 ------------------------------------------
 
 Internal Changes
