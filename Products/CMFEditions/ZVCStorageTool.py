@@ -219,7 +219,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem, ActionProviderBase):
         if len(entries) != 1:
             zLOG.LOG("CMFEditions ASSERT:", zLOG.INFO,
                      "Uups, an object has been stored %s times with the same "
-                     "history '%s'!!!" % (len(entries), selector))
+                     "history '%s'!!!" % (len(entry), selector))
         
         object = zvc_obj.getWrappedObject()
         referenced_data = zvc_obj.getReferencedData()
