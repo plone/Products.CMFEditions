@@ -90,7 +90,7 @@
                         <li condition="exists:here/portal_diff">
                             <a href=""
                                style="text-decoration: none"
-                               tal:attributes="href string:$here_url/version_diff?version_id1=current&version_id2=${reverted_vid}">
+                               tal:attributes="href string:$here_url/version_diff?version_id1=current&amp;version_id2=${reverted_vid}">
                               <span tal:condition="isReverted">
                                 Diff to version 
                                 <span tal:replace="reverted_vid">
