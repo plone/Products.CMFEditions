@@ -16,6 +16,14 @@ ToDo
   portal_uidhandler tool is found during install, it should be renamed to
   portal_historyidhandler. The missing tools should be created as normal then.
 
+CMFEditions 1.1-alpha2 (February 08, 2007)
+------------------------------------------
+
+- Removed specialized document byline.
+
+- Switch to Plone control panel category
+
+
 CMFEditions 1.1-alpha1 (November 22, 2006)
 ------------------------------------------
 
