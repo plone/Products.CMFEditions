@@ -1,0 +1,146 @@
+<p tal:replace="structure here/manage_page_header" omit-tag="">Header</p>
+<p tal:replace="structure here/manage_tabs" omit-tag="">tabs</p>
+
+<tal:block define="statistics here/zmi_getStorageStatistics;
+                   existing statistics/existing;
+                   deleted statistics/deleted;
+                   summaries statistics/summaries;
+                   ">
+<h2>Storage Statistics</h2>
+
+<p>Calculating the statistics took <span tal:replace="summaries/time" /> seconds.</p>
+
+<table border="0" cellspacing="0" tal:condition="existing">
+  <tr>
+    <th colspan="2" align="left">Number of Histories:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/totalHistories"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of existing items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/existingHistories"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of deleted items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/deletedHistories"></td>
+  </tr>
+  <tr>
+    <th colspan="4"></th>
+  </tr>
+  <tr>
+    <th colspan="2" align="left">Number of Versions:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/totalVersions"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of existing items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/existingVersions"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of deleted items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/deletedVersions"></td>
+  </tr>
+  <tr>
+    <th colspan="4"></th>
+  </tr>
+  <tr>
+    <th colspan="2" align="left">Average Versions per History:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/totalAverage"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of existing items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/existingAverage"></td>
+  </tr>
+  <tr>
+    <th>&nbsp;&nbsp;&nbsp;</th>
+    <th align="left">of deleted items:</th>
+    <td>&nbsp;&nbsp;</td>
+    <td tal:content="summaries/deletedAverage"></td>
+  </tr>
+</table>
+
+<h3>Existing Working Copies</h3>
+
+  <p tal:condition="not:existing">None</p>
+  <table border="1" cellspacing="0" tal:condition="existing">
+
+    <tr>
+      <th align="left">
+        history id
+      </th>
+      <th align="left">
+        versions
+      </th>
+      <th align="left">
+        size
+      </th>
+      <th align="left">
+        size state
+      </th>
+      <th align="left">
+        portal type
+      </th>
+      <th align="left">
+        current path (counting from the portals root)
+      </th>
+    </tr>
+
+    <tr tal:repeat="histData existing">
+      <td tal:content="histData/history_id">history id</td>
+      <td tal:content="histData/length">length</td>
+      <td align="right" tal:content="histData/size">size</td>
+      <td align="right" tal:content="histData/sizeState">size state</td>
+      <td tal:content="histData/portal_type">portal type</td>
+      <td><a tal:attributes="href histData/url" 
+             tal:content="histData/path">current path</a></td>
+    </tr>
+
+  </table>
+
+<h3>Deleted Working Copies</h3>
+
+  <p tal:condition="not:deleted">None</p>
+  <table border="1" cellspacing="0" tal:condition="deleted">
+
+    <tr>
+      <th align="left">
+        history id
+      </th>
+      <th align="left">
+        versions
+      </th>
+      <th align="left">
+        size
+      </th>
+      <th align="left">
+        size state
+      </th>
+      <th align="left">
+        portal type
+      </th>
+    </tr>
+
+    <tr tal:repeat="histData deleted">
+      <td tal:content="histData/history_id">history id</td>
+      <td tal:content="histData/length">length</td>
+      <td align="right" tal:content="histData/size">size</td>
+      <td align="right" tal:content="histData/sizeState">size state</td>
+      <td tal:content="histData/portal_type">portal type</td>
+    </tr>
+
+  </table>
+
+</tal:block>
+
+<p tal:replace="structure here/manage_page_footer" omit-tag="">Footer</p>
