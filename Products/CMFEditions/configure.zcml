@@ -1,7 +1,0 @@
-<configure xmlns="http://namespaces.zope.org/zope">
-
-  <include package=".exportimport" />
-
-  <include file="profiles.zcml"/>
-
-</configure>
