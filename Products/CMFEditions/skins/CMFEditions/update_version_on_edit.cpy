@@ -11,7 +11,7 @@
 REQUEST = context.REQUEST
 pr = context.portal_repository
 isVersionable = pr.isVersionable(context)
-comment = REQUEST.get('cmfeditions_version_comment',None)
+comment = REQUEST.get('cmfeditions_version_comment',"")
 if REQUEST.get('cmfeditions_save_new_version',None) and isVersionable:
 #     policy_support = context.portal_repository.supportsPolicy(context,
 #                                                             'at_edit_autoversion')
