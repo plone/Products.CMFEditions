@@ -7,6 +7,9 @@ This file contains change information for the CMFEditions releases.
 CMFEditions 1.1 (SVN)
 ---------------------
 
+- Do not install the versioning control panel anymore. You can enable versioning
+  for a content type on the new types control panel now.
+
 ToDo
 
 - Finish exportimport handlers for portal_repository and portal_modifier thus
@@ -22,7 +25,6 @@ CMFEditions 1.1-alpha2 (February 08, 2007)
 - Removed specialized document byline.
 
 - Switch to Plone control panel category
-
 
 CMFEditions 1.1-alpha1 (November 22, 2006)
 ------------------------------------------
