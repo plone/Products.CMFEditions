@@ -51,7 +51,13 @@ class ATVersionOnEditPolicy(VersionPolicy):
        requires a custom edit_macros.pt and a controller script called
        update_version_on_edit.  This policy automatically adds and removes
        the controller script from the AT edit controller chain on install."""
-    FC_ACTION_LIST = ({'template': 'validate_integrity',
+    FC_ACTION_LIST = ({'template': 'atct_edit',
+                       'status': 'success',
+                       'action': 'traverse_to',
+                       'expression': 'string:update_version_before_edit',
+                       'context':None,
+                       'button':None},
+                      {'template': 'validate_integrity',
                        'status': 'success',
                        'action': 'traverse_to',
                        'expression': 'string:update_version_on_edit',

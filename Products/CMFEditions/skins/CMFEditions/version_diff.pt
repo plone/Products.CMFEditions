@@ -54,8 +54,10 @@
                    tal:attributes="href string:${base_page_url}">Show visual differences</a>
                 <br />
             </tal:visual-only>
+                 <!-- Too programmer-y
             <a href="#"
                tal:attributes="href string:${base_page_url}&amp;no_inline:int=1&amp;show_unified:int=1">Unified diff format</a>
+            -->
             <pre tal:content="structure d/html_diff">[html diff]</pre>
         </tal:html>
         <tal:unified condition="python:unified and not html">

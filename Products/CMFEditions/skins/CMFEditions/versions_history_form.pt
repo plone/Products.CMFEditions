@@ -51,41 +51,31 @@
                 </tr>
             </thead>
 
-            <tbody>
-                <tr class="even"
-                    tal:define="isModified current/isModified;
-                                reverted_vid current/reverted_vid;
-                                isReverted current/isReverted"
+            <tbody tal:define="isModified current/isModified;
+                               reverted_vid current/reverted_vid;
+                               isReverted current/isReverted">
+                <tr class="CurrentVersion odd"
                     tal:condition="isModified">
-                  <td tal:define="id current/version_id;">
-                    <span tal:replace="id">1</span>
-                    <a href="#"
-                       class="version-table-version"
-                       tal:attributes="href here_url"
-                       i18n:translate="label_wcopy_version_link">(working copy)</a>
+                  <td class="VersionId"
+                      tal:define="id current/version_id;">
+                    <span i18n:translate="">Working Copy</span>
                   </td>
-                  <td>
+                  <td class="VersionUser">
                     <span tal:replace="here/Creator">user</span>
                   </td>
-                  <td>
+                  <td class="VersionDate">
                     <span tal:replace="python:here.toLocalizedTime(here.ModificationDate(),long_format=1)">2004/10/21 03:15 PM</span>
                   </td>
-                  <td>
-                    <i tal:condition="python:isModified is None">
-                      not yet saved
-                    </i>
-                    <i tal:condition="python:isModified is not None">
+                  <td class="VersionComment">
+                      <span tal:omit-tag="">
+                        modifications from version
+                        <span tal:replace="reverted_vid">13</span>
+                      </span>
                       <span tal:condition="isReverted" tal:omit-tag="">
-                        modification from reverted version
-                        <span tal:replace="reverted_vid">13</span>
+                        (previously reverted)
                       </span>
-                      <span tal:condition="not:isReverted" tal:omit-tag="">
-                        reverted to version
-                        <span tal:replace="reverted_vid">13</span>
-                      </span>
-                    </i>
                   </td>
-                  <td>
+                  <td class="VersionActions">
                     <ul>
                         <li condition="exists:here/portal_diff">
                             <a href=""
@@ -105,14 +95,17 @@
                   </td>
                 </tr>
                 <tal:block repeat="vdata history">
-                <tr tal:define="id string:${vdata/version_id};"
-                    tal:attributes="class python:not current['isModified'] and current['version_id']==vdata.version_id and 'even' or None">
-                  <td>
-                    <span tal:content="id">1</span>
+                <tr tal:define="id string:${vdata/version_id};
+                                current_version python:not current['isModified'] and current['version_id']==vdata.version_id;
+                                even repeat/vdata/even;"
+                    tal:attributes="class python:(current_version and 'CurrentVersion' or '') + (even and ' even' or '')">
+                  <td class="VersionId">
+                    <span tal:condition="current_version" i18n:translate="">Working Copy</span>
+                    <span tal:condition="not:current_version" tal:content="python:int(id)+1">1</span>
                     <a href="#"
                        class="version-table-version"
                        tal:attributes="href string:$here_url/versions_history_form?version_id=${id}"
-                       tal:condition="python:version_id!=id"
+                       tal:condition="python:version_id!=id and not current_version"
                        i18n:translate="label_preview_version_link">(preview)</a>
                     <a href="#"
                        class="version-table-version"
@@ -120,18 +113,18 @@
                        tal:condition="python:version_id==id"
                        i18n:translate="label_preview_version_below">(jump down)</a>
                   </td>
-                  <td>
+                  <td class="VersionUser">
                     <span tal:content="vdata/sys_metadata/principal">francesco</span>
                   </td>
-                  <td>
+                  <td class="VersionDate">
                     <span tal:content="python:here.toLocalizedTime(vdata.sys_metadata['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
                   </td>
                   <td><span tal:content="vdata/comment">Draft version ready for comments from the group.</span>
                   </td>
-                  <td>
+                  <td class="VersionActions">
                     <ul>
                         <tal:diffs condition="exists:here/portal_diff">
-                        <li>
+                        <li tal:condition="not:current_version">
                             <a href=""
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/version_diff?version_id1=current&version_id2=${id}">
@@ -147,7 +140,7 @@
                             </a>
                         </li>
                         </tal:diffs>
-                        <li>
+                        <li tal:condition="not:current_version">
                             <a href=""
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/revertversion?version_id=${id}"

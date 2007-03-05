@@ -4,8 +4,14 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
-CMFEditions 1.1 (SVN)
----------------------
+CMFEditions 1.1-beta1 (March 5, 2007)
+----------------------------------------
+
+- Make the AT autoversion policy save a version before the save for more
+   intuitive behavior.
+
+- Fixed numerous ui glitches on the versions history form and started using
+   statusmessages.
 
 - Do not install the versioning control panel anymore. You can enable versioning
   for a content type on the new types control panel now.

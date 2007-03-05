@@ -592,14 +592,20 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         # Check if the form controller hook is in place:
         self.failUnless(self.isFCActionInPlace('validate_integrity',
                                                      'success', None, None))
+        self.failUnless(self.isFCActionInPlace('atct_edit',
+                                                     'success', None, None))
         # Remove policy and check if hook is removed
         portal_repository.removePolicy('at_edit_autoversion')
         self.failIf(self.isFCActionInPlace('validate_integrity',
                                                  'success', None, None))
+        self.failIf(self.isFCActionInPlace('atct_edit',
+                                                     'success', None, None))
         # Add policy and check if hook is added
         portal_repository.addPolicy('at_edit_autoversion', 'Auto policy',
                                      ATVersionOnEditPolicy)
         self.failUnless(self.isFCActionInPlace('validate_integrity',
+                                                     'success', None, None))
+        self.failUnless(self.isFCActionInPlace('atct_edit',
                                                      'success', None, None))
 
 
