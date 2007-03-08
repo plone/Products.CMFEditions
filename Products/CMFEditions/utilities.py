@@ -25,9 +25,10 @@ $Id: utilities.py,v 1.1 2005/01/06 14:25:44 gregweb Exp $
 
 import random
 
+from zope.component import getUtility
 from Persistence import Persistent
 from Acquisition import aq_base
-from Products.CMFCore.utils import getToolByName
+from Products.CMFUid.interfaces import IUniqueIdHandler
 
 STUB_OBJECT_PREFIX = '_CMFEditionsTempId'
 
@@ -58,7 +59,7 @@ def dereference(obj=None, history_id=None, zodb_hook=None):
         # try to use the reference as zodb hook
         zodb_hook = obj
 
-    portal_uidhandler = getToolByName(zodb_hook, 'portal_uidhandler')
+    portal_uidhandler = getUtility(IUniqueIdHandler)
 
     if history_id is None:
         if obj is None:

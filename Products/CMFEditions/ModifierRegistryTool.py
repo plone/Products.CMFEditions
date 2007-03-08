@@ -31,7 +31,9 @@ from Acquisition import aq_base
 from AccessControl import ClassSecurityInfo
 from OFS.OrderedFolder import OrderedFolder
 
-from Products.CMFCore.utils import UniqueObject, getToolByName
+from zope.component import getUtility
+from Products.CMFCore.interfaces import IURLTool
+
 from Products.CMFCore.permissions import ManagePortal
 
 from Products.CMFEditions.utilities import KwAsAttributes
@@ -107,7 +109,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         """ Returns a list of valid modifiers
         """
         modifier_list = []
-        portal = getToolByName(self, 'portal_url').getPortalObject()
+        portal = getUtility(IURLTool).getPortalObject()
         for id, o in self.objectItems():
             # collect objects modifier only when appropriate
             if IConditionalModifier.isImplementedBy(o) \

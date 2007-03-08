@@ -39,8 +39,10 @@ from AccessControl import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
+from zope.component import getUtility
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.permissions import ManagePortal
+from Products.CMFCore.interfaces import IURLTool
 
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
 from Products.ZopeVersionControl.Utility import VersionControlError
@@ -631,7 +633,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         else:
             historyIds = {}
         hidhandler = getToolByName(self, "portal_historyidhandler")
-        portal_paths_len = len(getToolByName(self, "portal_url")())
+        portal_paths_len = len(getUtility(IURLTool)())
         
         # collect interesting informations
         histories = []

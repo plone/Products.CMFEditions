@@ -27,6 +27,7 @@ $Id: CopyModifyMergeRepositoryTool.py,v 1.20 2005/06/24 11:42:01 gregweb Exp $
 import time
 import transaction
 from zope.interface import implements
+from zope.component import getUtility
 
 from Globals import InitializeClass
 from Acquisition import aq_base, aq_parent, aq_inner
@@ -56,6 +57,8 @@ from Products.CMFEditions.Permissions import RevertToPreviousVersions
 from Products.CMFEditions.Permissions import ManageVersioningPolicies
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
+from Products.CMFCore.interfaces import ICatalogTool
+from Products.CMFCore.interfaces import IURLTool
 try:
     from Products.Archetypes.interfaces.referenceable import IReferenceable
     from Products.Archetypes.config import REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
@@ -250,7 +253,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         
         hook = getattr(self._policy_defs[policy_id], HOOKS[action], None)
         if hook is not None and callable(hook):
-            portal = getToolByName(self, 'portal_url').getPortalObject()
+            portal = getUtility(IURLTool).getPortalObject()
             hook(portal, *args, **kw)
 
     # -------------------------------------------------------------------
@@ -593,7 +596,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     def _fixupCatalogData(self, obj):
         """ Reindex the object, otherwise the catalog will certainly
         be out of sync."""
-        portal_catalog = getToolByName(self, 'portal_catalog')
+        portal_catalog = getUtility(ICatalogTool)
         portal_catalog.reindexObject(obj)
         # XXX: In theory we should probably be emitting IObjectModified and
         # IObjectMoved events here as those are the possible consequences of a

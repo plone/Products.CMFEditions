@@ -31,7 +31,9 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.Expressions import getEngine
 
-from Products.CMFCore.utils import getToolByName
+from zope.component import queryUtility
+from Products.CMFCore.interfaces import IMembershipTool
+
 from Products.CMFCore.Expression import Expression
 
 from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
@@ -199,7 +201,7 @@ def createExpressionContext(obj, portal=None, **more_symbols):
     # use the portal if folder lookup fails due to an unwrapped obj
     folder = findNextFolderishParent(obj) or portal
 
-    pm = getToolByName(portal, 'portal_membership', None)
+    pm = queryUtility(IMembershipTool)
     if pm is None or pm.isAnonymousUser():
         member = None
     else:

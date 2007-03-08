@@ -32,6 +32,9 @@ from Acquisition import aq_base
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
+from zope.component import queryUtility
+from Products.CMFCore.interfaces import IConfigurableWorkflowTool
+
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import ManagePortal
 
@@ -456,7 +459,7 @@ class RetainWorkflowStateAndHistory:
         #
         # Anyway the review state may be a very interesting piece of 
         # information for a hypothetic purge policy ...
-        wflow = getToolByName(obj, "portal_workflow", None)
+        wflow = queryUtility(IConfigurableWorkflowTool)
         if wflow is not None:
             review_state = wflow.getInfoFor(obj, "review_state")
         else:
