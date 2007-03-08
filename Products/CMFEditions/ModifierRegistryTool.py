@@ -32,6 +32,7 @@ from AccessControl import ClassSecurityInfo
 from OFS.OrderedFolder import OrderedFolder
 
 from zope.component import getUtility
+from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.interfaces import IURLTool
 
 from Products.CMFCore.permissions import ManagePortal
