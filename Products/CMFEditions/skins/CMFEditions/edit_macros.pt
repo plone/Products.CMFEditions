@@ -81,18 +81,18 @@
                  class="field editionComment"
                  id="cmfeditions_version_comment_block"
                  tal:condition="python: pr.isVersionable(here)">
-              <label><span i18n:translate="label_version_comment">Version Comment</span></label>
+              <label><span i18n:translate="label_version_comment">Change note</span></label>
                 <div class="formHelp"
                      id="cmfeditions_version_comment_help"
                      i18n:translate="help_version_comment">
-                     Enter a comment below to describe the changes you've made.
+                     Enter a comment that describes the changes you made.
                 </div>
-                <textarea tabindex="#"
+                <input tabindex="#"
                           name="cmfeditions_version_comment"
                           id="cmfeditions_version_comment"
-                          rows="4"
-                          tal:attributes="tabindex tabindex/next;" 
-                          tal:content="request/form/cmfeditions_version_comment | nothing"></textarea>
+                          size="40"
+                          tal:attributes="tabindex tabindex/next;
+                                          value request/form/cmfeditions_version_comment | nothing" />
             </div>
 
 
