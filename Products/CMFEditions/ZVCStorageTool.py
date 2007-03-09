@@ -29,6 +29,7 @@ import time
 import types
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
+from zope.interface import implements
 
 from Globals import InitializeClass
 from BTrees.OOBTree import OOBTree
@@ -48,6 +49,7 @@ from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
 from Products.ZopeVersionControl.Utility import VersionControlError
 from Products.ZopeVersionControl.EventLog import LogEntry
 
+from Products.CMFEditions.interfaces import IStorageTool
 from Products.CMFEditions.interfaces.IStorage import IStorage
 from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import IHistory
@@ -150,7 +152,8 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         IStorage,
         SimpleItem.__implements__,
     )
-        
+    implements(IStorageTool)
+
     id = 'portal_historiesstorage'
     alternative_id = 'portal_zvcstorage'
     

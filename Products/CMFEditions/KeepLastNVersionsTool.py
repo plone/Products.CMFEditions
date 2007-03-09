@@ -24,6 +24,7 @@ $Id$
 """
 __version__ = "$Revision$"
 
+from zope.interface import implements
 
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
@@ -33,6 +34,7 @@ from OFS.SimpleItem import SimpleItem
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 
+from Products.CMFEditions.interfaces import IPurgePolicyTool
 from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
 
 class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
@@ -43,7 +45,8 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
         IPurgePolicy,
         SimpleItem.__implements__,
     )
-        
+    implements(IPurgePolicyTool)
+
     id = 'portal_purgepolicy'
     alternative_id = 'portal_keeplastnversions'
     

@@ -24,6 +24,9 @@ $Id: ModifierRegistryTool.py,v 1.17 2005/06/24 11:42:01 gregweb Exp $
 """
 __version__ = "$Revision: 1.17 $"
 
+from zope.component import getUtility
+from zope.interface import implements
+
 from Globals import InitializeClass
 from Missing import MV
 
@@ -31,7 +34,6 @@ from Acquisition import aq_base
 from AccessControl import ClassSecurityInfo
 from OFS.OrderedFolder import OrderedFolder
 
-from zope.component import getUtility
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.interfaces import IURLTool
 
@@ -39,6 +41,7 @@ from Products.CMFCore.permissions import ManagePortal
 
 from Products.CMFEditions.utilities import KwAsAttributes
 
+from Products.CMFEditions.interfaces import IPortalModifierTool
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
@@ -62,7 +65,9 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         IModifierRegistryQuery,
 #        IBulkEditableSubscriberRegistry,        # not yet implemented
     )
-    
+
+    implements(IPortalModifierTool)
+
     id = 'portal_modifier'
     alternative_id = 'portal_modifierregistry'
 

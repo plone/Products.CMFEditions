@@ -26,6 +26,7 @@ $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 import time
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler
+from zope.interface import implements
 
 from Globals import InitializeClass
 from Persistence import Persistent
@@ -40,6 +41,7 @@ from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
+from Products.CMFEditions.interfaces import IArchivistTool
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
 from Products.CMFEditions.interfaces.IArchivist import IHistory
@@ -148,7 +150,8 @@ class ArchivistTool(UniqueObject, SimpleItem):
         IArchivist,
         SimpleItem.__implements__,
     )
-        
+    implements(IArchivistTool)
+
     id = 'portal_archivist'
     alternative_id = 'portal_standard_archivist'
     
