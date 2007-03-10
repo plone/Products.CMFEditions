@@ -3,9 +3,9 @@
    cookie_persistence="False" default_skin="Plone Default"
    request_varname="plone_skin">
  <object name="CMFEditions" meta_type="Filesystem Directory View"
-    directory="CMFEditions/skins/CMFEditions"/>
+    directory="Products.CMFEditions:skins/CMFEditions"/>
  <object name="cmfeditions_views" meta_type="Filesystem Directory View"
-    directory="CMFEditions/skins/cmfeditions_views"/>
+    directory="Products.CMFEditions:skins/cmfeditions_views"/>
  <skin-path name="*">
   <layer name="cmfeditions_views" insert-after="custom"/>
   <layer name="CMFEditions" insert-after="cmfeditions_views"/>
