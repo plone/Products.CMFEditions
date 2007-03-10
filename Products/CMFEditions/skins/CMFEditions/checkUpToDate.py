@@ -7,8 +7,8 @@
 ##parameters=history
 ##title=Check if Up To Date
 ##
-from Products.CMFCore.utils import getToolByName
-repo = getToolByName(context, "portal_repository")
+from Products.CMFCore.utils import getToolByInterfaceName
+repo = getToolByInterfaceName('Products.CMFEditions.interfaces.IRepository.IRepositoryTool')
 
 version_id = getattr(context, "version_id", None)
 if version_id is None:

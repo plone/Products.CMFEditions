@@ -1,15 +1,16 @@
-from Products.CMFCore.utils import getToolByName
+from zope.component import getUtility
+
+from Products.CMFCore.interfaces import IPropertiesTool
+from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFCore.interfaces import ISkinsTool
 from Products.CMFCore.DirectoryView import addDirectoryViews
-from Products.ExternalMethod.ExternalMethod import ExternalMethod
 
 from Products.Archetypes.Extensions.utils import installTypes
 from Products.Archetypes import listTypes
 from Products.FAQ import PROJECTNAME,product_globals
 
-from zExceptions import NotFound
-
 from StringIO import StringIO
-import sys
+
 
 class PloneSkinRegistrar:
     """
@@ -53,7 +54,7 @@ class PloneSkinRegistrar:
         """
 
         rpt = '=> Installing and registering layers from directory %s\n' % self._skinsdir
-        skinstool = getToolByName(aq_obj, 'portal_skins')
+        skinstool = getUtility(ISkinsTool)
 
         # Create the layer in portal_skins
 
@@ -96,7 +97,7 @@ class PloneSkinRegistrar:
                 rpt += '! Warning: skipping "%s" skin, "%s" is already set up\n' % (skin, type)
         return rpt
 
-    def uninstall(self, aq_obj):
+    def uninstall(self, aq_obj, layerName=None):
         """Uninstalls and unregisters the skin resources
         @param aq_obj: object from which cmf site object is acquired
         @type aq_obj: any Zope object in the CMF
@@ -105,7 +106,7 @@ class PloneSkinRegistrar:
         """
 
         rpt = '=> Uninstalling and unregistering %s layer\n' % self._skinsdir
-        skinstool = getToolByName(aq_obj, 'portal_skins')
+        skinstool = getUtility(ISkinsTool)
 
         # Removing layer from portal_skins
         # XXX FIXME: Actually assumes only one layer directory with the name of the Product
@@ -137,7 +138,7 @@ class PloneSkinRegistrar:
 # /class PloneSkinRegistrar
 
 def install(self):
-    portal=getToolByName(self,'portal_url').getPortalObject()
+    portal = getUtility(ISiteRoot)
     out = StringIO()
     classes=listTypes(PROJECTNAME)
     installTypes(self, out,
@@ -150,7 +151,7 @@ def install(self):
     print >> out,sr.install(self,position='custom',mode='after',layerName=PROJECTNAME+'_public')
 
     #register folderish classes in use_folder_contents
-    props=getToolByName(self,'portal_properties').site_properties
+    props = getUtility(IPropertiesTool).site_properties
     use_folder_tabs=list(props.use_folder_tabs)
     print >> out, 'adding classes to use_folder_tabs:'
     for cl in classes:
@@ -167,7 +168,7 @@ def uninstall(self):
     classes=listTypes(PROJECTNAME)
 
     #unregister folderish classes in use_folder_contents
-    props=getToolByName(self,'portal_properties').site_properties
+    props = getUtility(IPropertiesTool).site_properties
     use_folder_tabs=list(props.use_folder_tabs)
     print >> out, 'removing classes from use_folder_tabs:'
     for cl in classes:

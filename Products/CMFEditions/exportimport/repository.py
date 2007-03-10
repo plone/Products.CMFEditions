@@ -1,4 +1,6 @@
-from Products.CMFCore.utils import getToolByName
+from zope.component import getUtility
+from zope.component import queryUtility
+
 from Products.CMFEditions.interfaces.IRepository import IRepositoryTool
 from Products.GenericSetup.utils import XMLAdapterBase
 from Products.GenericSetup.utils import exportObjects
@@ -49,7 +51,7 @@ def importRepositoryTool(context):
     """Import Repository Tool configuration.
     """
     site = context.getSite()
-    tool = getToolByName(site, 'portal_repository')
+    tool = getUtility(IRepositoryTool)
 
     importObjects(tool, '', context)
 
@@ -58,7 +60,7 @@ def exportRepositoryTool(context):
     """Export Repository Tool configuration.
     """
     site = context.getSite()
-    tool = getToolByName(site, 'portal_repository', None)
+    tool = queryUtility(IRepositoryTool)
     if tool is None:
         logger = context.getLogger("repositorytool")
         logger.info("Nothing to export.")

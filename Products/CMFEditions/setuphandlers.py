@@ -2,9 +2,12 @@
 CMFEditions setup handlers.
 """
 
-from Acquisition import aq_base
-from Products.CMFCore.utils import getToolByName
+from zope.component import getUtility
+
 from Products.CMFEditions import StandardModifiers
+from Products.CMFEditions.interfaces import IPortalModifierTool
+from Products.CMFEditions.interfaces.IRepository import IRepositoryTool
+
 from Products.CMFEditions.VersionPolicies import ATVersionOnEditPolicy
 
 # File and image versioning are disabled by default until we have modifiers to
@@ -40,9 +43,9 @@ def importVarious(context):
     if context.readDataFile('cmfeditions_various.txt') is None:
         return
     site = context.getSite()
-    portal_modifier = getToolByName(site, 'portal_modifier')
+    portal_modifier = getUtility(IPortalModifierTool)
     StandardModifiers.install(portal_modifier)
-    portal_repository = getToolByName(site, 'portal_repository')
+    portal_repository = getUtility(IRepositoryTool)
     portal_repository.setAutoApplyMode(True)
     portal_repository.setVersionableContentTypes(VERSIONING_ACTIONS.keys())
     portal_repository._migrateVersionPolicies()

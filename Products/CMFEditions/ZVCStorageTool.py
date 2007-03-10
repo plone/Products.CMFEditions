@@ -27,20 +27,21 @@ __version__ = "$Revision: 1.18 $"
 import logging
 import time
 import types
-from StringIO import StringIO
-from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
+from zope.component import getUtility
+from zope.component import queryUtility
 from zope.interface import implements
 
+from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
+from AccessControl import ClassSecurityInfo
 from Globals import InitializeClass
 from BTrees.OOBTree import OOBTree
 from BTrees.IOBTree import IOBTree
-from Persistence import Persistent
-from AccessControl import ClassSecurityInfo
-
 from OFS.SimpleItem import SimpleItem
+from Persistence import Persistent
+from StringIO import StringIO
+
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
-from zope.component import getUtility
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.interfaces import IURLTool
@@ -49,6 +50,7 @@ from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
 from Products.ZopeVersionControl.Utility import VersionControlError
 from Products.ZopeVersionControl.EventLog import LogEntry
 
+from Products.CMFEditions.interfaces import IPurgePolicyTool
 from Products.CMFEditions.interfaces import IStorageTool
 from Products.CMFEditions.interfaces.IStorage import IStorage
 from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
@@ -285,7 +287,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             # delegate retrieving to purge policy if one is available
             # if none is available just return the replacement for the
             # removed object
-            policy = getToolByName(self, 'portal_purgepolicy', None)
+            policy = queryUtility(IPurgePolicyTool)
             if policy is not None:
                 data = policy.retrieveSubstitute(history_id, selector, 
                                                  default=data)
@@ -370,7 +372,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         # delegate the decision if and what to purge to the purge policy 
         # tool if one exists. If the call returns ``False`` do not save 
         # or register the current version.
-        policy = getToolByName(self, 'portal_purgepolicy', None)
+        policy = queryUtility(IPurgePolicyTool)
         if policy is not None:
             if not policy.beforeSaveHook(history_id, object, metadata):
                 # returning None signalizes that the version wasn't saved

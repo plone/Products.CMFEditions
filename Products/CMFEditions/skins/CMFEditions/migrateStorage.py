@@ -7,8 +7,8 @@
 ##parameters=
 ##title=Migrate the Storage
 ##
-from Products.CMFCore.utils import getToolByName
-storage = getToolByName(context, "portal_historiesstorage")
+from Products.CMFCore.utils import getToolByInterfaceName
+storage = getToolByInterfaceName('Products.CMFEditions.interfaces.IStorageTool')
 result = storage.migrateStorage()
 if result is None:
     return "no storage migration necessary: nothing done"

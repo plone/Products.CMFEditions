@@ -24,6 +24,7 @@ $Id$
 """
 __version__ = "$Revision$"
 
+from zope.component import getUtility
 from zope.interface import implements
 
 from Globals import InitializeClass
@@ -32,9 +33,10 @@ from AccessControl import ClassSecurityInfo
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
 
-from Products.CMFCore.utils import UniqueObject, getToolByName
+from Products.CMFCore.utils import UniqueObject
 
 from Products.CMFEditions.interfaces import IPurgePolicyTool
+from Products.CMFEditions.interfaces import IStorageTool
 from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
 
 class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
@@ -78,7 +80,7 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
             # infinite: do nothing
             return True
             
-        storage = getToolByName(self, 'portal_historiesstorage')
+        storage = getUtility(IStorageTool)
         currentVersion = len(storage.getHistory(history_id))
         while True:
             length = len(storage.getHistory(history_id, countPurged=False))
@@ -97,7 +99,7 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
         If there isn't a next older one returns the next newer one.
         """
         selector = int(selector)
-        storage = getToolByName(self, 'portal_historiesstorage')
+        storage = getUtility(IStorageTool)
         savedSelector = selector
         while selector:
             selector -= 1

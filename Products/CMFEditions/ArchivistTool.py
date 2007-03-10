@@ -26,6 +26,7 @@ $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 import time
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler
+from zope.component import getUtility
 from zope.interface import implements
 
 from Globals import InitializeClass
@@ -34,7 +35,7 @@ from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, getSecurityManager
 from OFS.SimpleItem import SimpleItem
 
-from Products.CMFCore.utils import UniqueObject, getToolByName
+from Products.CMFCore.utils import UniqueObject
 
 from Products.CMFEditions.utilities import KwAsAttributes
 from Products.CMFEditions.utilities import dereference
@@ -42,6 +43,9 @@ from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 
 from Products.CMFEditions.interfaces import IArchivistTool
+from Products.CMFEditions.interfaces import IPortalModifierTool
+from Products.CMFEditions.interfaces import IStorageTool
+
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
 from Products.CMFEditions.interfaces.IArchivist import IHistory
@@ -56,6 +60,7 @@ from Products.CMFEditions.interfaces.IArchivist import ArchivistSaveError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredError
 
+from Products.CMFUid.interfaces import IUniqueIdHandler
 
 RETRIEVING_UNREGISTERED_FAILED = \
     "Retrieving a version of an unregistered object is not possible. " \
@@ -122,7 +127,7 @@ class VersionAwareReference(Persistent):
     def setReference(self, target_obj, remove_info=True):
         """See IVersionAwareReference
         """
-        storage = getToolByName(target_obj, 'portal_historiesstorage')
+        storage = getUtility(IStorageTool)
         
         # save as much information as possible
         # it may be that the target object is not yet registered with the 
@@ -181,7 +186,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
     def _cloneByPickle(self, obj):
         """Returns a deep copy of a ZODB object, loading ghosts as needed.
         """
-        modifier = getToolByName(self, 'portal_modifier')
+        modifier = getUtility(IPortalModifierTool)
         callbacks = modifier.getOnCloneModifiers(obj)
         if callbacks is not None:
             pers_id, pers_load, inside_orefs, outside_orefs = callbacks[0:4]
@@ -209,8 +214,8 @@ class ArchivistTool(UniqueObject, SimpleItem):
     def prepare(self, obj, app_metadata=None, sys_metadata={}):
         """See IArchivist.
         """
-        storage = getToolByName(self, 'portal_historiesstorage')
-        modifier = getToolByName(self, 'portal_modifier')
+        storage = getUtility(IStorageTool)
+        modifier = getUtility(IPortalModifierTool)
         
         obj, history_id = dereference(obj, zodb_hook=self)
         if storage.isRegistered(history_id):
@@ -224,7 +229,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
             # (the current implementation isn't able yet to handle multiple
             # locations. Nevertheless lets set the location id to a well
             # known default value)
-            uidhandler = getToolByName(self, 'portal_uidhandler')
+            uidhandler = getUtility(IUniqueIdHandler)
             history_id = uidhandler.register(obj)
             version_id = obj.version_id = 0
             obj.location_id = 0
@@ -263,7 +268,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
         """
         # only register at the storage layer if not yet registered
         if not prepared_obj.is_registered:
-            storage = getToolByName(self, 'portal_historiesstorage')
+            storage = getUtility(IStorageTool)
             return storage.register(prepared_obj.history_id, 
                                     prepared_obj.clone, 
                                     prepared_obj.referenced_data,
@@ -280,7 +285,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
                 "Saving an unregistered object is not possible. Register "
                 "the object '%s' first. "% prepared_obj.original.object)
         
-        storage = getToolByName(self, 'portal_historiesstorage')
+        storage = getUtility(IStorageTool)
         return storage.save(prepared_obj.history_id, 
                             prepared_obj.clone, 
                             prepared_obj.referenced_data, 
@@ -295,7 +300,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
               countPurged=True):
         """See IPurgeSupport.
         """
-        storage = getToolByName(self, 'portal_historiesstorage')
+        storage = getUtility(IStorageTool)
         obj, history_id = dereference(obj, history_id, self)
         storage.purge(history_id, selector, metadata, countPurged)
 
@@ -343,7 +348,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
                    countPurged=True):
         """See IPurgeSupport.
         """
-        storage = getToolByName(self, 'portal_historiesstorage')
+        storage = getUtility(IStorageTool)
         obj, history_id = dereference(obj, history_id, self)
         if not storage.isRegistered(history_id):
             raise ArchivistUnregisteredError(
@@ -383,7 +388,7 @@ class PreparedObject:
         # register with sys_metadata as there is no other possibility
         obj = original.object
         parent = aq_parent(aq_inner(obj))
-        portal_uidhandler = getToolByName(obj, 'portal_uidhandler')
+        portal_uidhandler = getUserId(IUniqueIdHandler)
         
         # set defaults if missing
         sys_metadata['comment'] = sys_metadata.get('comment', '')
@@ -429,8 +434,8 @@ class LazyHistory:
         the obj. If the obj is omitted, then the obj will be obtained by 
         dereferencing the history_id.
         """
-        self._modifier = getToolByName(archivist, 'portal_modifier')
-        storage = getToolByName(archivist, 'portal_historiesstorage')
+        self._modifier = getUtility(IPortalModifierTool)
+        storage = getUtility(IStorageTool)
         self._obj, history_id = dereference(obj, history_id, archivist)
         self._preserve = preserve
         self._history = storage.getHistory(history_id, countPurged)

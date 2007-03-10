@@ -28,8 +28,9 @@ from Products.PloneTestCase import PloneTestCase
 PloneTestCase.setupPloneSite()
 
 import transaction
+from zope.component import getUtility
+
 from Interface.Verify import verifyObject
-from Products.CMFCore.utils import getToolByName
 
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
 from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
@@ -38,6 +39,7 @@ from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolic
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.CMFEditions.VersionPolicies import ATVersionOnEditPolicy
+from Products.CMFFormController.interfaces import IFormControllerTool
 
 from DummyTools import DummyArchivist
 from DummyTools import notifyModified
@@ -389,7 +391,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         self.np = len(self.portal.portal_repository.listPolicies())
 
     def isFCActionInPlace(self, object_id, status, button, context):
-        fc = getToolByName(self.portal, 'portal_form_controller')
+        fc = getUtility(IFormControllerTool)
         for action in fc.listFormActions(1):
             if (object_id == action.getObjectId() and
                 status == action.getStatus() and
