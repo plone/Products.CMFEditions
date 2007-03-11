@@ -388,7 +388,7 @@ class PreparedObject:
         # register with sys_metadata as there is no other possibility
         obj = original.object
         parent = aq_parent(aq_inner(obj))
-        portal_uidhandler = getUserId(IUniqueIdHandler)
+        portal_uidhandler = getUtility(IUniqueIdHandler)
         
         # set defaults if missing
         sys_metadata['comment'] = sys_metadata.get('comment', '')
