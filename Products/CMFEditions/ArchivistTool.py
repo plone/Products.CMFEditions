@@ -35,6 +35,7 @@ from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, getSecurityManager
 from OFS.SimpleItem import SimpleItem
 
+from Products.CMFCore.utils import registerToolInterface
 from Products.CMFCore.utils import UniqueObject
 
 from Products.CMFEditions.utilities import KwAsAttributes
@@ -359,6 +360,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
         return modified == obj.modified()
 
 InitializeClass(ArchivistTool)
+registerToolInterface('portal_archivist', IArchivistTool)
 
 
 def getUserId():

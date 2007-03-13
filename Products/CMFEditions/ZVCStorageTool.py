@@ -42,7 +42,9 @@ from StringIO import StringIO
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
-from Products.CMFCore.utils import UniqueObject, getToolByName
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.utils import registerToolInterface
+from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.interfaces import IURLTool
 
@@ -732,6 +734,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         }
 
 InitializeClass(ZVCStorageTool)
+registerToolInterface('portal_historiesstorage', IStorageTool)
 
 
 class ShadowStorage(Persistent):

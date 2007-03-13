@@ -39,7 +39,9 @@ from BTrees.OOBTree import OOBTree
 from Products.Archetypes.interfaces import IReferenceCatalog
 from Products.Archetypes.interfaces import IUIDCatalog
 
-from Products.CMFCore.utils import UniqueObject, getToolByName
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.utils import registerToolInterface
+from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.utils import _checkPermission
 
 from Products.CMFEditions.interfaces import IArchivistTool
@@ -779,3 +781,4 @@ class GetItemIterator:
 
 
 InitializeClass(CopyModifyMergeRepositoryTool)
+registerToolInterface('portal_repository', IRepositoryTool)
