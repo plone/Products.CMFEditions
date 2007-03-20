@@ -26,8 +26,6 @@ __version__ = "$Revision: 1.17 $"
 
 from Globals import package_home
 
-import patches
-
 from Products.CMFCore import utils
 from Products.CMFCore.DirectoryView import registerDirectory
 
