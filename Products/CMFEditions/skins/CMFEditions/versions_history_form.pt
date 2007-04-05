@@ -10,7 +10,8 @@
                    history python:pr.getHistory(here, countPurged=False);"
                    tal:condition="python: pr.isVersionable(context)">
 
-    <h1 i18n:translate="versions_of_title">Versions of
+    <h1 class="documentFirstHeading"
+        i18n:translate="versions_of_title">Versions of
           "<span i18n:name="title" tal:replace="here/title_or_id">title</span>"
     </h1>
 
