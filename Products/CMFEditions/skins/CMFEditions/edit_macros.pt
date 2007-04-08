@@ -88,11 +88,12 @@
                      Enter a comment that describes the changes you made.
                 </div>
                 <input tabindex="#"
-                          name="cmfeditions_version_comment"
-                          id="cmfeditions_version_comment"
-                          size="40"
-                          tal:attributes="tabindex tabindex/next;
-                                          value request/form/cmfeditions_version_comment | nothing" />
+                       type="text"
+                       name="cmfeditions_version_comment"
+                       id="cmfeditions_version_comment"
+                       size="40"
+                       tal:attributes="tabindex tabindex/next;
+                                       value request/form/cmfeditions_version_comment | nothing" />
             </div>
 
 
