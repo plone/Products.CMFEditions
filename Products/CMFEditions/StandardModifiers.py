@@ -32,16 +32,9 @@ from Acquisition import aq_base
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
-from zope.component import getUtility
-from zope.component import queryUtility
-
-from Products.Archetypes.interfaces import IReferenceCatalog
-from Products.CMFCore.interfaces import IConfigurableWorkflowTool
-
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import ManagePortal
 
-from Products.CMFEditions.interfaces import IArchivistTool
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
@@ -49,8 +42,6 @@ from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
 from Products.CMFEditions.interfaces.IModifier import IReferenceAdapter
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
-
-from Products.CMFUid.interfaces import IUniqueIdAnnotationManagement
 
 try:
     from Products.Archetypes.interfaces.referenceable import IReferenceable
@@ -245,7 +236,7 @@ class OMBaseModifier:
     def _getOnCloneModifiers(self, obj):
         """Removes all childrens and returns them as references.
         """
-        portal_archivist = getUtility(IArchivistTool)
+        portal_archivist = getToolByName(obj, 'portal_archivist')
         VersionAwareReference = portal_archivist.classes.VersionAwareReference
 
         # do not pickle the object managers subobjects
@@ -273,7 +264,7 @@ class OMBaseModifier:
     def _beforeSaveModifier(self, obj, clone):
         """Returns all unititialized 'IVersionAwareReference' objects.
         """
-        portal_archivist = getUtility(IArchivistTool)
+        portal_archivist = getToolByName(obj, 'portal_archivist')
         AttributeAdapter = portal_archivist.classes.AttributeAdapter
 
         # just return adapters to the attributes that were replaced by
@@ -465,7 +456,7 @@ class RetainWorkflowStateAndHistory:
         #
         # Anyway the review state may be a very interesting piece of 
         # information for a hypothetic purge policy ...
-        wflow = queryUtility(IConfigurableWorkflowTool)
+        wflow = getToolByName(obj, "portal_workflow", None)
         if wflow is not None:
             review_state = wflow.getInfoFor(obj, "review_state")
         else:
@@ -543,7 +534,7 @@ class RetainUIDs:
         if uid_tool is not None:
             working_uid = uid_tool.queryUid(obj)
             copy_uid = uid_tool.queryUid(repo_clone)
-            anno_tool = getUtility(IUniqueIdAnnotationManagement)
+            anno_tool = getToolByName(obj, 'portal_uidannotation')
             annotation = anno_tool(repo_clone, uid_tool.UID_ATTRIBUTE_NAME)
             annotation.setUid(working_uid)
 
@@ -614,7 +605,7 @@ class NotRetainATRefs:
                 ref_objs = orig_refs_container.objectValues()
                 repo_clone_ref_ids = repo_clone_refs_container.objectIds()
 
-                reference_catalog = getUtility(IReferenceCatalog)
+                reference_catalog = getToolByName(obj, 'reference_catalog')
                 if reference_catalog:
                     for ref in ref_objs:
                         if ref.getId() not in repo_clone_ref_ids:

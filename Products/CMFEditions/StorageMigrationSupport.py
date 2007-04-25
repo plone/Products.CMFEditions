@@ -27,11 +27,8 @@ $Id$
 import logging
 import os.path
 import time
-from zope.component import getUtility
-
+from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import PACKAGE_HOME
-from Products.CMFEditions.interfaces.IRepository import IRepositoryTool
-
 
 logger = logging.getLogger('CMFEditions')
 
@@ -187,13 +184,13 @@ hierarchy = {
 
 def createTestHierarchy(context):
     startTime = time.time()
-    repo = getUtility(IRepositoryTool)
+    repo = getToolByName(context, "portal_repository")
     testRoot = create(context,  "Folder", "CMFEditionsTestHierarchy")
     nbrOfObjects = 0
     nbrOfEdits = 0
     nbrOfSaves = 0
     for name, type in hierarchy.items():
-        logger.log(logging.INFO, "createTestHierarchy: creating container %s(%s)"
+        logger.log(logging.INFO "createTestHierarchy: creating container %s(%s)" \
             % (name, type[0]))
         folder = create(testRoot, type[0], name)
         nbrOfObjects += 1

@@ -7,9 +7,7 @@
 ##parameters=
 ##title=Create a test hierarchy for migration tests
 ##
-
-from Products.CMFCore.utils import getToolByInterfaceName
-
-repo = getToolByInterfaceName('Products.CMFEditions.interfaces.IRepository.IRepositoryTool')
+from Products.CMFCore.utils import getToolByName
+repo = getToolByName(context, "portal_repository")
 repo.createTestHierarchy(context)
 return "finished creating test hierarchy"

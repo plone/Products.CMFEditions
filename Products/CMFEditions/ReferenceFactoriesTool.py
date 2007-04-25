@@ -23,9 +23,6 @@
 $Id: $
 """
 
-from zope.component import getUtility
-from zope.component import queryUtility
-
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
 
@@ -36,7 +33,6 @@ from Products.CMFCore.utils import UniqueObject, getToolByName
 
 from Products.CMFEditions.utilities import generateId
 
-from Products.CMFEditions.interfaces import IArchivistTool
 from Products.CMFEditions.interfaces.IReferenceFactories \
     import IReferenceFactories
 
@@ -67,7 +63,7 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
         """
         # Just assuming ObjectManager behaviour for now
         portal_hidhandler = getToolByName(self, 'portal_historyidhandler')
-        portal_archivist = getUtility(IArchivistTool)
+        portal_archivist = getToolByName(self, 'portal_archivist')
         portal_type = repo_clone.getPortalTypeName()
         id = repo_clone.getId()
         if id in source.objectIds():

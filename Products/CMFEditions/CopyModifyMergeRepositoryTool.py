@@ -27,8 +27,6 @@ $Id: CopyModifyMergeRepositoryTool.py,v 1.20 2005/06/24 11:42:01 gregweb Exp $
 import time
 import transaction
 from zope.interface import implements
-from zope.component import getUtility
-from zope.component import queryUtility
 
 from Globals import InitializeClass
 from Acquisition import aq_base, aq_parent, aq_inner
@@ -36,16 +34,12 @@ from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem
 from BTrees.OOBTree import OOBTree
 
-from Products.Archetypes.interfaces import IReferenceCatalog
-from Products.Archetypes.interfaces import IUIDCatalog
-
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import registerToolInterface
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.utils import _checkPermission
 
-from Products.CMFEditions.interfaces import IArchivistTool
-from Products.CMFEditions.interfaces import IPurgePolicyTool
+from Products.CMFEditions.utilities import dereference, wrap
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
@@ -63,10 +57,7 @@ from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.CMFEditions.Permissions import RevertToPreviousVersions
 from Products.CMFEditions.Permissions import ManageVersioningPolicies
 from Products.CMFEditions.VersionPolicies import VersionPolicy
-from Products.CMFEditions.utilities import dereference, wrap
 from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
-from Products.CMFCore.interfaces import ICatalogTool
-from Products.CMFCore.interfaces import IURLTool
 try:
     from Products.Archetypes.interfaces.referenceable import IReferenceable
     from Products.Archetypes.config import REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
@@ -261,7 +252,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         
         hook = getattr(self._policy_defs[policy_id], HOOKS[action], None)
         if hook is not None and callable(hook):
-            portal = getUtility(IURLTool).getPortalObject()
+            portal = getToolByName(self, 'portal_url').getPortalObject()
             hook(portal, *args, **kw)
 
     # -------------------------------------------------------------------
@@ -305,13 +296,13 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # Trying to avoid mess with purged versions which we don't offer
         # support yet when passed to the repository layer due to a missing
         # purge policy. The problem would occure on revert and retrieve.
-        pp = queryUtility(IPurgePolicyTool)
+        pp = getToolByName(self, 'portal_purgepolicy', None)
         if pp is None:
             raise RepositoryPurgeError("Purging a version is not possible. "
                                        "Purge is only possible with a purge "
                                        "policy installed.")
 
-        portal_archivist = getUtility(IArchivistTool)
+        portal_archivist = getToolByName(self, 'portal_archivist')
         # just hand over to the archivist for the moment (recursive purging
         # may be implemented in a future release)
         metadata = {
@@ -387,7 +378,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     def isUpToDate(self, obj, selector=None, countPurged=True):
         """See IPurgeSupport.
         """
-        portal_archivist = getUtility(IArchivistTool)
+        portal_archivist = getToolByName(self, 'portal_archivist')
         return portal_archivist.isUpToDate(obj=obj, selector=selector,
                                            countPurged=countPurged)
 
@@ -418,7 +409,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     def _recursiveSave(self, obj, app_metadata, sys_metadata, autoapply):
         # prepare the save of the originating working copy
-        portal_archivist = getUtility(IArchivistTool)
+        portal_archivist = getToolByName(self, 'portal_archivist')
         prep = portal_archivist.prepare(obj, app_metadata, sys_metadata)
 
         # set the originator of the save operation for the referenced
@@ -479,7 +470,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                            ignore_existing=False, countPurged=True):
         """This is the real workhorse pulling objects out recursively.
         """
-        portal_archivist = getUtility(IArchivistTool)
+        portal_archivist = getToolByName(self, 'portal_archivist')
         portal_reffactories = getToolByName(self, 'portal_referencefactories')
         if ignore_existing:
             obj = None
@@ -604,7 +595,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     def _fixupCatalogData(self, obj):
         """ Reindex the object, otherwise the catalog will certainly
         be out of sync."""
-        portal_catalog = getUtility(ICatalogTool)
+        portal_catalog = getToolByName(self, 'portal_catalog')
         portal_catalog.reindexObject(obj)
         # XXX: In theory we should probably be emitting IObjectModified and
         # IObjectMoved events here as those are the possible consequences of a
@@ -636,8 +627,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         if IReferenceable.isImplementedBy(obj) and hasattr(obj, REFERENCES_CONTAINER_NAME):
             # Delete refs if their target doesn't exists anymore
             ref_folder = getattr(obj, REFERENCES_CONTAINER_NAME)
-            uid_catalog = getUtility(IUIDCatalog)
-            ref_catalog = getUtility(IReferenceCatalog)
+            uid_catalog = getToolByName(self, 'uid_catalog')
+            ref_catalog = getToolByName(self, 'reference_catalog')
             ref_objs = ref_folder.objectValues()
             for ref in ref_objs:
                 if not uid_catalog(UID=ref.targetUID):
@@ -727,7 +718,7 @@ class LazyHistory:
     __allow_access_to_unprotected_subobjects__ = 1
 
     def __init__(self, repository, obj, oldestFirst, preserve, countPurged):
-        archivist = getUtility(IArchivistTool)
+        archivist = getToolByName(repository, 'portal_archivist')
         self._repo = repository
         self._obj = obj
         self._oldestFirst = oldestFirst

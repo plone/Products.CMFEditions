@@ -19,13 +19,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """Default Version Policy implementations.
-"""
 
-from zope.component import queryUtility
+$Id$
+"""
 
 from AccessControl import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
-from Products.CMFFormController.interfaces import IFormControllerTool
+from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IVersionPolicy import IVersionPolicy
 
 
@@ -73,7 +73,7 @@ class ATVersionOnEditPolicy(VersionPolicy):
 
 # Helper methods
 def add_form_controller_overrides(portal, actions):
-    fc = queryUtility(IFormControllerTool)
+    fc = getToolByName(portal, 'portal_form_controller', None)
     if fc is not None:
         for action in actions:
             fc.addFormAction(action['template'],
@@ -85,7 +85,7 @@ def add_form_controller_overrides(portal, actions):
 
 
 def remove_form_controller_overrides(portal, actions):
-    fc = queryUtility(IFormControllerTool)
+    fc = getToolByName(portal, 'portal_form_controller', None)
     # Fake a request because form controller needs one to delete actions
     fake_req = DummyRequest()
     i = 0

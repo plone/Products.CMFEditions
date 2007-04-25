@@ -26,14 +26,14 @@ $Id: test_ModifierRegistryTool.py,v 1.12 2005/02/25 22:04:00 tomek1024 Exp $
 from Products.PloneTestCase import PloneTestCase
 PloneTestCase.setupPloneSite()
 
+
 from pickle import dumps, loads, HIGHEST_PROTOCOL
-from zope.component import getUtility
-from zope.component import queryUtility
 
-from Acquisition import aq_base
 from Interface.Verify import verifyObject
+from Acquisition import aq_base
 
-from Products.CMFEditions.interfaces import IPortalModifierTool
+from Products.CMFCore.utils import getToolByName
+
 from Products.CMFEditions.interfaces.IModifier import IModifierRegistrySet
 from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
@@ -163,7 +163,7 @@ class TestModifierRegistryTool(PloneTestCase.PloneTestCase):
         self.portal.invokeFactory('Document', 'doc')
 
         # just unregister the standard modifiers for the unit tests
-        portal_modifier = getUtility(IPortalModifierTool)
+        portal_modifier = getToolByName(self.portal, 'portal_modifier')
         modifiers = portal_modifier.modules.StandardModifiers.modifiers
         for m in modifiers:
             portal_modifier.unregister(m['id'])
