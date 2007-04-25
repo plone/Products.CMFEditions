@@ -150,17 +150,6 @@ def install(self):
     print >> out,sr.install(self)
     print >> out,sr.install(self,position='custom',mode='after',layerName=PROJECTNAME+'_public')
 
-    #register folderish classes in use_folder_contents
-    props = getUtility(IPropertiesTool).site_properties
-    use_folder_tabs=list(props.use_folder_tabs)
-    print >> out, 'adding classes to use_folder_tabs:'
-    for cl in classes:
-        print >> out,  'type:',cl['klass'].portal_type
-        if cl['klass'].isPrincipiaFolderish and not cl['klass'].portal_type in []:
-            use_folder_tabs.append(cl['klass'].portal_type)
-
-    props.use_folder_tabs=tuple(use_folder_tabs)
-
     return out.getvalue()
 
 def uninstall(self):
