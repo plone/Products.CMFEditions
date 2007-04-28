@@ -34,9 +34,7 @@ from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem
 from BTrees.OOBTree import OOBTree
 
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.utils import registerToolInterface
-from Products.CMFCore.utils import UniqueObject
+from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
 
 from Products.CMFEditions.utilities import dereference, wrap
@@ -772,4 +770,3 @@ class GetItemIterator:
 
 
 InitializeClass(CopyModifyMergeRepositoryTool)
-registerToolInterface('portal_repository', IRepositoryTool)

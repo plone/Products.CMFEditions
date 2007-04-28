@@ -34,10 +34,7 @@ from Acquisition import aq_base
 from AccessControl import ClassSecurityInfo
 from OFS.OrderedFolder import OrderedFolder
 
-from Products.CMFCore.utils import registerToolInterface
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.utils import UniqueObject
-from Products.CMFCore.interfaces import IURLTool
+from Products.CMFCore.utils import UniqueObject, getToolByName
 
 from Products.CMFCore.permissions import ManagePortal
 
@@ -331,4 +328,3 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
     
 
 InitializeClass(ModifierRegistryTool)
-registerToolInterface('portal_modifier', IPortalModifierTool)

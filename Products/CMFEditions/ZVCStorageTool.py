@@ -40,9 +40,7 @@ from AccessControl import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.utils import registerToolInterface
-from Products.CMFCore.utils import UniqueObject
+from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.permissions import ManagePortal
 
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
@@ -730,7 +728,6 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         }
 
 InitializeClass(ZVCStorageTool)
-registerToolInterface('portal_historiesstorage', IStorageTool)
 
 
 class ShadowStorage(Persistent):
