@@ -99,7 +99,6 @@
               </div>
               <textarea cols="60"
                         rows="3"
-                        tabindex=""
                         id="versioncomment"
                         name="versioncomment"
                         >Insert a comment.</textarea>
@@ -109,7 +108,6 @@
                         type="submit"
                         name="saveversion"
                         value="Save as a new version"
-                        tabindex=""
                         />
 
         </fieldset>

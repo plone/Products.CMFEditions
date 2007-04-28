@@ -63,8 +63,7 @@
               
               <input type="checkbox"
                      name="cmfeditions_save_new_version"
-                     id="cmfeditions_save_new_version"
-                     tal:attributes="tabindex tabindex/next;"/>
+                     id="cmfeditions_save_new_version" />
               <label>
                 <span i18n:translate="label_save_new_version">
                 Save as new version
@@ -87,13 +86,11 @@
                      i18n:translate="help_version_comment">
                      Enter a comment that describes the changes you made.
                 </div>
-                <input tabindex="#"
-                       type="text"
+                <input type="text"
                        name="cmfeditions_version_comment"
                        id="cmfeditions_version_comment"
                        size="40"
-                       tal:attributes="tabindex tabindex/next;
-                                       value request/form/cmfeditions_version_comment | nothing" />
+                       tal:attributes="value request/form/cmfeditions_version_comment | nothing" />
             </div>
 
 

@@ -174,7 +174,6 @@
               </div>
               <textarea cols="60"
                         rows="3"
-                        tabindex=""
                         id="versioncomment"
                         name="versioncomment"
                         ></textarea>
@@ -184,7 +183,6 @@
                         type="submit"
                         name="saveversion"
                         value="Save as a new version"
-                        tabindex=""
                         i18n:attributes="value button_save_as_new_version"
                         />
 
