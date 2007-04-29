@@ -224,7 +224,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
             # (the current implementation isn't able yet to handle multiple
             # locations. Nevertheless lets set the location id to a well
             # known default value)
-            uidhandler = getToolByName(self, 'portal_uidhandler')
+            uidhandler = getToolByName(self, 'portal_historyidhandler')
             history_id = uidhandler.register(obj)
             version_id = obj.version_id = 0
             obj.location_id = 0
@@ -383,7 +383,7 @@ class PreparedObject:
         # register with sys_metadata as there is no other possibility
         obj = original.object
         parent = aq_parent(aq_inner(obj))
-        portal_uidhandler = getToolByName(obj, 'portal_uidhandler')
+        portal_uidhandler = getToolByName(obj, 'portal_historyidhandler')
         
         # set defaults if missing
         sys_metadata['comment'] = sys_metadata.get('comment', '')

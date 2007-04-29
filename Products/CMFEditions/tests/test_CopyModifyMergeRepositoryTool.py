@@ -403,34 +403,33 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         # test the tools interface conformance
         verifyObject(IContentTypeVersionPolicySupport, portal_repository)
 
-    def test01_set_policy_on_type(self):
-        # test that policies which can be set and retrieved
-        portal_repository = self.portal.portal_repository
-        self.failIf(portal_repository.supportsPolicy(self.portal.doc,
-                                                        'at_edit_autoversion'))
-        self.failIf(portal_repository.hasPolicy(self.portal.doc))
-        portal_repository.addPolicyForContentType('Document',
-                                                        'at_edit_autoversion')
-        self.failUnless(portal_repository.supportsPolicy(self.portal.doc,
-                                                        'at_edit_autoversion'))
-        self.failUnless(portal_repository.hasPolicy(self.portal.doc))
-
-    def test02_remove_policy_from_type(self):
-        # test that policies which can be set and retrieved
+    def test01_remove_policy_from_type(self):
+        # test that policies can be removed
         portal_repository = self.portal.portal_repository
         # Set it twice to ensure that duplicates aren't created
-        portal_repository.addPolicyForContentType('Document',
-                                                        'at_edit_autoversion')
-        portal_repository.addPolicyForContentType('Document',
-                                                        'at_edit_autoversion')
+        self.failUnless(portal_repository.supportsPolicy(self.portal.doc,
+                                                        'at_edit_autoversion'))
         portal_repository.removePolicyFromContentType('Document',
                                                         'at_edit_autoversion')
         self.failIf(portal_repository.supportsPolicy(self.portal.doc,
                                                         'at_edit_autoversion'))
-        self.failIf(portal_repository.hasPolicy(self.portal.doc))
+
+    def test02_set_policy_on_type(self):
+        # test that policies can be set and retrieved
+        portal_repository = self.portal.portal_repository
+        self.failUnless(portal_repository.supportsPolicy(self.portal.doc,
+                                                        'at_edit_autoversion'))
+        portal_repository.removePolicyFromContentType('Document',
+                                                        'at_edit_autoversion')
+        self.failIf(portal_repository.supportsPolicy(self.portal.doc,
+                                                        'at_edit_autoversion'))
+        portal_repository.addPolicyForContentType('Document',
+                                                        'at_edit_autoversion')
+        self.failUnless(portal_repository.supportsPolicy(self.portal.doc,
+                                                        'at_edit_autoversion'))
 
     def test03_set_policy_types_map(self):
-        # test that policies which can be set and retrieved
+        # test the mapping of policies to types
         portal_repository = self.portal.portal_repository
         # Get something in place first
         portal_repository.addPolicyForContentType('Document',
@@ -474,7 +473,6 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         self.assertEqual(len(portal_repository.listPolicies()), self.np)
         self.failIf(portal_repository.supportsPolicy(self.portal.doc,
                                                         'version_on_publish'))
-        self.failIf(portal_repository.hasPolicy(self.portal.doc))
 
     def test07_set_policy_defs(self):
         # test update policy definition list
@@ -607,6 +605,17 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                                                      'success', None, None))
         self.failUnless(self.isFCActionInPlace('atct_edit',
                                                      'success', None, None))
+
+    def test14_has_policy(self):
+        portal_repository = self.portal.portal_repository
+        # We already have two policies by default
+        self.failUnless(portal_repository.hasPolicy(self.portal.doc))
+        portal_repository.removePolicyFromContentType('Document',
+                                                        'at_edit_autoversion')
+        portal_repository.removePolicyFromContentType('Document',
+                                                        'version_on_revert')
+        self.failIf(portal_repository.hasPolicy(self.portal.doc))
+
 
 
 from unittest import TestSuite, makeSuite

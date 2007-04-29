@@ -58,7 +58,7 @@ def dereference(obj=None, history_id=None, zodb_hook=None):
         # try to use the reference as zodb hook
         zodb_hook = obj
 
-    portal_uidhandler = getToolByName(zodb_hook, 'portal_uidhandler')
+    portal_uidhandler = getToolByName(zodb_hook, 'portal_historyidhandler')
 
     if history_id is None:
         if obj is None:

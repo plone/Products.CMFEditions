@@ -307,7 +307,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             "app_metadata": metadata,
             "sys_metadata": self._prepareSysMetadata(comment),
         }
-        portal_archivist.purge(obj=obj, selector=selector, comment=comment, 
+        portal_archivist.purge(obj=obj, selector=selector,
                                metadata=metadata, countPurged=countPurged)
 
     security.declarePublic('revert')
