@@ -4,6 +4,12 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+
+CMFEditions 1.1-beta4 (April 30, 2007)
+----------------------------------------
+
+- Updated permission mapping to account for new local roles (Editor/Contributor)
+
 CMFEditions 1.1-beta3 (April 29, 2007)
 ----------------------------------------
 
