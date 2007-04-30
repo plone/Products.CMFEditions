@@ -4,6 +4,18 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+CMFEditions 1.1-beta3 (April 29, 2007)
+----------------------------------------
+
+- No longer register tools as utilities, since it broke the tests among
+  other things.
+
+CMFEdition 1.1-beta2 (March 26, 2007)
+----------------------------------------
+
+- Register tools as utilities
+
+
 CMFEditions 1.1-beta1 (March 5, 2007)
 ----------------------------------------
 
