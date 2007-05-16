@@ -78,7 +78,7 @@
                   </td>
                   <td class="VersionActions">
                     <ul>
-                        <li condition="exists:here/portal_diff">
+                        <li tal:condition="exists:here/portal_diff">
                             <a href=""
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/version_diff?version_id1=current&amp;version_id2=${reverted_vid}">
@@ -128,7 +128,7 @@
                         <li tal:condition="not:current_version">
                             <a href=""
                                style="text-decoration: none"
-                               tal:attributes="href string:$here_url/version_diff?version_id1=current&version_id2=${id}">
+                               tal:attributes="href string:$here_url/version_diff?version_id1=current&amp;version_id2=${id}">
                             Compare to current revision
                             </a>
                         </li>
@@ -136,7 +136,7 @@
                             <a href=""
                                style="text-decoration: none"
                                tal:define="prev_ver python:str(int(id)-1)"
-                               tal:attributes="href string:$here_url/version_diff?version_id1=${id}&version_id2=${prev_ver}">
+                               tal:attributes="href string:$here_url/version_diff?version_id1=${id}&amp;version_id2=${prev_ver}">
                             Compare to previous revision
                             </a>
                         </li>

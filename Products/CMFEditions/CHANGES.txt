@@ -5,6 +5,8 @@ CMFEditions Changes
 This file contains change information for the CMFEditions releases.
 
 
+- Minor template corrections. [hannosch]
+
 CMFEditions 1.1-beta4 (April 30, 2007)
 ----------------------------------------
 
@@ -20,7 +22,6 @@ CMFEdition 1.1-beta2 (March 26, 2007)
 ----------------------------------------
 
 - Register tools as utilities
-
 
 CMFEditions 1.1-beta1 (March 5, 2007)
 ----------------------------------------
