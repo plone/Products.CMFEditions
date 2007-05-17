@@ -1,4 +1,4 @@
-<metal:block class="versionsHistory"
+<span class="versionsHistory"
       metal:define-macro="versions_history"
       i18n:domain="cmfeditions">
 <tal:history      tal:define="pr nocall:here/portal_repository;
@@ -48,4 +48,4 @@
       </dl>
     </tal:history>
 
-</metal:block>
+</span>

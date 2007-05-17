@@ -1,9 +1,15 @@
-<metal:page define-macro="master"
- i18n:domain="cmfeditions">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+    define-macro="master"
+    i18n:domain="cmfeditions">
+
 <metal:master use-macro="here/prefs_main_template/macros/master">
 
     <metal:block metal:fill-slot="top_slot" define-slot="top_slot"
         tal:define="dummy python:request.set('disable_border',1)" />
+
     <body>
 
     <div i18n:domain="cmfeditions"
@@ -17,29 +23,16 @@
          tal:define="type_list here/portal_types/listContentTypes;
                      friendly_list putils/getUserFriendlyTypes;
                      show_all request/show_all|nothing">
-<!-- Is this really necessary? How can the versioning prefs get more than one tab?
-        <ul class="contentViews"
-        tal:define="tabs python:(('Versioning properties','versioning_config_form'),);
-                tabs python:[ {'label':label, 'name':name} for (label,name) in tabs ];">
-        <li tal:repeat="tab tabs"
-        class="selected" tal:attributes="class python:template.pt_source_file()==tab['name'] and 'selected' or ''">
-        <a href=""
-        tal:attributes="href string:${here/absolute_url}/${tab/name}"
-        i18n:translate="" tal:content="tab/label">Versioning</a>
-        </li>
-        </ul>
 
-        <div class="contentActions">
-        &nbsp;
-        </div>
--->
         <div metal:define-slot="multisite_content">
+
         <h1 i18n:translate="label_title_vers_config">Versioning Settings</h1>
-        
+
         <p class="documentDescription"
            i18n:translate="description_version_settings">
-        You can have different settings for each content type. Content can be automatically versioned, and you can also opt to create a version when you 
-        revert a revision.
+           You can have different settings for each content type. Content can
+           be automatically versioned, and you can also opt to create a version
+           when you revert a revision.
         </p>
         
         <form action="."
@@ -47,8 +40,10 @@
             method="post">
 
         <fieldset>
-        <legend 
-        i18n:translate="label_versionable_content_types">Versionable content types</legend>
+        <legend i18n:translate="label_versionable_content_types">
+            Versionable content types
+        </legend>
+
         <div class="field">
             <a href="" i18n:translate="label_versioning_config_show_all"
                tal:attributes="href string:${request/ACTUAL_URL}?show_all=True"
@@ -58,8 +53,10 @@
                tal:attributes="href string:${request/ACTUAL_URL}"
                tal:condition="python:friendly_list and show_all">
                Show only searchable types</a>
-            
+
             <table class="listing"
+                   summary="Versionable content types"
+                   i18n:attributes="summary label_versionable_content_types;"
                    tal:define="pr nocall:here/portal_repository;
                             versionablelist pr/getVersionableContentTypes;
                             all_policies pr/getPolicyMap;
@@ -135,4 +132,4 @@
 
     </body>
 </metal:master>
-</metal:page>
+</html>
