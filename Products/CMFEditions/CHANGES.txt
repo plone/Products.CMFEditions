@@ -5,6 +5,8 @@ CMFEditions Changes
 This file contains change information for the CMFEditions releases.
 
 
+- Removed i18n folder. Translations are shipped in PloneTranslations. [hannosch]
+
 - Minor template corrections. [hannosch]
 
 CMFEditions 1.1-beta4 (April 30, 2007)
