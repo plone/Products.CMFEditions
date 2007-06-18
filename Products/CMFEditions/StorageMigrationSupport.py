@@ -190,7 +190,7 @@ def createTestHierarchy(context):
     nbrOfEdits = 0
     nbrOfSaves = 0
     for name, type in hierarchy.items():
-        logger.log(logging.INFO "createTestHierarchy: creating container %s(%s)" \
+        logger.log(logging.INFO, "createTestHierarchy: creating container %s(%s)" \
             % (name, type[0]))
         folder = create(testRoot, type[0], name)
         nbrOfObjects += 1
