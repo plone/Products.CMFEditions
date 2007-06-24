@@ -32,7 +32,6 @@ from AccessControl import ClassSecurityInfo
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
 
-from Products.CMFCore.utils import registerToolInterface
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.utils import getToolByName
 
@@ -121,4 +120,3 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
         return default
 
 InitializeClass(KeepLastNVersionsTool)
-registerToolInterface('portal_purgepolicy', IPurgePolicyTool)
