@@ -133,7 +133,7 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     def queryObject(self, uid, default=None):
         """See IUniqueIdQuery.
         """
-        histid_handler = getToolByName(self, 'portal_uidhandler', None)
+        histid_handler = getToolByName(self, 'portal_historyidhandler', None)
         if histid_handler is not None:
             return histid_handler.queryObject(uid, default)
     
