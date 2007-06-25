@@ -69,7 +69,7 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     def register(self, obj):
         """See IUniqueIdSet.
         """
-        histid_handler = getToolByName(self, 'portal_uidhandler', None)
+        histid_handler = getToolByName(self, 'portal_historyidhandler', None)
         if histid_handler is not None:
             return histid_handler.register(obj)
     
@@ -77,7 +77,7 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     def unregister(self, obj):
         """See IUniqueIdSet.
         """
-        histid_handler = getToolByName(self, 'portal_uidhandler', None)
+        histid_handler = getToolByName(self, 'portal_historyidhandler', None)
         if histid_handler is not None:
             histid_handler.unregister(obj)
     
@@ -85,7 +85,7 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     def queryUid(self, obj, default=None):
         """See IUniqueIdQuery.
         """
-        histid_handler = getToolByName(self, 'portal_uidhandler', None)
+        histid_handler = getToolByName(self, 'portal_historyidhandler', None)
         if histid_handler is not None:
             return histid_handler.queryUid(obj, default)
     
@@ -93,7 +93,7 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     def getUid(self, obj):
         """See IUniqueIdQuery.
         """
-        histid_handler = getToolByName(self, 'portal_uidhandler', None)
+        histid_handler = getToolByName(self, 'portal_historyidhandler', None)
         if histid_handler is not None:
             return histid_handler.getUid(obj)
     
@@ -101,7 +101,7 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     def setUid(self, obj, uid, check_uniqueness=True):
         """See IUniqueIdSet.
         """
-        histid_handler = getToolByName(self, 'portal_uidhandler', None)
+        histid_handler = getToolByName(self, 'portal_historyidhandler', None)
         if histid_handler is not None:
             return histid_handler.setUid(obj, uid, check_uniqueness)
     
@@ -109,7 +109,7 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     def queryBrain(self, uid, default=None):
         """See IUniqueIdBrainQuery.
         """
-        histid_handler = getToolByName(self, 'portal_uidhandler', None)
+        histid_handler = getToolByName(self, 'portal_historyidhandler', None)
         if histid_handler is not None:
             return histid_handler.queryBrain(uid, default)
     
@@ -117,7 +117,7 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     def getBrain(self, uid):
         """See IUniqueIdBrainQuery.
         """
-        histid_handler = getToolByName(self, 'portal_uidhandler', None)
+        histid_handler = getToolByName(self, 'portal_historyidhandler', None)
         if histid_handler is not None:
             return histid_handler.getBrain(uid)
     
@@ -125,7 +125,7 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     def getObject(self, uid):
         """See IUniqueIdQuery.
         """
-        histid_handler = getToolByName(self, 'portal_uidhandler', None)
+        histid_handler = getToolByName(self, 'portal_historyidhandler', None)
         if histid_handler is not None:
             return histid_handler.getObject(uid)
     
