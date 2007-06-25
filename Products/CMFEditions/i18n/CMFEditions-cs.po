@@ -1,0 +1,236 @@
+# Translation of cmfeditions.pot to Czech
+#
+# Please report bugs and omissions to recent authors. Thank you.
+#
+# You may get surprised when some string you found is translated its
+# way and is not following the original straight. Please double-check
+# the source, templates and test the software before you change it.
+# It is possible that the translation has its meaning. Thanks. ;-)
+#
+# License: GPL
+#
+# Package translators:
+#
+# David Pravec     <alekibango@zug.cz>      (2000-2003),
+# Radomil Pelisek  <pelisek@zug.cz>         (2001-2002),
+# Martina Pravcova <pravcova@vri.cz>        (2001-2002),
+# George Pejchal   <george@zug.cz>          (2002),
+# O. Auda          <auda@aow.cz>            (2002),
+# Sarka Neradilova                          (2003),
+# Radim Novotny    <r.novotny@elektrika.cz> (2004),
+# Vlada Macek      <tuttle@sandbox.cz>     (2004-2007).
+#
+# Translation funded by Hieronymus, s.r.o. (http://www.hieronymus.cz).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cmfeditions\n"
+"POT-Creation-Date: 2007-05-02 06:52+0000\n"
+"PO-Revision-Date: 2007-05-11 20:50+0200\n"
+"Last-Translator: Vlada Macek <tuttle@sandbox.cz>\n"
+"Language-Team: Vlada Macek\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language-Code: cs\n"
+"Language-Name: Czech\n"
+"Preferred-Encodings: utf-8 latin2\n"
+"Domain: cmfeditions\n"
+"X-Generator: KBabel 1.11.1\n"
+
+#. Default: "Working Copy"
+#: ./skins/CMFEditions/versions_history_form.pt:62
+msgid "Working Copy"
+msgstr "Pracovní kopie"
+
+#. Default: "Last modified"
+#: ./skins/CMFEditions/versions_history_form.pt:19
+msgid "box_last_modified"
+msgstr "Poslední změna:"
+
+#. Default: "Save as a new version"
+#: ./skins/CMFEditions/versions_history_form.pt:182
+msgid "button_save_as_new_version"
+msgstr "Uložit jako novou verzi"
+
+#. Default: "You can have different settings for each content type. Content can be automatically versioned, and you can also opt to create a version when you revert a revision."
+#: ./skins/CMFEditions/versioning_config_form.pt:39
+msgid "description_version_settings"
+msgstr "Pro jednotlivé typy položek jsou možná různá nastavení. Položky mohou být automaticky udržovány v různých verzích a také je možné zvolit, že při vrácení revize bude vytvořena nová verze."
+
+#. Default: "Select to make a version of the current content."
+#: ./skins/CMFEditions/edit_macros.pt:72
+msgid "help_save_new_version"
+msgstr "Zaškrtněte, chcete-li vytvořit verzi ze současného textu."
+
+#. Default: "Enter a comment that describes the changes you made."
+#: ./skins/CMFEditions/edit_macros.pt:84
+msgid "help_version_comment"
+msgstr "Popište provedené změny."
+
+#. Default: "At any moment you can save the content you just edited as a new version. Enter below a comment to identify the version and hit the \"Save as new version\" button."
+#: ./skins/CMFEditions/versions_history_form.pt:172
+msgid "help_versioncomment"
+msgstr "Právě upravovaný text je možné kdykoli uložit jako novou verzi. Níže přidejte popis nové verze a klepněte na tlačítko \"Uložit jako novou verzi\"."
+
+#. Default: "(+) Added"
+#: ./skins/CMFEditions/diff_legend.pt:8
+msgid "label_diff_added"
+msgstr "(+) Přidáno"
+
+#. Default: "Changed"
+#: ./skins/CMFEditions/diff_legend.pt:10
+msgid "label_diff_changed"
+msgstr "Změněno"
+
+#. Default: "(-) Deleted"
+#: ./skins/CMFEditions/diff_legend.pt:9
+msgid "label_diff_deleted"
+msgstr "(-) Odstraněno"
+
+#. Default: "Legend"
+#: ./skins/CMFEditions/diff_legend.pt:7
+msgid "label_diff_legend"
+msgstr "Legenda"
+
+#. Default: "Tag Added"
+#: ./skins/CMFEditions/diff_legend.pt:11
+msgid "label_diff_tag_added"
+msgstr "Značka přidána"
+
+#. Default: "Tag Deleted"
+#: ./skins/CMFEditions/diff_legend.pt:12
+msgid "label_diff_tag_deleted"
+msgstr "Značka odstraněna"
+
+#. Default: "Versioning Enabled?"
+#: ./skins/CMFEditions/versioning_config_form.pt:70
+msgid "label_enable_versioning"
+msgstr "Ukládání verzí?"
+
+#. Default: "Item Type"
+#: ./skins/CMFEditions/versioning_config_form.pt:69
+msgid "label_item_type"
+msgstr "Typ položky"
+
+#. Default: "New version"
+#: ./skins/CMFEditions/versions_history_form.pt:169
+msgid "label_newversion"
+msgstr "Nová verze"
+
+#. Default: "Preview of Version ${version_id}"
+#: ./skins/CMFEditions/versions_history_form.pt:197
+msgid "label_preview_version"
+msgstr "Náhled verze ${version_id}"
+
+#. Default: "(jump down)"
+#: ./skins/CMFEditions/versions_history_form.pt:111
+msgid "label_preview_version_below"
+msgstr "(dolů)"
+
+#. Default: "(preview)"
+#: ./skins/CMFEditions/versions_history_form.pt:106
+msgid "label_preview_version_link"
+msgstr "(náhled)"
+
+#. Default: "Revert to this revision"
+#: ./skins/CMFEditions/versions_history_form.pt:145
+msgid "label_revert"
+msgstr "Návrat k této revizi"
+
+#. Default: "Save as new version"
+#: ./skins/CMFEditions/edit_macros.pt:68
+msgid "label_save_new_version"
+msgstr "Uložit jako novou verzi"
+
+#. Default: "show versions"
+#: ./skins/CMFEditions/versions_history.pt:29
+msgid "label_show_version"
+msgstr "Zobrazit verze"
+
+#. Default: "Versioning Settings"
+#: ./skins/CMFEditions/versioning_config_form.pt:37
+msgid "label_title_vers_config"
+msgstr "Nastavení ukládání verzí"
+
+#. Default: "Change note"
+#: ./skins/CMFEditions/edit_macros.pt:83
+msgid "label_version_comment"
+msgstr "Popis změn"
+
+#. Default: "Versionable content types"
+#: ./skins/CMFEditions/versioning_config_form.pt:50
+msgid "label_versionable_content_types"
+msgstr "Typy položek s možností ukládání verzi"
+
+#. Default: "Show all types"
+#: ./skins/CMFEditions/versioning_config_form.pt:53
+msgid "label_versioning_config_show_all"
+msgstr "Zobrazit všechny typy"
+
+#. Default: "Show only searchable types"
+#: ./skins/CMFEditions/versioning_config_form.pt:57
+msgid "label_versioning_config_show_friendly"
+msgstr "Zobrazit pouze vyhledatelné typy"
+
+#. Default: "Policies"
+#: ./skins/CMFEditions/versioning_config_form.pt:71
+msgid "label_versioning_policies"
+msgstr "Zásady"
+
+#. Default: "Recent Versions"
+#: ./skins/CMFEditions/versions_history.pt:9
+msgid "label_versions"
+msgstr "Poslední verze"
+
+#. Default: "Actions"
+#: ./skins/CMFEditions/versions_history_form.pt:50
+msgid "listingheader_actions"
+msgstr "Akce"
+
+#. Default: "Comment"
+#: ./skins/CMFEditions/versions_history.pt:20
+msgid "listingheader_comment"
+msgstr "Poznámka"
+
+#. Default: "Date and Time"
+#: ./skins/CMFEditions/versions_history.pt:19
+msgid "listingheader_date_and_time"
+msgstr "Datum a čas"
+
+#. Default: "Version"
+#: ./skins/CMFEditions/versions_history.pt:17
+msgid "listingheader_key"
+msgstr "Verze"
+
+#. Default: "Performed by"
+#: ./skins/CMFEditions/versions_history.pt:18
+msgid "listingheader_performed_by"
+msgstr "Původce"
+
+#. Default: "Versions History"
+#: ./skins/CMFEditions/versions_history.pt:12
+msgid "summary_versions_history"
+msgstr "Historie verzí"
+
+#. Default: "Versions of \"${title}\""
+#: ./skins/CMFEditions/versions_history_form.pt:15
+msgid "versions_of_title"
+msgstr "Verze položky \"${title}\""
+
+#. Default: "Insert a comment."
+#: ./skins/CMFEditions/versions_history_form.pt
+msgid "label_insert_a_comment"
+msgstr "Zadejte poznámku k verzi."
+
+#. Diff to current
+#: versions_history_form.pt
+msgid "label_diff_to_current"
+msgstr "Porovnat s aktuální verzí"
+
+#. Diff from last
+#: versions_history_form.pt
+msgid "label_diff_from_last"
+msgstr "Porovnat s předchozí verzí"
+
