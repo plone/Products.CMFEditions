@@ -236,3 +236,19 @@ msgstr "Porovnat s předchozí verzí"
 
 msgid "${title} has been reverted to version ${version}"
 msgstr "Položka ${title} byla nastavena na verzi ${version}"
+
+#. Choose the versionable portal type.
+#: versioning_config_form.pt
+msgid "label_form_help"
+msgstr "Vyberte typy položek, které budou podporovat verzování"
+
+#. Create version on edit (AT objects only)
+msgid "Create version on edit (AT objects only)"
+msgstr "Vytvořit verzi při každém uložení položky"
+
+#. Create version on version revert
+msgid "Create version on version revert"
+msgstr "Vytvořit verzi při návratu ke starší verzi"
+
+msgid "Versioning properties"
+msgstr "Nastavení verzování"
