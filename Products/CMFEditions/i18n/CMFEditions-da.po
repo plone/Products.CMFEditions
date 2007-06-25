@@ -159,3 +159,5 @@ msgstr "Vis version"
 msgid "Versioning properties"
 msgstr "Versionsindstillinger"
 
+msgid "${title} has been reverted to version ${version}"
+msgstr ""

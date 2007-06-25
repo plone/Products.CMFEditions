@@ -200,3 +200,5 @@ msgstr "Pokaż wersje"
 msgid "Versioning properties"
 msgstr "Ustawienia wersjonowania"
 
+msgid "${title} has been reverted to version ${version}"
+msgstr ""

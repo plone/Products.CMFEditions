@@ -14,7 +14,12 @@ pr.revert(context, version_id)
 view_url = '%s/%s' % (context.absolute_url(),
                       context.getTypeInfo().getActionById('view')
                      )
-msg = 'portal_status_message=\'%s\' has been reverted to version %s' % (context.title_or_id(), version_id)
+msg = context.plone_utils.utranslate(msgid="${title} has been reverted to version ${version}", 
+                                     domain="cmfeditions",
+                                     mapping={'title':context.title_or_id(), 'version':version_id})
+if isinstance(msg, unicode):
+    msg = msg.encode(context.plone_utils.getSiteEncoding())
 if pr.supportsPolicy(context, 'version_on_revert'):
     pr.save(obj=context, comment="Reverted to version %s" % version_id)
-return RESPONSE.redirect('%s?%s' % (view_url, msg))
+
+return RESPONSE.redirect('%s?portal_status_message=%s' % (view_url, msg))

@@ -155,3 +155,6 @@ msgstr "Afficher la version"
 
 msgid "Versioning properties"
 msgstr "Propriétés de la gestion des versions"
+
+msgid "${title} has been reverted to version ${version}"
+msgstr ""

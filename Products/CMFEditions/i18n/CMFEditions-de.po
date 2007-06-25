@@ -212,3 +212,5 @@ msgstr "anzeigen"
 msgid "Versioning properties"
 msgstr "Versionierungs-Eigenschaften"
 
+msgid "${title} has been reverted to version ${version}"
+msgstr ""

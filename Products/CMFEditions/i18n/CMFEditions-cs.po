@@ -234,3 +234,5 @@ msgstr "Porovnat s aktuální verzí"
 msgid "label_diff_from_last"
 msgstr "Porovnat s předchozí verzí"
 
+msgid "${title} has been reverted to version ${version}"
+msgstr "Položka ${title} byla nastavena na verzi ${version}"
