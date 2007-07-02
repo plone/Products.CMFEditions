@@ -128,7 +128,8 @@
                         <li tal:condition="not:current_version">
                             <a href=""
                                style="text-decoration: none"
-                               tal:attributes="href string:$here_url/version_diff?version_id1=current&amp;version_id2=${id}">
+                               tal:attributes="href string:$here_url/version_diff?version_id1=current&amp;version_id2=${id}"
+                               i18n:translate="label_compare_current">
                             Compare to current revision
                             </a>
                         </li>
@@ -136,7 +137,8 @@
                             <a href=""
                                style="text-decoration: none"
                                tal:define="prev_ver python:str(int(id)-1)"
-                               tal:attributes="href string:$here_url/version_diff?version_id1=${id}&amp;version_id2=${prev_ver}">
+                               tal:attributes="href string:$here_url/version_diff?version_id1=${id}&amp;version_id2=${prev_ver}"
+                               i18n:translate="label_compare_previous">
                             Compare to previous revision
                             </a>
                         </li>
