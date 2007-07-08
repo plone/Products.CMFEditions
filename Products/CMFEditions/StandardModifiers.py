@@ -458,7 +458,7 @@ class RetainWorkflowStateAndHistory:
         # information for a hypothetic purge policy ...
         wflow = getToolByName(obj, "portal_workflow", None)
         if wflow is not None:
-            review_state = wflow.getInfoFor(obj, "review_state")
+            review_state = wflow.getInfoFor(obj, "review_state", None)
         else:
             review_state = None
         
