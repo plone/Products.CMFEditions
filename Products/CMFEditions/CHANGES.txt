@@ -4,6 +4,12 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+- Add checks in versioning policy scripts to ensure we don't get duplicate
+  revisions.
+
+- Add controller overrides so that the correct actions happen on
+  cancel and reference upload.
+
 - Add an event listener that removes the `version_id` attribute from
   copies.
 

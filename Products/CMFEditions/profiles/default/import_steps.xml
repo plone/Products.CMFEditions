@@ -10,7 +10,6 @@
   <import-step id="cmfeditions_various" version="20061008-01"
                handler="Products.CMFEditions.setuphandlers.importVarious"
                title="Various CMFEditions Settings">
-   <dependency step="repositorytool"/>
    <dependency step="toolset"/>
    <dependency step="typeinfo"/>
      CMFEditions specific settings
