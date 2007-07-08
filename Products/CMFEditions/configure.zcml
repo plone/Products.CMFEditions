@@ -4,4 +4,9 @@
 
   <include file="profiles.zcml"/>
 
+  <subscriber for=".interfaces.IVersioned
+                   zope.lifecycleevent.interfaces.IObjectCopiedEvent"
+              handler=".ArchivistTool.object_copied"
+              />
+
 </configure>

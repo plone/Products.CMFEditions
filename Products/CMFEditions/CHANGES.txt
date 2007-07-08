@@ -4,6 +4,8 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+- Add an event listener that removes the `version_id` attribute from
+  copies.
 
 - Removed i18n folder. Translations are shipped in PloneTranslations. [hannosch]
 

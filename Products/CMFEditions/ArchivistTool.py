@@ -26,7 +26,7 @@ $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 import time
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler
-from zope.interface import implements
+from zope.interface import implements, alsoProvides
 
 from Globals import InitializeClass
 from Persistence import Persistent
@@ -55,7 +55,7 @@ from Products.CMFEditions.interfaces.IArchivist import ArchivistError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistSaveError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredError
-
+from Products.CMFEditions.interfaces import IVersioned
 
 RETRIEVING_UNREGISTERED_FAILED = \
     "Retrieving a version of an unregistered object is not possible. " \
@@ -227,6 +227,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
             uidhandler = getToolByName(self, 'portal_historyidhandler')
             history_id = uidhandler.register(obj)
             version_id = obj.version_id = 0
+            alsoProvides(obj, IVersioned)
             obj.location_id = 0
             is_registered = False
         
@@ -496,3 +497,8 @@ class GetItemIterator:
             return self._getItem(self._pos)
         except self._stopExceptions:
             raise StopIteration()
+
+
+def object_copied(obj, event):
+    if getattr(aq_base(obj), 'version_id', None) is not None:
+        delattr(obj, 'version_id')
