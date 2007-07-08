@@ -4,6 +4,9 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+CMFEditions 1.1-rc1 (July 8, 2007)
+----------------------------------------
+
 - Make text more consistent (use revision instead of version throughout the ui)
 
 - Add checks in versioning policy scripts to ensure we don't get duplicate
