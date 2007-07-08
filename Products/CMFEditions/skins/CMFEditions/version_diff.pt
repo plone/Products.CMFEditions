@@ -24,8 +24,8 @@
         tal:content="here/title_or_id" />
     <div>
     <div metal:use-macro="here/diff_legend/macros/diff_legend" />
-    <h3 class="diff-head" tal:condition="python:id1=='current'">Changes since version <span tal:replace="id2"/></h3>
-    <h3 class="diff-head" tal:condition="python:id1!='current'">Changes from version <span tal:replace="string:${id2} to version ${id1}"/></h3>
+    <h3 class="diff-head" tal:condition="python:id1=='current'">Changes since revision <span tal:replace="id2"/></h3>
+    <h3 class="diff-head" tal:condition="python:id1!='current'">Changes from revision <span tal:replace="string:${id2} to revision ${id1}"/></h3>
     <form id="diffs"
           action="#"
           tal:condition="not:diffs/same" tal:repeat="d diffs/getDiffs">

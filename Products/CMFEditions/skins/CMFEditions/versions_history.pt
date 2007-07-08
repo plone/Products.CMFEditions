@@ -14,7 +14,7 @@
                tal:condition="history">
 
           <tr>
-            <th i18n:translate="listingheader_key">Version</th>
+            <th i18n:translate="listingheader_key">Revision</th>
             <th i18n:translate="listingheader_performed_by">Performed by</th>
             <th i18n:translate="listingheader_date_and_time">Date and Time</th>
             <th i18n:translate="listingheader_comment">Comment</th>
@@ -30,7 +30,7 @@
                    class="version-table-version"
                    tal:attributes="href string:$here_url/versions_history_form?version_id=${id}"
                    i18n:translate="label_show_version">
-                  show versions</a>
+                  show revisions</a>
               </td>
               <td>
                 <span tal:content="vdata/sys_metadata/principal">francesco</span>
