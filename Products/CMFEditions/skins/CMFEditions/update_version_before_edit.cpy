@@ -17,7 +17,7 @@ isVersionable = pr.isVersionable(context)
 comment = "Initial revision"
 
 version_id = getattr(context, "version_id", None)
-context.plone_log("Verion: %s"%version_id)
+context.plone_log("Version: %s"%version_id)
 changed = False
 if version_id is None:
     changed = True
