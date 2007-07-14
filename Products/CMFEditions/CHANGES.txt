@@ -4,6 +4,12 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+CMFEditions 1.1-rc2
+----------------------------------------
+
+- Removed overly aggressive logging from update_version_before_edit.cpy.
+  [hannosch]
+
 CMFEditions 1.1-rc1 (July 8, 2007)
 ----------------------------------------
 
