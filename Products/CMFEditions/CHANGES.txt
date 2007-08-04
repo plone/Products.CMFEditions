@@ -7,7 +7,7 @@ This file contains change information for the CMFEditions releases.
 CMFEditions 1.1-rc2
 ----------------------------------------
 
-- Fix dumb acquisition issue in on_add and on_update policy scripts.
+- Fix dumb acquisition issue in the default policy scripts.
   [alecm]
 
 - Removed overly aggressive logging from update_version_before_edit.cpy.
