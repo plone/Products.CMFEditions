@@ -7,7 +7,7 @@
 ##bind subpath=traverse_subpath
 ##parameters=
 ##
-
+from Products.CMFPlone.utils import base_hasattr
 REQUEST = context.REQUEST
 if context.portal_factory.isTemporary(context):
     # don't do anything if we're in the factory
@@ -16,12 +16,11 @@ pr = context.portal_repository
 isVersionable = pr.isVersionable(context)
 comment = "Initial revision"
 
-version_id = getattr(context, "version_id", None)
 changed = False
-if version_id is None:
+if not base_hasattr(context, 'version_id'):
     changed = True
 else:
-    changed = not pr.isUpToDate(context, version_id)
+    changed = not pr.isUpToDate(context, context.version_id)
 if not changed:
     return state.set(status='success')
 

@@ -8,16 +8,17 @@
 ##parameters=
 ##
 
+from Products.CMFPlone.utils import base_hasattr
+
 REQUEST = context.REQUEST
 pr = context.portal_repository
 isVersionable = pr.isVersionable(context)
 
-version_id = getattr(context, "version_id", None)
 changed = False
-if version_id is None:
+if not base_hasattr(context, 'version_id'):
     changed = True
 else:
-    changed = not pr.isUpToDate(context, version_id)
+    changed = not pr.isUpToDate(context, context.version_id)
 
 comment = REQUEST.get('cmfeditions_version_comment',"")
 if REQUEST.get('cmfeditions_save_new_version',None) and isVersionable:
