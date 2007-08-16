@@ -14,10 +14,9 @@ pr.revert(context, version_id)
 view_url = '%s/%s' % (context.absolute_url(),
                       context.getTypeInfo().getActionInfo('object/view')['url']
                      )
-display_id = int(version_id) +1
-msg = u"'%s' has been reverted to version %s" % (context.title_or_id(), display_id)
+msg = u"'%s' has been reverted to version %s" % (context.title_or_id(), version_id)
 if pr.supportsPolicy(context, 'version_on_revert'):
-    pr.save(obj=context, comment="Reverted to version %s" % display_id)
+    pr.save(obj=context, comment="Reverted to version %s" % version_id)
 plone_tool = context.plone_utils
 plone_tool.addPortalMessage(msg)
 return RESPONSE.redirect(view_url)

@@ -18,16 +18,16 @@
        tal:define="id1 request/version_id1|options/version_id1|string:current;
                    id2 request/version_id2|options/version_id2;
                    diffs python:here.getVersionDiff(id1,id2);
-                   base_page_url string:${request/ACTUAL_URL}?version_id1=${id1}&amp;version_id2=${id2};
-                   display_id1 python:id1 != 'current' and int(id1)+1;
-                   display_id2 python:id2 is not None and int(id2)+1;">
+                   base_page_url string:${request/ACTUAL_URL}?version_id1=${id1}&amp;version_id2=${id2};">
 
     <h1 class="documentFirstHeading"
         tal:content="here/title_or_id" />
     <div>
     <div metal:use-macro="here/diff_legend/macros/diff_legend" />
-    <h3 class="diff-head" tal:condition="python:id1=='current'">Changes since revision <span tal:replace="display_id2"/></h3>
-    <h3 class="diff-head" tal:condition="python:id1!='current'">Changes from revision <span tal:replace="string:${display_id2} to revision ${display_id1}"/></h3>
+    <h3 class="diff-head" tal:condition="python:id1=='current'"
+        i18n:translate="title_changes_since_rev">Changes since revision <span i18n:name="id2" tal:replace="id2"/></h3>
+    <h3 class="diff-head" tal:condition="python:id1!='current'"
+        i18n:translate="title_changes_between_revs">Changes from revision <span i18n:name="id2" tal:replace="string:${id2}" /> to revision <span i18n:name="id1" tal:replace="string:${id1}" /></h3>
     <form id="diffs"
           action="#"
           tal:condition="not:diffs/same" tal:repeat="d diffs/getDiffs">
