@@ -4,6 +4,13 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+CMFEditions 1.1.1 (UNRELEASED)
+----------------------------------------
+
+- Expose the extra_top, widgets and extra_bottom METAL hooks in edit_macros.
+  [wichert]
+
+
 CMFEditions 1.1-final (August 16, 2007)
 ----------------------------------------
 

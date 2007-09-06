@@ -23,6 +23,19 @@
       <metal:body define-macro="body"
                     tal:define="edit_macros here/portal_skins/archetypes/edit_macros/macros">
         <div metal:use-macro="edit_macros/body">
+
+          <metal:block fill-slot="extra_top" >
+              <metal:block define-slot="extra_top" />
+          </metal:block>
+
+          <metal:block fill-slot="widgets">
+              <metal:block define-slot="widgets">
+                <tal:fields repeat="field fields">
+                  <metal:fieldMacro use-macro="python:here.widget(field.getName(), mode='edit')" />
+                </tal:fields>
+              </metal:block>
+          </metal:block>
+
           <metal:block fill-slot="extra_bottom"
                        tal:define="pr nocall:here/portal_repository">
 
@@ -93,11 +106,8 @@
                        tal:attributes="value request/form/cmfeditions_version_comment | nothing" />
             </div>
 
-
+            <metal:block define-slot="extra_bottom" />
         </metal:block>
-          <metal:block fill-slot="extra_buttons">
-            <metal:block define-slot="extra_buttons"/>
-          </metal:block>
 
         </div>
       </metal:body>
