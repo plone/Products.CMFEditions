@@ -354,7 +354,7 @@ class IHistory(Interface):
         """Returns the length of the history.
         """
 
-    def __getattr__(selector):
+    def __getitem__(selector):
         """Returns the selected version of a content.
 
         Returns a ``IVersionData`` object.
