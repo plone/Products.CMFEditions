@@ -4,6 +4,13 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+CMFEditions 1.1.2 (unreleased)
+----------------------------------------
+
+- Added CMFEditionsMessageFactory and used it to i18n-ize a statusmessages in
+  revertversion.py. This closes http://dev.plone.org/plone/ticket/7066.
+  [hannosch]
+
 CMFEditions 1.1.1 (September 10, 2007)
 ----------------------------------------
 

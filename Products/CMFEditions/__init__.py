@@ -58,6 +58,11 @@ product_globals = globals()
 registerDirectory('skins', product_globals)
 registerDirectory('skins/CMFEditions', product_globals)
 
+# Set up a MessageFactory for the cmfeditions domain
+from zope.i18nmessageid import MessageFactory
+CMFEditionsMessageFactory = MessageFactory('cmfeditions')
+ModuleSecurityInfo('Products.CMFEditions').declarePublic('CMFEditionsMessageFactory')
+
 def initialize(context):
     utils.ToolInit(meta_type='CMF Editions Tool', tools=tools,
                    icon='tool.gif').initialize(context)
