@@ -16,6 +16,11 @@ pr.revert(context, version_id)
 view_url = '%s/%s' % (context.absolute_url(),
                       context.getTypeInfo().getActionInfo('object/view')['url']
                      )
+
+title = context.title_or_id()
+if not isinstance(title, unicode):
+    title = unicode(title, 'utf-8', 'ignore')
+
 msg = _(u'${title} has been reverted to version ${version}.',
         mapping={'title' : context.title_or_id(), 'version' : version_id})
 
