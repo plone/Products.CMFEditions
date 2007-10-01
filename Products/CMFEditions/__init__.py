@@ -24,6 +24,7 @@ $Id: __init__.py,v 1.17 2005/02/07 22:09:08 gregweb Exp $
 """
 __version__ = "$Revision: 1.17 $"
 
+from AccessControl import ModuleSecurityInfo
 from Globals import package_home
 
 from Products.CMFCore import utils
