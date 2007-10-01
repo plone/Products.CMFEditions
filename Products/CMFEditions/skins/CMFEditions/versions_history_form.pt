@@ -68,13 +68,14 @@
                     <span tal:replace="python:here.toLocalizedTime(here.ModificationDate(),long_format=1)">2004/10/21 03:15 PM</span>
                   </td>
                   <td class="VersionComment">
-                      <span tal:omit-tag="">
-                        modifications from revision
-                        <span tal:replace="reverted_vid">13</span>
-                      </span>
-                      <span tal:condition="isReverted" tal:omit-tag="">
-                        (previously reverted)
-                      </span>
+                    <span i18n:translate="label_modifications_from_revision">
+                      modifications from revision
+                      <span tal:replace="reverted_vid" i18n:name="version_id" />
+                    </span>
+                    <span tal:condition="isReverted"
+                           i18n:translate="label_previously_reverted">
+                      (previously reverted)
+                    </span>
                   </td>
                   <td class="VersionActions">
                     <ul>
@@ -82,12 +83,14 @@
                             <a href=""
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/version_diff?version_id1=current&amp;version_id2=${reverted_vid}">
-                              <span tal:condition="isReverted">
+                              <span tal:condition="isReverted"
+                                    i18n:translate="label_compare_to_revision">
                                 Compare to revision 
-                                <span tal:replace="reverted_vid">
-                                </span>
+                                <span tal:replace="reverted_vid"
+                                      i18n:name="version_id" />
                               </span>
-                              <span tal:condition="not:isReverted">
+                              <span tal:condition="not:isReverted"
+                                    i18n:translate="label_compare_to_previous_revision">
                                 Compare to previous revision
                               </span>
                             </a>
