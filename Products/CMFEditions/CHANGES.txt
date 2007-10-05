@@ -4,7 +4,7 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
-CMFEditions 1.1.2 (unreleased)
+CMFEditions 1.1.2 (October 5, 2007)
 ----------------------------------------
 
 - Added bits of missing i18n markup to versions_history_form.pt. This closes
