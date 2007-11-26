@@ -63,6 +63,7 @@ registerDirectory('skins/CMFEditions', product_globals)
 from zope.i18nmessageid import MessageFactory
 CMFEditionsMessageFactory = MessageFactory('cmfeditions')
 ModuleSecurityInfo('Products.CMFEditions').declarePublic('CMFEditionsMessageFactory')
+ModuleSecurityInfo('Products.CMFEditions.interfaces.IArchivist').declarePublic('ArchivistUnregisteredError')
 
 def initialize(context):
     utils.ToolInit(meta_type='CMF Editions Tool', tools=tools,
