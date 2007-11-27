@@ -64,7 +64,12 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
         # Just assuming ObjectManager behaviour for now
         portal_hidhandler = getToolByName(self, 'portal_historyidhandler')
         portal_archivist = getToolByName(self, 'portal_archivist')
-        portal_type = repo_clone.getPortalTypeName()
+        try:
+            portal_type = repo_clone.getPortalTypeName()
+        except AttributeError:
+            # We attach the clone directly if the object has no portal type,
+            # perhaps we should clone it.
+            return repo_clone
         id = repo_clone.getId()
         if id in source.objectIds():
             id = generateId(source, prefix=id)

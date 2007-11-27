@@ -540,6 +540,10 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # this correctly before multi location stuff is implemented.
             # XXX Perhaps there is a need for a workaround!
             va_ref = attr_ref.getAttribute()
+            if va_ref is None:
+                # a missing reference, the policy has changed,
+                # don't try to replace it
+                continue
             history_id = va_ref.history_id
 
             # retrieve the referenced version (always count purged versions

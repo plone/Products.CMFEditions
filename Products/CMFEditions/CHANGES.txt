@@ -7,6 +7,12 @@ This file contains change information for the CMFEditions releases.
 CMFEditions trunk
 -----------------
 
+- Make sure that we attempt to handle Inside Refs which have no
+  portal_type, as well as retrieving revisions that once used the
+  InsideRefsModifier but now use the OutsideRefsModifier.
+  Related to: http://dev.plone.org/plone/ticket/7295
+  [alecm]
+
 - Fix issue on diff form where empty entries were being shown for
   unchanged files.  Related to http://dev.plone.org/plone/ticket/7253
   [alecm]
