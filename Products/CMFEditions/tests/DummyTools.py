@@ -651,7 +651,7 @@ class PurgePolicyTestDummyStorage(DummyBaseTool):
                    substitute=True):
         return self.history
 
-    def purge(self, history_id, selector, comment="", metadata={}, 
+    def purge(self, history_id, selector, metadata={}, 
               countPurged=True):
         del self.history[selector]
 

@@ -86,7 +86,9 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
             if length < self.maxNumberOfVersionsToKeep:
                 break
             comment = "purged on save of version %s" % currentVersion
-            storage.purge(history_id, 0, comment, metadata={}, 
+            storage.purge(history_id, 0, metadata={'sys_metadata': {
+                                                           'comment': comment}
+                                                   },
                           countPurged=False)
         
         # save current version

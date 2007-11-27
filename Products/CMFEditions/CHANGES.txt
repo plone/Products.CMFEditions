@@ -7,6 +7,10 @@ This file contains change information for the CMFEditions releases.
 CMFEditions trunk
 -----------------
 
+- Fix issues with purge policy as reported in
+  http://dev.plone.org/plone/ticket/7300
+  [alecm]
+
 - Handle ArchivistUnregisteredErrors during save.  This occurs when an
   object has been imported, or when the version information has been
   destroyed.  Fixes http://dev.plone.org/plone/ticket/7334.
