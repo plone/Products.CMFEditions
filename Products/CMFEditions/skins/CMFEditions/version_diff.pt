@@ -86,14 +86,15 @@
 
     <tal:block tal:condition="diffs/recursive">
     <h2>Changed files</h2>
-    <i tal:condition="not:diffs/getSubDiffs">None</i>
-    <ul tal:condition="diffs/getSubDiffs">
-        <li tal:repeat="cs diffs/getSubDiffs">
-            <tal:check condition="not:cs/same">
-                <a tal:content="cs/id" tal:attributes="href cs/id">[filename]</a>
-           </tal:check>
-       </li>
-    </ul>
+    <tal:changed define="subdiffs diffs/getSubDiffs;
+                         subdiffs python:[c for c in subdiffs if not c.same]">
+      <em tal:condition="not:subdiffs">None</em>
+      <ul tal:condition="subdiffs">
+        <li tal:repeat="cs subdiffs">
+          <a tal:content="cs/id" tal:attributes="href cs/id">[filename]</a>
+        </li>
+      </ul>
+    </tal:changed>
 
     <h2>Removed files</h2>
     <em tal:condition="not:diffs/getRemovedItems">None</em>
