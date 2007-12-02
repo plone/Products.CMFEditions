@@ -4,8 +4,8 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
-CMFEditions trunk
------------------
+CMFEditions 1.1.3 (December 2, 2007)  
+---------------------------------------
 
 - Make sure that we attempt to handle Inside Refs which have no
   portal_type, as well as retrieving revisions that once used the
