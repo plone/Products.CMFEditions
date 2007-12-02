@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<tool-setup>
+ <required tool_id="portal_archivist"
+           class="Products.CMFEditions.ArchivistTool.ArchivistTool"/>
+ <required tool_id="portal_repository"
+           class="Products.CMFEditions.CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool"/>
+ <required tool_id="portal_historyidhandler"
+           class="Products.CMFUid.UniqueIdHandlerTool.UniqueIdHandlerTool"/>
+ <required tool_id="portal_purgepolicy"
+           class="Products.CMFEditions.KeepLastNVersionsTool.KeepLastNVersionsTool"/>
+ <required tool_id="portal_modifier"
+           class="Products.CMFEditions.ModifierRegistryTool.ModifierRegistryTool"/>
+ <required tool_id="portal_referencefactories"
+           class="Products.CMFEditions.ReferenceFactoriesTool.ReferenceFactoriesTool"/>
+ <required tool_id="portal_uidhandler"
+           class="Products.CMFEditions.UniqueIdHandlerTool.UniqueIdHandlerTool"/>
+ <required tool_id="portal_historiesstorage"
+           class="Products.CMFEditions.ZVCStorageTool.ZVCStorageTool"/>
+</tool-setup>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<export-steps>
+  <export-step id="repositorytool"
+    handler="Products.CMFEditions.exportimport.repository.exportRepositoryTool"
+    title="Repository Tool">
+    Export CMFEditions repository tool type specific configuration.
+  </export-step>
+</export-steps>

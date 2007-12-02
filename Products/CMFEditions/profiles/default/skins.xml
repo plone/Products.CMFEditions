@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<object name="portal_skins">
+ <object name="CMFEditions" meta_type="Filesystem Directory View"
+    directory="Products.CMFEditions:skins/CMFEditions"/>
+ <object name="cmfeditions_views" meta_type="Filesystem Directory View"
+    directory="Products.CMFEditions:skins/cmfeditions_views"/>
+ <skin-path name="*">
+  <layer name="cmfeditions_views" insert-after="custom"/>
+  <layer name="CMFEditions" insert-after="cmfeditions_views"/>
+ </skin-path>
+</object>

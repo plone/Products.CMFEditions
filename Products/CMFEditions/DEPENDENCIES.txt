@@ -1,0 +1,11 @@
+============
+Dependencies
+============
+
+This package is tested with the following releases:
+
+Plone 3.0 Series
+================
+
+CMFEditions is an integrated part of Plone 3.0 and thus should work without
+problems.

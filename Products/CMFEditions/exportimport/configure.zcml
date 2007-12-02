@@ -1,0 +1,11 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope">
+
+  <adapter
+      factory=".repository.RepositoryToolXMLAdapter"
+      provides="Products.GenericSetup.interfaces.IBody"
+      for="Products.CMFEditions.interfaces.IRepository.IRepositoryTool
+           Products.GenericSetup.interfaces.ISetupEnviron"
+      />
+
+</configure>
