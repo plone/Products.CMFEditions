@@ -26,6 +26,7 @@
 $Id: StandardModifiers.py,v 1.13 2005/06/26 13:28:36 gregweb Exp $
 """
 
+import sys
 from Globals import InitializeClass
 
 from Acquisition import aq_base
@@ -34,12 +35,14 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import ManagePortal
+from Products.CMFCore.Expression import Expression
 
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
 from Products.CMFEditions.interfaces.IModifier import IReferenceAdapter
+from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
@@ -51,7 +54,8 @@ except ImportError:
     WRONG_AT=True
     UUID_ATTR = None
     REFERENCE_ANNOTATION = None
-    
+
+
 #----------------------------------------------------------------------
 # Product initialziation, installation and factory stuff
 #----------------------------------------------------------------------
@@ -218,6 +222,38 @@ def manage_addSillyDemoRetrieveModifier(self, id, title=None,
     """
     modifier = SillyDemoRetrieveModifier()
     self._setObject(id, ConditionalModifier(id, modifier, title))
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+
+manage_AbortVersioningOfLargeFilesAndImagesAddForm =  \
+    PageTemplateFile('www/AbortVersioningOfLargeFilesAndImagesAddForm.pt',
+                  globals(),
+                  __name__='manage_AbortVersioningOfLargeFilesAndImagesAddForm')
+
+def manage_addAbortVersioningOfLargeFilesAndImages(self, id, title=None,
+                                            REQUEST=None):
+    """Add a silly demo retrieve modifier
+    """
+    modifier = AbortVersioningOfLargeFilesAndImages(id, title)
+    self._setObject(id, modifier)
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+
+manage_SkipVersioningOfLargeFilesAndImagesAddForm =  \
+    PageTemplateFile('www/SkipVersioningOfLargeFilesAndImagesAddForm.pt',
+                   globals(),
+                   __name__='manage_SkipVersioningOfLargeFilesAndImagesAddForm')
+
+def manage_addSkipVersioningOfLargeFilesAndImages(self, id, title=None,
+                                            REQUEST=None):
+    """Add a silly demo retrieve modifier
+    """
+    modifier = SkipVersioningOfLargeFilesAndImages(id, title)
+    self._setObject(id, modifier)
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
@@ -641,7 +677,7 @@ class SillyDemoRetrieveModifier:
 
     Disabled by default and if enabled only effective if the 
     username is ``gregweb``.
-    
+
     This is really just as silly example though for demo purposes!!!
     """
 
@@ -660,16 +696,167 @@ class SillyDemoRetrieveModifier:
 
         # sorry: hack
         clone = repo_clone.__of__(obj.aq_inner.aq_parent)
-        
+
         # replace all occurences of DeMo with Demo and deMo with demo
         text = clone.EditableBody()
         text = text.replace("DeMo", "Demo").replace("deMo", "demo")
         clone.setText(text)
-        
+
         return [], [], {}
 
 InitializeClass(SillyDemoRetrieveModifier)
 
+
+ANNOTATION_PREFIX = 'Archetypes.storage.AnnotationStorage-'
+class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
+    """Raises an error if a file or image attribute stored on the
+    object in a specified field is larger than a fixed default"""
+
+    field_names = ('file', 'image')
+    max_size = 26214400 # This represents a 400 element long Pdata list
+
+    __implements__ = (IConditionalTalesModifier, ICloneModifier,)
+
+    modifierEditForm = PageTemplateFile('www/fieldModifierEditForm.pt',
+                                        globals(),
+                                        __name__='modifierEditForm')
+
+    _condition = Expression("python: portal_type in ('Image', 'File')")
+
+    def __init__(self, id='AbortVersioningOfLargeFilesAndImages', modifier=None,
+                 title=''):
+        self.id = str(id)
+        self.title = str(title)
+        self.meta_type = 'edmod_%s' % id
+        self._enabled = False
+
+    def edit(self, enabled=None, condition=None, title='', field_names=None,
+             max_size=None, REQUEST=None):
+        """See IConditionalTalesModifier.
+        """
+        if max_size is not None:
+            self.max_size = int(max_size)
+        if field_names is not None:
+            field_names = tuple(s.strip() for s in field_names.split('\n') if s)
+            if field_names != self.field_names:
+                self.field_names = field_names
+        return ConditionalTalesModifier.edit(self, enabled, condition, title)
+
+    def getFieldNames(self):
+        """For the edit form"""
+        return '\n'.join(self.field_names)
+
+    def getModifier(self):
+        """We are the modifier, not some silly wrapper. """
+        return self
+
+    def _getFieldValues(self, obj):
+        """Finds the specified field values and returns them if
+        they contain file objects which are too large.  Specifically,
+        it returns an iterator of tuples containing the type of storage,
+        the field name, and the value stored"""
+        max_size  = self.max_size
+
+        # Search for fields stored via AnnotationStorage
+        annotations = getattr(obj, '__annotations__', None)
+        if annotations is not None:
+            annotation_names = (ANNOTATION_PREFIX + name for name in
+                                                              self.field_names)
+            for name in annotation_names:
+                val = annotations.get(name, None)
+                # Skip linked Pdata chains too long for the pickler
+                if hasattr(aq_base(val), 'getSize') and callable(val.getSize):
+                    size = val.getSize()
+                    if isinstance(size, (int, long)) and size >= max_size:
+                        yield 'annotation', name, val
+
+        # Search for fields stored via AttributeStorage
+        for name in self.field_names:
+            val = getattr(obj, name, None)
+            # Skip linked Pdata chains too long for the pickler
+            if hasattr(aq_base(val), 'getSize') and callable(val.getSize):
+                size = val.getSize()
+                if isinstance(size, int) and size >= max_size:
+                    yield 'attribute', name, val
+
+    def getOnCloneModifiers(self, obj):
+        """Detects large file objects and raises an error
+        """
+        for storage, name, val in self._getFieldValues(obj):
+            # if we find a file that's too big, abort
+            raise FileTooLargeToVersionError
+        return None # no effect otherwise
+
+InitializeClass(AbortVersioningOfLargeFilesAndImages)
+
+_empty_marker =[]
+class LargeFilePlaceHolder(object):
+    """PlaceHolder for a large object"""
+    @staticmethod
+    def getSize():
+        return sys.maxint
+
+class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
+    """Replaces any excessively large file and images stored as
+    annotations or attributes on the object with a marker.  On
+    retrieve, the marker will be replaced with the current value.."""
+
+    __implements__ = (IConditionalTalesModifier, ICloneModifier,
+                      ISaveRetrieveModifier)
+
+    def getOnCloneModifiers(self, obj):
+        """Removes large file objects and returns them as references
+        """
+        refs = {}
+        ref_list = []
+        for storage, name, val in self._getFieldValues(obj):
+            ref_list.append(val)
+            refs[id(val)] = True
+
+        if not refs:
+            return None # don't do anything
+
+        def persistent_id(obj):
+            return refs.get(id(obj), None)
+
+        def persistent_load(ignored):
+            return LargeFilePlaceHolder()
+
+        return persistent_id, persistent_load, [], []
+
+    def beforeSaveModifier(self, obj, clone):
+        """Does nothing, the pickler does the work"""
+        return {}, [], []
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        """If we find any LargeFilePlaceHolders, replace them with the
+        values from the current working copy.  If the values are missing
+        from the working copy, remove them from the retrieved object."""
+        # Search for fields stored via AnnotationStorage
+        annotations = getattr(obj, '__annotations__', None)
+        orig_annotations = getattr(repo_clone, '__annotations__', None)
+        for storage, name, orig_val in self._getFieldValues(repo_clone):
+            if isinstance(orig_val, LargeFilePlaceHolder):
+                if storage == 'annotation':
+                    val = _empty_marker
+                    if annotations is not None:
+                        val = annotations.get(name, _empty_marker)
+                    if val is not _empty_marker:
+                        orig_annotations[name] = val
+                    else:
+                        # remove the annotation if not present on the
+                        # working copy, or if annotations are missing
+                        # entirely
+                        del orig_annotations[name]
+                else: # attribute storage
+                    val = getattr(obj, name, _empty_marker)
+                    if val is not _empty_marker:
+                        setattr(repo_clone, name, val)
+                    else:
+                        delattr(repo_clone, name)
+        return [], [], {}
+
+InitializeClass(SkipVersioningOfLargeFilesAndImages)
 
 
 #----------------------------------------------------------------------
@@ -771,6 +958,28 @@ modifiers = (
         'modifier': SillyDemoRetrieveModifier,
         'form': manage_SillyDemoRetrieveModifierAddForm,
         'factory': manage_addSillyDemoRetrieveModifier,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'AbortVersioningOfLargeFilesAndImages',
+        'title': "Abort versioning of objects if file data if it's too large",
+        'enabled': True,
+        'condition': "python: portal_type in ('Image', 'File')",
+        'wrapper': AbortVersioningOfLargeFilesAndImages,
+        'modifier': AbortVersioningOfLargeFilesAndImages,
+        'form': manage_AbortVersioningOfLargeFilesAndImagesAddForm,
+        'factory': manage_addAbortVersioningOfLargeFilesAndImages,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'SkipVersioningOfLargeFilesAndImages',
+        'title': "Skip versioning of objects if file data if it's too large",
+        'enabled': False,
+        'condition': "python: portal_type in ('Image', 'File')",
+        'wrapper': SkipVersioningOfLargeFilesAndImages,
+        'modifier': SkipVersioningOfLargeFilesAndImages,
+        'form': manage_SkipVersioningOfLargeFilesAndImagesAddForm,
+        'factory': manage_addSkipVersioningOfLargeFilesAndImages,
         'icon': 'www/modifier.gif',
     },
 )

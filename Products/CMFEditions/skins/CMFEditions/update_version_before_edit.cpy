@@ -9,6 +9,8 @@
 ##
 from Products.CMFPlone.utils import base_hasattr
 from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredError
+from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
+
 REQUEST = context.REQUEST
 if context.portal_factory.isTemporary(context):
     # don't do anything if we're in the factory
@@ -32,6 +34,9 @@ if not changed:
     return state.set(status='success')
 
 if pr.supportsPolicy(context, 'at_edit_autoversion') and isVersionable:
-    context.portal_repository.save(obj=context, comment=comment)
+    try:
+        context.portal_repository.save(obj=context, comment=comment)
+    except FileTooLargeToVersionError:
+        pass # the on edit save will emit a warning
 
 return state.set(status='success')

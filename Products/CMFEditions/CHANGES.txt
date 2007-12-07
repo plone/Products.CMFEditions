@@ -4,6 +4,21 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+CMFEditions 1.1.4 (Unreleased)
+---------------------------------------
+
+- Add modifiers to avoid pickling extremely large files.  The
+  AbortVersioningOfLargeFilesAndImages modifier is enabled by default
+  for Files and Images. It will skip saving versions of objects when
+  they contain a large file ('file' or 'image' field in Attribute or
+  AnnotationStorage).  The SkipVersioningOfLargeFilesAndImages will
+  simply not version the large file, but will version all other data.
+  On retrieval it will put the file from the working copy in place.
+  This is disabled by default, but can be enabled easily.
+  Workaround for: http://dev.plone.org/plone/ticket/7223
+  [alecm]
+
+
 CMFEditions 1.1.3 (December 2, 2007)  
 ---------------------------------------
 

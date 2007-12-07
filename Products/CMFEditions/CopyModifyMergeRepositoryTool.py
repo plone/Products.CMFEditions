@@ -48,6 +48,8 @@ from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolic
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.interfaces.IRepository import IHistory
 
+from Products.CMFEditions.interfaces.IModifier import ModifierException
+
 from Products.CMFEditions.Permissions import ApplyVersionControl
 from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.CMFEditions.Permissions import PurgeVersion
@@ -268,18 +270,30 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """See ICopyModifyMergeRepository.
         """
         self._assertAuthorized(obj, ApplyVersionControl, 'applyVersionControl')
-        self._recursiveSave(obj, metadata,
-                            self._prepareSysMetadata(comment),
-                            autoapply=True)
+        sp = transaction.savepoint(optimistic=True)
+        try:
+            self._recursiveSave(obj, metadata,
+                                self._prepareSysMetadata(comment),
+                                autoapply=True)
+        except ModifierException:
+            # modifiers can abort save operations under certain conditions
+            sp.rollback()
+            raise
 
     security.declarePublic('save')
     def save(self, obj, comment='', metadata={}):
         """See ICopyModifyMergeRepository.
         """
         self._assertAuthorized(obj, SaveNewVersion, 'save')
-        self._recursiveSave(obj, metadata,
-                            self._prepareSysMetadata(comment),
-                            autoapply=self.autoapply)
+        sp = transaction.savepoint(optimistic=True)
+        try:
+            self._recursiveSave(obj, metadata,
+                                self._prepareSysMetadata(comment),
+                                autoapply=self.autoapply)
+        except ModifierException:
+            # modifiers can abort save operations under certain conditions
+            sp.rollback()
+            raise
 
     # -------------------------------------------------------------------
     # methods implementing IPurgeSupport

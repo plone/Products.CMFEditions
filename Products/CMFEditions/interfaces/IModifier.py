@@ -276,3 +276,14 @@ class IBulkEditableModifierRegistry(Interface):
         
         Use this to set all subscribers at once from a form.
         """
+
+class ModifierException(Exception):
+    """A base class for exceptions thrown by modifiers which wish to abort
+    a save operation"""
+    pass
+
+class FileTooLargeToVersionError(ModifierException):
+    """A simple exception indicating that an object contained a file
+    object that was too large to support versioning, and that versioning
+    will be aborted as a result"""
+    pass
