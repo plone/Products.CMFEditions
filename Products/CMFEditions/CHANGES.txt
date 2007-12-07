@@ -4,7 +4,7 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
-CMFEditions 1.1.4 (Unreleased)
+CMFEditions 1.1.4 (December 6, 2007)
 ---------------------------------------
 
 - Add modifiers to avoid pickling extremely large files.  The
