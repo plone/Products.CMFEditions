@@ -4,6 +4,12 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+CMFEditions 1.1.5 (unreleased)
+---------------------------------------
+
+- Added metadata.xml file to the profile.
+  [hannosch]
+
 CMFEditions 1.1.4 (December 6, 2007)
 ---------------------------------------
 
