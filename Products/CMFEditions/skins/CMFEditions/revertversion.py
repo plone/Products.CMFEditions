@@ -28,7 +28,8 @@ msg = _(u'${title} has been reverted to version ${version}.',
 
 if pr.supportsPolicy(context, 'version_on_revert'):
     try:
-        pr.save(obj=context, comment="Reverted to version %s" % version_id)
+        pr.save(obj=context, comment=_(u"Reverted to version ${version}",
+                                       mapping={'version': version_id}))
     except FileTooLargeToVersionError:
         putils.addPortalMessage(
   _("The most current version of the file could not be saved before reverting "
