@@ -4,8 +4,11 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
-CMFEditions 1.1.5 (unreleased)
+CMFEditions 1.1.5 (March 8, 2008)
 ---------------------------------------
+
+- Fix bug in wrapper assignment for some modifiers.
+  [encolpe, alecm]
 
 - Added metadata.xml file to the profile.
   [hannosch]
