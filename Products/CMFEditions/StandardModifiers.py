@@ -206,7 +206,7 @@ def manage_addSaveFileDataInFileTypeByReference(self, id, title=None,
     """Add a modifier avoiding unnecessary cloning of file data.
     """
     modifier = SaveFileDataInFileTypeByReference()
-    self._setObject(id, ConditionalModifier(id, modifier, title))
+    self._setObject(id, ConditionalTalesModifier(id, modifier, title))
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
@@ -221,7 +221,7 @@ def manage_addSillyDemoRetrieveModifier(self, id, title=None,
     """Add a silly demo retrieve modifier
     """
     modifier = SillyDemoRetrieveModifier()
-    self._setObject(id, ConditionalModifier(id, modifier, title))
+    self._setObject(id, ConditionalTalesModifier(id, modifier, title))
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
@@ -943,7 +943,7 @@ modifiers = (
         'title': "Let's the storage optimize cloning of file data.",
         'enabled': True,
         'condition': "python: meta_type=='Portal File'",
-        'wrapper': ConditionalModifier,
+        'wrapper': ConditionalTalesModifier,
         'modifier': SaveFileDataInFileTypeByReference,
         'form': manage_SaveFileDataInFileTypeByReferenceModifierAddForm,
         'factory': manage_addSaveFileDataInFileTypeByReference,
@@ -954,7 +954,7 @@ modifiers = (
         'title': "Silly retrive modifier for demos only.",
         'enabled': False,
         'condition': "python: True",
-        'wrapper': ConditionalModifier,
+        'wrapper': ConditionalTalesModifier,
         'modifier': SillyDemoRetrieveModifier,
         'form': manage_SillyDemoRetrieveModifierAddForm,
         'factory': manage_addSillyDemoRetrieveModifier,
