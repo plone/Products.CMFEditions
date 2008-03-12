@@ -4,6 +4,12 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
+CMFEditions trunk
+-----------------
+
+- Merge AT changes into our copy of 'edit_macros.pt'.
+  See: http://dev.plone.org/plone/ticket/6936
+
 CMFEditions 1.1.5 (March 8, 2008)
 ---------------------------------------
 
