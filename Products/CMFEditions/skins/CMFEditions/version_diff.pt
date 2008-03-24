@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
     metal:use-macro="here/main_template/macros/master"
-    i18n:domain="plone">
+    i18n:domain="cmfeditions">
 
 <tal:block metal:fill-slot="base">
     <base href="" tal:attributes="href current_page_url" />
@@ -25,13 +25,13 @@
     <div>
     <div metal:use-macro="here/diff_legend/macros/diff_legend" />
     <h3 class="diff-head" tal:condition="python:id1=='current'"
-        i18n:translate="title_changes_since_rev">Changes since revision <span i18n:name="id2" tal:replace="id2"/></h3>
+        i18n:translate="title_changes_since_rev">Changes since revision <tal:block i18n:name="id2" tal:content="id2">id</tal:block></h3>
     <h3 class="diff-head" tal:condition="python:id1!='current'"
-        i18n:translate="title_changes_between_revs">Changes from revision <span i18n:name="id2" tal:replace="string:${id2}" /> to revision <span i18n:name="id1" tal:replace="string:${id1}" /></h3>
+        i18n:translate="title_changes_between_revs">Changes from revision <tal:block i18n:name="id2" tal:content="string:${id2}">id</tal:block> to revision <tal:block i18n:name="id1" tal:content="string:${id1}">id1</tal:block></h3>
     <form id="diffs"
           action="#"
           tal:condition="not:diffs/same" tal:repeat="d diffs/getDiffs">
-      <em tal:condition="diffs/same">No changes</em>
+      <em tal:condition="diffs/same" i18n:translate="label_no_changes">No changes</em>
       <div class="field"
            tal:condition="not:d/same"
            tal:define="unified exists:d/unified_diff;

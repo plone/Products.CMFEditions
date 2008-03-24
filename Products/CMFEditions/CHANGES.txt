@@ -7,6 +7,10 @@ This file contains change information for the CMFEditions releases.
 CMFEditions trunk
 -----------------
 
+- Some i18n fixes to version_diff.pt. This closes
+  http://dev.plone.org/plone/ticket/7862.
+  [hannosch]
+
 - Merge AT changes into our copy of 'edit_macros.pt'.
   See: http://dev.plone.org/plone/ticket/6936
 
