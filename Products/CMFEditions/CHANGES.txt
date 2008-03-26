@@ -4,8 +4,8 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
-CMFEditions trunk
------------------
+CMFEditions 1.1.6 (March 26, 2008)
+---------------------------------------
 
 - Some i18n fixes to version_diff.pt. This closes
   http://dev.plone.org/plone/ticket/7862.
