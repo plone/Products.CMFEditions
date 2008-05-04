@@ -1,0 +1,24 @@
+Handling reference fields in CMFEditions
+========================================
+
+We need a new attribute on fields:
+
+versioning=False
+        This is the default for reference fields. The field
+        is not versioned. Rolling back to a previous version leaves
+        the field unchanged.
+
+versioning=True
+        This is the default for fields except reference fields. When
+        rolling back the previous version of the field is restored.
+        Rolling back a versioned reference field will restore any
+        references which are still valid, but if the reference target
+        does not exist the reference is discarded.
+
+When saving a version, all versioned reference fields are converted
+internally to a list of uids.
+When rolling back the list of uids is checked for validity and any
+valid references restored.
+
+Backward references are never versioned.
+

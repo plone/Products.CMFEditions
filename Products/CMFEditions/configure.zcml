@@ -1,0 +1,12 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <include package=".exportimport" />
+
+  <include file="profiles.zcml"/>
+
+  <subscriber for=".interfaces.IVersioned
+                   zope.lifecycleevent.interfaces.IObjectCopiedEvent"
+              handler=".ArchivistTool.object_copied"
+              />
+
+</configure>

@@ -1,0 +1,61 @@
+===================
+CMFEditions Credits
+===================
+
+Please add or move yourself to the correct category.
+
+Contributors
+============
+
+Code and Templates
+------------------
+
+Project Drivers:
+
+- Gregoire Weber (gregweb)
+- Alec Mitchel (alecm)
+- Vincenzo Di Somma (vds)
+- Riccardo Lemmi (rlemmi)
+- Francesco Ciriaci (ilbestio)
+
+Contributors:
+
+- Alberto Berti (azy)
+- Duncan Booth (duncan)
+- Tomek Meka (tomek)
+- Varun Rastogi (varun)
+
+Bug Fixes:
+
+- Encolpe Degoute (encolpe)
+- Hanno Schlichting (hannosch)
+- Rob Miller (rafrombrc)
+- Sune Broendum Woeller (sunew)
+- Sylvain Thenault (syt)
+
+
+Translations
+------------
+
+- French: Godefroid Chapelle (godchap)
+- Polish: Piotr Furman
+- German: Gregoire Weber (gregweb)
+- Danish: Anton Stonor
+
+
+Sponsors
+========
+
+The following sponsors helped the project either by donating money to a 
+developer to work on the project or a particular feature or by donating 
+money for the organization of sprints and paying travel expenses or donated 
+time to a developer of the organization to work on the project:
+
+- Oxfam GB: http://www.oxfam.org.uk
+- ZEA Partners: http://www.zeapartners.org
+- Musee de l'Afrique Centrale: http://www.africamuseum.be
+- RedCOR: http://www.redcor.ch
+- Zehnder Group: http://www.zehndergroup.com
+- Reflab: http://www.reflab.com
+- Metapensiero: http://www.metapensiero.it
+- Incept: http://www.incept.ch

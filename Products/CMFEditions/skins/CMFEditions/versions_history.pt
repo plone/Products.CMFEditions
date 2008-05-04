@@ -1,0 +1,51 @@
+<span class="versionsHistory"
+      metal:define-macro="versions_history"
+      i18n:domain="cmfeditions">
+<tal:history      tal:define="pr nocall:here/portal_repository;
+                              history python:pr.getHistory(here, countPurged=False);
+                              revisions python:len(history)"
+                  tal:condition="python: history and pr.isVersionable(context)">
+      <dl id="versions" class="collapsible inline collapsedOnLoad">
+        <dt class="collapsibleHeader" i18n:translate="label_versions">Recent Versions</dt>
+        <dd class="collapsibleContent">
+
+        <table class="listing nosort" summary="Versions History"
+               i18n:attributes="summary summary_versions_history;"
+               tal:condition="history">
+
+          <tr>
+            <th i18n:translate="listingheader_key">Revision</th>
+            <th i18n:translate="listingheader_performed_by">Performed by</th>
+            <th i18n:translate="listingheader_date_and_time">Date and Time</th>
+            <th i18n:translate="listingheader_comment">Comment</th>
+          </tr>
+
+          <metal:block tal:repeat="vdata python:[history[i] for i in range(revisions > 5 and 5 or revisions)]">
+            <tr tal:define="odd repeat/vdata/odd;
+                            id string:${vdata/version_id};"
+                tal:attributes="class python:test(odd, 'even', 'odd')">
+              <td>
+                <span tal:content="id">1</span>
+                <a href="#"
+                   class="version-table-version"
+                   tal:attributes="href string:$here_url/versions_history_form?version_id=${id}"
+                   i18n:translate="label_show_version">
+                  show revisions</a>
+              </td>
+              <td>
+                <span tal:content="vdata/sys_metadata/principal">francesco</span>
+              </td>
+              <td>
+                <span tal:content="python:here.toLocalizedTime(vdata.sys_metadata['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
+              </td>
+              <td><span tal:content="vdata/comment">Draft version ready for comments from the group.</span>
+              </td>
+            </tr>
+          </metal:block>
+        </table>
+
+        </dd>
+      </dl>
+    </tal:history>
+
+</span>
