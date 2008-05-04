@@ -1,11 +1,9 @@
-===================
-CMFEditions Changes
-===================
+=========
+Changelog
+=========
 
-This file contains change information for the CMFEditions releases.
-
-CMFEditions 1.1.6 (March 26, 2008)
----------------------------------------
+1.1.6 (March 26, 2008)
+----------------------
 
 - Some i18n fixes to version_diff.pt. This closes
   http://dev.plone.org/plone/ticket/7862.
@@ -14,8 +12,9 @@ CMFEditions 1.1.6 (March 26, 2008)
 - Merge AT changes into our copy of 'edit_macros.pt'.
   See: http://dev.plone.org/plone/ticket/6936
 
-CMFEditions 1.1.5 (March 8, 2008)
----------------------------------------
+
+1.1.5 (March 8, 2008)
+---------------------
 
 - Fix bug in wrapper assignment for some modifiers.
   [encolpe, alecm]
@@ -23,8 +22,9 @@ CMFEditions 1.1.5 (March 8, 2008)
 - Added metadata.xml file to the profile.
   [hannosch]
 
-CMFEditions 1.1.4 (December 6, 2007)
----------------------------------------
+
+1.1.4 (December 6, 2007)
+------------------------
 
 - Add modifiers to avoid pickling extremely large files.  The
   AbortVersioningOfLargeFilesAndImages modifier is enabled by default
@@ -38,8 +38,8 @@ CMFEditions 1.1.4 (December 6, 2007)
   [alecm]
 
 
-CMFEditions 1.1.3 (December 2, 2007)  
----------------------------------------
+1.1.3 (December 2, 2007)
+------------------------
 
 - Make sure that we attempt to handle Inside Refs which have no
   portal_type, as well as retrieving revisions that once used the
@@ -66,8 +66,9 @@ CMFEditions 1.1.3 (December 2, 2007)
   when we're only displaying one fieldset, i.e. the 'default' one.
   [nouri]
 
-CMFEditions 1.1.2 (October 5, 2007)
-----------------------------------------
+
+1.1.2 (October 5, 2007)
+-----------------------
 
 - Added bits of missing i18n markup to versions_history_form.pt. This closes
   http://dev.plone.org/plone/ticket/7065.
@@ -77,18 +78,18 @@ CMFEditions 1.1.2 (October 5, 2007)
   revertversion.py. This closes http://dev.plone.org/plone/ticket/7066.
   [hannosch, naro]
 
-CMFEditions 1.1.1 (September 10, 2007)
-----------------------------------------
+
+1.1.1 (September 10, 2007)
+--------------------------
 
 - Expose the extra_top, widgets and extra_bottom METAL hooks in edit_macros.
   [wichert]
 
 
-CMFEditions 1.1-final (August 16, 2007)
-----------------------------------------
+1.1-final (August 16, 2007)
+---------------------------
 
-- Prevent future off by one errors in the ui by just starting our count from
-  0.
+- Prevent future off by one errors in the ui by just starting our count from 0.
   [alecm]
 
 - Fix dumb acquisition issue in the default policy scripts.
@@ -97,8 +98,9 @@ CMFEditions 1.1-final (August 16, 2007)
 - Removed overly aggressive logging from update_version_before_edit.cpy.
   [hannosch]
 
-CMFEditions 1.1-rc1 (July 8, 2007)
-----------------------------------------
+
+1.1-rc1 (July 8, 2007)
+----------------------
 
 - Make text more consistent (use revision instead of version throughout the ui)
 
@@ -115,24 +117,28 @@ CMFEditions 1.1-rc1 (July 8, 2007)
 
 - Minor template corrections. [hannosch]
 
-CMFEditions 1.1-beta4 (April 30, 2007)
-----------------------------------------
+
+1.1-beta4 (April 30, 2007)
+--------------------------
 
 - Updated permission mapping to account for new local roles (Editor/Contributor)
 
-CMFEditions 1.1-beta3 (April 29, 2007)
-----------------------------------------
+
+1.1-beta3 (April 29, 2007)
+--------------------------
 
 - No longer register tools as utilities, since it broke the tests among
   other things.
 
-CMFEdition 1.1-beta2 (March 26, 2007)
-----------------------------------------
+
+1.1-beta2 (March 26, 2007)
+--------------------------
 
 - Register tools as utilities
 
-CMFEditions 1.1-beta1 (March 5, 2007)
-----------------------------------------
+
+1.1-beta1 (March 5, 2007)
+-------------------------
 
 - Make the AT autoversion policy save a version before the save for more
    intuitive behavior.
@@ -152,15 +158,17 @@ ToDo
   portal_uidhandler tool is found during install, it should be renamed to
   portal_historyidhandler. The missing tools should be created as normal then.
 
-CMFEditions 1.1-alpha2 (February 08, 2007)
-------------------------------------------
+
+1.1-alpha2 (February 08, 2007)
+------------------------------
 
 - Removed specialized document byline.
 
 - Switch to Plone control panel category
 
-CMFEditions 1.1-alpha1 (November 22, 2006)
-------------------------------------------
+
+1.1-alpha1 (November 22, 2006)
+------------------------------
 
 Internal Changes
 
@@ -177,8 +185,9 @@ Internal Changes
 
 - Updated dependency information for Plone 3.0 inclusion. [hannosch]
 
-CMFEditions 1.0 (SVN)
----------------------
+
+1.0 (SVN)
+---------
 
 Bugs fixed
 
@@ -194,8 +203,8 @@ Internal Changes
 
 - Removed some BBB code for ZClasses and CMF 1.4. [hannosch]
 
-Upcoming CMFEditions 1.0rc1 (unreleased)
-----------------------------------------
+CMFEditions 1.0rc1 (unreleased)
+-------------------------------
 
 ToDo
 
@@ -212,29 +221,8 @@ ToDo
 - fix issue #17
 - fix issue #22
 
-47. Retrieving an old version of an object with a different id shall retain
-    the current id. What about the children ids when recursing into?
-    The current implementation replaces the id in 
-    ``copymodifymergerepositorytool.py``::
-    
-        > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\copymodifymergerepositorytool.py(272)revert()
-        (Pdb) l
-        267             """
-        268             """
-        269             original_id = obj.getId()
-        270             self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
-        271             parent = aq_parent(aq_inner(obj))
-        272             self._recursiveRetrieve(obj, parent, selector, preserve=(),
-        273                                     inplace=True)
-        274  ->         if obj.getId() != original_id:
-        275                 obj._setId(original_id)
-        276                 #parent.manage_renameObject(obj.getId(), original_id)
-        277                 #parent._setObject(original_id, obj, set_owner=0)
-    
-    This is the wrong place. A modifier shall do that.
-
-CMFEditions 1.0beta1 (2006-06-24)
----------------------------------
+1.0beta1 (2006-06-24)
+---------------------
 
 Bugs fixed
 
@@ -373,8 +361,8 @@ Internal Changes
   run the tests with ZVCStorageToll twice. [gregweb]
 
 
-CMFEditions 1.0alpha4 (2006-06-24)
-----------------------------------
+1.0alpha4 (2006-06-24)
+----------------------
 
 Bugs fixed
 
@@ -391,8 +379,8 @@ Features added
 - Added functionality to create a test hierarchy. [gregweb]
 
 
-CMFEditions 1.0alpha3 (2006-06-03)
-----------------------------------
+1.0alpha3 (2006-06-03)
+----------------------
 
 Bugs fixed
 
@@ -530,7 +518,7 @@ Features added
   [alecm]
 
 
-CMFEditions 1.0alpha2 (around June 2005)
-----------------------------------------
+1.0alpha2 (around June 2005)
+----------------------------
 
 no changes recorded

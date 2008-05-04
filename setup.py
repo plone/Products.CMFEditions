@@ -1,4 +1,3 @@
-# import os
 from setuptools import setup, find_packages
 
 version = '1.2'
@@ -6,7 +5,8 @@ version = '1.2'
 setup(name='Products.CMFEditions',
       version=version,
       description="Versioning for Plone",
-      long_description="", # open(os.path.join("docs", "HISTORY.txt")).read(),
+      long_description=open("README.txt").read() + '\n' +
+                       open("CHANGES.txt").read(),
       classifiers=[
         'Framework :: Plone',
         'Framework :: Zope2',
