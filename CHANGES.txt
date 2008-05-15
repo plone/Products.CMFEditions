@@ -2,6 +2,14 @@
 Changelog
 =========
 
+1.2 (Unreleased)
+----------------
+
+- Use the new archetypes.edit.afterfieldsets viewlet manager to add our
+  field to the AT edit template. The customized edit_macros is now no longer
+  needed.
+  [wichert]
+
 1.1.6 (March 26, 2008)
 ----------------------
 

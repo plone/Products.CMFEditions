@@ -1,0 +1,69 @@
+<tal:block i18n:domain="plone"
+           tal:define="pr nocall:here/portal_repository">
+    <script type="text/javascript"
+            tal:condition="python:pr.isVersionable(here) and not pr.supportsPolicy(here,'at_edit_autoversion')">
+    <!--
+    function switchComment(ev) {
+        var save_version = document.getElementById('cmfeditions_save_new_version');
+        var comment = document.getElementById('cmfeditions_version_comment_block');
+        if (save_version && comment) {
+            if (save_version.checked) {
+                comment.style.display = 'block';
+            } else {
+                comment.style.display = 'none';
+            }
+        }
+    }
+
+    function setupSaveNewVersion(ev) {
+        var save_version = document.getElementById('cmfeditions_save_new_version');
+        var comment = document.getElementById('cmfeditions_version_comment_block');
+
+        if (save_version && comment) {
+            if (save_version.checked) {
+                comment.style.display = 'block';
+            } else {
+                comment.style.display = 'none';
+            }
+        }
+        registerEventListener(save_version, "click", switchComment);
+    }
+    registerPloneFunction(setupSaveNewVersion);
+    -->
+    </script>
+
+    <div i18n:domain="cmfeditions"
+         class="field editionSaveVersion"
+         tal:condition="python: pr.isVersionable(here) and not pr.supportsPolicy(here,'at_edit_autoversion')">
+
+        <input type="checkbox"
+               name="cmfeditions_save_new_version"
+               id="cmfeditions_save_new_version" />
+            <label><span i18n:translate="label_save_new_version">Save as new version</span></label>
+            <div class="formHelp"
+                 id="cmfeditions_save_new_version_help"
+                 i18n:translate="help_save_new_version">
+                 Select to make a version of the current content.
+             </div>
+    </div>
+
+    <div i18n:domain="cmfeditions"
+         class="field editionComment"
+         id="cmfeditions_version_comment_block"
+         tal:condition="python: pr.isVersionable(here)">
+
+        <label><span i18n:translate="label_version_comment">Change note</span></label>
+        <div class="formHelp"
+             id="cmfeditions_version_comment_help"
+             i18n:translate="help_version_comment">
+            Enter a comment that describes the changes you made.
+        </div>
+
+        <input type="text"
+               name="cmfeditions_version_comment"
+               id="cmfeditions_version_comment"
+               size="40"
+               tal:attributes="value request/form/cmfeditions_version_comment | nothing"
+               />
+    </div>
+</tal:block>
