@@ -46,14 +46,8 @@ from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
-try:
-    from Products.Archetypes.interfaces.referenceable import IReferenceable
-    from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
-    WRONG_AT=False
-except ImportError:
-    WRONG_AT=True
-    UUID_ATTR = None
-    REFERENCE_ANNOTATION = None
+from Products.Archetypes.interfaces.referenceable import IReferenceable
+from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
 
 
 #----------------------------------------------------------------------
@@ -605,12 +599,12 @@ class RetainATRefs:
         if obj is None:
             return [], [], {}
 
-        if not WRONG_AT:
-            if IReferenceable.isImplementedBy(obj) \
-                and hasattr(aq_base(obj), REFERENCE_ANNOTATION):
-                #Preserve AT references
-                orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
-                setattr(repo_clone, REFERENCE_ANNOTATION, orig_refs_container)
+        if IReferenceable.isImplementedBy(obj) \
+            and hasattr(aq_base(obj), REFERENCE_ANNOTATION):
+            #Preserve AT references
+            orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
+            setattr(repo_clone, REFERENCE_ANNOTATION, orig_refs_container)
+
         return [], [], {}
 
 InitializeClass(RetainATRefs)
@@ -632,21 +626,20 @@ class NotRetainATRefs:
         if obj is None:
             return [], [], {}
 
-        if not WRONG_AT:
-            if IReferenceable.isImplementedBy(obj) and hasattr(aq_base(obj), REFERENCE_ANNOTATION) \
-            and hasattr(aq_base(repo_clone), REFERENCE_ANNOTATION):
-                #Remove AT references that no longer exists in the retrived version
-                orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
-                repo_clone_refs_container = getattr(aq_base(repo_clone), REFERENCE_ANNOTATION)
-                ref_objs = orig_refs_container.objectValues()
-                repo_clone_ref_ids = repo_clone_refs_container.objectIds()
+        if IReferenceable.isImplementedBy(obj) and hasattr(aq_base(obj), REFERENCE_ANNOTATION) \
+        and hasattr(aq_base(repo_clone), REFERENCE_ANNOTATION):
+            #Remove AT references that no longer exists in the retrived version
+            orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
+            repo_clone_refs_container = getattr(aq_base(repo_clone), REFERENCE_ANNOTATION)
+            ref_objs = orig_refs_container.objectValues()
+            repo_clone_ref_ids = repo_clone_refs_container.objectIds()
 
-                reference_catalog = getToolByName(obj, 'reference_catalog')
-                if reference_catalog:
-                    for ref in ref_objs:
-                        if ref.getId() not in repo_clone_ref_ids:
-                            reference_catalog.deleteReference(ref.sourceUID, ref.targetUID,
-                                                              ref.relationship)
+            reference_catalog = getToolByName(obj, 'reference_catalog')
+            if reference_catalog:
+                for ref in ref_objs:
+                    if ref.getId() not in repo_clone_ref_ids:
+                        reference_catalog.deleteReference(ref.sourceUID, ref.targetUID,
+                                                          ref.relationship)
                 
         return [], [], {}
 

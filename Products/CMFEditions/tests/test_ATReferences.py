@@ -119,7 +119,6 @@ class TestATReferences(PloneTestCase.PloneTestCase):
 
     def test_contentReferencesAreSavedAndRestored(self):
 
-        from Products.Archetypes.ReferenceEngine import ContentReference
         repo = self.portal.portal_repository
         fol = self.portal.fol
         doc1 = self.portal.fol.doc1

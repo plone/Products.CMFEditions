@@ -2,7 +2,6 @@
 CMFEditions setup handlers.
 """
 
-from Acquisition import aq_base
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import StandardModifiers
 from Products.CMFEditions.VersionPolicies import ATVersionOnEditPolicy
