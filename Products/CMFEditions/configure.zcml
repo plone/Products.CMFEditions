@@ -1,9 +1,13 @@
 <configure xmlns="http://namespaces.zope.org/zope"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="cmfeditions">
 
   <include package=".browser" />
   <include package=".exportimport" />
+
+  <cmf:registerDirectory name="CMFEditions" />
+  <cmf:registerDirectory name="cmfeditions_views" />
 
   <include file="profiles.zcml"/>
 

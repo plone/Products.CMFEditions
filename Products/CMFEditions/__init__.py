@@ -28,7 +28,6 @@ from AccessControl import ModuleSecurityInfo
 from Globals import package_home
 
 from Products.CMFCore import utils
-from Products.CMFCore.DirectoryView import registerDirectory
 
 from Products.CMFEditions import UniqueIdHandlerTool
 from Products.CMFEditions import ModifierRegistryTool
@@ -55,9 +54,6 @@ tools = (
 # This is used by a script (external method) that can be run
 # to set up CMFEditions in an existing CMF Site instance.
 product_globals = globals()
-
-registerDirectory('skins', product_globals)
-registerDirectory('skins/CMFEditions', product_globals)
 
 # Set up a MessageFactory for the cmfeditions domain
 from zope.i18nmessageid import MessageFactory
