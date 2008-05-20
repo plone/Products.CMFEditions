@@ -26,7 +26,7 @@
 $Id: IModifier.py,v 1.7 2005/06/24 11:42:01 gregweb Exp $
 """
 
-from Interface import Interface
+from zope.interface import Interface
 
 class IAttributeModifier(Interface):
     """The simplest possible modifier, it indicates, which attributes

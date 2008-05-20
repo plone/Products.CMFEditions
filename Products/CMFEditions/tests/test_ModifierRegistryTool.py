@@ -29,8 +29,9 @@ PloneTestCase.setupPloneSite()
 
 from pickle import dumps, loads, HIGHEST_PROTOCOL
 
-from Interface.Verify import verifyObject
+from zope.interface.verify import verifyObject
 from Acquisition import aq_base
+from zope.interface import implements
 
 from Products.CMFCore.utils import getToolByName
 
@@ -52,7 +53,7 @@ deepcopy(Dummy())
 
 class SimpleModifierBase:
 
-    __implements__ = (ISaveRetrieveModifier,)
+    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, copy_obj):
         try:
@@ -99,7 +100,7 @@ def dictToString(dict):
 
 class LoggingModifierBase:
 
-    __implements__ = (IAttributeModifier, ICloneModifier, ISaveRetrieveModifier)
+    implements(IAttributeModifier, ICloneModifier, ISaveRetrieveModifier)
 
     def getReferencedAttributes(self, obj):
         referenced_data = {

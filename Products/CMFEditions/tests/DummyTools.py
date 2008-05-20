@@ -18,6 +18,7 @@ from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFCore.utils import getToolByName
 from cPickle import Pickler, Unpickler
 from DateTime import DateTime
+from zope.interface import implements
 import types
 
 # Make alog module level so that it survives transaction rollbacks
@@ -257,7 +258,6 @@ class VersionAwareReference:
 
 
 class DummyModifier(DummyBaseTool):
-    __implements__ = ()
     id = 'portal_modifier'
 
     def beforeSaveModifier(self, obj, clone):
@@ -284,7 +284,6 @@ class FolderishContentObjectModifier(DummyBaseTool):
     """This is a full fledged modifier.
     """
 
-    __implements__ = ()
     id = 'portal_modifier'
 
     def getReferencedAttributes(self, obj):
@@ -439,7 +438,7 @@ class Removed:
 
 class MemoryStorage(DummyBaseTool):
 
-    __implements__ = (IStorage, IPurgeSupport)
+    implements(IStorage, IPurgeSupport)
     id = 'portal_historiesstorage'
 
 
@@ -475,7 +474,7 @@ class MemoryStorage(DummyBaseTool):
 
         for key, ref in referenced_data.items():
             # a real storage may treat IStreamableReference obj differently
-            if IStreamableReference.isImplementedBy(ref):
+            if IStreamableReference.providedBy(ref):
                 cloned_referenced_data[key] = deepCopy(ref.getObject())
             else:
                 cloned_referenced_data[key] = deepCopy(ref)
@@ -601,7 +600,7 @@ class HistoryList(types.ListType):
 class DummyPurgePolicy(DummyBaseTool):
     """Dummy Purge Policy
     """
-    __implements__ = IPurgePolicy
+    implements(IPurgePolicy)
     id = 'portal_purgepolicy'
 
     def beforeSaveHook(self, history_id, obj, metadata={}):
@@ -638,7 +637,7 @@ class PurgePolicyTestDummyStorage(DummyBaseTool):
     """Partial Storage used for PurgePolicy Tetss
     """
 
-    __implements__ = (IStorage, IPurgeSupport)
+    implements(IStorage, IPurgeSupport)
     id = 'portal_historiesstorage'
 
     def __init__(self):

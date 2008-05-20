@@ -74,7 +74,7 @@ def deepcopy(obj):
 class VersionData:
     """
     """
-    __implements__ = (IVersionData, )
+    implements(IVersionData)
     
     def __init__(self, data, refs_to_be_deleted, attr_handling_references, 
                  preserved_data, metadata):
@@ -87,7 +87,7 @@ class VersionData:
 
 
 class AttributeAdapter(Persistent):
-    __implements__ = (IAttributeAdapter, )
+    implements(IAttributeAdapter)
 
     def __init__(self, parent, attr_name, type=None):
         self._parent = aq_base(parent)
@@ -111,7 +111,7 @@ class AttributeAdapter(Persistent):
 class VersionAwareReference(Persistent):
     """A Reference that is version aware (and in future also location aware).
     """
-    __implements__ = (IVersionAwareReference, )
+    implements(IVersionAwareReference)
 
     def __init__(self, **info):
         self.history_id = None
@@ -144,13 +144,7 @@ class VersionAwareReference(Persistent):
 class ArchivistTool(UniqueObject, SimpleItem):
     """
     """
-
-    __implements__ = (
-        IPurgeSupport, 
-        IArchivist,
-        SimpleItem.__implements__,
-    )
-    implements(IArchivistTool)
+    implements(IArchivistTool, IArchivist, IPurgeSupport)
 
     id = 'portal_archivist'
     alternative_id = 'portal_standard_archivist'
@@ -364,7 +358,7 @@ def getUserId():
 class ObjectData(Persistent):
     """
     """
-    __implements__ = (IObjectData, )
+    implements(IObjectData)
     
     def __init__(self, obj, inside_refs=(), outside_refs=()):
         self.object = obj
@@ -375,7 +369,7 @@ class ObjectData(Persistent):
 class PreparedObject:
     """
     """
-    __implements__ = (IPreparedObject, )
+    implements(IPreparedObject)
     
     def __init__(self, history_id, original, clone, referenced_data, 
                  app_metadata, sys_metadata, is_registered, approxSize):
@@ -419,7 +413,7 @@ class PreparedObject:
 class LazyHistory:
     """Lazy history.
     """
-    __implements__ = (IHistory, )
+    implements(IHistory)
     
     def __init__(self, archivist, obj, history_id, preserve, countPurged):
         """Sets up a lazy history. 

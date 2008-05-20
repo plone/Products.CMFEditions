@@ -21,7 +21,7 @@
 """Version Policies
 $Id$
 """
-from Interface import Interface
+from zope.interface import Interface
 
 
 class IVersionPolicy(Interface):

@@ -25,6 +25,7 @@ $Id: $
 
 from Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
+from zope.interface import implements
 
 from Acquisition import aq_parent, aq_inner
 from OFS.OrderedFolder import OrderedFolder
@@ -39,9 +40,8 @@ from Products.CMFEditions.interfaces.IReferenceFactories \
 class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
     __doc__ = __doc__ # copy from module
 
-    __implements__ = (
+    implements(
         IReferenceFactories,
-        OrderedFolder.__implements__,   # hide underspecified interfaces :-(
     )
     
     id = 'portal_referencefactories'

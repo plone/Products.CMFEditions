@@ -26,7 +26,7 @@ $Id$
 from Products.PloneTestCase import PloneTestCase
 PloneTestCase.setupPloneSite()
 
-from Interface.Verify import verifyObject
+from zope.interface.verify import verifyObject
 from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
 
 from DummyTools import PurgePolicyTestDummyStorage

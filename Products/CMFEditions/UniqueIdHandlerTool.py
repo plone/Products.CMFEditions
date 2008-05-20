@@ -45,7 +45,6 @@ class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     __doc__ = __doc__ # copy from module
 
     implements(IUniqueIdHandler, IUniqueIdBrainQuery)
-    __implements__ = (SimpleItem.__implements__,)
 
     id = 'portal_historyidhandler'
     alternative_id = "portal_editions_uidhandler"

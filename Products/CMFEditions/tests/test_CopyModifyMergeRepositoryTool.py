@@ -28,7 +28,7 @@ from Products.PloneTestCase import PloneTestCase
 PloneTestCase.setupPloneSite()
 
 import transaction
-from Interface.Verify import verifyObject
+from zope.interface.verify import verifyObject
 from Products.CMFCore.utils import getToolByName
 
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository

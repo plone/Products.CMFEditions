@@ -42,11 +42,7 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
     """
     """
 
-    __implements__ = (
-        IPurgePolicy,
-        SimpleItem.__implements__,
-    )
-    implements(IPurgePolicyTool)
+    implements(IPurgePolicyTool, IPurgePolicy)
 
     id = 'portal_purgepolicy'
     alternative_id = 'portal_keeplastnversions'

@@ -86,7 +86,7 @@ def getSize(obj):
         
     try:
         # check if ``IStreamableReference``
-        if IStreamableReference.isImplementedBy(obj):
+        if IStreamableReference.providedBy(obj):
             size = obj.getSize()
             if size is not None:
                 return size
@@ -145,12 +145,11 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
       objects.
     """
 
-    __implements__ = (
+    implements(
         IPurgeSupport,
         IStorage,
-        SimpleItem.__implements__,
+        IStorageTool,
     )
-    implements(IStorageTool)
 
     id = 'portal_historiesstorage'
     alternative_id = 'portal_zvcstorage'
@@ -946,7 +945,7 @@ class Removed(Persistent):
 
 
 class VersionData:
-    __implements__ = (IVersionData, )
+    implements(IVersionData)
     
     def __init__(self, object, referenced_data, metadata):
         self.object = object
@@ -962,7 +961,7 @@ class LazyHistory:
     """Lazy history adapter.
     """
     
-    __implements__ = (
+    implements(
         IHistory,
     )
 

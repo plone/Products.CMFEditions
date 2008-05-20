@@ -42,8 +42,6 @@ class FAQQuestion(BaseContent):
     allowed_content_types = [] 
     _at_fti_meta_type = DynamicViewTypeInformation.meta_type
 
-    __implements__ = getattr(BaseContent,'__implements__',())
-
     ##code-section class-header #fill in your manual code here
     ##/code-section class-header
 

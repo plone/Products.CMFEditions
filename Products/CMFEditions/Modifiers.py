@@ -25,6 +25,7 @@ $Id: Modifiers.py,v 1.3 2005/06/09 13:07:28 duncanb Exp $
 
 from Globals import InitializeClass
 from Acquisition import aq_base, aq_parent, aq_inner
+from zope.interface import implements
 
 from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -45,7 +46,7 @@ class ConditionalModifier(SimpleItem):
     """This is a wrapper for a modifier.
     """
 
-    __implements__ = (
+    implements(
         IConditionalModifier,
     )
 
@@ -107,7 +108,7 @@ class ConditionalTalesModifier(ConditionalModifier):
     """This is a wrapper with a tales condition for a modifier.
     """
 
-    __implements__ = (
+    implements(
         IConditionalTalesModifier,
     )
 

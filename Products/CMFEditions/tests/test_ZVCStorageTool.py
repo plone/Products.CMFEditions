@@ -27,7 +27,7 @@ $Id: test_ZVCStorageTool.py,v 1.12 2005/02/24 21:53:44 tomek1024 Exp $
 from Products.PloneTestCase import PloneTestCase
 PloneTestCase.setupPloneSite()
 
-from Interface.Verify import verifyObject
+from zope.interface.verify import verifyObject
 from OFS.ObjectManager import ObjectManager
 
 from Products.CMFEditions.ArchivistTool import ObjectData

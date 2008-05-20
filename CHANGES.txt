@@ -5,6 +5,9 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Purged old Zope 2 Interface interfaces for Zope 2.12 compatibility.
+  [elro]
+
 - Register GenericSetup steps via ZCML.
   [wichert]
 

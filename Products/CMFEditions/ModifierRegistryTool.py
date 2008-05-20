@@ -56,15 +56,13 @@ from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 class ModifierRegistryTool(UniqueObject, OrderedFolder):
     __doc__ = __doc__ # copy from module
 
-    __implements__ = (
-        OrderedFolder.__implements__,   # hide underspecified interfaces :-(
+    implements(
         IAttributeModifier, ISaveRetrieveModifier, ICloneModifier,
         IModifierRegistrySet,
         IModifierRegistryQuery,
 #        IBulkEditableSubscriberRegistry,        # not yet implemented
+        IPortalModifierTool,
     )
-
-    implements(IPortalModifierTool)
 
     id = 'portal_modifier'
     alternative_id = 'portal_modifierregistry'
@@ -103,7 +101,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         """
         
         # wrap the object by a conditional tales modifier if it isn't one yet
-        if not IConditionalModifier.isImplementedBy(object):
+        if not IConditionalModifier.providedBy(object):
             object = ConditionalTalesModifier(id, object)
         
         return self.orderedFolderSetObject(id, object, roles=roles, 
@@ -116,10 +114,10 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         portal = getToolByName(self, 'portal_url').getPortalObject()
         for id, o in self.objectItems():
             # collect objects modifier only when appropriate
-            if IConditionalModifier.isImplementedBy(o) \
+            if IConditionalModifier.providedBy(o) \
                and o.isApplicable(obj, portal):
                 mod = o.getModifier()
-                if interface.isImplementedBy(mod):
+                if interface.providedBy(mod):
                     modifier_list.append((id, mod))
                 
         if reversed:
@@ -291,7 +289,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         """See IModifierRegistrySet
         """
         modifier = self.get(id)
-        if IConditionalTalesModifier.isImplementedBy(modifier):
+        if IConditionalTalesModifier.providedBy(modifier):
             modifier.edit(enabled, condition)
         else:
             if condition:

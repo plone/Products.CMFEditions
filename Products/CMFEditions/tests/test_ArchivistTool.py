@@ -27,7 +27,7 @@ $Id: test_ArchivistTool.py,v 1.10 2005/02/25 22:04:00 tomek1024 Exp $
 from Products.PloneTestCase import PloneTestCase
 PloneTestCase.setupPloneSite()
 
-from Interface.Verify import verifyObject
+from zope.interface.verify import verifyObject
 
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
@@ -241,7 +241,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.assertEqual(len(outside_refs), 1)
         refs = [ref.getAttribute() for ref in inside_refs+outside_refs]
         for ref in refs:
-            self.failUnless(IVersionAwareReference.isImplementedBy(ref))
+            self.failUnless(IVersionAwareReference.providedBy(ref))
         cloneValues = prep.clone.object.objectValues()
         for sub in cloneValues:
             self.failUnless(sub in refs)
@@ -315,7 +315,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.assertEqual(len(outside_refs), 1)
         refs = [ref.getAttribute() for ref in inside_refs+outside_refs]
         for ref in refs:
-            self.failUnless(IVersionAwareReference.isImplementedBy(ref))
+            self.failUnless(IVersionAwareReference.providedBy(ref))
             # check info value (see note above)
             self.assertEquals(ref.info, refs.index(ref))
 

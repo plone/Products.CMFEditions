@@ -41,8 +41,7 @@ former version
 $Id: IRepository.py,v 1.8 2005/04/01 17:41:56 disommav Exp $
 """
 
-from zope.interface import Interface as Z3Interface
-from Interface import Interface, Attribute
+from zope.interface import Interface, Attribute
 
 
 class ICopyModifyMergeRepository(Interface):
@@ -365,7 +364,7 @@ class IHistory(Interface):
         """
 
 
-class IRepositoryTool(Z3Interface):
+class IRepositoryTool(Interface):
     """Marker interface for the repository tool used in GenericSetup
        exportimport handlers.
     """

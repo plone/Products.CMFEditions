@@ -30,6 +30,7 @@ import sys
 from Globals import InitializeClass
 
 from Acquisition import aq_base
+from zope.interface import implements
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
@@ -76,7 +77,7 @@ def install(portal_modifier):
         modifier = m['modifier']()
         wrapper = m['wrapper'](id, modifier, title)
         enabled = m['enabled']
-        if IConditionalTalesModifier.isImplementedBy(wrapper):
+        if IConditionalTalesModifier.providedBy(wrapper):
             wrapper.edit(enabled, m['condition'])
         else:
             wrapper.edit(enabled)
@@ -318,7 +319,7 @@ class OMOutsideChildrensModifier(OMBaseModifier):
     knows what to do with that fact).
     """
 
-    __implements__ = (ICloneModifier, ISaveRetrieveModifier)
+    implements(ICloneModifier, ISaveRetrieveModifier)
 
     def getOnCloneModifiers(self, obj):
         """Removes all childrens and returns them as references.
@@ -371,7 +372,7 @@ class OMInsideChildrensModifier(OMBaseModifier):
     knows what to do with that fact).
     """
 
-    __implements__ = (ICloneModifier, ISaveRetrieveModifier)
+    implements(ICloneModifier, ISaveRetrieveModifier)
 
     def getOnCloneModifiers(self, obj):
         """Removes all childrens and returns them as references.
@@ -437,7 +438,7 @@ class OMSubObjectAdapter:
     """Adapter to an object manager children.
     """
 
-    __implements__ = (IReferenceAdapter, )
+    implements(IReferenceAdapter)
 
     def __init__(self, obj, name):
         """Initialize the adapter.
@@ -476,7 +477,7 @@ class RetainWorkflowStateAndHistory:
     Avoids the objects workflow state from beeing retrieved also.
     """
 
-    __implements__ = (ISaveRetrieveModifier, )
+    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         # Saving the ``review_state`` as this is hard to achieve at retreive
@@ -523,7 +524,7 @@ class RetainPermissionsSettings:
     This is nearly essential if we are going to be retaining workflow.
     """
 
-    __implements__ = (ISaveRetrieveModifier, )
+    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         return {}, [], []
@@ -549,7 +550,7 @@ class RetainUIDs:
        that newly created objects are assigned an appropriate uid is a job for the repository tool.
     """
 
-    __implements__ = (ISaveRetrieveModifier, )
+    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         return {}, [], []
@@ -589,7 +590,7 @@ class RetainATRefs:
        copy are preserved when reverting to a previous version
     """
 
-    __implements__ = (ISaveRetrieveModifier, )
+    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         return {}, [], []
@@ -599,7 +600,7 @@ class RetainATRefs:
         if obj is None:
             return [], [], {}
 
-        if IReferenceable.isImplementedBy(obj) \
+        if IReferenceable.providedBy(obj) \
             and hasattr(aq_base(obj), REFERENCE_ANNOTATION):
             #Preserve AT references
             orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
@@ -616,7 +617,7 @@ class NotRetainATRefs:
        keep the reference_catalog in sync, and to call the delHook().
     """
 
-    __implements__ = (ISaveRetrieveModifier, )
+    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         return {}, [], []
@@ -626,7 +627,7 @@ class NotRetainATRefs:
         if obj is None:
             return [], [], {}
 
-        if IReferenceable.isImplementedBy(obj) and hasattr(aq_base(obj), REFERENCE_ANNOTATION) \
+        if IReferenceable.providedBy(obj) and hasattr(aq_base(obj), REFERENCE_ANNOTATION) \
         and hasattr(aq_base(repo_clone), REFERENCE_ANNOTATION):
             #Remove AT references that no longer exists in the retrived version
             orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
@@ -651,7 +652,7 @@ class SaveFileDataInFileTypeByReference:
     Called on 'Portal File' objects.
     """
 
-    __implements__ = (IAttributeModifier, )
+    implements(IAttributeModifier)
 
     def getReferencedAttributes(self, obj):
         return {'data': getattr(aq_base(obj),'data', None)}
@@ -674,7 +675,7 @@ class SillyDemoRetrieveModifier:
     This is really just as silly example though for demo purposes!!!
     """
 
-    __implements__ = (ISaveRetrieveModifier, )
+    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         return {}, [], []
@@ -708,7 +709,7 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
     field_names = ('file', 'image')
     max_size = 26214400 # This represents a 400 element long Pdata list
 
-    __implements__ = (IConditionalTalesModifier, ICloneModifier,)
+    implements(IConditionalTalesModifier, ICloneModifier)
 
     modifierEditForm = PageTemplateFile('www/fieldModifierEditForm.pt',
                                         globals(),
@@ -794,7 +795,7 @@ class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
     annotations or attributes on the object with a marker.  On
     retrieve, the marker will be replaced with the current value.."""
 
-    __implements__ = (IConditionalTalesModifier, ICloneModifier,
+    implements(IConditionalTalesModifier, ICloneModifier,
                       ISaveRetrieveModifier)
 
     def getOnCloneModifiers(self, obj):

@@ -32,6 +32,7 @@ from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem
 from BTrees.OOBTree import OOBTree
+from zope.interface import implements
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
@@ -78,8 +79,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     """See ICopyModifyMergeRepository
     """
 
-    __implements__ = (
-        SimpleItem.__implements__,
+    implements(
         IPurgeSupport, 
         ICopyModifyMergeRepository,
         IContentTypeVersionPolicySupport,
@@ -638,7 +638,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         incosistent state.
         """
 
-        if IReferenceable.isImplementedBy(obj) and hasattr(obj, REFERENCES_CONTAINER_NAME):
+        if IReferenceable.providedBy(obj) and hasattr(obj, REFERENCES_CONTAINER_NAME):
             # Delete refs if their target doesn't exists anymore
             ref_folder = getattr(obj, REFERENCES_CONTAINER_NAME)
             uid_catalog = getToolByName(self, 'uid_catalog')
@@ -705,7 +705,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 class VersionData:
     """
     """
-    __implements__ = (IVersionData, )
+    implements(IVersionData)
 
     security = ClassSecurityInfo()
     security.declareObjectPublic()
@@ -727,7 +727,7 @@ class VersionData:
 class LazyHistory:
     """Lazy history.
     """
-    __implements__ = (IHistory, )
+    implements(IHistory)
 
     __allow_access_to_unprotected_subobjects__ = 1
 

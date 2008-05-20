@@ -24,7 +24,7 @@
 $Id: IArchivist.py,v 1.3 2005/02/23 00:29:02 gregweb Exp $
 """
 
-from Interface import Interface, Attribute
+from zope.interface import Interface, Attribute
 
 
 class IArchivist(Interface):
