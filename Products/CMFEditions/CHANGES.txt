@@ -4,8 +4,8 @@ CMFEditions Changes
 
 This file contains change information for the CMFEditions releases.
 
-CMFEditions 1.1.7 unreleased
------------------------------
+CMFEditions 1.1.7 (June 2, 2008)
+---------------------------------
 
 - Fix for issues with unicode version save comments.
   http://dev.plone.org/plone/ticket/7400
