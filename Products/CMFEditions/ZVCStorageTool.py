@@ -499,6 +499,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         #    - then: pickled metadata (incl. comment)
         try:
             comment = metadata['sys_metadata']['comment']
+            comment = dumps(comment)
         except KeyError:
             comment = ''
         return '\x00\n'.join((comment, dumps(metadata, HIGHEST_PROTOCOL)))

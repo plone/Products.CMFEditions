@@ -422,6 +422,14 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
                           portal_storage.retrieve, history_id=1, selector=1, 
                           countPurged=False)
 
+    def test13_saveWithUnicodeComment(self):
+        portal_storage = self.portal.portal_historiesstorage
+        obj1 = Dummy()
+        obj1.text = 'v1 of text'
+        portal_storage.register(1, ObjectData(obj1),
+                                metadata=self.buildMetadata('saved v1'))
+        portal_storage.save(1, ObjectData(obj1),
+                            metadata=self.buildMetadata(u'saved v1\xc3\xa1'))
 
 class TestMemoryStorage(TestZVCStorageTool):
 
