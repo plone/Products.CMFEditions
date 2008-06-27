@@ -24,12 +24,12 @@
     <depends name="toolset" />
     <depends name="typeinfo" />
   </genericsetup:importStep>
-
+<--
   <genericsetup:exportStep
       name="repositorytool"
       handler="Products.CMFEditions.exportimport.repository.exportRepositoryTool"
       title="Repository Tool"
       description="Export CMFEditions repository tool type specific configuration."
       />
-
+-->
 </configure>

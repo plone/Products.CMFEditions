@@ -49,3 +49,4 @@ def importVarious(context):
     for ctype in VERSIONING_ACTIONS:
         for policy_id in DEFAULT_POLICIES:
             portal_repository.addPolicyForContentType(ctype, policy_id)
+
