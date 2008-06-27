@@ -1,7 +1,9 @@
 <tal:block i18n:domain="plone"
-           tal:define="pr nocall:here/portal_repository">
+            tal:define="pr nocall:here/portal_repository;
+                        isVersionable python:pr.isVersionable(context);
+                        supportsAutoVersion python:pr.supportsPolicy(here,'at_edit_autoversion')">
     <script type="text/javascript"
-            tal:condition="python:pr.isVersionable(here) and not pr.supportsPolicy(here,'at_edit_autoversion')">
+            tal:condition="python:isVersionable and not supportsAutoVersion">
     <!--
     function switchComment(ev) {
         var save_version = document.getElementById('cmfeditions_save_new_version');
@@ -34,7 +36,7 @@
 
     <div i18n:domain="cmfeditions"
          class="field editionSaveVersion"
-         tal:condition="python: pr.isVersionable(here) and not pr.supportsPolicy(here,'at_edit_autoversion')">
+         tal:condition="python: isVersionable and not supportsAutoVersion">
 
         <input type="checkbox"
                name="cmfeditions_save_new_version"
@@ -50,7 +52,7 @@
     <div i18n:domain="cmfeditions"
          class="field editionComment"
          id="cmfeditions_version_comment_block"
-         tal:condition="python: pr.isVersionable(here)">
+         tal:condition="python: isVersionable">
 
         <label><span i18n:translate="label_version_comment">Change note</span></label>
         <div class="formHelp"
