@@ -32,7 +32,7 @@ from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem
 from BTrees.OOBTree import OOBTree
-from zope.interface import implements
+from zope.interface import implements, Interface
 
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
@@ -62,6 +62,7 @@ try:
     from Products.Archetypes.config import REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
     from Products.Archetypes.exceptions import ReferenceException
     WRONG_AT=False
+    HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
 except ImportError:
     WRONG_AT=True
 
@@ -638,7 +639,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         incosistent state.
         """
 
-        if IReferenceable.providedBy(obj) and hasattr(obj, REFERENCES_CONTAINER_NAME):
+        if (HAVE_Z3_IFACE and IReferenceable.providedBy(obj)
+            or not HAVE_Z3_IFACE and IReferenceable.isImplementedBy(obj)) \
+        and hasattr(obj, REFERENCES_CONTAINER_NAME):
             # Delete refs if their target doesn't exists anymore
             ref_folder = getattr(obj, REFERENCES_CONTAINER_NAME)
             uid_catalog = getToolByName(self, 'uid_catalog')

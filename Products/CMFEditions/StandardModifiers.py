@@ -30,7 +30,7 @@ import sys
 from Globals import InitializeClass
 
 from Acquisition import aq_base
-from zope.interface import implements
+from zope.interface import implements, Interface
 
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
@@ -49,6 +49,7 @@ from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
 from Products.Archetypes.interfaces.referenceable import IReferenceable
 from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
+HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
 
 
 #----------------------------------------------------------------------
@@ -600,8 +601,9 @@ class RetainATRefs:
         if obj is None:
             return [], [], {}
 
-        if IReferenceable.providedBy(obj) \
-            and hasattr(aq_base(obj), REFERENCE_ANNOTATION):
+        if (HAVE_Z3_IFACE and IReferenceable.providedBy(obj)
+            or not HAVE_Z3_IFACE and IReferenceable.isImplementedBy(obj)) \
+        and hasattr(aq_base(obj), REFERENCE_ANNOTATION):
             #Preserve AT references
             orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
             setattr(repo_clone, REFERENCE_ANNOTATION, orig_refs_container)
@@ -627,7 +629,9 @@ class NotRetainATRefs:
         if obj is None:
             return [], [], {}
 
-        if IReferenceable.providedBy(obj) and hasattr(aq_base(obj), REFERENCE_ANNOTATION) \
+        if (HAVE_Z3_IFACE and IReferenceable.providedBy(obj)
+            or not HAVE_Z3_IFACE and IReferenceable.isImplementedBy(obj)) \
+        and hasattr(aq_base(obj), REFERENCE_ANNOTATION) \
         and hasattr(aq_base(repo_clone), REFERENCE_ANNOTATION):
             #Remove AT references that no longer exists in the retrived version
             orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
