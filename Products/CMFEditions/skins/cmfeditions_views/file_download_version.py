@@ -14,6 +14,6 @@ obj = context.portal_repository.retrieve(context, version_id).object
 RESPONSE.setHeader('Content-Type', obj.getContentType())
 RESPONSE.setHeader('Content-Length', obj.get_size())
 RESPONSE.setHeader('Content-Disposition',
-                   'attachment;filename=%s'%(obj.getId()))
+                   'attachment;filename="%s"'%(obj.getId()))
 
 return obj.data
