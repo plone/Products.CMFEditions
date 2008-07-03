@@ -8,6 +8,12 @@ Changelog
 - Purged old Zope 2 Interface interfaces for Zope 2.12 compatibility.
   [elro]
 
+- Fixed a bug in the file_download_version that prevented successful download
+  of anterior version of files if the filename contained spaces. Anyway, the
+  filename param of Content-Disposition header SHOULD NEVER come without
+  double-quotes.
+  [drjnut]
+
 CMFEditions 1.1.7 (June 2, 2008)
 -----------------------------
 
