@@ -5,6 +5,8 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Fixed the name of the file : is has to be the FileName not the Id [tbenita]
+
 - Purged old Zope 2 Interface interfaces for Zope 2.12 compatibility.
   [elro]
 
