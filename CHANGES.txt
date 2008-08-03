@@ -2,37 +2,28 @@
 Changelog
 =========
 
-1.2 (Unreleased)
-----------------
+1.1.8
+-----
 
-- Fixed the name of the file : is has to be the FileName not the Id [tbenita]
+- Fix on FileDownloadVersion : files retrieved didn't get their version name
+  [tbenita]
+  Backport from trunk
 
-- Purged old Zope 2 Interface interfaces for Zope 2.12 compatibility.
-  [elro]
-
-- Fixed a bug in the file_download_version that prevented successful download
-  of anterior version of files if the filename contained spaces. Anyway, the
-  filename param of Content-Disposition header SHOULD NEVER come without
-  double-quotes.
+- Fix on FileDownloadVersion : files retrieved got corrupted at retrieval
   [drjnut]
+  Backport from trunk
 
-CMFEditions 1.1.7 (June 2, 2008)
------------------------------
+- Merge AT changes into replacement of 'edit_macros.pt'.
+  See ticket http://dev.plone.org/plone/ticket/7999.
+  [rsantos]
+
+
+1.1.7 (June 2, 2008)
+--------------------
 
 - Fix for issues with unicode version save comments.
   http://dev.plone.org/plone/ticket/7400
   [alecm]
-
-CMFEditions 1.1.6 (March 26, 2008)
----------------------------------------
-
-- Register GenericSetup steps via ZCML.
-  [wichert]
-
-- Use the new archetypes.edit.afterfieldsets viewlet manager to add our
-  field to the AT edit template. The customized edit_macros is now no longer
-  needed.
-  [wichert]
 
 
 1.1.6 (March 26, 2008)
