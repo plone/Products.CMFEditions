@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+    metal:use-macro="here/main_template/macros/master"
+    i18n:domain="cmfeditions">
+
+<tal:block metal:fill-slot="base">
+    <base href="" tal:attributes="href current_page_url" />
+</tal:block>
+<tal:block metal:fill-slot="head_slot">
+    <link rel="stylesheet" type="text/css" href="compare.css"
+          tal:attributes="href string:${portal_url}/compare.css"/>
+</tal:block>
+
+<body>
+  <div metal:fill-slot="main"
+       tal:define="id1 request/version_id1|options/version_id1|string:current;
+                   id2 request/version_id2|options/version_id2;
+                   diffs python:here.getVersionDiff(id1,id2);
+                   base_page_url string:${request/ACTUAL_URL}?version_id1=${id1}&amp;version_id2=${id2};">
+
+    <h1 class="documentFirstHeading"
+        tal:content="here/title_or_id" />
+    <div>
+    <div metal:use-macro="here/diff_legend/macros/diff_legend" />
+    <h3 class="diff-head" tal:condition="python:id1=='current'"
+        i18n:translate="title_changes_since_rev">Changes since revision <tal:block i18n:name="id2" tal:content="id2">id</tal:block></h3>
+    <h3 class="diff-head" tal:condition="python:id1!='current'"
+        i18n:translate="title_changes_between_revs">Changes from revision <tal:block i18n:name="id2" tal:content="string:${id2}">id</tal:block> to revision <tal:block i18n:name="id1" tal:content="string:${id1}">id1</tal:block></h3>
+    <form id="diffs"
+          action="#"
+          tal:condition="not:diffs/same" tal:repeat="d diffs/getDiffs">
+      <em tal:condition="diffs/same" i18n:translate="label_no_changes">No changes</em>
+      <div class="field"
+           tal:condition="not:d/same"
+           tal:define="unified exists:d/unified_diff;
+                       html exists:d/html_diff;
+                       inline exists:d/inline_diff;
+                       ndiff exists:d/ndiff;
+                       inline python: inline and not request.get('no_inline', 0);
+                       html python: html and not request.get('show_unified', 0)">
+        <label tal:content="d/label">[field]</label>
+        <tal:html condition="inline">
+            <br />
+            <a href="#"
+               tal:attributes="href string:${base_page_url}&amp;no_inline:int=1"
+               i18n:translate="label_show_code_differences">Show code differences</a>
+            <br />
+            <br />
+            <div class="inline-diff"
+                 tal:content="structure d/inline_diff">[inline diff]</div>
+        </tal:html>
+        <tal:html condition="python: html and not inline">
+            <br />
+            <tal:visual-only tal:condition="exists:d/inline_diff">
+                <a href="#"
+                   tal:attributes="href string:${base_page_url}"
+                   i18n:translate="label_show_visual_differences">Show visual differences</a>
+                <br />
+            </tal:visual-only>
+                 <!-- Too programmer-y
+            <a href="#"
+               tal:attributes="href string:${base_page_url}&amp;no_inline:int=1&amp;show_unified:int=1">Unified diff format</a>
+            -->
+            <pre tal:content="structure d/html_diff">[html diff]</pre>
+        </tal:html>
+        <tal:unified condition="python:unified and not html">
+            <a href="#"
+                tal:condition="exists:d/inline_diff"
+                tal:attributes="href string:${base_page_url}">Show visual differences</a>
+            <br />
+            <a href="#"
+               tal:condition="exists:d/html_diff"
+               tal:attributes="href string:${base_page_url}&amp;no_inline:int=1">Show side by side</a>
+            <pre tal:content="d/unified_diff">[unified diff]</pre>
+        </tal:unified>
+        <tal:ndiff condition="python:ndiff and not (unified or html)">
+            <pre tal:content="d/ndiff">[ndiff]</pre>
+        </tal:ndiff>
+        <tal:nodiff condition="python:not (unified or html or ndiff)">
+            <span class="diff_chg">Field Changed</span>
+            <br /><br />
+        </tal:nodiff>
+      </div>
+    </form>
+    </div>
+
+    <tal:block tal:condition="diffs/recursive">
+    <h2>Changed files</h2>
+    <tal:changed define="subdiffs diffs/getSubDiffs;
+                         subdiffs python:[c for c in subdiffs if not c.same]">
+      <em tal:condition="not:subdiffs">None</em>
+      <ul tal:condition="subdiffs">
+        <li tal:repeat="cs subdiffs">
+          <a tal:content="cs/id" tal:attributes="href cs/id">[filename]</a>
+        </li>
+      </ul>
+    </tal:changed>
+
+    <h2>Removed files</h2>
+    <em tal:condition="not:diffs/getRemovedItems">None</em>
+    <ul tal:condition="diffs/getRemovedItems">
+    <li tal:repeat="id diffs/getRemovedItems" tal:content="id">[filename]</li>
+    </ul>
+
+    <h2>Added files</h2>
+    <em tal:condition="not:diffs/getAddedItems">None</em>
+    <ul tal:condition="diffs/getAddedItems">
+    <li tal:repeat="id diffs/getAddedItems"><a tal:content="id" tal:attributes="href id">[filename]</a></li>
+    </ul>
+    </tal:block>
+
+  </div>
+
+</body>
+</html>

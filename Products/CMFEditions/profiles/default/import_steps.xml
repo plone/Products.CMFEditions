@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<import-steps>
+  <!--<import-step id="repositorytool"
+    version="20061008-01"
+    handler="Products.CMFEditions.exportimport.repository.importRepositoryTool"
+    title="Repository Tool">
+    <dependency step="toolset"/>
+    Import CMFEditions repository tool type specific configuration.
+  </import-step>-->
+  <import-step id="cmfeditions_various" version="20061008-01"
+               handler="Products.CMFEditions.setuphandlers.importVarious"
+               title="Various CMFEditions Settings">
+   <dependency step="toolset"/>
+   <dependency step="typeinfo"/>
+     CMFEditions specific settings
+  </import-step>
+</import-steps>

@@ -1,0 +1,275 @@
+======================
+Notes, ToDos and Ideas
+======================
+
+next number: 56
+
+
+Deferred to a Future Version
+============================
+
+43. Extract generic tests from ``test_ZVCStorageTool.py`` into a 
+    ``test_IStorage.py``. ``test_ZVCStorageTool.py`` and future storage
+    may then easily inherit the generic tests.
+
+49. Currently autoapply can be enabled/disabled for the object to version only.
+    All subobjects (related objects) are automagically autoapplied when the
+    object gets versioned. This may be a security hole as one can give 
+    ``applyVersionControl`` a different permission than ``save``. The correct
+    behaviour would be to allow inside objects to be autoapplied and outside 
+    object not. What the reaction should be is yet unclear: raise exception or
+    autoapply the outside subobjects?
+
+53. Write test suite for ``StandardModifiers``.
+
+18. Write a How-To about how to write a modifier (it's like a driver
+    that may screw up your operating system)
+
+14. Extend the portal_uidhandler tool to make it version and location 
+    aware (see also 8.)
+
+8. archivist: an working copy under version control shall carry a 
+   'history_id', 'version_id' and a 'location_id'. The resulting 'cmf_uid' 
+   then is a combination of the former ones (see also 14.).
+
+22. Implement Multi Location checkout support. 'getHistoryById' and 
+    'checkout' methods of IRepository. This also means the current
+    'portal_uidhandler' must be made location and version aware (see also 9.).
+    
+9. allow 'checkout' and 'getHistory' of a version by history_id and version_id
+   (see also 22.)
+
+11. terminology: workspace object --> working copy
+                 resource == all versions at every location
+
+20. Make the autoapply of the CopyModifyMergerepository a Zope property
+    beeing editable through the ZMI.
+
+39. Revert, View and Save have different permissions. This must be 
+    reflected by the version_history_form only showing actions that
+    are allowed by the current user (use actions for it).
+
+17. Write a better README.txt
+
+19. Implement the IBulkEditableModifierRegistry interface (this enables
+    us to deliver a ZMI interface for registering modifiers. Currently
+    registering has to be done in e.g. a customization policy.
+    
+21. No unit tests yet for the "preserve" feature. Write some.
+
+25. Write a new much simpler history storage replacing the ZVCStorage.
+    (eventually defered to CMFEditions 1.1, depends on resources, see
+    also 32.)
+
+32. Make storage unit tests subclassable to allow people writing
+    new storages to subclass a buch of unit tests (see also 25.).
+    
+16. principal: save the name or kind of unique id?
+
+40. Support branching.
+
+
+
+
+
+Done
+====
+
+2. terminology: rename archivar --> archivist (Archivar doesn't exist as word)
+
+4. terminology: proposal about method namings (inckl. API), include 
+   houston-sprinters ideas and views (e.g. checkout and getHistory by 
+   history_id, add isCurrent, isUpToDate, etc., see branch and API of ZVC)
+
+5. Continue integration and integration testing (similar to the 
+   CopyModifyRepositoryTool unit tests)
+
+7. we need another hook allowing to intercept cloneByPickle
+
+10. archivist: move applying the context to the repository layer
+
+13. modifier: The modifier API is not powerfull enough to handle:
+    - subobjects that should not be cloned by pickling (e.g. because
+      they're to big) and be passed to the storage by reference.
+    - enable beforeSaveModifier/afterRetrieveModifier to be able to 
+      return nested/related objects to be versioned separately.
+
+17. The archivists getHistory shall return [] for objects not beeing under
+    version control
+    
+3. terminology: rename selector --> version_id --> NO!
+
+34. Remove Multisite stuff 
+    (--> gregweb)
+
+35. delete old version code 
+    (--> gregweb)
+
+36. correctly initialize new architecture 
+    (--> gregweb)
+
+37. make things working in stock plone 
+    (--> gregweb)
+
+1. general: check if the renameTool method in Install.py also works as 
+   expected outside of the unit test framework 
+   (--> gregweb)
+
+31. ZVCStorage currently deletes ObjectManager subobjects on save.
+    This behaviour is inherited from ZVC and must be circumvented.
+    Don't forget to write unit tests that cover this.
+    (--> everybody, done: gregweb)
+    
+12. modifiers: Write Modifiers that will replace the current implicit 
+    "modifiers" in VersionTool.py 
+    (--> gregweb/everybody, done: gregweb)
+
+24. Remove autoregister feature from ZVCStorage.py. This is YAGNI on that
+    level as teh archivist doesn't use it.
+
+15. UI: refactoring and move to new API 
+    (--> reflab, done: gregweb)
+
+6. general: add security stuff to methods (see also 26.) 
+   (--> everybody, done: gregweb)
+
+26. Think about and add permission definitions (see also 6.) 
+    (--> everybody, done: gregweb)
+
+27. Catch exceptions and generate exception more consequently.
+    (--> gregweb)
+
+38. Get plone folders working.
+    (--> gregweb)
+
+33. Implement 'isUpToDate' and 'isModified' of IRepository.
+    We have to extend the storage api to be able to get to the 
+    independently of the storage type and possibly more cheaply. 
+    (--> everybody, done: tomek, varun)
+
+44. Replace hards tabs by soft tabs.
+
+45. Get AT reference stuff working (see ``test_FAQ.py``).
+
+48. ``ZVCStorageTool.py`` stores the current ``__vc_info__`` in a mapping
+    even if the operation was a retrieve. But this is correct only in the 
+    case of a revert. This may end in odd behaviour if a user is just looking 
+    at an old version but continueing working on teh current one.
+    --> ``ZVCStorageTool.py`` should not strip the ``__vc_info__`` away.
+    Argghhh: We really should replace the ``ZVCStorageTool`` by a simpler
+    ZODB based one. In the short term we have to write a test showing the 
+    problem and then correct it if there is really one.
+    
+    > e:\user\greg\data\zope\inst\eddev_plone20\products\cmfeditions\zvcstoragetool.py(121)_saveZVCInfo()
+    (Pdb) l
+    116                     % history_id)
+    117
+    118         def _saveZVCInfo(self, obj, history_id):
+    119             """Saves ZVC related informations and deletes them from the object.
+    120             """
+    121             vc_info = deepCopy(obj.__vc_info__)
+    122  ->         self._getHistoryIdMapping()[history_id] = vc_info
+
+50. Add tests for object managers trating subobjects as inside references.
+    Also add tests for a mixed behaviour.
+
+51. ``_recursiveRetrieve``: There is currently a problem with inside_references 
+    beeing moved to outside: What do on revert when reverting an inside_reference 
+    that has previously been moved to outside (no control over it anymore)? We 
+    may end in two object having the same ``history_id`` which is **REALLY** bad. 
+    The reverted inside_reference should be attached a new history!!!
+    Just take into account: the operation of moving away and object and the 
+    reverting it is in fact a copy operation.
+    
+52. ``_recursiveRetrieve``: Rewrapping in revert shall not be done with the 
+    parent but with the current objects wrapper.
+
+        # rewrap (XXX is this the correct place here in case of inplace?)
+        vdata.data.object = vdata.data.object.__of__(parent)
+
+41. Add at least one functional test to benefit from the fact that 
+    Stefan Holek is here at the sprint (the occasion has been gone)
+
+30. Write more unit tests to cover functionality better. Especially
+    test with folderish content objects and later Archetypes references.
+    These tests will fail before new modifiers were written.
+    We must get at least the same level of functionality as 
+    CMFEditions 0.6.x currently offers.
+
+56. packaging: for the release we need an updated CMF 1.5 CMFUid package 
+    (collective). --> No support for Plone 2.0.x planed anymore.
+
+28. CopyModifyMergeRepositoryTool.py currently implements one possible
+    policy how to handle references. Build a framework for pluggable
+    policies. --> started with ReferenceFactoriesTool.py
+
+42. Solve problem in line 142 of test_CopyModifyMergeRepositoryTool.py
+    (test03_..., part marked with XXX) [CHECK]
+
+23. The ArchivistTool shall store the path at save time (in 
+    getPhysicalPath format). Remark: This is useless as at retrieve
+    time the names of the parents may have changed. But there is a
+    need to store a version aware reference to the parent.
+
+29. Solve all XXX or replace them by TODO's where apropriate.
+
+46. Discuss naming: ``revert`` <--> ``rollback``
+
+- fixed bug that prevented version preview to show the correct content
+- check tracker issues on plone.org and assign to alpha3, beta1 or rc1
+
+55. packaging: make ZVC 0.3.1 downloadable from the collective (await 
+    tres answer)
+
+- check responses for tracker issues for alpha3
+- package and publish 1.0alpha3
+- check answers about rollback versus revert and take a decission 
+  --> rename to revert
+- check name change opinions and take a decission
+  --> no name change (lack of time, too risky)
+- storage migration from alpha3 (purge support)
+- Check what the problem is with retrieve in the version view (not purge 
+  support related, to be checked before 1.0 rc or better before beta1
+  as long as it doesn't delay beta1 to much).
+- move ``oldestFirst`` parameter before the ``preserve`` parameter 
+  (purge support)
+- Test history with ``oldestFirst=True/False`` (purge support)
+- manual purge support implementation on storage level (incl tests)
+- Implement save policy support allowing automatic deleting of version 
+  at save time(testing with dummy purge policy)
+- Write tests for IHistory (__iter__, __getattr__, __len__)
+- Check what happens if __len__ would only return the length of not 
+  purged versions. Decide what to do: This is necessary!
+- refatored storage massively
+- refactor Archivist such that it allows propagating purge support to 
+  repo layer.
+- What shall getModificationDate return in case of purged versions? 
+  Answer and decide what to do. Answer: the date of a substitute. Done.
+- Add reverse iterator for history (eventually change default behaviour)
+- Implement a purge policy tool (last n, enable/disable)
+- Do first UI Tests
+- replace (show below) by (preview)
+- versions_history_form: changed i18n label: 
+  label_show_below --> preview_version
+- Add enable/disable purge in case there is no purge policy (Storage Impl.)
+  (purge support)
+- Add a purge permission (purge support)
+- adding polish translations
+- eventually add german translation
+
+- adding modification time to sys_metadata
+- also store all metadata in shadow storage
+- adding size of data to sys_metadata (archivist shall pass it to storage)
+- update DEPENDENCIES.txt/CHANGES.txt/README.txt/CREDITS.txt
+- move this document to the doc folder
+- check changes on trunk and update CHANGES.txt
+- also tag/branch and prepare a 1.0alpa4 release before merging
+- check which tracker issues to be solved in 1.0beta1
+- merge with trunk before doing 1.0beta1
+- prepare release documentation
+  - addons: propose usage and download of diff in release description
+  - credits
+  - sponsors
+- e-mail to list that no new features should be added and be taken care
+  with changes
+- send e-mails to translators

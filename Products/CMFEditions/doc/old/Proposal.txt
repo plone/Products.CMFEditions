@@ -1,0 +1,230 @@
+#########################################################################
+# Copyright (c) 2004 Alberto Berti, Gregoire Weber. 
+# All Rights Reserved.
+# 
+# This file is part of CMFEditions.
+# 
+# CMFEditions is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# CMFEditions is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CMFEditions; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#########################################################################
+"""Three different repository strategies.
+
+We base our naming of the different repository types on what the
+subversion people suggest in:
+
+    http://tortoisesvn.tigris.org/docs/TortoiseSVN_en/ch02s02.html
+
+ToDo's:
+
+    - Exceptions
+    - isUpToDate/isCurrent
+    - Think about context wrapping
+    - terminology
+
+$Id: Proposal.txt,v 1.1 2005/03/22 12:26:42 gregweb Exp $
+"""
+
+from Interface import Interface, Attribute
+
+from Products.CMFEditions.interfaces import IArchivist
+
+class ICopyModifyMergeRepository(Interface):
+    """A Repository not managing any lock information.
+    
+    In this model, each user's client reads the repository and creates a 
+    personal working copy of the file or project. Users then work in 
+    parallel, modifying their private copies. Finally, the private copies 
+    are merged together into a new, final version. XXX The version control 
+    system often assists with the merging, but ultimately a human being 
+    is responsible for making it happen correctly.
+    """
+    
+    id = Attribute(
+        """The name of a repository shall be 'portal_repository'.
+        """)
+    
+    autoapply = Attribute(
+        """If set to a True value it isn't necessary to call
+        'applyRepositoryControl' before the first version gets saved.
+        The default value is False.
+        """)
+    
+    def applyRepositoryControl(obj, metadata=None):
+        """Put the object under control of the repository.
+        
+        This method has to be called prior any of the other repository
+        related methods is used. The objects current state gets saved 
+        as first version.
+        
+        The repository may raise a 'RepositoryError' exception.
+        
+        XXX Alternative names:
+            - applyVersionControl (status quo)
+            - addToRepository
+        """
+    
+    def saveCurrentState(obj, metadata=None):
+        """Save the current state of the object for later retrieval.
+        
+        XXX Alternative names:
+            - saveAsNewVersion (status quo)
+            - checkin (houston sprinters)
+            - saveState
+            - save
+        """
+    
+    def revert(obj, version_id=None):
+        """Reverts to a former state of the object.
+        
+        If no version information is passed then a the previously stored 
+        versions state is reverted.
+        
+        XXX Alternative names:
+            - rollback (status quo)
+            - checkout (houston sprinters)
+            - rollbackToFormerState
+            - rollbackState
+        """
+
+    def retrieve(obj=None, version_id=None, preserve={}):
+        """Return a given version of an object.
+
+        This method is used to return to the caller an object at a
+        given version id. It does not replace the passed object!
+        The returned object is not context wrapped!
+        
+        Updates the values of the attributes passed in 'preserve'
+        before they got (eventually) overwritten by a modifier.
+        XXX better description here!
+        
+        XXX No alternative names proposed yet.
+        """
+
+    def isUpToDate(obj):
+        """Returns true if the given object is up to date.
+        
+        An object is up to date when an identical copy of the last
+        saved version, at any level of detail. For example, if
+        it's in a different state, isUpToDate returns False.
+
+        XXX This isn't really the expected behavior because we want to
+        compare the aspects of an object that are meaningful to it.
+        
+        XXX isChanged may mean something similar. Need to check use 
+        cases here.
+        """
+        
+    def isVersionable(obj):
+        """Used to check if an object may be put under repository control.
+        
+        Returns a True or False.
+        """
+
+    def isUnderRepositoryControl(obj):
+        """Used to check if an object is under repository control.
+        
+        Returns a True or False.
+        """
+
+    def getHistory(obj=None):
+        """Returns the history of a resource.
+        
+        The returned object are not context wrapped.
+        
+        The history is tuple like thing containing version and metadata 
+        information of the 'IVersionData' format.
+        """
+
+    def getHistoryById(history_id=None):
+        """Returns the history of a resource.
+        
+        The returned object are not context wrapped.
+        
+        The history is tuple like thing containing version and metadata 
+        information of the 'IVersionData' format.
+        """
+
+    def checkout(history_id, version_id=None, obj=None, preserve={}):
+        """Checks out a resources version from the repository.
+        
+        Passing None to 'version_id' means the most current version 
+        is choosen.
+        
+        If an object is given the objects data is replaced by the
+        checked out versions state (modifiers apply). If no object
+        is given the check out is a kind of retrieve by history id.
+        
+        Updates the values of the attributes passed in 'preserve'
+        before they got (eventually) overwritten by a modifier.
+        XXX better description here!
+        
+        XXX The drawback to this solution is that some fake object
+        has to be added to a container before a checkout. Avantages
+        are that the repository doesn't have to care about context
+        wrapping and doesn't have to know how to add an object to 
+        a container. This is the only solution an object may be
+        checked out without beeing added to a container.
+        """
+
+
+class ILockModifyUnlockRepository(ICheckoutModifyCheckinRepository):
+    """Top level API for a lock-modify-unlock repository.
+    
+    These kind of repositories also manage a lock state to avoid
+    editing collisions.
+    
+    XXX This interface may be unstable as we didn't think a lot about 
+    it.
+    """
+
+    def lock(obj, override=None):
+        """Lock the object for exclusive modification use XXX.
+        
+        This doesn't do any locking on the object. It only avoids
+        saves from different locations.
+        
+        Alternative Names:
+            - maskAsInUse
+            - bookForModification
+            - book
+        """
+        
+    def unlock(obj):
+        """Unlock the object.
+
+        This doesn't do any unlocking on the object. It only reallows
+        saves from different locations.
+        
+        Alternative Names:
+            - maskAsModifyable
+            - freeForModification
+            - free
+        """
+
+
+class ContextAwarenes(Interfaces):
+    """Manages context awarenes of objects.
+    """
+
+    def wrap(obj, context=None):
+        """Context wrap the object.
+        
+        If context is None, the parents context is chosen.
+        """
+
+
+class IVersionData(IArchivist.IVersionData):
+    """The retrieved data and metadata.
+    """
+

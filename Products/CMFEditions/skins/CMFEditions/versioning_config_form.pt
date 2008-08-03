@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"
+    metal:define-macro="master"
+    i18n:domain="cmfeditions">
+
+<metal:master use-macro="here/prefs_main_template/macros/master">
+
+    <metal:block metal:fill-slot="top_slot" define-slot="top_slot"
+        tal:define="dummy python:request.set('disable_border',1)" />
+
+    <body>
+
+    <div i18n:domain="cmfeditions"
+         metal:fill-slot="prefs_configlet_main"
+         metal:define-slot="prefs_configlet_main"
+         tal:define="errors python:request.get('errors', {});">
+
+    <div class="configlet">
+
+    <div class="documentEditable"
+         tal:define="type_list here/portal_types/listContentTypes;
+                     friendly_list putils/getUserFriendlyTypes;
+                     show_all request/show_all|nothing">
+
+        <div metal:define-slot="multisite_content">
+
+        <h1 i18n:translate="label_title_vers_config">Versioning Settings</h1>
+
+        <p class="documentDescription"
+           i18n:translate="description_version_settings">
+           You can have different settings for each content type. Content can
+           be automatically versioned, and you can also opt to create a version
+           when you revert a revision.
+        </p>
+        
+        <form action="."
+            name="configure_multisite"
+            method="post">
+
+        <fieldset>
+        <legend i18n:translate="label_versionable_content_types">
+            Versionable content types
+        </legend>
+
+        <div class="field">
+            <a href="" i18n:translate="label_versioning_config_show_all"
+               tal:attributes="href string:${request/ACTUAL_URL}?show_all=True"
+               tal:condition="python:friendly_list and not show_all">
+               Show all types</a>
+            <a href="" i18n:translate="label_versioning_config_show_friendly"
+               tal:attributes="href string:${request/ACTUAL_URL}"
+               tal:condition="python:friendly_list and show_all">
+               Show only searchable types</a>
+
+            <table class="listing"
+                   summary="Versionable content types"
+                   i18n:attributes="summary label_versionable_content_types;"
+                   tal:define="pr nocall:here/portal_repository;
+                            versionablelist pr/getVersionableContentTypes;
+                            all_policies pr/getPolicyMap;
+                            policy_defs pr/listPolicies;
+                            type_list python:list((show_all and type_list) or (friendly_list or type_list));">
+              <tr>
+                <th i18n:translate="label_item_type">Item Type</th>
+                <th i18n:translate="label_enable_versioning">Versioning Enabled?</th>
+                <th i18n:translate="label_versioning_policies">Policies</th>
+              </tr>
+              <tal:block tal:repeat="type_id type_list">
+              <tr tal:define="typeinfo python:here.portal_types.getTypeInfo(type_id);
+                              oddrow repeat/type_id/odd"
+                  tal:attributes="class python:test(oddrow, 'even', 'odd')">
+                <td>
+                <span i18n:domain="plone" i18n:translate="" tal:content="typeinfo/Title">Type Title</span>
+                <input type="hidden"
+                        name="policy_map.portal_type:records"
+                        value=""
+                        tal:attributes="value type_id" />
+                </td>
+                <td class="listingCheckbox">
+                    <input type="checkbox"
+                        name="policy_map.enabled:boolean:records"
+                        class="noborder"
+                        checked="checked"
+                        tal:attributes="value python:True;
+                                        checked python:type_id in versionablelist;"/>
+                </td>
+
+                <!-- These should really be checkboxes, not multiselect lists ~limi -->
+                <td>
+                  <select multiple="multiple"
+                          size="3"
+                          name="policy_map.policies:list:records">
+                    <tal:block define="enabled_policies python:all_policies.get(type_id, []);"
+                               repeat="policy policy_defs">
+                        <option i18n:translate=""
+                                value="policy_id"
+                                tal:content="policy/Title"
+                                tal:attributes="value policy/getId;
+                                                selected python:policy.getId() in enabled_policies;" />
+                    </tal:block>
+                  </select>
+                </td>
+              </tr>
+              </tal:block>
+            </table>
+        </div>
+
+        <div class="formControls">
+            <input
+                class="context"
+                type="submit"
+                i18n:domain="plone"
+                i18n:attributes="value label_save"
+                name="versioning_config:method"
+                value="Save" />
+        </div>
+
+        </fieldset>
+
+
+        </form>
+
+        </div>
+
+    </div>
+
+    </div>
+
+    </div>
+
+    </body>
+</metal:master>
+</html>
