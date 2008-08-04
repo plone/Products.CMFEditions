@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.1.8'
+version = '1.1.8dev'
 
 setup(name='Products.CMFEditions',
       version=version,
@@ -9,7 +9,6 @@ setup(name='Products.CMFEditions',
                        open("CHANGES.txt").read(),
       classifiers=[
         'Framework :: Plone',
-        'Framework :: Zope2',
       ],
       keywords='Versioning Plone',
       author='CMFEditions contributers',
@@ -22,5 +21,15 @@ setup(name='Products.CMFEditions',
       zip_safe=False,
       install_requires=[
         'setuptools',
+        'Products.Archetypes',
+        'Products.CMFCore',
+        'Products.CMFDynamicViewFTI',
+        'Products.CMFPlone',
+        'Products.CMFUid',
+        'Products.GenericSetup',
+        'Products.PageTemplates',
+        'Products.PloneTestCase',
+        'Products.ZopeVersionControl',
+        'zope.interface',
       ],
       )
