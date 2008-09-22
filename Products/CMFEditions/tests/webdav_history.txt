@@ -1,0 +1,78 @@
+WebDAV and Versioning
+=====================
+
+This doctest makes sure that WebDAV changes to Archetypes-based
+objects trigger versioning correctly:
+
+  >>> from pprint import pprint
+  >>> from StringIO import StringIO
+  >>> from zope.app.testing import ztapi
+  >>> from Products.Archetypes.tests.utils import makeContent
+  >>> from Products.Archetypes.interfaces import IBaseObject
+  >>> from Products.Archetypes.tests.attestcase import user_name
+  >>> from Products.Archetypes.tests.attestcase import user_password
+  >>> from Products.Archetypes.tests.atsitetestcase import portal_name
+
+Doing a `PUT` request that creates a brand new object, and so should
+create and save an initial version as happens when creating a brand
+new object via the Plone UI:
+
+  >>> self.setRoles(['Manager'])
+
+  >>> 'some-document' in self.folder.objectIds()
+  False
+
+  >>> print http(r"""
+  ... PUT /%s/some-document HTTP/1.1
+  ... Authorization: Basic %s:%s
+  ... Content-Type: text/plain; charset="utf-8"
+  ...
+  ... Some Content
+  ... """ % ('/'.join(self.folder.getPhysicalPath()), user_name, user_password))
+  HTTP/1.1 201 Created
+  ...
+
+  >>> 'some-document' in self.folder.objectIds()
+  True
+
+  >>> print str(self.folder['some-document']['text'])
+  Some Content
+
+
+There should be only one history entry and not two or more
+
+  >>> portal_repo = self.portal.portal_repository
+  >>> len(portal_repo.getHistory(self.folder['some-document']))
+  1
+
+Doing another `PUT` request to update the same object should cause
+another version of the object to be saved:
+
+  >>> print http(r"""
+  ... PUT /%s/some-document HTTP/1.1
+  ... Authorization: Basic %s:%s
+  ... Content-Type: text/plain; charset="utf-8"
+  ...
+  ... Some Other Content
+  ... """ % ('/'.join(self.folder.getPhysicalPath()), user_name, user_password))
+  HTTP/1.1 204 No Content
+  ...
+
+  >>> print str(self.folder['some-document']['text'])
+  Some Other Content
+
+  >>> len(portal_repo.getHistory(self.folder['some-document']))
+  2
+
+Creating a folder does not trigger a revision because the policy is
+not configured for folders:
+
+  >>> print http(r"""
+  ... MKCOL /%s/some-folder HTTP/1.1
+  ... Authorization: Basic %s:%s
+  ... """ % ('/'.join(self.folder.getPhysicalPath()), user_name, user_password))
+  HTTP/1.1 201 Created
+  ...
+
+  >>> len(portal_repo.getHistory(self.folder['some-folder']))
+  0

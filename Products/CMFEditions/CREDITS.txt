@@ -32,7 +32,7 @@ Bug Fixes:
 - Rob Miller (rafrombrc)
 - Sune Broendum Woeller (sunew)
 - Sylvain Thenault (syt)
-
+- Sidnei da Silva (sidnei)
 
 Translations
 ------------

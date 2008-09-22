@@ -1,4 +1,5 @@
-<configure xmlns="http://namespaces.zope.org/zope">
+<configure xmlns="http://namespaces.zope.org/zope"
+	   xmlns:zcml="http://namespaces.zope.org/zcml">
 
   <include package=".exportimport" />
 
@@ -8,5 +9,13 @@
                    zope.lifecycleevent.interfaces.IObjectCopiedEvent"
               handler=".ArchivistTool.object_copied"
               />
+
+  <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectInitializedEvent"
+	      handler=".subscriber.webdavObjectInitialized" 
+	      zcml:condition="installed Products.Archetypes.interfaces.IWebDAVObjectInitializedEvent" />
+
+  <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectEditedEvent"
+	      handler=".subscriber.webdavObjectEdited" 
+	      zcml:condition="installed Products.Archetypes.interfaces.IWebDAVObjectEditedEvent" />
 
 </configure>

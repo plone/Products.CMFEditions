@@ -134,7 +134,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         #self.failUnless(h1.user_id)
         #self.assertEqual(h1.path, '/'.join(doc.getPhysicalPath()))
         #self.failUnless(h1.timestamp)
-        """"""
 
     def test06_retrieveSpecificVersion(self):
         portal_repo = self.portal.portal_repository
@@ -922,6 +921,12 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
 from unittest import TestSuite, makeSuite
 def test_suite():
+    from Products.PloneTestCase import PloneTestCase
+    from Testing.ZopeTestCase import FunctionalDocFileSuite as FileSuite
+
     suite = TestSuite()
     suite.addTest(makeSuite(TestIntegration))
+    suite.addTest(FileSuite('webdav_history.txt',
+                            package='Products.CMFEditions.tests',
+                            test_class=PloneTestCase.FunctionalTestCase))
     return suite
