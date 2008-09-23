@@ -1,7 +1,7 @@
 <configure xmlns="http://namespaces.zope.org/zope"
-    xmlns:cmf="http://namespaces.zope.org/cmf"
-    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-    i18n_domain="cmfeditions">
+	   xmlns:cmf="http://namespaces.zope.org/cmf"
+	   xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+	   i18n_domain="cmfeditions">
 
   <include package=".browser" />
   <include package=".exportimport" />
@@ -12,9 +12,15 @@
   <include file="profiles.zcml"/>
 
   <subscriber for=".interfaces.IVersioned
-                   zope.lifecycleevent.interfaces.IObjectCopiedEvent"
-              handler=".ArchivistTool.object_copied"
-              />
+		   zope.lifecycleevent.interfaces.IObjectCopiedEvent"
+	      handler=".ArchivistTool.object_copied"
+	      />
+
+  <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectInitializedEvent"
+	      handler=".subscriber.webdavObjectInitialized" />
+
+  <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectEditedEvent"
+	      handler=".subscriber.webdavObjectEdited" />
 
   <genericsetup:importStep
       name="cmfeditions_various"
@@ -33,4 +39,5 @@
       description="Export CMFEditions repository tool type specific configuration."
       />
 -->
+
 </configure>

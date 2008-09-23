@@ -117,7 +117,7 @@ class FAQQuestion(BaseContent):
           )
         
 
-registerType(FAQQuestion)
+registerType(FAQQuestion, 'CMFEditions')
 # end of class FAQQuestion
 
 ##code-section module-footer #fill in your manual code here

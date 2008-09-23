@@ -131,7 +131,7 @@ class FAQ(OrderedBaseFolder):
           )
         
 
-registerType(FAQ)
+registerType(FAQ, 'CMFEditions')
 # end of class FAQ
 
 ##code-section module-footer #fill in your manual code here

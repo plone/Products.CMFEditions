@@ -58,9 +58,12 @@ product_globals = globals()
 # Set up a MessageFactory for the cmfeditions domain
 from zope.i18nmessageid import MessageFactory
 CMFEditionsMessageFactory = MessageFactory('cmfeditions')
+
 ModuleSecurityInfo('Products.CMFEditions').declarePublic('CMFEditionsMessageFactory')
 ModuleSecurityInfo('Products.CMFEditions.interfaces.IArchivist').declarePublic('ArchivistUnregisteredError')
 ModuleSecurityInfo('Products.CMFEditions.interfaces.IModifier').declarePublic('FileTooLargeToVersionError')
+ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('isObjectChanged')
+ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('maybeSaveVersion')
 
 def initialize(context):
     utils.ToolInit(meta_type='CMF Editions Tool', tools=tools,
