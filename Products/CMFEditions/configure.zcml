@@ -9,10 +9,4 @@
               handler=".ArchivistTool.object_copied"
               />
 
-  <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectInitializedEvent"
-	      handler=".subscriber.webdavObjectInitialized" />
-
-  <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectEditedEvent"
-	      handler=".subscriber.webdavObjectEdited" />
-
 </configure>

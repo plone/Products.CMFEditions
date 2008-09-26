@@ -28,9 +28,6 @@ import random
 from Persistence import Persistent
 from Acquisition import aq_base
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import base_hasattr
-from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredError
-from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 
 STUB_OBJECT_PREFIX = '_CMFEditionsTempId'
 
@@ -88,28 +85,6 @@ def generateId(parent, prefix='', volatile=False):
         if id not in existingIds:
             return id
 
-def isObjectChanged(obj):
-    pr = getToolByName(obj, 'portal_repository')
-
-    changed = False
-    if not base_hasattr(obj, 'version_id'):
-        changed = True
-    else:
-        try:
-            changed = not pr.isUpToDate(obj, obj.version_id)
-        except ArchivistUnregisteredError:
-            # The object is not actually registered, but a version is
-            # set, perhaps it was imported, or versioning info was
-            # inappropriately destroyed
-            changed = True
-    return changed
-
-def maybeSaveVersion(obj, policy='at_edit_autoversion', comment='', force=False):
-    pr = getToolByName(obj, 'portal_repository')
-    isVersionable = pr.isVersionable(obj)
-
-    if isVersionable and (force or pr.supportsPolicy(obj, policy)):
-        pr.save(obj=obj, comment=comment)
 
 def wrap(obj, parent):
     """Copy the context and containment from one object to another.

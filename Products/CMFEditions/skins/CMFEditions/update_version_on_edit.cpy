@@ -8,25 +8,32 @@
 ##parameters=
 ##
 
-from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone import PloneMessageFactory as _
-from Products.CMFEditions.utilities import isObjectChanged, maybeSaveVersion
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 
-putils = getToolByName(context, 'plone_utils')
-REQUEST = context.REQUEST
-comment = REQUEST.get('cmfeditions_version_comment', '')
-force = REQUEST.get('cmfeditions_save_new_version', None) is not None
 
-if not (isObjectChanged(context) or force):
-    return state.set(status='success')
-    
-try:
-    maybeSaveVersion(context, comment=comment, force=force)
-except FileTooLargeToVersionError:
-    putils.addPortalMessage(
-        _("Versioning for this file has been disabled because it is too large"),
-        type="warn"
-        )
+REQUEST = context.REQUEST
+pr = context.portal_repository
+putils = context.plone_utils
+isVersionable = pr.isVersionable(context)
+
+changed = False
+if not base_hasattr(context, 'version_id'):
+    changed = True
+else:
+    changed = not pr.isUpToDate(context, context.version_id)
+
+comment = REQUEST.get('cmfeditions_version_comment',"")
+if isVersionable and ((changed and \
+                       pr.supportsPolicy(context, 'at_edit_autoversion')) or \
+                      REQUEST.get('cmfeditions_save_new_version', None)):
+    try:
+        context.portal_repository.save(obj=context, comment=comment)
+    except FileTooLargeToVersionError:
+        putils.addPortalMessage(
+       _("Versioning for this file has been disabled because it is too large"),
+       type="warn"
+       )
 
 return state.set(status='success')
