@@ -22,5 +22,6 @@ setup(name='Products.CMFEditions',
       zip_safe=False,
       install_requires=[
         'setuptools',
+        'Products.Archetypes >=1.5.10dev',
       ],
       )
