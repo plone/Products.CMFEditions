@@ -5,6 +5,11 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Catch WebDAVObjectInitializedEvent/WebDAVObjectEditedEvent and
+  save versions as appropriate. This is part of the fix for
+  http://dev.plone.org/plone/ticket/7338
+  [sidnei] 
+
 - Fixed the name of the file : is has to be the FileName not the Id [tbenita]
 
 - Purged old Zope 2 Interface interfaces for Zope 2.12 compatibility.
