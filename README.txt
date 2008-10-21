@@ -1,10 +1,6 @@
-===========
-CMFEditions
-===========
-
-------
-README
-------
+=================
+About CMFEditions
+=================
 
 CMFEditions provides versioning in Plone.
 
@@ -18,7 +14,7 @@ CMFEditions provides versioning in Plone.
 
 
 Out Of The Box Experience
-=========================
+-------------------------
 
 Versionable content items edit views now allows saving a version on save
 (automatically or manually). The version history may be accessed quickly from
@@ -48,7 +44,7 @@ filtered out. This policy may completely be changed depending on specific needs
 (see modifiers below). 
 
 Extensibility
-=============
+-------------
 
 CMFEditions was from the beginning developed with extensibility in mind.
 A handful of tools provide the whole functionality:
@@ -78,7 +74,7 @@ A handful of tools provide the whole functionality:
 
 
 Additional Documentation
-========================
+------------------------
 
 A couple of presentations and ReSt documents may be found in 
 documentation package that has to be downloaded separately (or the 
@@ -90,14 +86,14 @@ You're welcome to help out.
 
 
 Dependencies
-============
+------------
 
 CMFEditions is part of the Plone distribution and all dependencies are already
 included. Please refer to the dependency information of Plone for any details.
 
 
 Migrating from Older Versions of CMFEditions
-============================================
+--------------------------------------------
 
 We know there are severe problems when migrating from 1.0alpha3, 
 1.0alpha4 or trunk checkout from May 2006 and before.
@@ -106,7 +102,7 @@ for assistance. We're interested in making migrations bullet proof.
 
 
 Feedback
-========
+--------
 
 - Please `report bugs <http://plone.org/products/cmfeditions/issues>` 
   to the CMFEditions tracker on plone.org.
@@ -115,14 +111,14 @@ Feedback
 
 
 Contributing
-============
+------------
 
 Just do it and communicate with us over the 
 `mailing list <mailto:collective-versioning@lists.sourceforge.net>`!
 
 
 Credits & Sponsoring
-====================
+--------------------
 
 Several people and organizations have made CMFEditions possible:
 
