@@ -2,6 +2,10 @@
 Changelog
 =========
 
+
+- Some CMFEditions .py files use wrong MessageFactory (#8715)
+  [encolpe]
+
 1.1.8 (October 6, 2008)
 -----------------------
 

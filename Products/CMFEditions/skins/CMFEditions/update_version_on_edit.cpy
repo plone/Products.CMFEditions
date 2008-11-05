@@ -9,7 +9,7 @@
 ##
 
 from Products.CMFPlone.utils import base_hasattr
-from Products.CMFPlone import PloneMessageFactory as _
+from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 
 
