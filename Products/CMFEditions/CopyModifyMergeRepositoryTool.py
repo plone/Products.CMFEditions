@@ -27,7 +27,7 @@ $Id: CopyModifyMergeRepositoryTool.py,v 1.20 2005/06/24 11:42:01 gregweb Exp $
 import time
 import transaction
 
-from Globals import InitializeClass
+from App.class_init import InitializeClass
 from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem

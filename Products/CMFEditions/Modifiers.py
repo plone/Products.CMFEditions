@@ -23,7 +23,7 @@
 $Id: Modifiers.py,v 1.3 2005/06/09 13:07:28 duncanb Exp $
 """
 
-from Globals import InitializeClass
+from App.class_init import InitializeClass
 from Acquisition import aq_base, aq_parent, aq_inner
 from zope.interface import implements
 

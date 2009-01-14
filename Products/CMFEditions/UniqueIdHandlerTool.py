@@ -27,7 +27,7 @@ $Id: UniqueIdHandlerTool.py,v 1.2 2005/01/06 14:25:44 gregweb Exp $
 
 from zope.interface import implements
 
-from Globals import InitializeClass
+from App.class_init import InitializeClass
 from AccessControl import ClassSecurityInfo
 
 from OFS.SimpleItem import SimpleItem

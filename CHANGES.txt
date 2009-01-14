@@ -5,6 +5,10 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Declare package dependencies and fixed deprecation warnings for use
+  of Globals.
+  [hannosch]
+
 - Catch WebDAVObjectInitializedEvent/WebDAVObjectEditedEvent and
   save versions as appropriate. This is part of the fix for
   http://dev.plone.org/plone/ticket/7338

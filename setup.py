@@ -20,8 +20,27 @@ setup(name='Products.CMFEditions',
       namespace_packages=['Products'],
       include_package_data=True,
       zip_safe=False,
+      extras_require=dict(
+        test=[
+            'zope.testing',
+            'zope.app.testing',
+            'Products.CMFDynamicViewFTI',
+            'Products.PloneTestCase',
+        ]
+      ),
       install_requires=[
         'setuptools',
-        'Products.Archetypes >=1.5.10dev',
+        'zope.i18nmessageid',
+        'zope.interface',
+        'Plone',
+        'Products.Archetypes',
+        'Products.CMFCore',
+        'Products.CMFDefault',
+        'Products.GenericSetup',
+        # 'Acquisition',
+        # 'DateTime',
+        # 'transaction',
+        # 'ZODB3',
+        # 'Zope2',
       ],
       )

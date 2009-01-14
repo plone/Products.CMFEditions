@@ -26,7 +26,7 @@ __version__ = "$Revision: 1.17 $"
 
 from zope.interface import implements
 
-from Globals import InitializeClass
+from App.class_init import InitializeClass
 from Missing import MV
 
 from Acquisition import aq_base

@@ -31,7 +31,7 @@ from StringIO import StringIO
 from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
 from zope.interface import implements
 
-from Globals import InitializeClass
+from App.class_init import InitializeClass
 from BTrees.OOBTree import OOBTree
 from BTrees.IOBTree import IOBTree
 from Persistence import Persistent

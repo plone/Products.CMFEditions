@@ -28,7 +28,7 @@ from StringIO import StringIO
 from cPickle import Pickler, Unpickler
 from zope.interface import implements, alsoProvides
 
-from Globals import InitializeClass
+from App.class_init import InitializeClass
 from Persistence import Persistent
 from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo, getSecurityManager

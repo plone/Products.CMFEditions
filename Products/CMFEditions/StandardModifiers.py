@@ -27,7 +27,7 @@ $Id: StandardModifiers.py,v 1.13 2005/06/26 13:28:36 gregweb Exp $
 """
 
 import sys
-from Globals import InitializeClass
+from App.class_init import InitializeClass
 
 from Acquisition import aq_base
 from zope.interface import implements, Interface
