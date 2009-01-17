@@ -1,21 +1,9 @@
-<configure xmlns="http://namespaces.zope.org/zope"
-           xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-           i18n_domain="cmfeditions">
+<configure xmlns="http://namespaces.zope.org/zope">
 
   <include package=".browser" />
   <include package=".exportimport" />
 
   <include file="profiles.zcml"/>
-
-  <genericsetup:importStep
-      name="cmfeditions_various"
-      handler="Products.CMFEditions.setuphandlers.importVarious"
-      title="Various CMFEditions Settings"
-      description="CMFEditions specific settings">
-    <depends name="toolset" />
-    <depends name="typeinfo" />
-  </genericsetup:importStep>
-
 
   <subscriber for=".interfaces.IVersioned
                    zope.lifecycleevent.interfaces.IObjectCopiedEvent"
