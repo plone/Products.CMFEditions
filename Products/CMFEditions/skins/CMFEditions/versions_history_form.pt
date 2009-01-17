@@ -216,7 +216,7 @@
         <tal:preview condition="view_macro">
           <metal:use_body use-macro="view_macro" />
         </tal:preview>
-        <tal:nopreview condition="view_macro">
+        <tal:nopreview condition="not:view_macro">
           <div i18n:translate="">Preview is not available.</div>
         </tal:nopreview>
       </tal:block>
