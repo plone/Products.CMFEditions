@@ -2,9 +2,17 @@
 Changelog
 =========
 
+1.2 (Unreleased)
+----------------
+
+- Use the new archetypes.edit.afterfieldsets viewlet manager to add our
+  field to the AT edit template. The customized edit_macros is now no longer
+  needed.
+  [wichert]
 
 - Some CMFEditions .py files use wrong MessageFactory (#8715)
   [encolpe]
+
 
 1.1.8 (October 6, 2008)
 -----------------------
