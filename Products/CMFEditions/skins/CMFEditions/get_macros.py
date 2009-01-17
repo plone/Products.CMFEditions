@@ -23,7 +23,9 @@ versionPreviewTemplate = getattr(context, versionPreviewMethodName, None)
 # check if a special version view exists
 if getattr(versionPreviewTemplate, 'macros', None) is None:
     # Use the Plone's default view template
-    
     versionPreviewTemplate = context.restrictedTraverse(def_method_name)
+
+if getattr(versionPreviewTemplate, 'macros', None) is None:
+    return None
 
 return versionPreviewTemplate.macros['main']

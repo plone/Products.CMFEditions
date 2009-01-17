@@ -7,7 +7,8 @@
 
 <div metal:fill-slot="main">
     <tal:main-macro metal:define-macro="main"
-                    tal:define="size here/size">
+                    tal:define="size here/size;
+                                here_url context/absolute_url;">
 
         <div metal:use-macro="here/document_actions/macros/document_actions">
             Document actions (print, sendto etc)

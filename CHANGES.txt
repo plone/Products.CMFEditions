@@ -5,6 +5,10 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Define here_url in all templates and made get_macros not fail when
+  encountering a browser view based template.
+  [hannosch]
+
 - Cleaned up package metadata and code to remove the dependency on Plone.
   [hannosch]
 

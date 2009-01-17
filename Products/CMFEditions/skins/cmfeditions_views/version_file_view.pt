@@ -26,6 +26,7 @@
     
         <p>
             <a href=""
+               tal:define="here_url context/absolute_url"
                tal:attributes="href string:$here_url/file_download_version?version_id=${version_id}">
                 <img src="" tal:attributes="src string:${portal_url}/file_icon.gif" alt="" />
                 <tal:block i18n:translate="label_click_to_get_file">
