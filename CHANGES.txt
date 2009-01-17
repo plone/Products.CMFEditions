@@ -5,6 +5,11 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Remove history action. Plone 3.3 has alternative implementations in the
+  form of the content history viewlet so this should not be installed by
+  default.
+  [wichert]
+
 - Move import step registration to ZCML.
   [wichert]
 
