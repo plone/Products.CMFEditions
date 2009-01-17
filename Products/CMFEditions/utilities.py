@@ -28,7 +28,6 @@ import random
 from Persistence import Persistent
 from Acquisition import aq_base
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import base_hasattr
 from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredError
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 
@@ -92,7 +91,7 @@ def isObjectChanged(obj):
     pr = getToolByName(obj, 'portal_repository')
 
     changed = False
-    if not base_hasattr(obj, 'version_id'):
+    if getattr(aq_base(obj), 'version_id', None) is None:
         changed = True
     else:
         try:

@@ -9,7 +9,7 @@
 ##
 
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone import PloneMessageFactory as _
+from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.utilities import isObjectChanged, maybeSaveVersion
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 

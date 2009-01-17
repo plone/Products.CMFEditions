@@ -8,7 +8,7 @@
 ##title=Revert version
 ##
 
-from Products.CMFPlone import PloneMessageFactory as _
+from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 
 RESPONSE = context.REQUEST.RESPONSE

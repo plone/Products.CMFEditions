@@ -5,6 +5,9 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Cleaned up package metadata and code to remove the dependency on Plone.
+  [hannosch]
+
 - Declare package dependencies and fixed deprecation warnings for use
   of Globals.
   [hannosch]
