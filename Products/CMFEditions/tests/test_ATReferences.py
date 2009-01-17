@@ -119,7 +119,6 @@ class TestATReferences(PloneTestCase.PloneTestCase):
 
     def test_contentReferencesAreSavedAndRestored(self):
 
-        from Products.Archetypes.ReferenceEngine import ContentReference
         repo = self.portal.portal_repository
         fol = self.portal.fol
         doc1 = self.portal.fol.doc1
@@ -129,6 +128,7 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         repo.applyVersionControl(doc2)
 
 #  XXX Simply using this kind of ref doesn't work
+#         from Products.Archetypes.ReferenceEngine import ContentReference
 #         doc1.addReference(doc2, referenceClass=ContentReference,
 #         contentType='Document')
 #         doc1.setTitle('v1')

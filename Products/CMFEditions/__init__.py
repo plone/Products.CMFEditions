@@ -27,7 +27,6 @@ __version__ = "$Revision: 1.17 $"
 from AccessControl import ModuleSecurityInfo
 
 from Products.CMFCore import utils
-from Products.CMFCore.DirectoryView import registerDirectory
 
 from Products.CMFEditions import UniqueIdHandlerTool
 from Products.CMFEditions import ModifierRegistryTool

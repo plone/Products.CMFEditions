@@ -24,7 +24,6 @@ $Id: ModifierRegistryTool.py,v 1.17 2005/06/24 11:42:01 gregweb Exp $
 """
 __version__ = "$Revision: 1.17 $"
 
-from zope.component import getUtility
 from zope.interface import implements
 
 from Globals import InitializeClass
