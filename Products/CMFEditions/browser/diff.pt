@@ -16,6 +16,8 @@
   <tal:block metal:fill-slot="javascript_head_slot">
     <script type="text/javascript">
       jq(document).ready(function() {
+          jq(".jsOnly").show();
+
           jq("#versionSelector select").change(function() { this.form.submit(); });
           jq("#diffTypeSelector input").change(function() {
               var style = jq("#diffTypeSelector input[checked]").attr("value");
@@ -76,7 +78,7 @@
         </p>
 
         <tal:changes condition="view/changes">
-          <label for="diffstyle">Show differences
+          <label for="diffstyle" class="jsOnly" style="display: none">Show differences
             <ul class="radioRow" id="diffTypeSelector">
               <li><input type="radio" name="diffstyle" value="visual" checked="yes">inline</li>
               <li><input type="radio" name="diffstyle" value="code">as code</li>
