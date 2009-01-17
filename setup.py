@@ -22,7 +22,7 @@ setup(name='Products.CMFEditions',
       install_requires=[
         'setuptools',
         'Products.Archetypes',
-        'Products.CMFCore',
+        'Products.CMFCore >=2.1',
         'Products.CMFDynamicViewFTI',
         'Plone',
         'Products.CMFUid',
