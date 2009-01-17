@@ -5,6 +5,9 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Move import step registration to ZCML.
+  [wichert]
+
 - Use the new archetypes.edit.afterfieldsets viewlet manager to add our
   field to the AT edit template. The customized edit_macros is now no longer
   needed.
