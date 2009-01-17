@@ -26,7 +26,6 @@ $Id: CopyModifyMergeRepositoryTool.py,v 1.20 2005/06/24 11:42:01 gregweb Exp $
 
 import time
 import transaction
-from zope.interface import implements
 
 from Globals import InitializeClass
 from Acquisition import aq_base, aq_parent, aq_inner
@@ -42,7 +41,6 @@ from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
 from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
-from Products.CMFEditions.interfaces.IRepository import IRepositoryTool
 from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData
@@ -58,13 +56,9 @@ from Products.CMFEditions.Permissions import RevertToPreviousVersions
 from Products.CMFEditions.Permissions import ManageVersioningPolicies
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
-try:
-    from Products.Archetypes.interfaces.referenceable import IReferenceable
-    from Products.Archetypes.config import REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
-    from Products.Archetypes.exceptions import ReferenceException
-    WRONG_AT=False
-except ImportError:
-    WRONG_AT=True
+from Products.Archetypes.interfaces.referenceable import IReferenceable
+from Products.Archetypes.config import REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
+from Products.Archetypes.exceptions import ReferenceException
 
 VERSIONABLE_CONTENT_TYPES = []
 VERSION_POLICY_MAPPING = {}
@@ -603,8 +597,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         each retrieved object."""
         for obj in queue:
             if inplace:
-                if not WRONG_AT:
-                    self._fixupATReferences(obj)
+                self._fixupATReferences(obj)
                 self._fixIds(obj)
                 self._fixupCatalogData(obj)
 
