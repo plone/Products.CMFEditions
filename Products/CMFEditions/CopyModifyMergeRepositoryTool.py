@@ -265,7 +265,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """
         self.autoapply = autoapply
 
-    security.declarePublic('ApplyVersionControl')
+    security.declarePublic('applyVersionControl')
     def applyVersionControl(self, obj, comment='', metadata={}):
         """See ICopyModifyMergeRepository.
         """
