@@ -1,8 +1,14 @@
-from Acquisition import aq_base
 from copy import deepcopy
+from cPickle import Pickler, Unpickler
 from StringIO import StringIO
+import types
+
+from zope.interface import implements
+
+from Acquisition import aq_base
+from DateTime import DateTime
 from OFS.SimpleItem import SimpleItem
-from Products.CMFDefault.DublinCore import DefaultDublinCoreImpl
+
 from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.ArchivistTool import ObjectData
 from Products.CMFEditions.ArchivistTool import PreparedObject
@@ -16,16 +22,23 @@ from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFCore.utils import getToolByName
-from cPickle import Pickler, Unpickler
-from DateTime import DateTime
-from zope.interface import implements
-import types
 
 # Make alog module level so that it survives transaction rollbacks
 alog = []
 
-class Dummy(SimpleItem, DefaultDublinCoreImpl):
-   pass
+
+class Dummy(SimpleItem):
+
+    def __init__(self):
+        now = DateTime()
+        self.modification_date = now
+
+    def modified(self):
+        return self.modification_date
+
+    def notifyModified(self):
+        self.modification_date = DateTime()
+
 
 class UniqueIdError(Exception):
     pass
