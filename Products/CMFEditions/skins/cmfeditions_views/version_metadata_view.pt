@@ -18,8 +18,8 @@
 
                 <li>
                     <label for="predefined_subjects"
-                          i18n:translate="label_existing_keywords">
-                      Existing keywords
+                          i18n:translate="label_existing_categories">
+                      Existing categories
                     </label>:
 
                     <span tal:content="python: ', '.join(here.Subject())"
