@@ -32,6 +32,10 @@ Changelog
   double-quotes.
   [drjnut]
 
+- Set some msgids to cmfeditions i18n domain in version_file_view.
+  Renamed msgid label_existing_keywords by label_existing_categories in version_metadata_view.
+  [vincentfretin]
+
 CMFEditions 1.1.7 (June 2, 2008)
 -----------------------------
 
