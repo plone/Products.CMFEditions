@@ -98,18 +98,18 @@
             </p>
 
             <div class="fieldDiff code-diff" style="display: none">
-<!-- This triggers a UnicodeDecodeError. Strangely enough that does not happen
-     in the CMF page template version...
+              <!-- This no longer triggers a UnicodeDecodeError. Strangely enough that does not happen
+                   in the CMF page template version... -->
               <pre tal:condition="exists:diff/html_diff" tal:content="structure diff/html_diff">
                 HTML formatted differences
               </pre>
--->
-              <pre class="fieldDiff code-diff" tal:condition="python:not exists('Xdiff/html_diff') and exists('diff/ndiff')" tal:content="diff/ndiff">
+
+              <!-- <pre class="fieldDiff code-diff" tal:condition="python:not exists('Xdiff/html_diff') and exists('diff/ndiff')" tal:content="diff/ndiff">
                 ndiff formatted differences
               </pre>
               <p class="fieldDiff" tal:condition="python:not exists('Xdiff/html_diff') and not exists('diff/ndiff')">
                 This field has no code difference view.
-              </p>
+              </p> -->
             </div>
           </fieldset>
         </tal:changes>
