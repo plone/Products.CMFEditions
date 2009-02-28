@@ -5,6 +5,9 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Define dependency on Products.ZopeVersionControl.
+  [hannosch]
+
 - Define dependency on CMFDiffTool (via template using portal_diff) and
   avoiding a test dependency on CMFDefault.
   [hannosch]
