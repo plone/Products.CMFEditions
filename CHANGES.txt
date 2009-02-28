@@ -5,6 +5,9 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Added the required profile bits for installing CMFUid.
+  [hannosch]
+
 - Define dependency on Products.ZopeVersionControl.
   [hannosch]
 
