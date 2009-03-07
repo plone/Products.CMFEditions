@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.2'
+version = '1.2b1'
 
 setup(name='Products.CMFEditions',
       version=version,
