@@ -24,6 +24,11 @@ Changelog
 - Some CMFEditions .py files use wrong MessageFactory (#8715)
   [encolpe]
 
+- Set some msgids to cmfeditions i18n domain in version_file_view.
+  Renamed msgid label_existing_keywords by label_existing_categories in
+  version_metadata_view.
+  [vincentfretin]
+
 
 1.1.8 (October 6, 2008)
 -----------------------
