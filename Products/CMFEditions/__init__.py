@@ -25,7 +25,6 @@ $Id: __init__.py,v 1.17 2005/02/07 22:09:08 gregweb Exp $
 __version__ = "$Revision: 1.17 $"
 
 from AccessControl import ModuleSecurityInfo
-from App.Common import package_home
 
 from Products.CMFCore import utils
 
@@ -39,8 +38,6 @@ from Products.CMFEditions import KeepLastNVersionsTool
 
 from Products.CMFEditions import StandardModifiers
 
-PACKAGE_HOME = package_home(globals())
-
 tools = (
     UniqueIdHandlerTool.UniqueIdHandlerTool,
     ModifierRegistryTool.ModifierRegistryTool,
@@ -51,9 +48,6 @@ tools = (
     KeepLastNVersionsTool.KeepLastNVersionsTool,
     )
 
-# This is used by a script (external method) that can be run
-# to set up CMFEditions in an existing CMF Site instance.
-product_globals = globals()
 
 # Set up a MessageFactory for the cmfeditions domain
 from zope.i18nmessageid import MessageFactory

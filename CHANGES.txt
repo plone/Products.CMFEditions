@@ -8,6 +8,22 @@ Changelog
 - Added the required profile bits for installing CMFUid.
   [hannosch]
 
+- Register CMF skin layers via ZCML.
+  [wichert]
+
+- Remove history action. Plone 3.3 has alternative implementations in the
+  form of the content history viewlet so this should not be installed by
+  default.
+  [wichert]
+
+- Move import step registration to ZCML.
+  [wichert]
+
+- Use the new archetypes.edit.afterfieldsets viewlet manager to add our
+  field to the AT edit template. The customized edit_macros is now no longer
+  needed.
+  [wichert]
+
 - Define dependency on Products.ZopeVersionControl.
   [hannosch]
 

@@ -128,6 +128,7 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         repo.applyVersionControl(doc2)
 
 #  XXX Simply using this kind of ref doesn't work
+#         from Products.Archetypes.ReferenceEngine import ContentReference
 #         doc1.addReference(doc2, referenceClass=ContentReference,
 #         contentType='Document')
 #         doc1.setTitle('v1')

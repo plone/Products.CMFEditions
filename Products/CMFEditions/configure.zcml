@@ -3,6 +3,8 @@
 	   xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
 	   i18n_domain="cmfeditions">
 
+  <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
+
   <include package=".browser" />
   <include package=".exportimport" />
 
