@@ -2,7 +2,7 @@
 Changelog
 =========
 
-1.2 (Unreleased)
+2.0 (Unreleased)
 ----------------
 
 - Added the required profile bits for installing CMFUid.
