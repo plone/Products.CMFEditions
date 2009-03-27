@@ -52,7 +52,7 @@
                 <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                 <option tal:repeat="version view/history"
                         tal:attributes="value version/version_id; selected python:str(rev)==str(version.version_id) and 'yes' or None"
-                        i18n:translate="label_history_version"><tal:version content="version/version_id">1</tal:version>
+                        i18n:translate="label_history_version"><tal:version i18n:name="version" content="version/version_id">1</tal:version>
                         (<tal:date i18n:name="date" content="python:toLocalizedTime(version.sys_metadata['timestamp'])">1975-12-24</tal:date>)</option>
               </select>
             </label>

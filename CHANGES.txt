@@ -8,6 +8,15 @@ Changelog
 - Added the required profile bits for installing CMFUid.
   [hannosch]
 
+1.2 (Unreleased)
+----------------
+
+- Fixed label_history_version msgid dynamic content in diff.pt (added i18n:name="version")
+  [vincentfretin]
+
+1.2b1 (March 7, 2009)
+---------------------
+
 - Register CMF skin layers via ZCML.
   [wichert]
 
