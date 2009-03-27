@@ -5,6 +5,9 @@ Changelog
 1.2 (UNREELASED)
 ----------------
 
+- Fixed label_history_version msgid dynamic content in diff.pt (added i18n:name="version")
+  [vincentfretin]
+
 
 1.2b1 (March 7, 2009)
 ---------------------
