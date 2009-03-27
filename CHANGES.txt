@@ -2,7 +2,7 @@
 Changelog
 =========
 
-1.2 (UNREELASED)
+1.2 (Unreleased)
 ----------------
 
 - Fixed label_history_version msgid dynamic content in diff.pt (added i18n:name="version")
