@@ -5,6 +5,8 @@ Changelog
 1.2 (Unreleased)
 ----------------
 
+- Internationalization of 7 strings in diff.pt (history view).
+  [vincentfretin]
 - Fixed label_history_version msgid dynamic content in diff.pt (added i18n:name="version")
   [vincentfretin]
 

@@ -47,7 +47,7 @@
         <form id="versionSelector" tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
           <fieldset>
             <legend>Versions</legend>
-            <label for="one">First version
+            <label for="one"><span tal:omit-tag="" i18n:translate="">First version</span>
               <select name="one" tal:define="rev request/form/one|string:current">
                 <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                 <option tal:repeat="version view/history"
@@ -57,7 +57,7 @@
               </select>
             </label>
 
-            <label for="two">Second version
+            <label for="two"><span tal:omit-tag="" i18n:translate="">Second version</span>
               <select name="two" tal:define="rev request/two|string:current">
                 <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                 <option tal:repeat="version view/history"
@@ -73,15 +73,15 @@
           </noscript>
         </form>
 
-        <p tal:condition="not:view/changes">
+        <p tal:condition="not:view/changes" i18n:translate="">
           There are no changes between the selected versions.
         </p>
 
         <tal:changes condition="view/changes">
-          <label for="diffstyle" class="jsOnly" style="display: none">Show differences
+          <label for="diffstyle" class="jsOnly" style="display: none"><span tal:omit-tag="" i18n:translate="">Show differences</span>
             <ul class="radioRow" id="diffTypeSelector">
-              <li><input type="radio" name="diffstyle" value="visual" checked="yes">inline</li>
-              <li><input type="radio" name="diffstyle" value="code">as code</li>
+              <li><input type="radio" name="diffstyle" value="visual" checked="yes" i18n:translate="">inline</li>
+              <li><input type="radio" name="diffstyle" value="code" i18n:translate="">as code</li>
             </ul>
           </label>
 
@@ -93,7 +93,7 @@
               Inline changes
             </div>
 
-            <p class="fieldDiff inline-diff" tal:condition="not:exists:diff/inline_diff">
+            <p class="fieldDiff inline-diff" tal:condition="not:exists:diff/inline_diff" i18n:translate="">
               This field has no inline difference view.
             </p>
 
