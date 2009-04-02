@@ -80,8 +80,8 @@
         <tal:changes condition="view/changes">
           <label for="diffstyle" class="jsOnly" style="display: none"><span tal:omit-tag="" i18n:translate="">Show differences</span>
             <ul class="radioRow" id="diffTypeSelector">
-              <li i18n:translate=""><input type="radio" name="diffstyle" value="visual" checked="yes" />inline</li>
-              <li i18n:translate=""><input type="radio" name="diffstyle" value="code" />as code</li>
+              <li><input type="radio" name="diffstyle" value="visual" checked="yes" /><span tal:omit-tag="" i18n:translate="">inline</span></li>
+              <li><input type="radio" name="diffstyle" value="code" /><span tal:omit-tag="" i18n:translate="">as code</span></li>
             </ul>
           </label>
 
