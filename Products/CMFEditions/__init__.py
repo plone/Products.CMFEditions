@@ -25,6 +25,9 @@ $Id: __init__.py,v 1.17 2005/02/07 22:09:08 gregweb Exp $
 """
 __version__ = "$Revision: 1.17 $"
 
+
+from Globals import package_home
+
 from AccessControl import ModuleSecurityInfo
 
 from Products.CMFCore import utils
@@ -38,6 +41,9 @@ from Products.CMFEditions import ReferenceFactoriesTool
 from Products.CMFEditions import KeepLastNVersionsTool
 
 from Products.CMFEditions import StandardModifiers
+
+GLOBALS = globals()
+PACKAGE_HOME = package_home(GLOBALS)
 
 tools = (
     UniqueIdHandlerTool.UniqueIdHandlerTool,
