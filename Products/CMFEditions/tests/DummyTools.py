@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from copy import deepcopy
 from StringIO import StringIO

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from zope.i18n import translate
 
 from Acquisition import aq_inner

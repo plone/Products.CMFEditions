@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber,
 # Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
