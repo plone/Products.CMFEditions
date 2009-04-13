@@ -5,6 +5,9 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Add encoding declaration in python files
+  [encolpe]
+
 - Added the required profile bits for installing CMFUid.
   [hannosch]
 
@@ -13,6 +16,7 @@ Changelog
 
 - Internationalization of 7 strings in diff.pt (history view).
   [vincentfretin]
+
 - Fixed label_history_version msgid dynamic content in diff.pt (added i18n:name="version")
   [vincentfretin]
 
