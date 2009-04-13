@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from copy import deepcopy
 from cPickle import Pickler, Unpickler
 from StringIO import StringIO

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Tests which use the FAQ 'product' in this folder.
 # This is a folderish content type which also uses references.
 #

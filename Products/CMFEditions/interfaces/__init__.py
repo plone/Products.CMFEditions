@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from zope import interface
 
 from _tools import IArchivistTool

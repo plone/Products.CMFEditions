@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IRepository import IRepositoryTool
 from Products.GenericSetup.utils import XMLAdapterBase

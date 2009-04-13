@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2008 Alberto Berti, Gregoire Weber. 
 # All Rights Reserved.

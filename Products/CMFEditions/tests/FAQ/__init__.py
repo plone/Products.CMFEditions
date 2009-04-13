@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from Products.CMFCore import utils, DirectoryView
 from Products.Archetypes.atapi import *
 from Products.Archetypes import listTypes
