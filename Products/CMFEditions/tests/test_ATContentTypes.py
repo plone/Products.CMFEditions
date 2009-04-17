@@ -61,7 +61,7 @@ class TestATContents(PloneTestCase.PloneTestCase):
         self.folder.invokeFactory('Document', id='doc')
         portal_repository = self.portal_repository
         content = self.folder.doc
-        content.setText('text v1')
+        content.setText('têxt v1')
         self.set_metadata(content, 'content')
         portal_repository.applyVersionControl(content, comment='save no 1')
         content.setText('text v2')
@@ -69,14 +69,14 @@ class TestATContents(PloneTestCase.PloneTestCase):
         portal_repository.save(content, comment='save no 2')
         vdata = portal_repository.retrieve(content, 0)
         obj = vdata.object
-        self.assertEqual(obj.getRawText(), 'text v1')
+        self.assertEqual(obj.getRawText(), 'têxt v1')
         self.metadata_test(obj, 'content')
         vdata = portal_repository.retrieve(content, 1)
         obj = vdata.object
         self.assertEqual(obj.getRawText(), 'text v2')
         self.metadata_test(obj, 'contentOK')
         portal_repository.revert(content, 0)
-        self.assertEqual(content.getRawText(), 'text v1')
+        self.assertEqual(content.getRawText(), 'têxt v1')
         self.metadata_test(content, 'content')
 
     def testNewsItem(self):

@@ -5,14 +5,17 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
-- Add encoding declaration in python files
-  [encolpe]
-
 - Added the required profile bits for installing CMFUid.
   [hannosch]
 
 1.2 (Unreleased)
 ----------------
+
+- Add missing PACKAGE_HOME in the init file according to tests
+  [encolpe]
+
+- Add the encoding declaration (utf-8) in all python files
+  [encolpe]
 
 - Internationalization of 7 strings in diff.pt (history view).
   [vincentfretin]
