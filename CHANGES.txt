@@ -7,10 +7,13 @@ Changelog
 
 - Add missing PACKAGE_HOME in the init file according to tests
   [encolpe]
+
 - Add the encoding declaration (utf-8) in all python files
   [encolpe]
+
 - Internationalization of 7 strings in diff.pt (history view).
   [vincentfretin]
+
 - Fixed label_history_version msgid dynamic content in diff.pt (added i18n:name="version")
   [vincentfretin]
 
