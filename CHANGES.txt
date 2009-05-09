@@ -3,6 +3,9 @@ Changelog
 =========
 
 
+1.1.9 (unreleased)
+------------------
+
 - Some CMFEditions .py files use wrong MessageFactory (#8715)
   [encolpe]
 
