@@ -7,8 +7,16 @@ Changelog
   [encolpe]
 
 - Set some msgids to cmfeditions i18n domain in version_file_view.
-  Renamed msgid label_existing_keywords by label_existing_categories in version_metadata_view.
+  Renamed msgid label_existing_keywords by label_existing_categories
+  in version_metadata_view.
   [vincentfretin]
+
+- Merge AT changes into replacement of 'edit_macros.pt':
+  Updated the name of the buttons on the edit form and updated all the
+  places that are using this buttons.
+  See ticket http://dev.plone.org/plone/ticket/7559
+  [lucie]
+
 
 1.1.8 (October 6, 2008)
 -----------------------
