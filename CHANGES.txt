@@ -2,8 +2,8 @@
 Changelog
 =========
 
-1.2 (Unreleased)
-----------------
+1.2 - May 16, 2009
+------------------
 
 - Add missing PACKAGE_HOME in the init file according to tests
   [encolpe]
