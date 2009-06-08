@@ -7,8 +7,9 @@
   <div metal:fill-slot="main"
        tal:define="pr  nocall:here/portal_repository;
                    version_id python:request.get('version_id', None);
-                   history python:pr.getHistoryMetadata(context); 
-                   histrange    python:range(len(history)-1, -1, -1)"
+                   history python:pr.getHistoryMetadata(context);
+                   revisions python:history.getLength(countPurged=False);
+                   histrange python:range(revisions-1, -1, -1)"
                    tal:condition="python: pr.isVersionable(context)">
     <h1 class="documentFirstHeading"
         i18n:translate="versions_of_title">Revisions of
@@ -98,7 +99,7 @@
                 </tr>
                 <tal:block repeat="vdatai histrange">
                 <tr tal:define="id     vdatai;
-                                vdatafull   python:history.retrieve(vdatai, True);
+                                vdatafull   python:history.retrieve(vdatai, countPurged=False);
                                 vdata       vdatafull/metadata;
                                 current_version python:not current['isModified'] and current['version_id']==vdatai;
                                 even repeat/vdatai/even;"
