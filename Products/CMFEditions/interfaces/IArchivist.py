@@ -127,6 +127,10 @@ class IArchivist(Interface):
         the value supplied with ``default`` instead of raising an exception.
         """
 
+    def getHistoryMetadata(obj=None, history_id=None):
+        """Returns the versioning metadata history.
+        """
+
 
 class IPurgeSupport(Interface):
     """Repository Purge Support

@@ -270,6 +270,27 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
 
         self.portal.portal_purgepolicy = portal_purgepolicy
 
+    def test09_getHistoryMetadata(self):
+        portal_repository = self.portal.portal_repository
+        doc = self.portal.doc
+        doc.text = 'text v1'
+        portal_repository.applyVersionControl(doc, comment='save number 1')
+        doc.text = 'text v2'
+        portal_repository.save(doc, comment='save number 2')
+
+        history = portal_repository.getHistoryMetadata(doc)
+
+        self.assertEqual(len(history), 2)
+        # The history is acquisition wrapped
+        self.assertEqual(history.aq_parent, portal_repository)
+        # check if timestamp and principal available
+        self.failUnless(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
+        self.failUnless(history.retrieve(0)['metadata']['sys_metadata']['principal'])
+        # check if correct data and metadata retrieved
+        self.assertEqual(history.retrieve(0)['metadata']['sys_metadata']['comment'], 'save number 1')
+        self.assertEqual(history.retrieve(1)['metadata']['sys_metadata']['comment'], 'save number 2')
+
+
 
 class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):
 

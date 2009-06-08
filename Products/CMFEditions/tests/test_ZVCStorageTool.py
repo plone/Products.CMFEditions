@@ -432,6 +432,19 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         portal_storage.save(1, ObjectData(obj1),
                             metadata=self.buildMetadata(u'saved v1\xc3\xa1'))
 
+    def test14_getHistoryMetadata(self):
+        portal_storage = self.portal.portal_historiesstorage
+        self._setupMinimalHistory()
+        history = portal_storage.getHistoryMetadata(1)
+        self.assertEqual(len(history), 4)
+
+        # accessing the versions
+        self.assertEqual(history.retrieve(0)['metadata']['sys_metadata']['comment'], "saved v1")
+        self.assertEqual(history.retrieve(1)['metadata']['sys_metadata']['comment'], "saved v2")
+        self.assertEqual(history.retrieve(2)['metadata']['sys_metadata']['comment'], "saved v3")
+        self.assertEqual(history.retrieve(3)['metadata']['sys_metadata']['comment'], "saved v4")
+
+
 class TestMemoryStorage(TestZVCStorageTool):
 
     def installStorageTool(self):

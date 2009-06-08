@@ -239,6 +239,10 @@ class DummyArchivist(SimpleItem):
         obj, history_id = dereference(obj, history_id, self)
         return [deepCopy(obj) for obj in self._archive[history_id]]
 
+    def getHistoryMetadata(self, obj=None, history_id=None):
+        obj, history_id = dereference(obj, history_id, self)
+        return [item['metadata'] for item in self._archive[history_id]]
+
     def queryHistory(self, obj=None, history_id=None,
                      preserve=(), default=[]):
         try:
@@ -538,7 +542,7 @@ class MemoryStorage(DummyBaseTool):
                    substitute=True):
         history = []
         sel = 0
-        
+
         while True:
             try:
                 vdata = self.retrieve(history_id, sel, countPurged, substitute)
@@ -546,8 +550,11 @@ class MemoryStorage(DummyBaseTool):
                 break
             history.append(vdata)
             sel += 1
-            
+
         return HistoryList(history)
+
+    def getHistoryMetadata(self, history_id):
+        return self.getHistory(history_id)
 
     def isRegistered(self, history_id):
         return history_id in self._histories
@@ -610,6 +617,10 @@ class HistoryList(types.ListType):
         except IndexError:
             raise StorageRetrieveError("Retrieving non existing version %s" % selector)
 
+    def retrieve(self, selector, ignored=True):
+       """Faux metadata only retrieval"""
+       item = self[selector]
+       return {'metadata': item.metadata}
 
 class DummyPurgePolicy(DummyBaseTool):
     """Dummy Purge Policy
