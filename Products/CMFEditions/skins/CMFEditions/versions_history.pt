@@ -3,7 +3,7 @@
       i18n:domain="cmfeditions">
 <tal:history      tal:define="pr        nocall:here/portal_repository;
                               history   python:pr.getHistoryMetadata(context);
-                              revisions python:len(history);
+                              revisions python:history.getLength(countPurged=False);
                               histrange python:range(revisions-1, -1, -1)"
                   tal:condition="python: history and pr.isVersionable(context)">
       <dl id="versions" class="collapsible inline collapsedOnLoad">
@@ -22,7 +22,7 @@
           </tr>
 
           <metal:block tal:repeat="vdatai histrange">
-            <tr tal:define="vdatafull  python:history.retrieve(vdatai, True);
+            <tr tal:define="vdatafull  python:history.retrieve(vdatai, countPurged=False);
                             vdata      vdatafull/metadata;
                             odd        repeat/vdatai/odd;
                             id         vdatai"

@@ -30,7 +30,15 @@ class DiffView(BrowserView):
         version1=self.request.get("one", "current")
         version2=self.request.get("two", "current")
 
-        self.history=self.repo_tool.getHistory(self.context, countPurged=False)
+        history_metadata=self.repo_tool.getHistoryMetadata(self.context)
+        retrieve = history_metadata.retrieve
+        getId = history_metadata.getVersionId
+        history = self.history = []
+        # Count backwards from most recent to least recent
+        for i in xrange(history_metadata.getLength(countPurged=False)-1, -1, -1):
+            version = retrieve(i, countPurged=False)['metadata'].copy()
+            version['version_id'] = getId(i, countPurged=False)
+            history.append(version)
         dt=getToolByName(self.context, "portal_diff")
         changeset=dt.createChangeSet(
                 self.getVersion(version2),

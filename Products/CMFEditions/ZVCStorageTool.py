@@ -852,6 +852,7 @@ class ShadowHistory(Persistent):
         # purge the reference
         del self._available[version_pos]
 
+    security.declareProtected(AccessPreviousVersions, 'getLength')
     def getLength(self, countPurged):
         """Length of the History Either Counting Purged Versions or Not
         """
