@@ -341,6 +341,50 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self.failUnless(portal_archivist.isUpToDate(obj=doc, selector=v2))
         self.failIf(portal_archivist.isUpToDate(obj=doc, selector=v1))
 
+    def test09_getHistoryMetadata(self):
+        portal_archivist = self.portal.portal_archivist
+        doc = self.portal.doc
+
+        doc.text = 'text v1'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        portal_archivist.register(prep)
+
+        doc.text = 'text v2'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        portal_archivist.save(prep)
+
+        history = portal_archivist.getHistoryMetadata(doc)
+
+        self.assertEqual(len(history), 2)
+        # check if timestamp and principal available
+        self.failUnless(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
+        self.failUnless(history.retrieve(0)['metadata']['sys_metadata']['principal'])
+        # check if correct data and metadata retrieved
+        self.assertEqual(history.retrieve(0)['metadata']['app_metadata'], 'save number 1')
+        self.assertEqual(history.retrieve(1)['metadata']['app_metadata'], 'save number 2')
+
+    def test09_getHistoryMetadata_byId(self):
+        portal_archivist = self.portal.portal_archivist
+        doc = self.portal.doc
+
+        doc.text = 'text v1'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        portal_archivist.register(prep)
+
+        doc.text = 'text v2'
+        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        portal_archivist.save(prep)
+
+        # retrieve the history by history id
+        history = portal_archivist.getHistoryMetadata(history_id=1)
+
+        self.assertEqual(len(history), 2)
+        # check if timestamp and principal available
+        self.failUnless(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
+        self.failUnless(history.retrieve(0)['metadata']['sys_metadata']['principal'])
+        # check if correct data and metadata retrieved
+        self.assertEqual(history.retrieve(0)['metadata']['app_metadata'], 'save number 1')
+        self.assertEqual(history.retrieve(1)['metadata']['app_metadata'], 'save number 2')
 
 class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):
 

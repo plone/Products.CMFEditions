@@ -5,7 +5,10 @@ Changelog
 1.2.1 - UNRELEASED
 ------------------
 
-
+- Add getHistoryMetadata method to allow efficient history display
+  without full object retrieval.  Based on patches by Darryl Dixon on
+  CMFEditions zvc_enfold_fixfailures branch r59908:60078.
+  [alecm]
 
 
 1.2 - May 16, 2009

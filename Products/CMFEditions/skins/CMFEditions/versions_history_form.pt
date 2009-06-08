@@ -5,11 +5,11 @@
   </tal:block>
 
   <div metal:fill-slot="main"
-       tal:define="pr nocall:here/portal_repository;
+       tal:define="pr  nocall:here/portal_repository;
                    version_id python:request.get('version_id', None);
-                   history python:pr.getHistory(here, countPurged=False);"
+                   history python:pr.getHistoryMetadata(context); 
+                   histrange    python:range(len(history)-1, -1, -1)"
                    tal:condition="python: pr.isVersionable(context)">
-
     <h1 class="documentFirstHeading"
         i18n:translate="versions_of_title">Revisions of
           "<span i18n:name="title" tal:replace="here/title_or_id">title</span>"
@@ -27,16 +27,14 @@
 
     <form action="."
         method="post"
-        tal:condition="python: history"
+        tal:condition="history"
         tal:attributes="action string:$here_url/versions_history">
 
         <table id="sortable"
             class="listing"
             summary="Content history"
             cellpadding="0" cellspacing="0"
-            tal:define="current python:context.checkUpToDate(history)"
-            >
-
+            tal:define="current python:context.checkUpToDate(history)">
             <thead>
                 <tr>
                   <th><tal:title i18n:translate="listingheader_key"
@@ -98,10 +96,12 @@
                     </ul>
                   </td>
                 </tr>
-                <tal:block repeat="vdata history">
-                <tr tal:define="id string:${vdata/version_id};
-                                current_version python:not current['isModified'] and current['version_id']==vdata.version_id;
-                                even repeat/vdata/even;"
+                <tal:block repeat="vdatai histrange">
+                <tr tal:define="id     vdatai;
+                                vdatafull   python:history.retrieve(vdatai, True);
+                                vdata       vdatafull/metadata;
+                                current_version python:not current['isModified'] and current['version_id']==vdatai;
+                                even repeat/vdatai/even;"
                     tal:attributes="class python:(current_version and 'CurrentVersion' or '') + (even and ' even' or '')">
                   <td class="VersionId">
                     <span tal:condition="current_version" i18n:translate="">Working Copy</span>
@@ -121,9 +121,9 @@
                     <span tal:content="vdata/sys_metadata/principal">francesco</span>
                   </td>
                   <td class="VersionDate">
-                    <span tal:content="python:here.toLocalizedTime(vdata.sys_metadata['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
+                    <span tal:content="python:here.toLocalizedTime(vdata['sys_metadata']['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
                   </td>
-                  <td><span tal:content="vdata/comment">Draft version ready for comments from the group.</span>
+                  <td><span tal:content="vdata/sys_metadata/comment">Draft version ready for comments from the group.</span>
                   </td>
                   <td class="VersionActions">
                     <ul>
@@ -136,7 +136,7 @@
                             Compare to current revision
                             </a>
                         </li>
-                        <li tal:condition="not:repeat/vdata/end">
+                        <li tal:condition="not:repeat/vdatai/end">
                             <a href=""
                                style="text-decoration: none"
                                tal:define="prev_ver python:str(int(id)-1)"
@@ -218,4 +218,3 @@
 
   </div>
 </html>
-

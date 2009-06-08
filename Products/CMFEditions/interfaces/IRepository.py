@@ -125,6 +125,10 @@ class ICopyModifyMergeRepository(Interface):
         Returns a sequence (``IHistory``) of ``IVersionData`` objects.
         """
 
+    def getHistoryMetadata(obj):
+        """Returns the versioning metadata history.
+        """
+
 
 class IPurgeSupport(Interface):
     """Repository Purge Support

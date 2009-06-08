@@ -99,6 +99,10 @@ class IStorage(Interface):
         Returns a 'IHistory' object.
         """
 
+    def getHistoryMetadata(history_id):
+        """Returns the versioning metadata history.
+        """
+
     def getModificationDate(history_id, selector=None):
         """ Returns the modification date of the selected version of object
             which has the given history id.

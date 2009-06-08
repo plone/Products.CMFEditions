@@ -1,9 +1,10 @@
 <span class="versionsHistory"
       metal:define-macro="versions_history"
       i18n:domain="cmfeditions">
-<tal:history      tal:define="pr nocall:here/portal_repository;
-                              history python:pr.getHistory(here, countPurged=False);
-                              revisions python:len(history)"
+<tal:history      tal:define="pr        nocall:here/portal_repository;
+                              history   python:pr.getHistoryMetadata(context);
+                              revisions python:len(history);
+                              histrange python:range(revisions-1, -1, -1)"
                   tal:condition="python: history and pr.isVersionable(context)">
       <dl id="versions" class="collapsible inline collapsedOnLoad">
         <dt class="collapsibleHeader" i18n:translate="label_versions">Recent Versions</dt>
@@ -20,15 +21,17 @@
             <th i18n:translate="listingheader_comment">Comment</th>
           </tr>
 
-          <metal:block tal:repeat="vdata python:[history[i] for i in range(revisions > 5 and 5 or revisions)]">
-            <tr tal:define="odd repeat/vdata/odd;
-                            id string:${vdata/version_id};"
+          <metal:block tal:repeat="vdatai histrange">
+            <tr tal:define="vdatafull  python:history.retrieve(vdatai, True);
+                            vdata      vdatafull/metadata;
+                            odd        repeat/vdatai/odd;
+                            id         vdatai"
                 tal:attributes="class python:test(odd, 'even', 'odd')">
               <td>
                 <span tal:content="id">1</span>
                 <a href="#"
                    class="version-table-version"
-                   tal:attributes="href string:$here_url/versions_history_form?version_id=${id}"
+                   tal:attributes="href string:${context/absolute_url}/versions_history_form?version_id=${id}"
                    i18n:translate="label_show_version">
                   show revisions</a>
               </td>
@@ -36,9 +39,9 @@
                 <span tal:content="vdata/sys_metadata/principal">francesco</span>
               </td>
               <td>
-                <span tal:content="python:here.toLocalizedTime(vdata.sys_metadata['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
+                <span tal:content="python:here.toLocalizedTime(vdata['sys_metadata']['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
               </td>
-              <td><span tal:content="vdata/comment">Draft version ready for comments from the group.</span>
+              <td><span tal:content="vdata/sys_metadata/comment">Draft version ready for comments from the group.</span>
               </td>
             </tr>
           </metal:block>

@@ -30,6 +30,7 @@ import transaction
 
 from Globals import InitializeClass
 from Acquisition import aq_base, aq_parent, aq_inner
+from Acquisition import ImplicitAcquisitionWrapper
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem
 from BTrees.OOBTree import OOBTree
@@ -381,6 +382,19 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         self._assertAuthorized(obj, AccessPreviousVersions, 'getHistory')
         return LazyHistory(self, obj, oldestFirst, preserve, countPurged)
 
+    security.declarePublic('getHistoryMetadata')
+    def getHistoryMetadata(self, obj):
+        """Returns the versioning metadata history.
+        """
+        self._assertAuthorized(obj, AccessPreviousVersions,
+                               'getHistoryMetadata')
+        portal_archivist = getToolByName(self, 'portal_archivist')
+        hist = portal_archivist.getHistoryMetadata(obj)
+        if hist:
+            return ImplicitAcquisitionWrapper(hist, self)
+        return hist
+
+
     security.declarePublic('isUpToDate')
     def isUpToDate(self, obj, selector=None, countPurged=True):
         """See IPurgeSupport.
@@ -606,11 +620,11 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """ Reindex the object, otherwise the catalog will certainly
         be out of sync."""
         portal_catalog = getToolByName(self, 'portal_catalog')
-        portal_catalog.reindexObject(obj)
+        portal_catalog.indexObject(obj)
         # XXX: In theory we should probably be emitting IObjectModified and
         # IObjectMoved events here as those are the possible consequences of a
         # revert. Perhaps in out current meager z2 existence we should do
-        # obj.manage_afterRename()?  Also, should we be doing obj.reindexObject()
+        # obj.manage_afterRename()?  Also, should we be doing obj.indexObject()
         # instead to make sure we maximally cover specialized classes which want
         # to handle their cataloging in special ways.
 

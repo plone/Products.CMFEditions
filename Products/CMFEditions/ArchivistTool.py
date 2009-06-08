@@ -329,7 +329,23 @@ class ArchivistTool(UniqueObject, SimpleItem):
             raise ArchivistUnregisteredError(
                 "Retrieving a version of an unregistered object is not "
                 "possible. Register the object '%s' first. " % obj)
-        
+
+    security.declarePrivate('getHistoryMetadata')
+    def getHistoryMetadata(self, obj=None, history_id=None):
+        """ Return the metadata blob for presenting summary
+            information, etc. If obj is not supplied, history is found
+            by history_id, if history_id is not supplied, history is
+            found by obj. If neither, return None.
+        """
+        obj, history_id = dereference(obj, history_id, self)
+        storage = getToolByName(self, 'portal_historiesstorage')
+        try:
+            return storage.getHistoryMetadata(history_id)
+        except StorageUnregisteredError:
+            raise ArchivistUnregisteredError(
+                "Retrieving a version of an unregistered object is not "
+                "possible. Register the object '%s' first. " % obj)
+
     security.declarePrivate('queryHistory')
     def queryHistory(self, obj=None, history_id=None, preserve=(), default=[],
                      countPurged=True):

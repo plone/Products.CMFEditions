@@ -62,6 +62,8 @@ from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import StoragePurgeError
 
+from Products.CMFEditions.Permissions import AccessPreviousVersions
+
 logger = logging.getLogger('CMFEditions')
 
 def deepCopy(obj):
@@ -414,6 +416,18 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             self._shadowStorage = ShadowStorage()
         return self._shadowStorage
 
+    security.declarePrivate('getHistoryMetadata')
+    def getHistoryMetadata(self, history_id):
+        """ Return the metadata blob from ShadowHistory for presenting
+            summary information, etc.
+        """
+        if history_id is None:
+            return []
+        hist = self._getShadowHistory(history_id)
+        if hist is None:
+            return []
+        return hist
+
     def _getShadowHistory(self, history_id, autoAdd=False):
         """Returns a History from the Shadow Storage
         """
@@ -765,6 +779,8 @@ InitializeClass(ShadowStorage)
 class ShadowHistory(Persistent):
     """Purge Aware History for Storage Related Metadata
     """
+    security = ClassSecurityInfo()
+
     def __init__(self):
         # Using a IOBtree as we know the selectors are integers.
         # The full history contains shadow data for every saved version. 
@@ -800,7 +816,8 @@ class ShadowHistory(Persistent):
         
         return version_id
 
-    def retrieve(self, selector, countPurged):
+    security.declareProtected(AccessPreviousVersions, 'retrieve')
+    def retrieve(self, selector, countPurged=True):
         """Retrieves the Selected Data From the History
         
         The caller has to make a copy if he passed the data to another 
@@ -843,6 +860,10 @@ class ShadowHistory(Persistent):
             return self.nextVersionId
         else:
             return len(self._available)
+
+    def __len__(self):
+        # Policy: The length is the entire length, including purged
+        return self.getLength(True)
 
     def getSize(self):
         """Returns the size including the quality of the size
