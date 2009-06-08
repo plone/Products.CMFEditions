@@ -2,8 +2,8 @@
 Changelog
 =========
 
-1.2.1 - UNRELEASED
-------------------
+1.2.1 - June 8, 2009
+--------------------
 
 - Add getHistoryMetadata method to allow efficient history display
   without full object retrieval.  Based on patches by Darryl Dixon on
