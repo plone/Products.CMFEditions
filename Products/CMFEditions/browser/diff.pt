@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
@@ -44,11 +42,11 @@
       </p>
 
       <tal:block condition="view/history">
-        <form id="versionSelector" tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
+        <form id="versionSelector" action="#" tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
           <fieldset>
             <legend i18n:translate="legend_versions">Versions</legend>
             <label for="one"><span tal:omit-tag="" i18n:translate="">First version</span>
-              <select name="one" tal:define="rev request/form/one|string:current">
+              <select id="one" name="one" tal:define="rev request/form/one|string:current">
                 <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                 <option tal:repeat="version view/history"
                         tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"
@@ -58,7 +56,7 @@
             </label>
 
             <label for="two"><span tal:omit-tag="" i18n:translate="">Second version</span>
-              <select name="two" tal:define="rev request/two|string:current">
+              <select id="two" name="two" tal:define="rev request/two|string:current">
                 <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                 <option tal:repeat="version view/history"
                         tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"

@@ -2,6 +2,13 @@
 Changelog
 =========
 
+1.2.2 - Unreleased
+--------------------
+
+- Fix XHTML markup for diff view.
+  See ticket http://dev.plone.org/plone/ticket/9227
+  [alecm]
+
 1.2.1 - June 8, 2009
 --------------------
 
