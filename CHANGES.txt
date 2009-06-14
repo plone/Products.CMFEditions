@@ -5,6 +5,9 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Use new import location for the package_home function.
+  [hannosch]
+
 - Added the required profile bits for installing CMFUid.
   [hannosch]
 

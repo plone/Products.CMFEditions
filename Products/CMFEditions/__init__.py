@@ -26,7 +26,10 @@ $Id: __init__.py,v 1.17 2005/02/07 22:09:08 gregweb Exp $
 __version__ = "$Revision: 1.17 $"
 
 
-from Globals import package_home
+try:
+    from App.Common import package_home
+except ImportError:
+    from Globals import package_home
 
 from AccessControl import ModuleSecurityInfo
 
