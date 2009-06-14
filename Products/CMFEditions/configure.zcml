@@ -5,6 +5,7 @@
 
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
 
+  <include package="Products.CMFUid" />
   <include package=".browser" />
   <include package=".exportimport" />
 
