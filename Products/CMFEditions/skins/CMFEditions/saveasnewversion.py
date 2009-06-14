@@ -8,5 +8,9 @@
 ##title=Save as new version
 ##
 
-container.portal_repository.save(obj=context, comment=versioncomment)
-context.REQUEST.RESPONSE.redirect('versions_history_form')
+from Products.CMFCore.utils import getToolByName
+
+pr = getToolByName(context, 'portal_repository', None)
+if pr is not None:
+    pr.save(obj=context, comment=versioncomment)
+    context.REQUEST.RESPONSE.redirect('versions_history_form')

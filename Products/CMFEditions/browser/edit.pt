@@ -1,9 +1,9 @@
 <tal:block xmlns:i18n="http://xml.zope.org/namespaces/i18n"
            xmlns:tal="http://xml.zope.org/namespaces/tal"
            i18n:domain="plone"
-            tal:define="pr nocall:here/portal_repository;
-                        isVersionable python:pr.isVersionable(context);
-                        supportsAutoVersion python:pr.supportsPolicy(here,'at_edit_autoversion')">
+            tal:define="pr nocall:here/portal_repository|nothing;
+                        isVersionable python:pr is not None and pr.isVersionable(context) or None;
+                        supportsAutoVersion python:pr is not None and pr.supportsPolicy(context, 'at_edit_autoversion') or None">
     <script type="text/javascript"
             tal:condition="python:isVersionable and not supportsAutoVersion">
     <!--

@@ -8,23 +8,27 @@
 ##title=Check if Up To Date
 ##
 from Products.CMFCore.utils import getToolByName
-repo = getToolByName(context, "portal_repository")
+repo = getToolByName(context, "portal_repository", None)
+
+isModified = None
+reverted_vid = None
+isReverted = None
 
 version_id = getattr(context, "version_id", None)
-if version_id is None:
-    isModified = True
-    reverted_vid = None
-    isReverted = False
-else:
-    isModified = not repo.isUpToDate(context, version_id)
-    historyLength = len(history)
-    reverted_vid = version_id
-    if historyLength == version_id+1:
+if repo is not None:
+    if version_id is None:
+        isModified = True
         isReverted = False
     else:
-        isReverted = True
-    if isModified:
-        version_id = historyLength
+        isModified = not repo.isUpToDate(context, version_id)
+        historyLength = len(history)
+        reverted_vid = version_id
+        if historyLength == version_id+1:
+            isReverted = False
+        else:
+            isReverted = True
+        if isModified:
+            version_id = historyLength
 
 return {
     "isModified": isModified,
