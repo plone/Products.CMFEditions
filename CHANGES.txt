@@ -5,6 +5,9 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- No longer rely on base_properties.
+  [hannosch]
+
 - Made some calls to portal_repository more defensive.
   [hannosch]
 

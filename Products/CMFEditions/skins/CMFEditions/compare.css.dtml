@@ -1,11 +1,6 @@
-/* <dtml-with base_properties> */
-
 .inline-diff {
     font-size: 100%;
     padding: 1em;
-    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
-    color: &dtml-fontColor;;
-    background-color: &dtml-globalBackgroundColor;;
 }
 
 /* CSS for htmldiff.py inline diff view */
@@ -83,4 +78,3 @@ td.diff_header {
 .diff_sub {
     background-color:#ffaaaa;
 }
-/* </dtml-with> */
