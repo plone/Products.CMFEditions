@@ -125,7 +125,8 @@
                   <td class="VersionDate">
                     <span tal:content="python:context.toLocalizedTime(vdata['sys_metadata']['timestamp'],long_format=1)">2004/10/21 03:15 PM</span>
                   </td>
-                  <td><span tal:content="vdata/sys_metadata/comment">Draft version ready for comments from the group.</span>
+                  <td class="VersionComment">
+                    <span tal:content="vdata/sys_metadata/comment" i18n:translate="">Draft version ready for comments from the group.</span>
                   </td>
                   <td class="VersionActions">
                     <ul>

@@ -5,6 +5,9 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Fixed missing i18n markup in versions_history_form.
+  [hannosch]
+
 - No longer rely on base_properties.
   [hannosch]
 
