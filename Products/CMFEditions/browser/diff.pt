@@ -42,7 +42,10 @@
       </p>
 
       <tal:block condition="view/history">
-        <form id="versionSelector" action="#" tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
+        <form id="versionSelector"
+              action="#"
+              tal:attributes="action string:${context/absolute_url}/@@history"
+              tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
           <fieldset>
             <legend i18n:translate="legend_versions">Versions</legend>
             <label for="one"><span tal:omit-tag="" i18n:translate="">First version</span>
