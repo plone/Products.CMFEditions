@@ -2,11 +2,12 @@
 Changelog
 =========
 
-1.2.3 - unreleased
-------------------
+1.2.3 - July 4, 2009
+--------------------
 
 - Fix form action in @@history view.
   [vincentfretin]
+
 
 1.2.2 - June 11, 2009
 ---------------------
