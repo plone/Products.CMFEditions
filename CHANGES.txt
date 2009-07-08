@@ -23,67 +23,6 @@ Changelog
 - Added the required profile bits for installing CMFUid.
   [hannosch]
 
-1.2.4 - Unreleased
---------------------
-
-
-
-1.2.3 - July 4, 2009
---------------------
-
-- Fix form action in @@history view.
-  [vincentfretin]
-
-
-1.2.2 - June 11, 2009
----------------------
-
-- Fix XHTML markup for diff view.
-  See ticket http://dev.plone.org/plone/ticket/9227
-  [alecm]
-
-1.2.1 - June 8, 2009
---------------------
-
-- Add getHistoryMetadata method to allow efficient history display
-  without full object retrieval.  Based on patches by Darryl Dixon on
-  CMFEditions zvc_enfold_fixfailures branch r59908:60078.
-  [alecm]
-
-1.2 - May 16, 2009
-------------------
-
-- Add missing PACKAGE_HOME in the init file according to tests
-  [encolpe]
-
-- Add the encoding declaration (utf-8) in all python files
-  [encolpe]
-
-- Internationalization of 7 strings in diff.pt (history view).
-  [vincentfretin]
-
-- Fixed label_history_version msgid dynamic content in diff.pt (added i18n:name="version")
-  [vincentfretin]
-
-1.2b1 (March 7, 2009)
----------------------
-
-- Register CMF skin layers via ZCML.
-  [wichert]
-
-- Remove history action. Plone 3.3 has alternative implementations in the
-  form of the content history viewlet so this should not be installed by
-  default.
-  [wichert]
-
-- Move import step registration to ZCML.
-  [wichert]
-
-- Use the new archetypes.edit.afterfieldsets viewlet manager to add our
-  field to the AT edit template. The customized edit_macros is now no longer
-  needed.
-  [wichert]
-
 - Define dependency on Products.ZopeVersionControl.
   [hannosch]
 
@@ -118,9 +57,85 @@ Changelog
   double-quotes.
   [drjnut]
 
-- Set some msgids to cmfeditions i18n domain in version_file_view.
-  Renamed msgid label_existing_keywords by label_existing_categories in version_metadata_view.
+- Register GenericSetup steps via ZCML.
+  [wichert]
+
+- Use the new archetypes.edit.afterfieldsets viewlet manager to add our
+  field to the AT edit template. The customized edit_macros is now no longer
+  needed.
+  [wichert]
+
+1.2.4 - Unreleased
+--------------------
+
+
+
+1.2.3 - July 4, 2009
+--------------------
+
+- Fix form action in @@history view.
   [vincentfretin]
+
+
+1.2.2 - June 11, 2009
+---------------------
+
+- Fix XHTML markup for diff view.
+  See ticket http://dev.plone.org/plone/ticket/9227
+  [alecm]
+
+1.2.1 - June 8, 2009
+--------------------
+
+- Add getHistoryMetadata method to allow efficient history display
+  without full object retrieval.  Based on patches by Darryl Dixon on
+  CMFEditions zvc_enfold_fixfailures branch r59908:60078.
+  [alecm]
+
+
+1.2 - May 16, 2009
+------------------
+
+- Add missing PACKAGE_HOME in the init file according to tests
+  [encolpe]
+
+- Add the encoding declaration (utf-8) in all python files
+  [encolpe]
+
+- Internationalization of 7 strings in diff.pt (history view).
+  [vincentfretin]
+
+- Fixed label_history_version msgid dynamic content in diff.pt (added i18n:name="version")
+  [vincentfretin]
+
+
+1.2b1 (March 7, 2009)
+---------------------
+
+- Register CMF skin layers via ZCML.
+  [wichert]
+
+- Remove history action. Plone 3.3 has alternative implementations in the
+  form of the content history viewlet so this should not be installed by
+  default.
+  [wichert]
+
+- Move import step registration to ZCML.
+  [wichert]
+
+- Use the new archetypes.edit.afterfieldsets viewlet manager to add our
+  field to the AT edit template. The customized edit_macros is now no longer
+  needed.
+  [wichert]
+
+- Some CMFEditions .py files use wrong MessageFactory (#8715)
+  [encolpe]
+
+- Set some msgids to cmfeditions i18n domain in version_file_view.
+  Renamed msgid label_existing_keywords by label_existing_categories in
+  version_metadata_view.
+  [vincentfretin]
+
 
 1.1.8 (October 6, 2008)
 -----------------------
@@ -138,23 +153,13 @@ Changelog
   See ticket http://dev.plone.org/plone/ticket/7999.
   [rsantos]
 
-CMFEditions 1.1.7 (June 2, 2008)
------------------------------
+
+1.1.7 (June 2, 2008)
+--------------------
 
 - Fix for issues with unicode version save comments.
   http://dev.plone.org/plone/ticket/7400
   [alecm]
-
-CMFEditions 1.1.6 (March 26, 2008)
----------------------------------------
-
-- Register GenericSetup steps via ZCML.
-  [wichert]
-
-- Use the new archetypes.edit.afterfieldsets viewlet manager to add our
-  field to the AT edit template. The customized edit_macros is now no longer
-  needed.
-  [wichert]
 
 
 1.1.6 (March 26, 2008)
@@ -677,3 +682,4 @@ Features added
 ----------------------------
 
 no changes recorded
+

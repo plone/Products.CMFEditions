@@ -44,11 +44,14 @@
       </p>
 
       <tal:block condition="view/history">
-        <form id="versionSelector" tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
+        <form id="versionSelector"
+              action="#"
+              tal:attributes="action string:${context/absolute_url}/@@history"
+              tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
           <fieldset>
             <legend i18n:translate="legend_versions">Versions</legend>
             <label for="one"><span tal:omit-tag="" i18n:translate="">First version</span>
-              <select name="one" tal:define="rev request/form/one|string:current">
+              <select id="one" name="one" tal:define="rev request/form/one|string:current">
                 <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                 <option tal:repeat="version view/history"
                         tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"
@@ -58,7 +61,7 @@
             </label>
 
             <label for="two"><span tal:omit-tag="" i18n:translate="">Second version</span>
-              <select name="two" tal:define="rev request/two|string:current">
+              <select id="two" name="two" tal:define="rev request/two|string:current">
                 <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                 <option tal:repeat="version view/history"
                         tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"
@@ -98,18 +101,18 @@
             </p>
 
             <div class="fieldDiff code-diff" style="display: none">
-<!-- This triggers a UnicodeDecodeError. Strangely enough that does not happen
-     in the CMF page template version...
+              <!-- This no longer triggers a UnicodeDecodeError. Strangely enough that does not happen
+                   in the CMF page template version... -->
               <pre tal:condition="exists:diff/html_diff" tal:content="structure diff/html_diff">
                 HTML formatted differences
               </pre>
--->
-              <pre class="fieldDiff code-diff" tal:condition="python:not exists('Xdiff/html_diff') and exists('diff/ndiff')" tal:content="diff/ndiff">
+
+              <!-- <pre class="fieldDiff code-diff" tal:condition="python:not exists('Xdiff/html_diff') and exists('diff/ndiff')" tal:content="diff/ndiff">
                 ndiff formatted differences
               </pre>
               <p class="fieldDiff" tal:condition="python:not exists('Xdiff/html_diff') and not exists('diff/ndiff')">
                 This field has no code difference view.
-              </p>
+              </p> -->
             </div>
           </fieldset>
         </tal:changes>
