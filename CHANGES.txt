@@ -5,8 +5,8 @@ Changelog
 1.2.4 - Unreleased
 --------------------
 
-- Fix markup of version-related form labels.
-  [witsch]
+- Fixed missing i18n markup in versions_history_form.
+  [hannosch]
 
 
 1.2.3 - July 4, 2009
