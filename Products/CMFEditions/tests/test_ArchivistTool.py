@@ -392,7 +392,9 @@ class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):
        """Test with a real ZODB storage overriding the storage installation
           in the super class.
        """
-       pass
+       # reset the shadow storage to avoid the effect of any versions created
+       # during portal setup
+       self.portal.portal_historiesstorage._shadowStorage = None
 
 
 from unittest import TestSuite, makeSuite
