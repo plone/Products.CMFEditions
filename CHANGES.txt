@@ -2,7 +2,11 @@
 Changelog
 =========
 
-1.2.4 - Unreleased
+1.2.5 - unreleased
+------------------
+
+
+1.2.4 - July 4, 2009
 --------------------
 
 - Fixed missing i18n markup in versions_history_form.
