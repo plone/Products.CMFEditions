@@ -59,6 +59,10 @@ class TestZVCStorageTool(PloneTestCase.PloneTestCase):
         # eventually install another storage 
         self.installStorageTool()
 
+        # reset shadow storage in case versions were created during
+        # portal setup
+        self.portal.portal_historiesstorage._shadowStorage = None
+
         # delete purge policy if there is one installed
         try:
             del self.portal.portal_purgepolicy
