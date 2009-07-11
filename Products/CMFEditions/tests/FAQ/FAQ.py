@@ -30,7 +30,7 @@ __docformat__ = 'plaintext'
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
 from Products.CMFDynamicViewFTI.fti import DynamicViewTypeInformation
-
+from Products.FAQ import PROJECTNAME
 
 ##code-section module-header #fill in your manual code here
 ##/code-section module-header
@@ -132,7 +132,7 @@ class FAQ(OrderedBaseFolder):
           )
         
 
-registerType(FAQ, 'CMFEditions')
+registerType(FAQ, PROJECTNAME)
 # end of class FAQ
 
 ##code-section module-footer #fill in your manual code here
