@@ -39,6 +39,7 @@ from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolic
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.CMFEditions.VersionPolicies import ATVersionOnEditPolicy
+from Products.CMFEditions.utilities import dereference
 
 from DummyTools import DummyArchivist
 from DummyTools import notifyModified
@@ -315,19 +316,23 @@ class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):
         # check if correctly recursing and setting reference data correctly
         alog_str = portal_archivist.get_log()
         expected = """
-prepare fol: hid=1, refs=(doc1_inside, doc2_inside, doc3_outside)
-  prepare doc1_inside: hid=3
-  save    doc1_inside: hid=3, isreg=False, auto=True
-  prepare doc2_inside: hid=4
-  save    doc2_inside: hid=4, isreg=False, auto=True
-save    fol: hid=1, irefs=({hid:3, vid:0}, {hid:4, vid:0}), orefs=({hid:None, vid:-1}), isreg=False, auto=True
+prepare fol: hid=%(fol_id)s, refs=(doc1_inside, doc2_inside, doc3_outside)
+  prepare doc1_inside: hid=%(doc1_id)s
+  save    doc1_inside: hid=%(doc1_id)s, isreg=False, auto=True
+  prepare doc2_inside: hid=%(doc2_id)s
+  save    doc2_inside: hid=%(doc2_id)s, isreg=False, auto=True
+save    fol: hid=%(fol_id)s, irefs=({hid:%(doc1_id)s, vid:0}, {hid:%(doc2_id)s, vid:0}), orefs=({hid:None, vid:-1}), isreg=False, auto=True
 
-prepare fol: hid=1, refs=(doc1_inside, doc2_inside, doc3_outside)
-  prepare doc1_inside: hid=3
-  save    doc1_inside: hid=3, isreg=True, auto=False
-  prepare doc2_inside: hid=4
-  save    doc2_inside: hid=4, isreg=True, auto=False
-save    fol: hid=1, irefs=({hid:3, vid:1}, {hid:4, vid:1}), orefs=({hid:None, vid:-1}), isreg=True, auto=False"""
+prepare fol: hid=%(fol_id)s, refs=(doc1_inside, doc2_inside, doc3_outside)
+  prepare doc1_inside: hid=%(doc1_id)s
+  save    doc1_inside: hid=%(doc1_id)s, isreg=True, auto=False
+  prepare doc2_inside: hid=%(doc2_id)s
+  save    doc2_inside: hid=%(doc2_id)s, isreg=True, auto=False
+save    fol: hid=%(fol_id)s, irefs=({hid:%(doc1_id)s, vid:1}, {hid:%(doc2_id)s, vid:1}), orefs=({hid:None, vid:-1}), isreg=True, auto=False"""%{
+            'fol_id': fol.cmf_uid(),
+            'doc1_id': fol.doc1_inside.cmf_uid(),
+            'doc2_id': fol.doc2_inside.cmf_uid()
+            }
 
         self.assertEqual(alog_str, expected)
 
@@ -355,9 +360,13 @@ save    fol: hid=1, irefs=({hid:3, vid:1}, {hid:4, vid:1}), orefs=({hid:None, vi
         # check recursive retrieve
         alog_str = portal_archivist.get_log()
 
-        expected = """retrieve fol: hid=1, selector=0
-retrieve doc1_inside: hid=3, selector=0
-retrieve doc2_inside: hid=4, selector=0"""
+        expected = """retrieve fol: hid=%(fol_id)s, selector=0
+retrieve doc1_inside: hid=%(doc1_id)s, selector=0
+retrieve doc2_inside: hid=%(doc2_id)s, selector=0"""%{
+            'fol_id': fol.cmf_uid(),
+            'doc1_id': fol.doc1_inside.cmf_uid(),
+            'doc2_id': fol.doc2_inside.cmf_uid()
+            }
         self.assertEqual(alog_str, expected)
 
         # check result

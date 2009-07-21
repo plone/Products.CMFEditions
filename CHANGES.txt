@@ -4,6 +4,10 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Fixed tests which depended on specific uids for portal content.
+  Added cmf_uid catalog index in install profile.
+  [alecm]
+
 - Fixed missing i18n markup in versions_history_form.
   [hannosch]
 
