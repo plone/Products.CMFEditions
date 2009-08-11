@@ -4,6 +4,10 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Acquire plone_utils from context rather than assuming the putils global in
+  templates.
+  [erikrose]
+
 - Fixed tests which depended on specific uids for portal content.
   Added cmf_uid catalog index in install profile.
   [alecm]

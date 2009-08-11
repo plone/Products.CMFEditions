@@ -21,7 +21,7 @@
 
     <div class="documentEditable"
          tal:define="type_list here/portal_types/listContentTypes;
-                     friendly_list putils/getUserFriendlyTypes;
+                     friendly_list context/plone_utils/getUserFriendlyTypes;
                      show_all request/show_all|nothing">
 
         <div metal:define-slot="multisite_content">

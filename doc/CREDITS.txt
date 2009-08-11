@@ -32,6 +32,7 @@ Bug Fixes:
 - Rob Miller (rafrombrc)
 - Sune Broendum Woeller (sunew)
 - Sylvain Thenault (syt)
+- Erik Rose (erikrose)
 
 
 Translations
