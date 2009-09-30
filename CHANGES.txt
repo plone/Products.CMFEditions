@@ -4,6 +4,9 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Switched document_byline macro to plone.belowcontenttitle content provider.
+  [hannosch]
+
 - Acquire plone_utils from context rather than assuming the putils global in
   templates.
   [erikrose]

@@ -17,7 +17,9 @@
         <h1 tal:content="object_title" class="documentFirstHeading">
             Title or id
         </h1>
-    
+
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+
         <p class="documentDescription"
            tal:content="here/Description"
            tal:condition="here/Description">
@@ -73,10 +75,7 @@
         <div metal:use-macro="here/document_relateditems/macros/relatedItems">
             show related items if they exist
         </div>
-    
-        <div metal:use-macro="here/document_byline/macros/byline">
-          Get the byline - contains details about author and modification date.
-        </div>
+
     </tal:main-macro>
 </div>
 
