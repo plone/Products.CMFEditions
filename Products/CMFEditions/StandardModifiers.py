@@ -775,7 +775,7 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
             # Skip linked Pdata chains too long for the pickler
             if hasattr(aq_base(val), 'getSize') and callable(val.getSize):
                 size = val.getSize()
-                if isinstance(size, int) and size >= max_size:
+                if isinstance(size, (int, long)) and size >= max_size:
                     yield 'attribute', name, val
 
     def getOnCloneModifiers(self, obj):
