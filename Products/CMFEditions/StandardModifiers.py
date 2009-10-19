@@ -255,8 +255,19 @@ def manage_addSkipVersioningOfLargeFilesAndImages(self, id, title=None,
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
+manage_SkipParentPointersAddForm =  \
+    PageTemplateFile('www/SkipParentPointersAddForm.pt',
+                   globals(),
+                   __name__='manage_SkipParentPointersAddForm')
 
+def manage_addSkipParentPointers(self, id, title=None, REQUEST=None):
+    """Add a skip parent pointers modifier
+    """
+    modifier = SkipParentPointers(id, title)
+    self._setObject(id, modifier)
 
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
 #----------------------------------------------------------------------
 # Standard modifier implementation
@@ -671,6 +682,48 @@ class SaveFileDataInFileTypeByReference:
 
 InitializeClass(SaveFileDataInFileTypeByReference)
 
+class SkipParentPointers:
+    """Standard modifier to avoid cloning of __parent__ pointers and
+    restore them from context
+    """
+
+    implements(ICloneModifier, ISaveRetrieveModifier)
+
+    def getOnCloneModifiers(self, obj):
+        """Removes parent pointers and stores a marker
+        """
+        refs = {}
+        ref_list = []
+        parent = getattr(obj, '__parent__', None)
+        if parent is not None:
+            ref_list.append(parent)
+            refs[id(parent)] = True
+        else:
+            return None # don't do anything
+
+        def persistent_id(obj):
+            return refs.get(id(obj), None)
+
+        def persistent_load(obj):
+            return None
+
+        return persistent_id, persistent_load, [], []
+
+    def beforeSaveModifier(self, obj, clone):
+        """Does nothing, the pickler does the work"""
+        return {}, [], []
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        """If we find any LargeFilePlaceHolders, replace them with the
+        values from the current working copy.  If the values are missing
+        from the working copy, remove them from the retrieved object."""
+        if (getattr(repo_clone, '__parent__', _marker) is None
+            and getattr(obj, '__parent__', _marker) is not _marker):
+            repo_clone.__parent__ = obj.__parent__
+        return [], [], {}
+InitializeClass(SkipParentPointers)
+
+
 class SillyDemoRetrieveModifier:
     """Silly Retrieve Modifier for Demos
 
@@ -957,6 +1010,17 @@ modifiers = (
         'modifier': SillyDemoRetrieveModifier,
         'form': manage_SillyDemoRetrieveModifierAddForm,
         'factory': manage_addSillyDemoRetrieveModifier,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'SkipParentPointers',
+        'title': "Skip Saving of Parent Pointers",
+        'enabled': True,
+        'condition': "python: True",
+        'wrapper': ConditionalTalesModifier,
+        'modifier': SkipParentPointers,
+        'form': manage_SkipParentPointersAddForm,
+        'factory': manage_addSkipParentPointers,
         'icon': 'www/modifier.gif',
     },
     {

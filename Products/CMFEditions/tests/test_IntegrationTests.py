@@ -920,6 +920,34 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # the original uid exists
         self.failIf(portal_hidhandler.queryUid(res_doc) == history_id)
 
+    def test22_ParentPointerNotVersionedOrRestored(self):
+        portal_repo = self.portal.portal_repository
+        doc = self.portal.doc
+
+        doc.setTitle("v1")
+        # bogus parent
+        portal_repo.applyVersionControl(doc)
+
+        doc.setTitle("v2")
+        doc.__parent__ = self.portal.fol
+        # If an attempt was made to pickle the still wrapped parent object
+        # we would see an error here
+        portal_repo.save(doc)
+
+        # Change the parent to the correct location
+        doc.setTitle("v3")
+        doc.__parent__ = self.portal.aq_base
+
+        # revert to check that the current __parent__ is retained on
+        # the reverted version
+        portal_repo.revert(doc)
+
+        # We have the version that had an erroneous parent pointer, but
+        # the current parent pointer has replaced it.
+        self.assertEqual(self.portal.doc.Title(), "v2")
+        self.assertEqual(self.portal.doc.__parent__, self.portal.aq_base)
+
+
 from unittest import TestSuite, makeSuite
 def test_suite():
     from Products.PloneTestCase import PloneTestCase

@@ -4,6 +4,9 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Added modifier that skips cloning of __parent__ pointers.
+  [alecm]
+
 - Switched document_byline macro to plone.belowcontenttitle content provider.
   [hannosch]
 
