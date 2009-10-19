@@ -408,7 +408,7 @@ class IAttributeAdapter(Interface):
         """Sets the given object as attribute.
         """
         
-    def getAttribute():
+    def getAttribute(alternate=None):
         """Returns the current attribute.
         """
         

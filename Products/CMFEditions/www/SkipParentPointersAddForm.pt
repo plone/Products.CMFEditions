@@ -2,9 +2,9 @@
 <p tal:replace="structure here/manage_tabs" omit-tag="">tabs</p>
 
 
-<h2>Add Skip cloning of parent pointers Modifier</h2>
+<h2>Add Skip Versioning of Parent Pointers Modifier</h2>
 
-<form action="manage_SkipParentPointersAddForm" method="post">
+<form action="manage_addSkipParentPointers" method="post">
 
   <table border="0">
 

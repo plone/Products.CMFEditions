@@ -515,7 +515,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         if hasBeenDeleted:
             # if the object to retreive doesn't have a counterpart in the tree
             # build a new one before retrieving an old state
-            vdata = portal_archivist.retrieve(obj, history_id, selector, 
+            vdata = portal_archivist.retrieve(obj, history_id, selector,
                                               preserve, countPurged)
             repo_clone = vdata.data.object
             obj = portal_reffactories.invokeFactory(repo_clone, source)
@@ -598,8 +598,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                 continue
             try:
                 ref = dereference(history_id=va_ref.history_id, zodb_hook=self)[0]
-            except TypeError:
-                ref = getattr(aq_base(obj), attr_ref.getAttributeName(), None)
+            except (TypeError, AttributeError):
+                # get the attribute from the working copy
+                ref = attr_ref.getAttribute(alternate=obj)
             # If the object is not under version control just
             # attach the current working copy if it exists
             if ref is not None:

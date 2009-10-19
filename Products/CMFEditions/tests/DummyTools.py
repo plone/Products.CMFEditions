@@ -13,7 +13,7 @@ from OFS.SimpleItem import SimpleItem
 from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.ArchivistTool import ObjectData
 from Products.CMFEditions.ArchivistTool import PreparedObject
-from Products.CMFEditions.ArchivistTool import AttributeAdapter
+from Products.CMFEditions.ArchivistTool import ObjectManagerStorageAdapter
 from Products.CMFEditions.ArchivistTool import VersionData
 from Products.CMFEditions.interfaces.IArchivist import ArchivistError
 from Products.CMFEditions.interfaces.IStorage import IStreamableReference
@@ -119,11 +119,11 @@ class DummyArchivist(SimpleItem):
         ocrefs = []
         clone = deepCopy(base_obj)
         if doc1_inside is not None:
-            icrefs.append(AttributeAdapter(clone, 'doc1_inside'))
+            icrefs.append(ObjectManagerStorageAdapter(clone, 'doc1_inside'))
         if doc2_inside is not None:
-            icrefs.append(AttributeAdapter(clone, 'doc2_inside'))
+            icrefs.append(ObjectManagerStorageAdapter(clone, 'doc2_inside'))
         if doc3_outside is not None:
-            ocrefs.append(AttributeAdapter(clone, 'doc3_outside'))
+            ocrefs.append(ObjectManagerStorageAdapter(clone, 'doc3_outside'))
         crefs = icrefs + ocrefs
 
         # simulate before save modifier
@@ -224,7 +224,7 @@ class DummyArchivist(SimpleItem):
                     % (self.alog_indent, obj.getId(), history_id, selector))
 
         data = self._archive[history_id][selector]
-        attr_handling_references = ['_objects']
+        attr_handling_references = ['_objects','_tree','_count','_mt_index', '__annotations__']
         attr_handling_references.extend(data['clone'].object.objectIds())
         attr_handling_references.extend(obj.objectIds())
         vdata = VersionData(data['clone'],
@@ -273,6 +273,9 @@ class VersionAwareReference:
         self.location_id = 1 # only one location possible currently
         if remove_info and hasattr(self, 'info'):
             self.info = None
+
+    def __of__(self, parent):
+        return self
 
 
 class DummyModifier(DummyBaseTool):
@@ -395,7 +398,7 @@ class FolderishContentObjectModifier(DummyBaseTool):
             setattr(object, key, value)
 
     def _getAttributeNamesHandlingSubObjects(self, obj):
-        return ['_objects'].extend(obj.objectIds())
+        return ['_objects', '_tree', '_count', '_mt_index', '__annotations__'].extend(obj.objectIds())
 
 
 class DummyHistoryIdHandler(DummyBaseTool):

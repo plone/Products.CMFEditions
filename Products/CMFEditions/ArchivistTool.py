@@ -98,9 +98,35 @@ class AttributeAdapter(Persistent):
     def setAttribute(self, obj):
         setattr(self._parent, self._name, obj)
 
-    def getAttribute(self):
+    def getAttribute(self, alternate=None):
         # The attribute may have been removed by a modifier
-        return getattr(self._parent, self._name, None)
+        parent = alternate is not None and alternate or self._parent
+        return getattr(parent, self._name, None)
+
+    def getAttributeName(self):
+        return self._name
+
+    def getType(self):
+        return self._type
+
+class ObjectManagerStorageAdapter(Persistent):
+    implements(IAttributeAdapter)
+
+    def __init__(self, parent, attr_name, type=None):
+        self._parent = aq_base(parent)
+        self._name = attr_name
+        self._type = type
+
+    def setAttribute(self, obj):
+        # replace the attribute if it exists
+        if self.getAttributeName() is not None:
+            self._parent._delOb(self._name)
+        self._parent._setOb(self._name, obj)
+
+    def getAttribute(self, alternate=None):
+        # The attribute may have been removed by a modifier
+        parent = alternate is not None and alternate or self._parent
+        return parent._getOb(self._name, None)
 
     def getAttributeName(self):
         return self._name
@@ -141,6 +167,10 @@ class VersionAwareReference(Persistent):
         if remove_info and hasattr(self, 'info'):
             del self.info
 
+    def __of__(self, obj):
+        """Fake some acquisition stuff that may be needed in retrieval"""
+        return self
+
 
 class ArchivistTool(UniqueObject, SimpleItem):
     """
@@ -165,6 +195,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
         VersionData=VersionData,
         VersionAwareReference=VersionAwareReference,
         AttributeAdapter=AttributeAdapter,
+        ObjectManagerStorageAdapter=ObjectManagerStorageAdapter,
     )
     
     security = ClassSecurityInfo()

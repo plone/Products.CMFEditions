@@ -32,7 +32,8 @@ from App.class_init import InitializeClass
 
 from Acquisition import aq_base
 from zope.interface import implements, Interface
-
+from OFS.ObjectManager import ObjectManager
+from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 from Products.CMFCore.utils import getToolByName
@@ -309,20 +310,28 @@ class OMBaseModifier:
         """Returns all unititialized 'IVersionAwareReference' objects.
         """
         portal_archivist = getToolByName(obj, 'portal_archivist')
-        AttributeAdapter = portal_archivist.classes.AttributeAdapter
+        adapter = portal_archivist.classes.ObjectManagerStorageAdapter
 
         # just return adapters to the attributes that were replaced by
         # a uninitialzed 'IVersionAwareReference' object
         result_refs = []
         for name in clone.objectIds():
-            result_refs.append(AttributeAdapter(clone, name, type="ObjectManager"))
+            result_refs.append(adapter(clone, name, type="Folder"))
 
         return result_refs
 
     def _getAttributeNamesHandlingSubObjects(self, obj, repo_clone):
-        attrs = ['_objects']
-        attrs.extend(repo_clone.objectIds())
-        attrs.extend(obj.objectIds())
+        if isinstance(obj, BTreeFolder2Base):
+            # XXX: we should not have to treat the entire set of
+            # __annotations__ as a reference, but the default IExplicitOrdering
+            # implementation would appear to force it.
+            attrs = ['_tree', '_count', '_mt_index', '__annotations__']
+        elif isinstance(obj, ObjectManager):
+            attrs = ['_objects']
+        else:
+            # No idea how this folder is implemented
+            attrs = []
+        attrs.extend(set(repo_clone.objectIds()+obj.objectIds()))
         return attrs
 
 class OMOutsideChildrensModifier(OMBaseModifier):
@@ -368,10 +377,10 @@ class OMOutsideChildrensModifier(OMBaseModifier):
                 except AttributeError:
                     pass
 
-        # Restore _objects, so that order is preserved and ids are consistent
-        orig_objects = getattr(obj, '_objects', None)
-        if orig_objects is not None:
-            repo_clone._objects = orig_objects
+        for attr_name in ref_names:
+            orig_objects = getattr(obj, attr_name, None)
+            if orig_objects is not None:
+                setattr(repo_clone, attr_name, orig_objects)
 
         return [], ref_names, {}
 
@@ -462,7 +471,7 @@ class OMSubObjectAdapter:
     def save(self, dict):
         """See interface
         """
-        dict[self._name] = getattr(aq_base(self._obj), self._name)
+        dict[self._name] = self._obj._getOb(self._name)
 
     def remove(self, permanent=False):
         """See interface
@@ -495,17 +504,17 @@ class RetainWorkflowStateAndHistory:
     def beforeSaveModifier(self, obj, clone):
         # Saving the ``review_state`` as this is hard to achieve at retreive
         # (or because I'm dumb). What happened is that ``getInfoFor`` always
-        # returned the state of the working copy although the retrieved 
+        # returned the state of the working copy although the retrieved
         # temporary object was passed to it.
         #
-        # Anyway the review state may be a very interesting piece of 
+        # Anyway the review state may be a very interesting piece of
         # information for a hypothetic purge policy ...
         wflow = getToolByName(obj, "portal_workflow", None)
         if wflow is not None:
             review_state = wflow.getInfoFor(obj, "review_state", None)
         else:
             review_state = None
-        
+
         return {"review_state": review_state}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
@@ -693,19 +702,19 @@ class SkipParentPointers:
         """Removes parent pointers and stores a marker
         """
         refs = {}
-        ref_list = []
         parent = getattr(obj, '__parent__', None)
-        if parent is not None:
-            ref_list.append(parent)
-            refs[id(parent)] = True
-        else:
-            return None # don't do anything
-        delattr(obj, '__parent__')
+        if parent is None:
+            return None
+
+        parent_id = id(aq_base(parent))
 
         def persistent_id(obj):
-            return refs.get(id(obj), None)
+            if id(aq_base(obj)) == parent_id:
+                return True
+            return None
 
         def persistent_load(obj):
+            # Set the value to None on clone
             return None
 
         return persistent_id, persistent_load, [], []
