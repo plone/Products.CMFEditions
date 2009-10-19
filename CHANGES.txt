@@ -4,6 +4,10 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+* Fixed modifier for skipping cloning of __parent__ pointers
+  (delattr and template were missing)
+  [jbaumann]
+
 - Added modifier that skips cloning of __parent__ pointers.
   [alecm]
 

@@ -700,6 +700,7 @@ class SkipParentPointers:
             refs[id(parent)] = True
         else:
             return None # don't do anything
+        delattr(obj, '__parent__')
 
         def persistent_id(obj):
             return refs.get(id(obj), None)
