@@ -4,6 +4,11 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Enable both inside and outside children modifiers by default for
+  folder objects.  Using the INonStructuralFolder interface to determine
+  which to use.
+  [alecm]
+
 - Fixes for reference handling in plone.folder and other BTree based folder implementations.
    [alecm]
 

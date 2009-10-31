@@ -27,8 +27,10 @@ RCS-ID $Id: FAQ.py,v 1.1 2005/04/20 15:43:37 duncanb Exp $
 __author__  = 'unknown <unknown>'
 __docformat__ = 'plaintext'
 
+from zope.interface import implements
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.atapi import *
+from Products.CMFPlone.interfaces import INonStructuralFolder
 from Products.CMFDynamicViewFTI.fti import DynamicViewTypeInformation
 from Products.FAQ import PROJECTNAME
 
@@ -42,6 +44,7 @@ class FAQ(OrderedBaseFolder):
     archetype_name = 'FAQ'   #this name appears in the 'add' box 
     allowed_content_types = ['FAQQuestion'] 
     _at_fti_meta_type = DynamicViewTypeInformation.meta_type
+    implements(INonStructuralFolder)
 
     ##code-section class-header #fill in your manual code here
     ##/code-section class-header

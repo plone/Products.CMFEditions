@@ -702,8 +702,8 @@ class SkipParentPointers:
         """Removes parent pointers and stores a marker
         """
         refs = {}
-        parent = getattr(obj, '__parent__', None)
-        if parent is None:
+        parent = getattr(obj, '__parent__', _marker)
+        if parent is _marker:
             return None
 
         parent_id = id(aq_base(parent))
@@ -929,8 +929,8 @@ modifiers = (
     {
         'id': 'OMInsideChildrensModifier',
         'title': "Modifier for object managers treating children as inside objects.",
-        'enabled': False,
-        'condition': 'python: False',
+        'enabled': True,
+        'condition': 'python: object and path("object/isPrincipiaFolderish|nothing") and not path("object/@@plone/isStructuralFolder|nothing")',
         'wrapper': ConditionalTalesModifier,
         'modifier': OMInsideChildrensModifier,
         'form': manage_OMInsideChildrensModifierAddForm,
@@ -941,7 +941,7 @@ modifiers = (
         'id': 'OMOutsideChildrensModifier',
         'title': "Modifier for object managers (like standard folders) treating children as outside objects.",
         'enabled': True,
-        'condition': "python: portal_type=='Folder'",
+        'condition': "python:path('object/@@plone/isStructuralFolder|nothing') or portal_type == 'Folder'",
         'wrapper': ConditionalTalesModifier,
         'modifier': OMOutsideChildrensModifier,
         'form': manage_OMOutsideChildrensModifierAddForm,
