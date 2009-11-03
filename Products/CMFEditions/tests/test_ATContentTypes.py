@@ -102,18 +102,18 @@ class TestATContents(PloneTestCase.PloneTestCase):
         img2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
         portal_repository = self.portal_repository
         content = self.folder.image
-        content.edit(file=img1)
+        content.edit(image=img1)
         portal_repository.applyVersionControl(content, comment='save no 1')
-        content.edit(file=img2)
+        content.edit(image=img2)
         portal_repository.save(content, comment='save no 2')
         vdata = portal_repository.retrieve(content, 0)
         obj = vdata.object
-        self.assertEqual(obj.data, img1)
+        self.assertEqual(str(obj.getImage()), img1)
         vdata = portal_repository.retrieve(content, 1)
         obj = vdata.object
-        self.assertEqual(obj.data, img2)
+        self.assertEqual(str(obj.getImage()), img2)
         portal_repository.revert(content, 0)
-        self.assertEqual(content.data, img1)
+        self.assertEqual(str(content.getImage()), img1)
 
     def testFile(self):
         self.folder.invokeFactory('File', id='file')
@@ -127,12 +127,12 @@ class TestATContents(PloneTestCase.PloneTestCase):
         portal_repository.save(content, comment='save no 2')
         vdata = portal_repository.retrieve(content, 0)
         obj = vdata.object
-        self.assertEqual(obj.data, file1)
+        self.assertEqual(str(obj.getFile()), file1)
         vdata = portal_repository.retrieve(content, 1)
         obj = vdata.object
-        self.assertEqual(obj.data, file2)
+        self.assertEqual(str(obj.getFile()), file2)
         portal_repository.revert(content, 0)
-        self.assertEqual(content.data, file1)
+        self.assertEqual(str(content.getFile()), file1)
 
     def testFolder(self):
         titleOne = 'folderOne'

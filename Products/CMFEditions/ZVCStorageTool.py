@@ -276,7 +276,9 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         
         # wrap object and referenced data
         object = zvc_obj.getWrappedObject()
-        referenced_data = zvc_obj.getReferencedData()
+        # Get referenced data from shadow history
+        history = self._getShadowHistory(history_id)
+        referenced_data = history.retrieve(selector).get('referenced_data', {})
         data = VersionData(object, referenced_data, metadata)
         
         # check if retrieved a replacement for a removed object and 
@@ -400,6 +402,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         shadowInfo = {
             "vc_info": zvc_obj.__vc_info__,
             "metadata": metadata,
+            "referenced_data": referenced_data,
         }
         history = self._getShadowHistory(history_id, autoAdd=True)
         return history.save(shadowInfo)
@@ -800,7 +803,13 @@ class ShadowHistory(Persistent):
         Returns the version id of the saved version.
         """
         version_id = self.nextVersionId
+        referenced = {}
+        # Store referenced data as is
+        if 'referenced_data' in data:
+            referenced = data['referenced_data']
+            del data['referenced_data']
         self._full[version_id] = deepCopy(data)
+        self._full[version_id]['referenced_data'] = referenced
         self._available.append(version_id)
         # Provokes a write conflict if two saves happen the same
         # time. That's exactly what's desired.
@@ -851,6 +860,10 @@ class ShadowHistory(Persistent):
         self._full[version_id]["metadata"] = deepCopy(data)
         # purge the reference
         del self._available[version_pos]
+        try:
+            del self._full[version_id]["referenced_data"]
+        except KeyError:
+            pass
 
     security.declareProtected(AccessPreviousVersions, 'getLength')
     def getLength(self, countPurged):

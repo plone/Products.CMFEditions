@@ -32,6 +32,7 @@ from App.class_init import InitializeClass
 
 from Acquisition import aq_base
 from zope.interface import implements, Interface
+from ZODB.blob import Blob
 from OFS.ObjectManager import ObjectManager
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -51,6 +52,9 @@ from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
 from Products.Archetypes.interfaces.referenceable import IReferenceable
 from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
+from Products.Archetypes.Field import FileField
+from plone.app.blob.field import BlobField
+
 HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
 
 
@@ -265,6 +269,34 @@ def manage_addSkipParentPointers(self, id, title=None, REQUEST=None):
     """Add a skip parent pointers modifier
     """
     modifier = SkipParentPointers(id, title)
+    self._setObject(id, modifier)
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+manage_SkipBlobsAddForm =  \
+    PageTemplateFile('www/SkipBlobs.pt',
+                   globals(),
+                   __name__='manage_SkipBlobsAddForm')
+
+def manage_addSkipBlobs(self, id, title=None, REQUEST=None):
+    """Add a skip parent pointers modifier
+    """
+    modifier = SkipBlobs(id, title)
+    self._setObject(id, modifier)
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+manage_CloneBlobsAddForm =  \
+    PageTemplateFile('www/CloneBlobs.pt',
+                   globals(),
+                   __name__='manage_CloneBlobsAddForm')
+
+def manage_addCloneBlobs(self, id, title=None, REQUEST=None):
+    """Add a skip parent pointers modifier
+    """
+    modifier = CloneBlobs(id, title)
     self._setObject(id, modifier)
 
     if REQUEST is not None:
@@ -724,9 +756,7 @@ class SkipParentPointers:
         return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        """If we find any LargeFilePlaceHolders, replace them with the
-        values from the current working copy.  If the values are missing
-        from the working copy, remove them from the retrieved object."""
+        """Install the parent from the working copy"""
         if (getattr(repo_clone, '__parent__', _marker) is None
             and getattr(obj, '__parent__', _marker) is not _marker):
             repo_clone.__parent__ = obj.__parent__
@@ -828,7 +858,10 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
                 val = annotations.get(name, None)
                 # Skip linked Pdata chains too long for the pickler
                 if hasattr(aq_base(val), 'getSize') and callable(val.getSize):
-                    size = val.getSize()
+                    try:
+                        size = val.getSize()
+                    except (TypeError,AttributeError):
+                        size = None
                     if isinstance(size, (int, long)) and size >= max_size:
                         yield 'annotation', name, val
 
@@ -920,6 +953,81 @@ class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
 
 InitializeClass(SkipVersioningOfLargeFilesAndImages)
 
+class BlobProxy(object):
+    pass
+
+class SkipBlobs:
+    """Standard avoid storing blob data, may be useful for extremely
+    large files where versioing the non-file metadata is important but
+    the cost of versioning the file data is too high.
+    """
+
+    implements(ICloneModifier, ISaveRetrieveModifier)
+
+    def getOnCloneModifiers(self, obj):
+        """Removes blob objects and stores a marker
+        """
+
+        blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
+                         for f in obj.Schema().fields() if
+                         isinstance(f, BlobField))
+
+        def persistent_id(obj):
+            if id(aq_base(obj)) in blob_refs:
+                return True
+            return None
+
+        def persistent_load(ignored):
+            return BlobProxy()
+
+        return persistent_id, persistent_load, [], []
+
+    def beforeSaveModifier(self, obj, clone):
+        return {}, [], []
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        """If we find any BlobProxies, replace them with the values
+        from the current working copy."""
+        blob_fields = (f for f in obj.Schema().fields()
+                       if isinstance(f, BlobField))
+        for f in blob_fields:
+            blob = f.getUnwrapped(obj, raw=True).getBlob()
+            clone_ref = f.getUnwrapped(repo_clone, raw=True)
+            if isinstance(clone_ref.blob, BlobProxy):
+                clone_ref.setBlob(blob)
+        return [], [], {}
+
+InitializeClass(SkipBlobs)
+
+class CloneBlobs:
+    """Standard modifier to save an un-cloned reference to the blob to avoid it
+    being packed away.
+    """
+
+    implements(IAttributeModifier)
+
+    def getReferencedAttributes(self, obj):
+        blob_fields = (f for f in obj.Schema().fields()
+                       if isinstance(f, BlobField))
+        file_data = {}
+        for f in blob_fields:
+            # XXX: should only do this if data has changed since last version somehow
+            # Resave the blob line by line
+            with f.get(obj, raw=True).getBlob().open('r') as blob:
+                new_blob = file_data[f.getName()] = Blob()
+                with new_blob.open('w') as new_blob_file:
+                    new_blob_file.writelines(blob)
+        return file_data
+
+    def reattachReferencedAttributes(self, obj, attrs_dict):
+        obj = aq_base(obj)
+        for name, blob in attrs_dict.iteritems():
+            obj.getField(name).get(obj).setBlob(blob)
+
+
+
+InitializeClass(CloneBlobs)
+
 
 #----------------------------------------------------------------------
 # Standard modifier configuration
@@ -1003,7 +1111,7 @@ modifiers = (
     {
         'id': 'SaveFileDataInFileTypeByReference',
         'title': "Let's the storage optimize cloning of file data.",
-        'enabled': True,
+        'enabled': False,
         'condition': "python: meta_type=='Portal File'",
         'wrapper': ConditionalTalesModifier,
         'modifier': SaveFileDataInFileTypeByReference,
@@ -1053,6 +1161,28 @@ modifiers = (
         'modifier': SkipVersioningOfLargeFilesAndImages,
         'form': manage_SkipVersioningOfLargeFilesAndImagesAddForm,
         'factory': manage_addSkipVersioningOfLargeFilesAndImages,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'SkipBlobs',
+        'title': "Skip storing blob fields on objects",
+        'enabled': False,
+        'condition': "python: portal_type in ('Image', 'File')",
+        'wrapper': ConditionalTalesModifier,
+        'modifier': SkipBlobs,
+        'form': manage_SkipBlobsAddForm,
+        'factory': manage_addSkipBlobs,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'CloneBlobs',
+        'title': "Store blobs and files by reference on AT content",
+        'enabled': True,
+        'condition': "python: portal_type in ('Image', 'File')",
+        'wrapper': ConditionalTalesModifier,
+        'modifier': CloneBlobs,
+        'form': manage_CloneBlobsAddForm,
+        'factory': manage_addCloneBlobs,
         'icon': 'www/modifier.gif',
     },
 )

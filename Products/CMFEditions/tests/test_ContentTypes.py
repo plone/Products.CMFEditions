@@ -144,7 +144,7 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         self.metadata_test_one(content)
 
     def testFile(self):
-        self.folder.invokeFactory('Image', id='file')
+        self.folder.invokeFactory('File', id='file')
         file1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
         file2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
         portal_repository = self.portal_repository

@@ -4,13 +4,22 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Made the ZVCStorage store references directly in the shadow instead
+  of simply passing them to ZVC.  This way real references can be used
+  in the storage instead of copies, so that BLOB revisions can work.
+  [alecm]
+
+- Add modifiers to handle AT blob fields from plone.app.blob.  One
+  handler skips the blobs and the other copies them.
+  [alecm]
+
 - Enable both inside and outside children modifiers by default for
   folder objects.  Using the INonStructuralFolder interface to determine
   which to use.
   [alecm]
 
 - Fixes for reference handling in plone.folder and other BTree based folder implementations.
-   [alecm]
+  [alecm]
 
 - Added modifier that skips cloning of __parent__ pointers.
   [alecm]
