@@ -97,6 +97,14 @@ Changelog
   [wichert]
 
 
+1.2.5 - unreleased
+------------------
+
+- Show ndiff (natural diff) when neither inline diff nor html diff are
+  available.
+  [maurits]
+
+
 1.2.4 - July 4, 2009
 --------------------
 

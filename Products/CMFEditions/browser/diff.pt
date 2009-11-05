@@ -107,12 +107,12 @@
                 HTML formatted differences
               </pre>
 
-              <!-- <pre class="fieldDiff code-diff" tal:condition="python:not exists('Xdiff/html_diff') and exists('diff/ndiff')" tal:content="diff/ndiff">
+              <pre class="fieldDiff code-diff" tal:condition="python:not exists('diff/html_diff') and exists('diff/ndiff')" tal:content="diff/ndiff">
                 ndiff formatted differences
               </pre>
-              <p class="fieldDiff" tal:condition="python:not exists('Xdiff/html_diff') and not exists('diff/ndiff')">
+              <p class="fieldDiff" tal:condition="python:not exists('diff/html_diff') and not exists('diff/ndiff')">
                 This field has no code difference view.
-              </p> -->
+              </p>
             </div>
           </fieldset>
         </tal:changes>
