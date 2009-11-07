@@ -153,6 +153,47 @@ class TestATContents(PloneTestCase.PloneTestCase):
         portal_repository.revert(content, 0)
         self.assertEqual(content.Title(), titleOne)
 
+    def testBlobsNotResavedUnlessChanged(self):
+        self.folder.invokeFactory('File', id='file')
+        file1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
+        file2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
+        portal_repository = self.portal_repository
+        content = self.folder.file
+        content.edit(file=file1)
+        original_blob = content.getFile().getBlob()
+        portal_repository.applyVersionControl(content, comment='save no 1')
+        # Change something that's not the file and resave
+        content.edit(title='Title 2')
+        portal_repository.save(content, comment='save no 2')
+        # Change the file again and resave
+        content.edit(file=file2)
+        portal_repository.save(content, comment='save no 3')
+        # Now let's inspect our versions
+        vdata = portal_repository.retrieve(content, 0)
+        obj = vdata.object
+        self.assertEqual(str(obj.getFile()), file1)
+        blob1 = obj.getFile().getBlob()
+        # The second version has the same file
+        vdata = portal_repository.retrieve(content, 1)
+        obj = vdata.object
+        self.assertEqual(str(obj.getFile()), file1)
+        # Not only is the file the same, the blob is identical, so the
+        # data hasn't been copied
+        self.assertEqual(obj.getFile().getBlob(), blob1)
+        # The blobs we use for versioning are different from the
+        # original blob though.  Otherwise we wouldn't have a reliable
+        # solution
+        self.failIfEqual(original_blob, blob1)
+        # Our third revision has a distinct blob from the current
+        # object even though the contents are the same
+        vdata = portal_repository.retrieve(content, 2)
+        obj = vdata.object
+        self.assertEqual(str(obj.getFile()), file2)
+        self.failIfEqual(obj.getFile().getBlob(), content.getFile().getBlob())
+        # Reverting gives us the blob saved in versioning, not the original
+        portal_repository.revert(content, 0)
+        self.assertEqual(content.getFile().getBlob(), blob1)
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

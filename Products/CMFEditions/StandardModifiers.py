@@ -27,7 +27,8 @@
 $Id: StandardModifiers.py,v 1.13 2005/06/26 13:28:36 gregweb Exp $
 """
 
-import sys
+import os,sys
+from itertools import izip
 from App.class_init import InitializeClass
 
 from Acquisition import aq_base
@@ -41,6 +42,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.Expression import Expression
 
+from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
@@ -52,8 +54,11 @@ from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
 from Products.Archetypes.interfaces.referenceable import IReferenceable
 from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
-from Products.Archetypes.Field import FileField
-from plone.app.blob.field import BlobField
+try:
+    from plone.app.blob.field import BlobField
+except:
+    class BlobField(object):
+        pass
 
 HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
 
@@ -1010,13 +1015,43 @@ class CloneBlobs:
         blob_fields = (f for f in obj.Schema().fields()
                        if isinstance(f, BlobField))
         file_data = {}
+        # try to get last revision, only store a new blob if the
+        # contents differ from the prior one, otherwise store a
+        # reference to the prior one
+        repo = getToolByName(obj, 'portal_repository')
+        try:
+            prior_rev = repo.retrieve(obj)
+        except ArchivistRetrieveError:
+            prior_rev = None
         for f in blob_fields:
-            # XXX: should only do this if data has changed since last version somehow
-            # Resave the blob line by line
-            with f.get(obj, raw=True).getBlob().open('r') as blob:
+            # XXX: should only do this if data has changed since last
+            # version somehow Resave the blob line by line
+            blob_file = f.get(obj, raw=True).getBlob().open('r')
+            save_new = True
+            if prior_rev is not None:
+                prior_rev = prior_rev.object
+                last_blob = f.get(prior_rev, raw=True).getBlob()
+                last_file = last_blob.open('r')
+                # Check for file size differences
+                if (os.fstat(last_file.fileno()).st_size ==
+                    os.fstat(blob_file.fileno()).st_size):
+                    # Files are the same size, compare line by line
+                    for line, line_prior in izip(blob_file, last_file):
+                        if line != line_prior:
+                            break
+                    else:
+                        # The files are the same, save a reference
+                        # to the prior versions blob on this version
+                        file_data[f.getName()] = last_blob
+                        save_new = False
+            if save_new:
                 new_blob = file_data[f.getName()] = Blob()
-                with new_blob.open('w') as new_blob_file:
-                    new_blob_file.writelines(blob)
+                new_blob_file = new_blob.open('w')
+                try:
+                    new_blob_file.writelines(blob_file)
+                finally:
+                    blob_file.close()
+                    new_blob_file.close()
         return file_data
 
     def reattachReferencedAttributes(self, obj, attrs_dict):

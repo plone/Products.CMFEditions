@@ -4,6 +4,10 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Only make a copy of a BLOB if it's changed since the last save.
+  Otherwise, just reference the BLOB from the prior revision.
+  [alecm]
+
 - Made the ZVCStorage store references directly in the shadow instead
   of simply passing them to ZVC.  This way real references can be used
   in the storage instead of copies, so that BLOB revisions can work.
