@@ -101,8 +101,16 @@ Changelog
   [wichert]
 
 
-1.2.5 - unreleased
+1.2.6 - unreleased
 ------------------
+
+- Fixed the html and javascript on the difference view so it works on
+  more browsers.
+  [vpretre, maurits]
+
+
+1.2.5 - November 5, 2009
+------------------------
 
 - Show ndiff (natural diff) when neither inline diff nor html diff are
   available.

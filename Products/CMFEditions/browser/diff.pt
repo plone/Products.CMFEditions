@@ -15,20 +15,28 @@
 
   <tal:block metal:fill-slot="javascript_head_slot">
     <script type="text/javascript">
+      update_display = function() {
+          var style = jq(this).attr('value');
+          if (! this.checked) {
+              return;
+          }
+
+          jq(".fieldDiff").hide();
+
+          if (style=="visual") {
+              jq(".inline-diff").show();
+          }
+          else {
+              jq(".code-diff").show();
+          }
+      }
+
       jq(document).ready(function() {
           jq(".jsOnly").show();
 
           jq("#versionSelector select").change(function() { this.form.submit(); });
-          jq("#diffTypeSelector input").change(function() {
-              var style = jq("#diffTypeSelector input[checked]").attr("value");
-              jq(".fieldDiff").hide();
-
-              if (style=="visual")
-                  jq(".inline-diff").show();
-              else
-                  jq(".code-diff").show();
-          });
-
+          jq("#diffTypeSelector input").click(update_display);
+          jq("#diffTypeSelector input").each(update_display);
       });
 </script>
   </tal:block>
@@ -81,12 +89,19 @@
         </p>
 
         <tal:changes condition="view/changes">
-          <label for="diffstyle" class="jsOnly" style="display: none"><span tal:omit-tag="" i18n:translate="">Show differences</span>
+          <form method="post" action="">
+            <label for="diffstyle" class="jsOnly" style="display: none" i18n:translate="">Show differences</label>
             <ul class="radioRow" id="diffTypeSelector">
-              <li><input type="radio" name="diffstyle" value="visual" checked="yes" /><span tal:omit-tag="" i18n:translate="">inline</span></li>
-              <li><input type="radio" name="diffstyle" value="code" /><span tal:omit-tag="" i18n:translate="">as code</span></li>
+              <li>
+                <input id="diffstylevisual" type="radio" name="diffstyle" value="visual" checked="checked" />
+                <label for="diffstylevisual" i18n:translate="">inline</label>
+              </li>
+              <li>
+                <input id="diffstylecode" type="radio" name="diffstyle" value="code" />
+                <label for="diffstylecode" i18n:translate="">as code</label>
+              </li>
             </ul>
-          </label>
+          </form>
 
           <fieldset class="diff" tal:repeat="diff view/changes">
             <legend tal:content="diff/label">Body text</legend>
