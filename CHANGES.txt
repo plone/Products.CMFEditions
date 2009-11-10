@@ -5,7 +5,9 @@ Changelog
 1.2.6 - (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Fixed the html and javascript on the difference view so it works on
+  more browsers.
+  [vpretre, maurits]
 
 
 1.2.5 - November 5, 2009
