@@ -52,11 +52,16 @@ from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
-from Products.Archetypes.interfaces.referenceable import IReferenceable
-from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
+try:
+    from Products.Archetypes.interfaces.referenceable import IReferenceable
+    from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
+except ImportError:
+    class IReferenceable(Interface):
+        pass
+    UUID_ATTR = REFERENCE_ANNOTATION = None
 try:
     from plone.app.blob.field import BlobField
-except:
+except ImportError:
     class BlobField(object):
         pass
 
@@ -395,16 +400,21 @@ class OMOutsideChildrensModifier(OMBaseModifier):
         return {}, [], outside_refs
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        portal_archivist = getToolByName(obj, 'portal_archivist')
+        OMStorageAdapter = portal_archivist.classes.ObjectManagerStorageAdapter
+
         ref_names = self._getAttributeNamesHandlingSubObjects(obj, repo_clone)
 
         # Add objects that have been added to the working copy
         clone_ids = repo_clone.objectIds()
         orig_ids = obj.objectIds()
+
         for attr_name in orig_ids:
             if attr_name not in clone_ids:
                 new_ob = getattr(obj, attr_name, None)
                 if new_ob is not None:
-                    repo_clone._setOb(attr_name, new_ob)
+                    adapter = OMStorageAdapter(repo_clone, attr_name)
+                    adapter.setAttribute(new_ob)
 
         # Delete references that are no longer relevant
         for attr_name in clone_ids:
@@ -415,8 +425,8 @@ class OMOutsideChildrensModifier(OMBaseModifier):
                     pass
 
         for attr_name in ref_names:
-            orig_objects = getattr(obj, attr_name, None)
-            if orig_objects is not None:
+            orig_objects = getattr(obj, attr_name, _marker)
+            if orig_objects is not _marker:
                 setattr(repo_clone, attr_name, orig_objects)
 
         return [], ref_names, {}

@@ -9,8 +9,13 @@ Products.__path__.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from Products.PloneTestCase import PloneTestCase
 
-PloneTestCase.installProduct('FAQ')
-PloneTestCase.setupPloneSite(products=('FAQ', ))
+# We may not have Archetypes, which the FAQ tests require
+try:
+    PloneTestCase.installProduct('FAQ')
+    PloneTestCase.setupPloneSite(products=('FAQ', ))
+    HAS_AT = True
+except ImportError:
+    HAS_AT = False
 
 from Products.CMFEditions import PACKAGE_HOME
 
@@ -182,8 +187,9 @@ class TestATContents(PloneTestCase.PloneTestCase):
             self.assertEquals(explinks, folderLinks,
                 "Version %d, expected %r, actual %r" % (version, explinks, folderLinks))
 
-def test_suite():
-    from unittest import TestSuite, makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestATContents))
-    return suite
+if HAS_AT:
+    def test_suite():
+        from unittest import TestSuite, makeSuite
+        suite = TestSuite()
+        suite.addTest(makeSuite(TestATContents))
+        return suite

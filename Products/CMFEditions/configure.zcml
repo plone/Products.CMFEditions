@@ -1,5 +1,6 @@
 <configure xmlns="http://namespaces.zope.org/zope"
 	   xmlns:cmf="http://namespaces.zope.org/cmf"
+       xmlns:zcml="http://namespaces.zope.org/zcml"
 	   xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
 	   i18n_domain="cmfeditions">
 
@@ -16,10 +17,12 @@
 	      handler=".ArchivistTool.object_copied"
 	      />
 
-  <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectInitializedEvent"
-	      handler=".subscriber.webdavObjectInitialized" />
+  <configure zcml:condition="installed Products.Archetypes">
+    <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectInitializedEvent"
+                handler=".subscriber.webdavObjectInitialized" />
 
-  <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectEditedEvent"
-	      handler=".subscriber.webdavObjectEdited" />
+    <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectEditedEvent"
+                handler=".subscriber.webdavObjectEdited" />
+  </configure>
 
 </configure>

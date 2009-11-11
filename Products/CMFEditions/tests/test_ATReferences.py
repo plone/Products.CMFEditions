@@ -210,7 +210,13 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         self.assertEqual([fol], doc1.getReferences())
 
 from unittest import TestSuite, makeSuite
-def test_suite():
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestATReferences))
-    return suite
+# Only run these tests if AT is installed
+try:
+    from Products.Archetypes import atapi
+
+    def test_suite():
+        suite = TestSuite()
+        suite.addTest(makeSuite(TestATReferences))
+        return suite
+except ImportError:
+    pass

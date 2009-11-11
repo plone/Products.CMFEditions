@@ -119,7 +119,7 @@ class ObjectManagerStorageAdapter(Persistent):
 
     def setAttribute(self, obj):
         # replace the attribute if it exists
-        if self.getAttributeName() is not None:
+        if self.getAttribute() is not None:
             self._parent._delOb(self._name)
         self._parent._setOb(self._name, obj)
 

@@ -433,7 +433,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_folder = retrieved_data.object
         self.assertEqual(ret_folder.objectIds(), fol.objectIds())
-        self.assertEqual(ret_folder.objectValues(), fol.objectValues())
+        self.assertEqual(tuple(ret_folder.objectValues()),
+                         tuple(fol.objectValues()))
 
         # remove an item
         fol.manage_delObjects('doc2')
@@ -442,7 +443,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_folder = retrieved_data.object
         self.assertEqual(ret_folder.objectIds(), fol.objectIds())
-        self.assertEqual(ret_folder.objectValues(), fol.objectValues())
+        self.assertEqual(tuple(ret_folder.objectValues()),
+                         tuple(fol.objectValues()))
 
         # add it back
         fol.invokeFactory('Document', 'doc2')
@@ -453,7 +455,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_folder = retrieved_data.object
         self.assertEqual(ret_folder.objectIds(), fol.objectIds())
-        self.assertEqual(ret_folder.objectValues(), fol.objectValues())
+        self.assertEqual(tuple(ret_folder.objectValues()),
+                         tuple(fol.objectValues()))
         self.assertEqual(ret_folder.doc2.Title(), 'v2 of doc2')
 
         # add new item
@@ -465,7 +468,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_folder = retrieved_data.object
         self.assertEqual(ret_folder.objectIds(), fol.objectIds())
-        self.assertEqual(ret_folder.objectValues(), fol.objectValues())
+        self.assertEqual(tuple(ret_folder.objectValues()),
+                         tuple(fol.objectValues()))
         self.assertEqual(ret_folder.doc3.Title(), 'v1 of doc3')
 
         orig_ids = fol.objectIds()
@@ -475,8 +479,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         portal_repo.revert(fol, 0)
 
         # check if reversion worked correctly
-        self.assertEqual(fol.objectIds(), orig_ids)
-        self.assertEqual(fol.objectValues(), orig_values)
+        self.assertEqual(tuple(fol.objectIds()), tuple(orig_ids))
+        self.assertEqual(tuple(fol.objectValues()), tuple(orig_values))
 
         # XXX we should be preserving order as well
 
@@ -955,7 +959,14 @@ def test_suite():
 
     suite = TestSuite()
     suite.addTest(makeSuite(TestIntegration))
-    suite.addTest(FileSuite('webdav_history.txt',
-                            package='Products.CMFEditions.tests',
-                            test_class=PloneTestCase.FunctionalTestCase))
+
+    # The webdav tests are Archetypes specific
+    try:
+        from Products.Archetypes import atapi
+        suite.addTest(FileSuite('webdav_history.txt',
+                                package='Products.CMFEditions.tests',
+                                test_class=PloneTestCase.FunctionalTestCase))
+    except ImportError:
+        pass
+
     return suite

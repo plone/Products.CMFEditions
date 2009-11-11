@@ -4,6 +4,12 @@ Changelog
 2.0 (Unreleased)
 ----------------
 
+- Fix ordering issues with versioned BTree folders.
+  [alecm]
+
+- Make the Archetypes dependency a soft one.
+  [alecm]
+
 - Only make a copy of a BLOB if it's changed since the last save.
   Otherwise, just reference the BLOB from the prior revision.
   [alecm]

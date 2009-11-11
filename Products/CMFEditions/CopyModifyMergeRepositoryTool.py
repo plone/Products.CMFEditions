@@ -592,6 +592,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # XXX this is an implicit policy we can live with for now
         for attr_ref in vdata.data.outside_refs:
             va_ref = attr_ref.getAttribute()
+            cur_value = attr_ref.getAttribute(alternate=obj)
             # If the attribute has been removed by a modifier, then we get
             # None, move on to the next ref.
             if va_ref is None:
@@ -600,10 +601,11 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                 ref = dereference(history_id=va_ref.history_id, zodb_hook=self)[0]
             except (TypeError, AttributeError):
                 # get the attribute from the working copy
-                ref = attr_ref.getAttribute(alternate=obj)
-            # If the object is not under version control just
-            # attach the current working copy if it exists
-            if ref is not None:
+                ref = cur_value
+            # If the object is not under version control just attach
+            # the current working copy if it exists and is not already
+            # in place
+            if ref is not None and aq_base(ref) is not aq_base(va_ref):
                 attr_ref.setAttribute(ref)
 
         # feed the fixup queue defined in revert() and retrieve() to
