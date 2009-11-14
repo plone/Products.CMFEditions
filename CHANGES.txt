@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0 (Unreleased)
-----------------
+2.0a1 - 2009-11-14
+------------------
 
 - Fix ordering issues with versioned BTree folders.
   [alecm]

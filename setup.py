@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-version = '2.0'
+version = '2.0a1'
 
 setup(name='Products.CMFEditions',
       version=version,
@@ -15,7 +15,7 @@ setup(name='Products.CMFEditions',
       keywords='Versioning Plone',
       author='CMFEditions contributers',
       author_email='collective-versioning@lists.sourceforge.net',
-      url='http://plone.org/products/cmfeditions',
+      url='http://pypi.python.org/pypi/Products.CMFEditions',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['Products'],
