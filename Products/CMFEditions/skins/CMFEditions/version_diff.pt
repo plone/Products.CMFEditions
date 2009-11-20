@@ -6,7 +6,7 @@
     i18n:domain="cmfeditions">
 
 <tal:block metal:fill-slot="base">
-    <base href="" tal:attributes="href current_page_url" />
+    <base href="" tal:attributes="href context/@@plone_context_state/current_page_url" />
 </tal:block>
 <tal:block metal:fill-slot="head_slot">
     <link rel="stylesheet" type="text/css" href="compare.css"
