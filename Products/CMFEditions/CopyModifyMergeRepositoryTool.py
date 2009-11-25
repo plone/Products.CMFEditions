@@ -391,7 +391,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         portal_archivist = getToolByName(self, 'portal_archivist')
         hist = portal_archivist.getHistoryMetadata(obj)
         if hist:
-            return ImplicitAcquisitionWrapper(hist, self)
+            return ImplicitAcquisitionWrapper(hist, obj)
         return hist
 
 

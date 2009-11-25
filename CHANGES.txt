@@ -5,6 +5,10 @@ Changelog
 1.2.6 - (unreleased)
 --------------------
 
+- Check history permissions in the context of the versioned object not
+  the repository tool.  See http://plone.org/products/cmfeditions/issues/55
+  [alecm]
+
 - Fixed the html and javascript on the difference view so it works on
   more browsers.
   [vpretre, maurits]

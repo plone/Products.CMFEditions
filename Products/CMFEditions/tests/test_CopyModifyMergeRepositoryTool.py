@@ -282,7 +282,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
 
         self.assertEqual(len(history), 2)
         # The history is acquisition wrapped
-        self.assertEqual(history.aq_parent, portal_repository)
+        self.assertEqual(history.aq_parent, doc)
         # check if timestamp and principal available
         self.failUnless(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
         self.failUnless(history.retrieve(0)['metadata']['sys_metadata']['principal'])
