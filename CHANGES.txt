@@ -2,8 +2,8 @@
 Changelog
 =========
 
-1.2.6 - (unreleased)
---------------------
+1.2.6 - December 2, 2009
+-------------------------
 
 - Check history permissions in the context of the versioned object not
   the repository tool.  See http://plone.org/products/cmfeditions/issues/55
