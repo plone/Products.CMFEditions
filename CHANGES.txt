@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b1 - Unreleased
+2.0b1 - 2009-12-02
 ------------------
 
 - Fix dependence on global_defines in diff.pt.
