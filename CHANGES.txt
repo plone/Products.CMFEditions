@@ -5,6 +5,11 @@ Changelog
 1.2.6 - December 2, 2009
 -------------------------
 
+- Make "Revert to this version" on the versions_history_form an input
+  with HTTP POST, instead of a simple GET link.
+  Fixes http://dev.plone.org/plone/ticket/6932
+  [maurits]
+
 - Check history permissions in the context of the versioned object not
   the repository tool.  See http://plone.org/products/cmfeditions/issues/55
   [alecm]

@@ -26,11 +26,6 @@
         </span>
     </div>
 
-    <form action="."
-        method="post"
-        tal:condition="history"
-        tal:attributes="action string:$here_url/versions_history">
-
         <table id="sortable"
             class="listing"
             summary="Content history"
@@ -148,12 +143,12 @@
                         </li>
                         </tal:diffs>
                         <li tal:condition="not:current_version">
-                            <a href=""
-                               style="text-decoration: none"
-                               tal:attributes="href string:$here_url/revertversion?version_id=${id}"
-                               i18n:translate="label_revert">
-                        Revert to this revision
-                            </a>
+                            <form action="" method="post"
+                                  tal:attributes="action string:$here_url/revertversion">
+                              <input type="hidden" name="version_id" value="" tal:attributes="value id" />
+                              <input class="standalone" type="submit"
+                                     i18n:attributes="value title_revert_revision"
+                                     value="Revert to this revision" /></form>
                         </li>
                     </ul>
                   </td>
@@ -161,8 +156,6 @@
                 </tal:block>
             </tbody>
           </table>
-
-    </form>
 
     <form action="#"
         method="post"
