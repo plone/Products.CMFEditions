@@ -1,12 +1,18 @@
 Changelog
 =========
 
+2.0b2 - unreleased
+------------------
+
+- Fixed test dependencies and removed unused test helper code.
+  [hannosch]
+
 2.0b1 - 2009-12-02
 ------------------
 
 - Fix dependence on global_defines in diff.pt.
-   https://dev.plone.org/plone/ticket/9804
-   [alecm]
+  https://dev.plone.org/plone/ticket/9804
+  [alecm]
 
 2.0a1 - 2009-11-14
 ------------------

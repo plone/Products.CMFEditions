@@ -25,6 +25,8 @@ setup(name='Products.CMFEditions',
         test=[
             'zope.testing',
             'zope.app.testing',
+            'Plone',
+            'Products.Archetypes',
             'Products.CMFDynamicViewFTI',
             'Products.PloneTestCase',
         ]

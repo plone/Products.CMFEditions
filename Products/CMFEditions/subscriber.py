@@ -24,7 +24,6 @@
 $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 """
 
-from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.utilities import isObjectChanged, maybeSaveVersion
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 
