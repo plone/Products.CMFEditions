@@ -28,4 +28,10 @@ if getattr(versionPreviewTemplate, 'macros', None) is None:
 if getattr(versionPreviewTemplate, 'macros', None) is None:
     return None
 
-return versionPreviewTemplate.macros['main']
+macro_name = 'main'
+
+if not macro_name in versionPreviewTemplate.macros:
+    context.plone_log('(CMFEditions: get_macros.py) Internal error: Missing TAL macro "%s" in template "%s".' % (macro_name, versionPreviewMethodName))
+    return None
+
+return versionPreviewTemplate.macros[macro_name]
