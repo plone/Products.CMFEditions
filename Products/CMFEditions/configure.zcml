@@ -13,9 +13,8 @@
   <include file="profiles.zcml"/>
 
   <subscriber for=".interfaces.IVersioned
-		   zope.lifecycleevent.interfaces.IObjectCopiedEvent"
-	      handler=".ArchivistTool.object_copied"
-	      />
+                   zope.lifecycleevent.interfaces.IObjectCopiedEvent"
+              handler=".ArchivistTool.object_copied" />
 
   <configure zcml:condition="installed Products.Archetypes">
     <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectInitializedEvent"

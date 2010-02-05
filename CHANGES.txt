@@ -4,6 +4,8 @@ Changelog
 2.0b3 - unreleased
 ------------------
 
+- Be more defensive in our importVarious step, to avoid issues while upgrading.
+  [hannosch]
 
 2.0b2 - 2009-12-27
 ------------------

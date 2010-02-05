@@ -29,6 +29,7 @@ ADD_POLICIES = (('at_edit_autoversion',
 
 DEFAULT_POLICIES = ('at_edit_autoversion', 'version_on_revert')
 
+
 def importVarious(context):
     """
     Import various settings.
@@ -40,7 +41,9 @@ def importVarious(context):
     if context.readDataFile('cmfeditions_various.txt') is None:
         return
     site = context.getSite()
-    portal_modifier = getToolByName(site, 'portal_modifier')
+    portal_modifier = getToolByName(site, 'portal_modifier', None)
+    if portal_modifier is None:
+        return
     StandardModifiers.install(portal_modifier)
     portal_repository = getToolByName(site, 'portal_repository')
     portal_repository.setAutoApplyMode(True)
@@ -50,4 +53,3 @@ def importVarious(context):
     for ctype in VERSIONING_ACTIONS:
         for policy_id in DEFAULT_POLICIES:
             portal_repository.addPolicyForContentType(ctype, policy_id)
-
