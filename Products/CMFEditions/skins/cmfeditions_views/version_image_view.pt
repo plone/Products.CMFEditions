@@ -5,14 +5,10 @@
 
 <body>
 
-<div metal:fill-slot="main">
+<metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main"
                     tal:define="size here/size;
                                 here_url context/absolute_url;">
-
-        <div metal:use-macro="here/document_actions/macros/document_actions">
-            Document actions (print, sendto etc)
-        </div>
 
         <h1 tal:content="object_title" class="documentFirstHeading">
             Title or id
@@ -20,44 +16,43 @@
 
         <div tal:replace="structure provider:plone.belowcontenttitle" />
 
-        <p class="documentDescription"
+        <div class="documentDescription"
            tal:content="here/Description"
            tal:condition="here/Description">
             Description
-        </p>
+        </div>
 
-        <a href=""
-           class="discreet"
-           tal:attributes="href string:$here_url/file_download_version?version_id=${request/version_id}">
-            <tal:block condition="size" replace="structure python: here.version_image_tag(here_url, version_id)" />
-            <br />
-            <span class="visualNoPrint">
-                <img src="" alt="" tal:replace="structure here/search_icon.gif" />
-                <span i18n:translate="label_click_to_view_full_image">Click to view full-size image&hellip;</span>
+        <div id="content-core">
+            <a href=""
+               class="discreet"
+               tal:attributes="href string:$here_url/file_download_version?version_id=${request/version_id}">
+                <tal:block condition="size" replace="structure python: here.version_image_tag(here_url, version_id)" />
+                <br />
+                <span class="visualNoPrint">
+                    <img src="" alt="" tal:replace="structure here/search_icon.gif" />
+                    <span i18n:translate="label_click_to_view_full_image">Click to view full-size image&hellip;</span>
+                </span>
+            </a>
+
+            <span class="discreet visualNoPrint">
+            &mdash;
+                <span i18n:translate="label_size">Size</span>:
+
+                <span tal:define="size python:here.getObjSize(here)"
+                      tal:content="size">
+                    File size
+                </span>
+
+                <span tal:condition="python:test(size, 0, 1)"
+                      i18n:translate="no_image_uploaded">
+                    (No image has been uploaded yet)
+                </span>
             </span>
-        </a>
-
-        <span class="discreet visualNoPrint">
-        &mdash;
-            <span i18n:translate="label_size">Size</span>:
-
-            <span tal:define="size python:here.getObjSize(here)"
-                  tal:content="size">
-                File size
-            </span>
-
-            <span tal:condition="python:test(size, 0, 1)"
-                  i18n:translate="no_image_uploaded">
-                (No image has been uploaded yet)
-            </span>
-        </span>
-
-        <div metal:use-macro="here/document_relateditems/macros/relatedItems">
-            show related items if they exist
         </div>
         
     </tal:main-macro>
-</div>
+
+</metal:main>
 
 </body>
 

@@ -47,91 +47,93 @@
         My Important Document
       </h1>
 
-      <p tal:condition="not:view/history" i18n:translate="no_history">
-        This object has no version information.
-      </p>
+      <div id="content-core">
+          <p tal:condition="not:view/history" i18n:translate="no_history">
+            This object has no version information.
+          </p>
 
-      <tal:block condition="view/history">
-        <form id="versionSelector"
-              action="#"
-              tal:attributes="action string:${context/absolute_url}/@@history"
-              tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
-          <fieldset>
-            <legend i18n:translate="legend_versions">Versions</legend>
-            <label for="one"><span tal:omit-tag="" i18n:translate="">First version</span>
-              <select id="one" name="one" tal:define="rev request/form/one|string:current">
-                <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
-                <option tal:repeat="version view/history"
-                        tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"
-                        i18n:translate="label_history_version"><tal:version i18n:name="version" content="version/version_id">1</tal:version>
-                        (<tal:date i18n:name="date" content="python:toLocalizedTime(version['sys_metadata']['timestamp'])">1975-12-24</tal:date>)</option>
-              </select>
-            </label>
+          <tal:block condition="view/history">
+            <form id="versionSelector"
+                  action="#"
+                  tal:attributes="action string:${context/absolute_url}/@@history"
+                  tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
+              <fieldset>
+                <legend i18n:translate="legend_versions">Versions</legend>
+                <label for="one"><span tal:omit-tag="" i18n:translate="">First version</span>
+                  <select id="one" name="one" tal:define="rev request/form/one|string:current">
+                    <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
+                    <option tal:repeat="version view/history"
+                            tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"
+                            i18n:translate="label_history_version"><tal:version i18n:name="version" content="version/version_id">1</tal:version>
+                            (<tal:date i18n:name="date" content="python:toLocalizedTime(version['sys_metadata']['timestamp'])">1975-12-24</tal:date>)</option>
+                  </select>
+                </label>
 
-            <label for="two"><span tal:omit-tag="" i18n:translate="">Second version</span>
-              <select id="two" name="two" tal:define="rev request/two|string:current">
-                <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
-                <option tal:repeat="version view/history"
-                        tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"
-                        i18n:translate="label_history_version"><tal:version i18n:name="version" content="version/version_id">1</tal:version>
-                        (<tal:date i18n:name="date" content="python:toLocalizedTime(version['sys_metadata']['timestamp'])">1975-12-24</tal:date>)</option>
-              </select>
-            </label>
-          </fieldset>
+                <label for="two"><span tal:omit-tag="" i18n:translate="">Second version</span>
+                  <select id="two" name="two" tal:define="rev request/two|string:current">
+                    <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
+                    <option tal:repeat="version view/history"
+                            tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"
+                            i18n:translate="label_history_version"><tal:version i18n:name="version" content="version/version_id">1</tal:version>
+                            (<tal:date i18n:name="date" content="python:toLocalizedTime(version['sys_metadata']['timestamp'])">1975-12-24</tal:date>)</option>
+                  </select>
+                </label>
+              </fieldset>
 
-          <noscript>
-            <input type="submit" i18n:attributes="value label_update" value="Update"/>
-          </noscript>
-        </form>
+              <noscript>
+                <input type="submit" i18n:attributes="value label_update" value="Update"/>
+              </noscript>
+            </form>
 
-        <p tal:condition="not:view/changes" i18n:translate="">
-          There are no changes between the selected versions.
-        </p>
-
-        <tal:changes condition="view/changes">
-          <form method="post" action="">
-            <label for="diffstyle" class="jsOnly" style="display: none" i18n:translate="">Show differences</label>
-            <ul class="radioRow" id="diffTypeSelector">
-              <li>
-                <input id="diffstylevisual" type="radio" name="diffstyle" value="visual" checked="checked" />
-                <label for="diffstylevisual" i18n:translate="">inline</label>
-              </li>
-              <li>
-                <input id="diffstylecode" type="radio" name="diffstyle" value="code" />
-                <label for="diffstylecode" i18n:translate="">as code</label>
-              </li>
-            </ul>
-          </form>
-
-          <fieldset class="diff" tal:repeat="diff view/changes">
-            <legend tal:content="diff/label">Body text</legend>
-
-            <div class="fieldDiff inline-diff" tal:condition="exists:diff/inline_diff"
-                 tal:content="structure python:diff.inline_diff()">
-              Inline changes
-            </div>
-
-            <p class="fieldDiff inline-diff" tal:condition="not:exists:diff/inline_diff" i18n:translate="">
-              This field has no inline difference view.
+            <p tal:condition="not:view/changes" i18n:translate="">
+              There are no changes between the selected versions.
             </p>
 
-            <div class="fieldDiff code-diff" style="display: none">
-              <!-- This no longer triggers a UnicodeDecodeError. Strangely enough that does not happen
-                   in the CMF page template version... -->
-              <pre tal:condition="exists:diff/html_diff" tal:content="structure diff/html_diff">
-                HTML formatted differences
-              </pre>
+            <tal:changes condition="view/changes">
+              <form method="post" action="">
+                <label for="diffstyle" class="jsOnly" style="display: none" i18n:translate="">Show differences</label>
+                <ul class="radioRow" id="diffTypeSelector">
+                  <li>
+                    <input id="diffstylevisual" type="radio" name="diffstyle" value="visual" checked="checked" />
+                    <label for="diffstylevisual" i18n:translate="">inline</label>
+                  </li>
+                  <li>
+                    <input id="diffstylecode" type="radio" name="diffstyle" value="code" />
+                    <label for="diffstylecode" i18n:translate="">as code</label>
+                  </li>
+                </ul>
+              </form>
 
-              <pre class="fieldDiff code-diff" tal:condition="python:not exists('diff/html_diff') and exists('diff/ndiff')" tal:content="diff/ndiff">
-                ndiff formatted differences
-              </pre>
-              <p class="fieldDiff" tal:condition="python:not exists('diff/html_diff') and not exists('diff/ndiff')">
-                This field has no code difference view.
-              </p>
-            </div>
-          </fieldset>
-        </tal:changes>
-      </tal:block>
+              <fieldset class="diff" tal:repeat="diff view/changes">
+                <legend tal:content="diff/label">Body text</legend>
+
+                <div class="fieldDiff inline-diff" tal:condition="exists:diff/inline_diff"
+                     tal:content="structure python:diff.inline_diff()">
+                  Inline changes
+                </div>
+
+                <p class="fieldDiff inline-diff" tal:condition="not:exists:diff/inline_diff" i18n:translate="">
+                  This field has no inline difference view.
+                </p>
+
+                <div class="fieldDiff code-diff" style="display: none">
+                  <!-- This no longer triggers a UnicodeDecodeError. Strangely enough that does not happen
+                       in the CMF page template version... -->
+                  <pre tal:condition="exists:diff/html_diff" tal:content="structure diff/html_diff">
+                    HTML formatted differences
+                  </pre>
+
+                  <pre class="fieldDiff code-diff" tal:condition="python:not exists('diff/html_diff') and exists('diff/ndiff')" tal:content="diff/ndiff">
+                    ndiff formatted differences
+                  </pre>
+                  <p class="fieldDiff" tal:condition="python:not exists('diff/html_diff') and not exists('diff/ndiff')">
+                    This field has no code difference view.
+                  </p>
+                </div>
+              </fieldset>
+            </tal:changes>
+          </tal:block>
+      </div>
     </metal:main>
   </body>
 </html>

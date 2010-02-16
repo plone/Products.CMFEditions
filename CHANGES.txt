@@ -4,6 +4,10 @@ Changelog
 2.0b3 - unreleased
 ------------------
 
+- Updated templates to follow recent markup conventions.
+  References http://dev.plone.org/old/plone/ticket/9981
+  [spliter]
+
 - Be more defensive in our importVarious step, to avoid issues while upgrading.
   [hannosch]
 
