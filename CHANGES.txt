@@ -1,15 +1,19 @@
 Changelog
 =========
 
-2.0b3 - unreleased
+2.0b3 - 2010-02-17
 ------------------
 
 - Updated templates to follow recent markup conventions.
-  References http://dev.plone.org/old/plone/ticket/9981
+  References http://dev.plone.org/old/plone/ticket/9981.
   [spliter]
 
 - Be more defensive in our importVarious step, to avoid issues while upgrading.
   [hannosch]
+
+- Workaround for http//dev.plone.org/plone/ticket/10120, "version_history_form"
+  now renders "Preview is not available." instead of causing a traceback.
+  [kleist]
 
 2.0b2 - 2009-12-27
 ------------------
