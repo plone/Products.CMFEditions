@@ -23,13 +23,27 @@
 """Test the ATContentTypes content
 """
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+
+import pkg_resources
+try:
+    pkg_resources.get_distribution('plone.app.blob')
+    has_blob = True
+except pkg_resources.DistributionNotFound:
+    pass
+
+if has_blob:
+    from plone.app.blob.tests import db
+    from plone.app.blob.tests.base import BlobReplacementLayer
 
 import os
+from Products.PloneTestCase import PloneTestCase
+
+PloneTestCase.setupPloneSite()
 from Products.CMFEditions import PACKAGE_HOME
 
 class TestATContents(PloneTestCase.PloneTestCase):
+    if has_blob:
+        layer = BlobReplacementLayer
 
     def afterSetUp(self):
         self.membership = self.portal.portal_membership
