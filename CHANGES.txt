@@ -5,7 +5,10 @@ Changelog
 1.2.7 - Unreleased
 ------------------
 
-- Don't fail when there's no view macro for previews. https://dev.plone.org/plone/ticket/9963
+- Fix error in history storage selector calculation.  http://dev.plone.org/plone/ticket/8967
+  [alecm]
+
+- Don't fail when there's no view macro for previews. http://dev.plone.org/plone/ticket/9963
   [alecm]
 
 - Fix version display when history is non-existent.  http://dev.plone.org/plone/ticket/9674

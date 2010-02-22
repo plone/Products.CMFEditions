@@ -895,7 +895,7 @@ class ShadowHistory(Persistent):
             return None
         # check if negative selector and if it looks to far into past
         if selector < 0:
-            selector = length - selector
+            selector = length + selector
             if selector < 0:
                 return None
         
