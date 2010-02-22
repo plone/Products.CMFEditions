@@ -8,7 +8,7 @@
        tal:define="pr nocall:context/portal_repository;
                    version_id python:request.get('version_id', None);
                    history python:pr.getHistoryMetadata(context);
-                   revisions python:history.getLength(countPurged=False);
+                   revisions python:history and history.getLength(countPurged=False) or 0;
                    histrange python:range(revisions-1, -1, -1)"
                    tal:condition="python: pr.isVersionable(context)">
     <h1 class="documentFirstHeading"
