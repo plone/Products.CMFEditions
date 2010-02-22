@@ -59,8 +59,8 @@
                   tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
               <fieldset>
                 <legend i18n:translate="legend_versions">Versions</legend>
-                <label for="one"><span tal:omit-tag="" i18n:translate="">First version</span>
-                  <select id="one" name="one" tal:define="rev request/form/one|string:current">
+                <label for="two"><span tal:omit-tag="" i18n:translate="">First version</span>
+                  <select id="two" name="two" tal:define="rev request/form/two|string:current">
                     <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                     <option tal:repeat="version view/history"
                             tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"
@@ -69,8 +69,8 @@
                   </select>
                 </label>
 
-                <label for="two"><span tal:omit-tag="" i18n:translate="">Second version</span>
-                  <select id="two" name="two" tal:define="rev request/two|string:current">
+                <label for="one"><span tal:omit-tag="" i18n:translate="">Second version</span>
+                  <select id="one" name="one" tal:define="rev request/one|string:current">
                     <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                     <option tal:repeat="version view/history"
                             tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"
