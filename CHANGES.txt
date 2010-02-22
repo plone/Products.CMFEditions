@@ -145,6 +145,9 @@ Changelog
 1.2.7 - Unreleased
 ------------------
 
+- Fix error in history storage selector calculation.  http://dev.plone.org/plone/ticket/8967
+  [alecm]
+
 - Make "Revert to this version" on the versions_history_form an input
   with HTTP POST, instead of a simple GET link.
   Fixes http://dev.plone.org/plone/ticket/6932
