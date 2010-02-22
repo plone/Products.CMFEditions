@@ -5,6 +5,9 @@ Changelog
 1.2.7 - Unreleased
 ------------------
 
+- Fix version display when history is non-existent.  http://dev.plone.org/plone/ticket/9674
+  [alecm]
+
 - Make "Revert to this version" on the versions_history_form an input
   with HTTP POST, instead of a simple GET link.
   Fixes http://dev.plone.org/plone/ticket/6932
