@@ -206,7 +206,12 @@
                          object_title here/Title;
                          suppress_preview python:True;
                          view_macro python:version_view_macro;">
-        <metal:use_body use-macro="view_macro" />
+        <tal:preview condition="view_macro">
+          <metal:use_body use-macro="view_macro" />
+        </tal:preview>
+        <tal:nopreview condition="not:view_macro">
+          <div i18n:translate="">Preview is not available.</div>
+        </tal:nopreview>
       </tal:block>
     </div>
 

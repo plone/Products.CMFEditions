@@ -24,7 +24,16 @@ versionPreviewTemplate = getattr(context, versionPreviewMethodName, None)
 # check if a special version view exists
 if getattr(versionPreviewTemplate, 'macros', None) is None:
     # Use the Plone's default view template
-    
     versionPreviewTemplate = context.restrictedTraverse(def_method_name)
 
-return versionPreviewTemplate.macros['main']
+if getattr(versionPreviewTemplate, 'macros', None) is None:
+    return None
+
+macro_names = ['content-core', 'main']
+
+for name in macro_names:
+    if name in versionPreviewTemplate.macros:
+        return versionPreviewTemplate.macros[name]
+else:
+    context.plone_log('(CMFEditions: get_macros.py) Internal error: Missing TAL macros %s in template "%s".' % (', '.join(macro_names), versionPreviewMethodName))
+    return None
