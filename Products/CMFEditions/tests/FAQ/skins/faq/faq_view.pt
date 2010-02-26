@@ -6,9 +6,9 @@
 <body>
 
 
-<div metal:fill-slot="main">
+<metal:main metal:fill-slot="main">
     
-</div>
+</metal:main>
 
 </body>
 </html>
