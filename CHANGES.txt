@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b4 - unreleased
+2.0b4 - 2010-03-04
 ------------------
 
 - Reverse order of diff listing on history view.  Fixes http://dev.plone.org/plone/ticket/10119
