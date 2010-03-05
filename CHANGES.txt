@@ -1,13 +1,19 @@
 Changelog
 =========
 
+2.0b5 - unreleased
+------------------
+
+
 2.0b4 - 2010-03-04
 ------------------
 
-- Reverse order of diff listing on history view.  Fixes http://dev.plone.org/plone/ticket/10119
+- Reverse order of diff listing on history view. Fixes
+  http://dev.plone.org/plone/ticket/10119.
   [alecm]
 
-- Fix version display when history is non-existent. Fixes http://dev.plone.org/plone/ticket/9674
+- Fix version display when history is non-existent. Fixes
+  http://dev.plone.org/plone/ticket/9674.
   [alecm]
 
 2.0b3 - 2010-02-17
