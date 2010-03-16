@@ -22,7 +22,7 @@ comment = "Initial revision"
 changed = isObjectChanged(context)
 new = isObjectVersioned(context)
 
-if not changed:# or not new:
+if not changed or not new:
     return state.set(status='success')
 
 try:
