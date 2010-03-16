@@ -33,6 +33,9 @@ try:
 except pkg_resources.DistributionNotFound:
     has_collective_indexing = False
 
+from StringIO import StringIO
+import os.path
+
 from Products.Five.testbrowser import Browser
 from Products.PloneTestCase import PloneTestCase
 from Products.PloneTestCase.setup import portal_owner, default_password
@@ -973,39 +976,20 @@ class TestIntegration(PloneTestCase.FunctionalTestCase):
         browser.getControl(name='__ac_password').value = default_password
         browser.getControl(name='submit').click()
 
-        def addImageInBrowser(name):
-            fileobj = StringIO(resource_string('Products.CMFEditions.tests',\
-                name))
-            if 'Replace with new image' in browser.contents:
-                browser.getControl('Replace with new image').click()
-            browser.getControl(name='image_file')\
-                .add_file(fileobj, 'image/png', name)
+        def addPage(name):
+            browser.getControl('Title').value = name
             browser.getControl(name='cmfeditions_version_comment').value = \
                 'test'
             browser.getControl('Save').click()
-        def getPreviewContents():
-            preview_url = '/'.join(browser.url.split('/')[:-1] \
-                                + ['image_preview'])
-            try:
-                browser.open(preview_url)
-            except Exception:
-                return None
-            retval = browser.contents
-            browser.goBack()
-            return retval
 
-        browser.handleErrors = False
-        browser.getLink('Image').click()
-        addImageInBrowser('img1.png')
-        preview1 = getPreviewContents()
+        browser.getLink('Page').click()
+        addPage('title1')
         browser.getLink('Edit').click()
-        addImageInBrowser('img2.png')
-        preview2 = getPreviewContents()
-        self.assertFalse(preview1 == preview2)
+        addPage('title2')
         browser.getLink('Edit').click()
-        addImageInBrowser('img1.png')
+        addPage('title1')
         browser.getLink('Edit').click()
-        addImageInBrowser('img2.png')
+        addPage('title2')
         self.assertEquals(4, browser.contents.count('Revert'))
         self.assertFalse('Initial revision' in browser.contents)
 
