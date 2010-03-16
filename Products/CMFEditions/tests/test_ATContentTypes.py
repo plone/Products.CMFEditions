@@ -29,7 +29,7 @@ try:
     pkg_resources.get_distribution('plone.app.blob')
     has_blob = True
 except pkg_resources.DistributionNotFound:
-    pass
+    has_blob = False
 
 if has_blob:
     from plone.app.blob.tests import db

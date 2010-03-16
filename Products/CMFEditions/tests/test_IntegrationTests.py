@@ -25,12 +25,26 @@
 $Id: test_IntegrationTests.py,v 1.15 2005/06/24 11:42:01 gregweb Exp $
 """
 
+import pkg_resources
+try:
+    pkg_resources.get_distribution('collective.indexing')
+    from collective.indexing.tests.layer import indexing as indexing_layer
+    has_collective_indexing = True
+except pkg_resources.DistributionNotFound:
+    has_collective_indexing = False
+
+from Products.Five.testbrowser import Browser
 from Products.PloneTestCase import PloneTestCase
+from Products.PloneTestCase.setup import portal_owner, default_password
+
 PloneTestCase.setupPloneSite()
 
 import transaction
 
-class TestIntegration(PloneTestCase.PloneTestCase):
+class TestIntegration(PloneTestCase.FunctionalTestCase):
+
+    if has_collective_indexing:
+        layer = indexing_layer
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -951,6 +965,49 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(self.portal.doc.Title(), "v2")
         self.assertEqual(self.portal.doc.__parent__, self.portal.aq_base)
 
+    def test23_basicFunctionalityTestThroughTheBrowser(self):
+        browser = Browser()
+        browser.handleErrors = False
+        browser.open(self.portal.absolute_url())
+        browser.getControl(name='__ac_name').value = portal_owner
+        browser.getControl(name='__ac_password').value = default_password
+        browser.getControl(name='submit').click()
+
+        def addImageInBrowser(name):
+            fileobj = StringIO(resource_string('Products.CMFEditions.tests',\
+                name))
+            if 'Replace with new image' in browser.contents:
+                browser.getControl('Replace with new image').click()
+            browser.getControl(name='image_file')\
+                .add_file(fileobj, 'image/png', name)
+            browser.getControl(name='cmfeditions_version_comment').value = \
+                'test'
+            browser.getControl('Save').click()
+        def getPreviewContents():
+            preview_url = '/'.join(browser.url.split('/')[:-1] \
+                                + ['image_preview'])
+            try:
+                browser.open(preview_url)
+            except Exception:
+                return None
+            retval = browser.contents
+            browser.goBack()
+            return retval
+
+        browser.handleErrors = False
+        browser.getLink('Image').click()
+        addImageInBrowser('img1.png')
+        preview1 = getPreviewContents()
+        browser.getLink('Edit').click()
+        addImageInBrowser('img2.png')
+        preview2 = getPreviewContents()
+        self.assertFalse(preview1 == preview2)
+        browser.getLink('Edit').click()
+        addImageInBrowser('img1.png')
+        browser.getLink('Edit').click()
+        addImageInBrowser('img2.png')
+        self.assertEquals(4, browser.contents.count('Revert'))
+        self.assertFalse('Initial revision' in browser.contents)
 
 from unittest import TestSuite, makeSuite
 def test_suite():
