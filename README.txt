@@ -11,12 +11,6 @@ CMFEditions provides versioning in Plone.
 - It works out of the box.
 - It's higly extensible for specific use cases.
 
-.. Note::
-
-   - Migrating from older versions of CMFEditions: See notes at the end
-     of this document!
-
-
 Out Of The Box Experience
 =========================
 

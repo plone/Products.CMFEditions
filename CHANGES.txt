@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b5 - unreleased
+2.0b5 - 2010-04-12
 ------------------
 
 - Re-add title and description when viewing old versions in Plone 4.
