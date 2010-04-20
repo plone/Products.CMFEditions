@@ -1,9 +1,15 @@
 Changelog
 =========
 
-2.0b6 - unreleased
+2.0b6 - 2010-04-20
 ------------------
 
+- Widen html diff display to work better with new layout.
+  [alecm]
+
+- Fix issue with versioning of large folders.
+  http://dev.plone.org/plone/ticket/10457
+  [alecm]
 
 2.0b5 - 2010-04-12
 ------------------

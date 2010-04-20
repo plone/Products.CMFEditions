@@ -119,7 +119,7 @@
                 <div class="fieldDiff code-diff" style="display: none">
                   <!-- This no longer triggers a UnicodeDecodeError. Strangely enough that does not happen
                        in the CMF page template version... -->
-                  <pre tal:condition="exists:diff/html_diff" tal:content="structure diff/html_diff">
+                  <pre tal:condition="exists:diff/html_diff" tal:content="structure python:diff.html_diff(wrapcolumn=80)">
                     HTML formatted differences
                   </pre>
 

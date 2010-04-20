@@ -373,7 +373,7 @@ class OMBaseModifier:
         else:
             # No idea how this folder is implemented
             attrs = []
-        attrs.extend(set(repo_clone.objectIds()+obj.objectIds()))
+        attrs.extend(set(tuple(repo_clone.objectIds())+tuple(obj.objectIds())))
         return attrs
 
 class OMOutsideChildrensModifier(OMBaseModifier):
