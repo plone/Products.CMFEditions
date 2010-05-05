@@ -1058,6 +1058,7 @@ class CloneBlobs:
                 new_blob = file_data[f.getName()] = Blob()
                 new_blob_file = new_blob.open('w')
                 try:
+                    new_blob_file.seek(0)
                     new_blob_file.writelines(blob_file)
                 finally:
                     blob_file.close()
