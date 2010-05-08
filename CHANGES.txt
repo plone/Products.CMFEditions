@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b7 - unreleased
+2.0b7 - 2010-05-08
 ------------------
 
 - Fix BLOB history corruption
