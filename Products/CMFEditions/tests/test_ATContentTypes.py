@@ -131,8 +131,8 @@ class TestATContents(PloneTestCase.PloneTestCase):
 
     def testFile(self):
         self.folder.invokeFactory('File', id='file')
-        file1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
-        file2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
+        file1 = open(os.path.join(PACKAGE_HOME, 'tests/file1.dat'), 'rb').read()
+        file2 = open(os.path.join(PACKAGE_HOME, 'tests/file2.dat'), 'rb').read()
         portal_repository = self.portal_repository
         content = self.folder.file
         content.edit(file=file1)

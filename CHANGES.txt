@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0b7 - unreleased
+------------------
+
+- Fix BLOB history corruption
+  http://dev.plone.org/plone/ticket/10503
+  [do3cc]
+
 2.0b6 - 2010-04-20
 ------------------
 
