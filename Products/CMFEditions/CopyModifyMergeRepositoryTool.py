@@ -762,6 +762,7 @@ class LazyHistory:
         self._retrieve = repository._retrieve
         self._length = len(archivist.queryHistory(obj=obj, preserve=preserve,
                                                   countPurged=countPurged))
+        self._cache={}
 
     def __len__(self):
         """See IHistory
@@ -776,9 +777,12 @@ class LazyHistory:
                 selector = self._length - 1 - selector
             else:
                 selector = - (selector + 1)
-            
-        return self._retrieve(self._obj, selector, self._preserve, 
-                              self._countPurged)
+        if selector in self._cache:
+            return self._cache[selector]
+
+        result=self._cache[selector]=self._retrieve(self._obj, selector,
+                self._preserve, self._countPurged)
+        return result
 
     def __iter__(self):
         """See IHistory.
