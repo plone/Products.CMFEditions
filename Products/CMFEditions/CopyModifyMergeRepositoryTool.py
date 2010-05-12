@@ -468,7 +468,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         portal_archivist.save(prep, autoregister=autoapply)
 
         # just to ensure that the working copy has the correct
-        # ``verision_id``
+        # ``version_id``
         prep.copyVersionIdFromClone()
 
     def _retrieve(self, obj, selector, preserve, countPurged):
