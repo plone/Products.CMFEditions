@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0b8 - Unreleased
+------------------
+
+- Fix repository save() method to actually save unregistered objects with
+  autoregister enabled.
+  [wichert]
+
 2.0b7 - 2010-05-08
 ------------------
 
