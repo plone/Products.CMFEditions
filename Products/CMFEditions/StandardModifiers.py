@@ -60,9 +60,9 @@ except ImportError:
         pass
     UUID_ATTR = REFERENCE_ANNOTATION = None
 try:
-    from plone.app.blob.field import BlobField
+    from plone.app.blob.interfaces import IBlobField
 except ImportError:
-    class BlobField(object):
+    class IBlobField(Interface):
         pass
 
 HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
@@ -713,7 +713,7 @@ class NotRetainATRefs:
                     if ref.getId() not in repo_clone_ref_ids:
                         reference_catalog.deleteReference(ref.sourceUID, ref.targetUID,
                                                           ref.relationship)
-                
+
         return [], [], {}
 
 InitializeClass(NotRetainATRefs)
@@ -782,7 +782,7 @@ InitializeClass(SkipParentPointers)
 class SillyDemoRetrieveModifier:
     """Silly Retrieve Modifier for Demos
 
-    Disabled by default and if enabled only effective if the 
+    Disabled by default and if enabled only effective if the
     username is ``gregweb``.
 
     This is really just as silly example though for demo purposes!!!
@@ -984,8 +984,8 @@ class SkipBlobs:
         """
 
         blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
-                         for f in obj.Schema().fields() if
-                         isinstance(f, BlobField))
+                         for f in obj.Schema().fields()
+                         if IBlobField.providedBy(f))
 
         def persistent_id(obj):
             if id(aq_base(obj)) in blob_refs:
@@ -1004,7 +1004,7 @@ class SkipBlobs:
         """If we find any BlobProxies, replace them with the values
         from the current working copy."""
         blob_fields = (f for f in obj.Schema().fields()
-                       if isinstance(f, BlobField))
+                       if IBlobField.providedBy(f))
         for f in blob_fields:
             blob = f.getUnwrapped(obj, raw=True).getBlob()
             clone_ref = f.getUnwrapped(repo_clone, raw=True)
@@ -1023,11 +1023,14 @@ class CloneBlobs:
 
     def getReferencedAttributes(self, obj):
         blob_fields = (f for f in obj.Schema().fields()
-                       if isinstance(f, BlobField))
+                       if IBlobField.providedBy(f))
         file_data = {}
         # try to get last revision, only store a new blob if the
         # contents differ from the prior one, otherwise store a
         # reference to the prior one
+        # XXX: According to CopyModifyMergeRepository, retrieve and getHistory
+        #      should not be used as a part of more complex transactions
+        #      due to some resource managers not supporting savepoints.
         repo = getToolByName(obj, 'portal_repository')
         try:
             prior_rev = repo.retrieve(obj)
@@ -1039,20 +1042,20 @@ class CloneBlobs:
             blob_file = f.get(obj, raw=True).getBlob().open('r')
             save_new = True
             if prior_rev is not None:
-                prior_rev = prior_rev.object
-                last_blob = f.get(prior_rev, raw=True).getBlob()
-                last_file = last_blob.open('r')
+                prior_obj = prior_rev.object
+                prior_blob = f.get(prior_obj, raw=True).getBlob()
+                prior_file = prior_blob.open('r')
                 # Check for file size differences
-                if (os.fstat(last_file.fileno()).st_size ==
+                if (os.fstat(prior_file.fileno()).st_size ==
                     os.fstat(blob_file.fileno()).st_size):
                     # Files are the same size, compare line by line
-                    for line, line_prior in izip(blob_file, last_file):
-                        if line != line_prior:
+                    for line, prior_line in izip(blob_file, prior_file):
+                        if line != prior_line:
                             break
                     else:
                         # The files are the same, save a reference
                         # to the prior versions blob on this version
-                        file_data[f.getName()] = last_blob
+                        file_data[f.getName()] = prior_blob
                         save_new = False
             if save_new:
                 new_blob = file_data[f.getName()] = Blob()

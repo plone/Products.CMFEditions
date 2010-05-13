@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from zope.i18n import translate
 from Acquisition import aq_inner
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -23,7 +24,8 @@ class DiffView(BrowserView):
 
 
     def versionTitle(self, version):
-        return _(u"version ${version}", mapping=dict(version=version))
+        return translate(_(u"version ${version}",
+                           mapping=dict(version=version)))
 
 
     def __call__(self):

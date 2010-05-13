@@ -7,6 +7,7 @@
 ##parameters=version_id
 ##title=Revert version
 ##
+from zope.i18n import translate
 
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
@@ -23,13 +24,14 @@ title = context.title_or_id()
 if not isinstance(title, unicode):
     title = unicode(title, 'utf-8', 'ignore')
 
-msg = _(u'${title} has been reverted to version ${version}.',
-        mapping={'title' : context.title_or_id(), 'version' : version_id})
+msg = translate(_(u'${title} has been reverted to version ${version}.',
+                mapping={'title': context.title_or_id(),
+                         'version': version_id}))
 
 if pr.supportsPolicy(context, 'version_on_revert'):
     try:
-        pr.save(obj=context, comment=_(u"Reverted to version ${version}",
-                                       mapping={'version': version_id}))
+        pr.save(obj=context, comment=translate(_(u"Reverted to version ${version}",
+                                                 mapping={'version': version_id})))
     except FileTooLargeToVersionError:
         putils.addPortalMessage(
   _("The most current version of the file could not be saved before reverting "

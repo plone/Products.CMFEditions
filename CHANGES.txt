@@ -8,6 +8,13 @@ Changelog
   autoregister enabled.
   [wichert]
 
+- Fixed CloneBlob & company, so that they check that the field provides an
+  interface instead of using isinstance.
+  Fixed CloneBlob to not trample its local variables, allowing for multiple
+  blob fields on a type.
+  Updated i18n methods that used mappings.
+  [davidblewett]
+
 2.0b7 - 2010-05-08
 ------------------
 
