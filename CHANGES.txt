@@ -4,6 +4,12 @@ Changelog
 2.0b8 - Unreleased
 ------------------
 
+- Added notification of changes on revert, via zope.lifecycle's
+  ObjectModifiedEvent and Archetypes' ObjectEditedEvent.
+  Fixed revertversion.py so that it didn't tack on a lone / to the redirect
+  URL.
+  [davidb]
+
 - Fix repository save() method to actually save unregistered objects with
   autoregister enabled.
   [wichert]

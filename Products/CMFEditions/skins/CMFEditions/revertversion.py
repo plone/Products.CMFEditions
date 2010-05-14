@@ -14,9 +14,14 @@ RESPONSE = context.REQUEST.RESPONSE
 putils = container.plone_utils
 pr = container.portal_repository
 pr.revert(context, version_id)
-view_url = '%s/%s' % (context.absolute_url(),
-                      context.getTypeInfo().getActionInfo('object/view')['url']
-                     )
+
+obj_type_view_url = context.getTypeInfo().getActionInfo('object/view')['url']
+if obj_type_view_url != '/':
+    view_url = '%s/%s' % (context.absolute_url(),
+                          obj_type_view_url
+                         )
+else:
+    view_url = context.absolute_url()
 
 title = context.title_or_id()
 if not isinstance(title, unicode):

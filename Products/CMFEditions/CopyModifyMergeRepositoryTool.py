@@ -34,8 +34,12 @@ from Acquisition import ImplicitAcquisitionWrapper
 from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem
 from BTrees.OOBTree import OOBTree
+from zope.event import notify
 from zope.interface import implements, Interface
-
+from zope.lifecycleevent import ObjectCreatedEvent, ObjectModifiedEvent
+from zope.app.container.contained import ObjectMovedEvent
+from Products.Archetypes.event import ObjectEditedEvent
+from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
 
@@ -83,7 +87,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     """
 
     implements(
-        IPurgeSupport, 
+        IPurgeSupport,
         ICopyModifyMergeRepository,
         IContentTypeVersionPolicySupport,
         )
@@ -158,12 +162,12 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     security.declarePublic('supportsPolicy')
     def supportsPolicy(self, obj, policy):
         content_type = obj.portal_type
-        # in 1.0alpha3 and earlier ``version_on_revert`` was 
+        # in 1.0alpha3 and earlier ``version_on_revert`` was
         # ``version_on_rollback``. Convert to new name.
         config = self._version_policy_mapping.get(content_type, [])
         if "version_on_rollback" in config:
             config[config.index("version_on_rollback")] = "version_on_revert"
-        
+
         return policy in self._version_policy_mapping.get(content_type, [])
 
     security.declarePublic('hasPolicy')
@@ -243,14 +247,14 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         return dict(self._version_policy_mapping)
 
     def _callPolicyHook(self, action, policy_id, *args, **kw):
-        # in 1.0alpha3 and earlier ``version_on_revert`` was 
+        # in 1.0alpha3 and earlier ``version_on_revert`` was
         # ``version_on_rollback``. Convert to new name.
         if policy_id == "version_on_revert":
             if "version_on_rollback" in self._policy_defs:
                 value = self._policy_defs["version_on_rollback"]
                 self._policy_defs["version_on_revert"] = value
                 del self._policy_defs["version_on_rollback"]
-        
+
         hook = getattr(self._policy_defs[policy_id], HOOKS[action], None)
         if hook is not None and callable(hook):
             portal = getToolByName(self, 'portal_url').getPortalObject()
@@ -305,7 +309,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """See IPurgeSupport.
         """
         self._assertAuthorized(obj, PurgeVersion, 'purge')
-        
+
         # Trying to avoid mess with purged versions which we don't offer
         # support yet when passed to the repository layer due to a missing
         # purge policy. The problem would occure on revert and retrieve.
@@ -334,8 +338,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
         self._assertAuthorized(obj, RevertToPreviousVersions, 'revert')
         fixup_queue = []
-        self._recursiveRetrieve(obj=obj, selector=selector, inplace=True, 
-                                fixup_queue=fixup_queue, 
+        self._recursiveRetrieve(obj=obj, selector=selector, inplace=True,
+                                fixup_queue=fixup_queue,
                                 countPurged=countPurged)
         # XXX this should go away if _recursiveRetrieve is correctly implemented
         if obj.getId() != original_id:
@@ -354,7 +358,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         return self._retrieve(obj, selector, preserve, countPurged)
 
     security.declarePublic('restore')
-    def restore(self, history_id, selector, container, new_id=None, 
+    def restore(self, history_id, selector, container, new_id=None,
                 countPurged=True):
         """See IPurgeSupport.
         """
@@ -380,7 +384,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         self._doInplaceFixups(fixup_queue, True)
 
     security.declarePublic('getHistory')
-    def getHistory(self, obj, oldestFirst=False, preserve=(), 
+    def getHistory(self, obj, oldestFirst=False, preserve=(),
                    countPurged=True):
         """See IPurgeSupport.
         """
@@ -535,17 +539,17 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
         if hasBeenMoved:
             if getattr(aq_base(source), obj.getId(), None) is None:
-                vdata = portal_archivist.retrieve(obj, history_id, selector, 
+                vdata = portal_archivist.retrieve(obj, history_id, selector,
                                                   preserve, countPurged)
                 repo_clone = vdata.data.object
                 obj = portal_reffactories.invokeFactory(repo_clone, source)
             else:
                 # What is the desired behavior
                 pass
-        
-        vdata = portal_archivist.retrieve(obj, history_id, selector, 
+
+        vdata = portal_archivist.retrieve(obj, history_id, selector,
                                           preserve, countPurged)
-        
+
         # Replace the objects attributes retaining identity.
         _missing = object()
         attrs_to_leave = vdata.attr_handling_references
@@ -630,12 +634,14 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         be out of sync."""
         portal_catalog = getToolByName(self, 'portal_catalog')
         portal_catalog.indexObject(obj)
-        # XXX: In theory we should probably be emitting IObjectModified and
-        # IObjectMoved events here as those are the possible consequences of a
-        # revert. Perhaps in out current meager z2 existence we should do
-        # obj.manage_afterRename()?  Also, should we be doing obj.indexObject()
-        # instead to make sure we maximally cover specialized classes which want
-        # to handle their cataloging in special ways.
+        notify(ObjectModifiedEvent(obj))
+        if IBaseObject.providedBy(obj):
+            notify(ObjectEditedEvent(obj))
+        obj.reindexObject()
+        # XXX: In theory we should probably be emitting IObjectMoved event
+        # here as it is a possible consequence of a revert.
+        # Perhaps in our current meager z2 existence we should do
+        # obj.manage_afterRename()?
 
     def _fixupATReferences(self, obj):
         """Reindex AT reference data, and delete reference
@@ -714,7 +720,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     # -------------------------------------------------------------------
     # diagnostics support
     # -------------------------------------------------------------------
-    
+
     def createTestHierarchy(self, context):
         """Create a Content Test Hierarchy
         """
@@ -801,7 +807,7 @@ class GetItemIterator:
 
     def __iter__(self):
         return self
-        
+
     def next(self):
         self._pos += 1
         try:
