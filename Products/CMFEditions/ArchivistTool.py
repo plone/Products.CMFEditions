@@ -297,16 +297,15 @@ class ArchivistTool(UniqueObject, SimpleItem):
                                     prepared_obj.metadata)
 
     security.declarePrivate('save')
-    def save(self, prepared_obj, autoregister=False):
+    def save(self, prepared_obj, autoregister=None):
         """See IArchivist.
         """
         if not prepared_obj.is_registered:
             if autoregister:
-                self.register(prepared_obj)
-            else:
-                raise ArchivistSaveError(
-                    "Saving an unregistered object is not possible. Register "
-                    "the object '%s' first. "% prepared_obj.original.object)
+                return self.register(prepared_obj)
+            raise ArchivistSaveError(
+                "Saving an unregistered object is not possible. Register "
+                "the object '%s' first. "% prepared_obj.original.object)
         
         storage = getToolByName(self, 'portal_historiesstorage')
         return storage.save(prepared_obj.history_id, 
