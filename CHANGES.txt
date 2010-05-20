@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b8 - Unreleased
+2.0b8 - 2010-05-20
 ------------------
 
 - Added notification of changes on revert, via zope.lifecycle's
@@ -9,10 +9,6 @@ Changelog
   Fixed revertversion.py so that it didn't tack on a lone / to the redirect
   URL.
   [davidb]
-
-- Fix repository save() method to actually save unregistered objects with
-  autoregister enabled.
-  [wichert]
 
 - Fixed CloneBlob & company, so that they check that the field provides an
   interface instead of using isinstance.
