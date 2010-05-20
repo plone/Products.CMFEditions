@@ -637,11 +637,14 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         notify(ObjectModifiedEvent(obj))
         if IBaseObject.providedBy(obj):
             notify(ObjectEditedEvent(obj))
-        obj.reindexObject()
         # XXX: In theory we should probably be emitting IObjectMoved event
         # here as it is a possible consequence of a revert.
         # Perhaps in our current meager z2 existence we should do
-        # obj.manage_afterRename()?
+        # obj.manage_afterRename()? Also, should we be doing obj.indexObject()
+        # instead to make sure we maximally cover specialized classes which
+        # want to handle their cataloging in special ways (this has the
+        # side-effect of changing the modification date of the reverted
+        # object).
 
     def _fixupATReferences(self, obj):
         """Reindex AT reference data, and delete reference
