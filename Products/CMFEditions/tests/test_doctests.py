@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+import doctest
 import unittest
-from zope.testing import doctest
 
 class DummyFile(object):
     """A sized object"""
