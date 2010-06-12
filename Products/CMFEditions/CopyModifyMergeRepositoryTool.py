@@ -36,8 +36,7 @@ from OFS.SimpleItem import SimpleItem
 from BTrees.OOBTree import OOBTree
 from zope.event import notify
 from zope.interface import implements, Interface
-from zope.lifecycleevent import ObjectCreatedEvent, ObjectModifiedEvent
-from zope.app.container.contained import ObjectMovedEvent
+from zope.lifecycleevent import ObjectModifiedEvent
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFCore.utils import UniqueObject, getToolByName
@@ -71,6 +70,7 @@ try:
     HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
 except ImportError:
     WRONG_AT=True
+
 
 VERSIONABLE_CONTENT_TYPES = []
 VERSION_POLICY_MAPPING = {}

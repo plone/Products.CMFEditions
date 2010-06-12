@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.0b9 - unreleased
+------------------
+
+- Avoid dependency on zope.app.testing.
+  [hannosch]
+
 2.0b8 - 2010-05-20
 ------------------
 

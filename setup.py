@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-version = '2.0b8'
+version = '2.0b9'
 
 setup(name='Products.CMFEditions',
       version=version,
@@ -25,7 +25,6 @@ setup(name='Products.CMFEditions',
       extras_require=dict(
         test=[
             'zope.testing',
-            'zope.app.testing',
             'Plone',
             'Products.Archetypes',
             'Products.CMFDynamicViewFTI',

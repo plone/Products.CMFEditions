@@ -6,7 +6,6 @@ objects trigger versioning correctly:
 
   >>> from pprint import pprint
   >>> from StringIO import StringIO
-  >>> from zope.app.testing import ztapi
   >>> from Products.Archetypes.tests.utils import makeContent
   >>> from Products.Archetypes.interfaces import IBaseObject
   >>> from Products.Archetypes.tests.attestcase import user_name
