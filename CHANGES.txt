@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0b9 - unreleased
+2.0b9 - 2010-06-13
 ------------------
 
 - Avoid dependency on zope.app.testing.
