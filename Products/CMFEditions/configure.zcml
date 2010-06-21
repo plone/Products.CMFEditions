@@ -23,6 +23,12 @@
 
     <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectEditedEvent"
                 handler=".subscriber.webdavObjectEdited" />
+
+    <subscriber for="Products.Archetypes.interfaces.IObjectInitializedEvent"
+                handler=".subscriber.objectInitialized" />
+
+    <subscriber for="Products.Archetypes.interfaces.IObjectEditedEvent"
+                handler=".subscriber.objectEdited" />
   </configure>
 
   <!-- Translations -->
