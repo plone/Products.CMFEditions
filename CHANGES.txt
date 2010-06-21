@@ -4,7 +4,11 @@ Changelog
 2.0b10 - unreleased
 -------------------
 
-- Add event listeners for Archetypes' ObjectInitializedEvent and
+- Added dependency on plone.app.blob, to pull in the needed bits for
+  handling blobs in the modifiers.
+  [davidblewett]
+
+- Added event listeners for Archetypes' ObjectInitializedEvent and
   ObjectEditedEvent events (to go along with the existing WebDAV ones).
   [davidblewett]
 

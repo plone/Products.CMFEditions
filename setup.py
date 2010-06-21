@@ -45,6 +45,7 @@ setup(name='Products.CMFEditions',
         'transaction',
         'ZODB3',
         'Zope2',
+        'plone.app.blob',
       ],
       entry_points="""
       [z3c.autoinclude.plugin]
