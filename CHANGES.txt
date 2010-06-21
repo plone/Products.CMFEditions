@@ -23,15 +23,21 @@ Changelog
 
 - Added notification of changes on revert, via zope.lifecycle's
   ObjectModifiedEvent and Archetypes' ObjectEditedEvent.
-  Fixed revertversion.py so that it didn't tack on a lone / to the redirect
+  [davidblewett]
+
+- Fixed revertversion.py so that it didn't tack on a lone / to the redirect
   URL.
   [davidblewett]
 
 - Fixed CloneBlob & company, so that they check that the field provides an
   interface instead of using isinstance.
-  Fixed CloneBlob to not trample its local variables, allowing for multiple
+  [davidblewett]
+
+- Fixed CloneBlob to not trample its local variables, allowing for multiple
   blob fields on a type.
-  Updated i18n methods that used mappings.
+  [davidblewett]
+
+- Updated i18n methods that used mappings.
   [davidblewett]
 
 2.0b7 - 2010-05-08
