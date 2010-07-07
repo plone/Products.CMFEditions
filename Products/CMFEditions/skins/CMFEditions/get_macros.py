@@ -30,9 +30,12 @@ if getattr(versionPreviewTemplate, 'macros', None) is None:
 
 macro_names = ['content-core', 'main']
 
-for name in macro_names:
-    if name in versionPreviewTemplate.macros:
-        return versionPreviewTemplate.macros[name]
-else:
+try:
+    return versionPreviewTemplate.macros['content-core']
+except KeyError:
+    pass # No content-core macro could mean that we are in plone3 land
+try:
+    return versionPreviewTemplate.macros['main']
+except KeyError:
     context.plone_log('(CMFEditions: get_macros.py) Internal error: Missing TAL macros %s in template "%s".' % (', '.join(macro_names), versionPreviewMethodName))
     return None
