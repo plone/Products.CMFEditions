@@ -4,6 +4,10 @@ Changelog
 2.0b10 - unreleased
 -------------------
 
+- Changed the text in the `@@history` page to use the term revision instead of
+  version. This fixes http://dev.plone.org/plone/ticket/10740.
+  [hannosch]
+
 - Added dependency on plone.app.blob, to pull in the needed bits for
   handling blobs in the modifiers.
   [davidblewett]
@@ -12,7 +16,7 @@ Changelog
   ObjectEditedEvent events (to go along with the existing WebDAV ones).
   [davidblewett]
 
-- Changed plone3 backward compatible handling to also work with Chameleon
+- Changed Plone 3 backward compatible handling to also work with Chameleon.
   [do3cc]
 
 2.0b9 - 2010-06-13

@@ -49,7 +49,7 @@
 
       <div id="content-core">
           <p tal:condition="not:view/history" i18n:translate="no_history">
-            This object has no version information.
+            This object has no revision information.
           </p>
 
           <tal:block condition="view/history">
@@ -58,8 +58,8 @@
                   tal:attributes="action string:${context/absolute_url}/@@history"
                   tal:define="toLocalizedTime nocall:context/@@plone/toLocalizedTime">
               <fieldset>
-                <legend i18n:translate="legend_versions">Versions</legend>
-                <label for="two"><span tal:omit-tag="" i18n:translate="">First version</span>
+                <legend i18n:translate="legend_revisions">Revisions</legend>
+                <label for="two"><span tal:omit-tag="" i18n:translate="">First revision</span>
                   <select id="two" name="two" tal:define="rev request/form/two|string:current">
                     <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                     <option tal:repeat="version view/history"
@@ -69,7 +69,7 @@
                   </select>
                 </label>
 
-                <label for="one"><span tal:omit-tag="" i18n:translate="">Second version</span>
+                <label for="one"><span tal:omit-tag="" i18n:translate="">Second revision</span>
                   <select id="one" name="one" tal:define="rev request/one|string:current">
                     <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                     <option tal:repeat="version view/history"
@@ -86,7 +86,7 @@
             </form>
 
             <p tal:condition="not:view/changes" i18n:translate="">
-              There are no changes between the selected versions.
+              There are no changes between the selected revisions.
             </p>
 
             <tal:changes condition="view/changes">
@@ -117,8 +117,6 @@
                 </p>
 
                 <div class="fieldDiff code-diff" style="display: none">
-                  <!-- This no longer triggers a UnicodeDecodeError. Strangely enough that does not happen
-                       in the CMF page template version... -->
                   <pre tal:condition="exists:diff/html_diff" tal:content="structure python:diff.html_diff(wrapcolumn=80)">
                     HTML formatted differences
                   </pre>
