@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0b10 - unreleased
--------------------
+2.0 - unreleased
+----------------
 
 - Changed the text in the `@@history` page to use the term revision instead of
   version. This fixes http://dev.plone.org/plone/ticket/10740.
