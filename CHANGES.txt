@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0 - unreleased
+2.0 - 2010-07-18
 ----------------
 
 - Changed the text in the `@@history` page to use the term revision instead of
