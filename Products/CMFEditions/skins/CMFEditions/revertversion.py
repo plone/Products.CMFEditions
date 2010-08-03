@@ -27,19 +27,19 @@ title = context.title_or_id()
 if not isinstance(title, unicode):
     title = unicode(title, 'utf-8', 'ignore')
 
-msg = _(u'${title} has been reverted to version ${version}.',
+msg = _(u'${title} has been reverted to revision ${version}.',
         mapping={'title': context.title_or_id(),
                  'version': version_id})
 
 if pr.supportsPolicy(context, 'version_on_revert'):
     try:
-        pr.save(obj=context, comment=_(u"Reverted to version ${version}",
+        pr.save(obj=context, comment=_(u'Reverted to revision ${version}',
                                        mapping={'version': version_id}))
     except FileTooLargeToVersionError:
         putils.addPortalMessage(
-  _("The most current version of the file could not be saved before reverting "
-    "because the file is too large."),
-       type="warn"
+  _(u'The most current revision of the file could not be saved before reverting '
+    'because the file is too large.'),
+       type='warn'
        )
 
 context.plone_utils.addPortalMessage(msg)
