@@ -4,6 +4,8 @@ Changelog
 2.0.1 - unreleased
 ------------------
 
+- Changed "version" to "revision" in portal messages.
+  [kleist]
 
 2.0 - 2010-07-18
 ----------------
