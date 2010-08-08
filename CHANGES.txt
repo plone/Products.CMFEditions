@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.1 - unreleased
+2.0.1 - 2010-08-08
 ------------------
 
 - Changed "version" to "revision" in portal messages.
