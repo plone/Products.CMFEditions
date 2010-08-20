@@ -18,7 +18,7 @@ if pf.isTemporary(context):
     # don't do anything if we're in the factory
     return state.set(status='success')
 
-comment = "Initial revision"
+comment = _("Initial revision")
 changed = isObjectChanged(context)
 
 if not changed:
