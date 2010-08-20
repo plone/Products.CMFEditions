@@ -5,6 +5,9 @@ Changelog
 1.2.7 - Unreleased
 ------------------
 
+- Added missing i18n markup to variables in update_version_before_edit.cpy.
+  [WouterVH]
+
 - Fix error in history storage selector calculation.  http://dev.plone.org/plone/ticket/8967
   [alecm]
 

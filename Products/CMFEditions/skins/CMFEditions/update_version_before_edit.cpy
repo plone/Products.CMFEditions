@@ -17,7 +17,7 @@ if context.portal_factory.isTemporary(context):
     return state.set(status='success')
 pr = context.portal_repository
 isVersionable = pr.isVersionable(context)
-comment = "Initial revision"
+comment = _("Initial revision")
 
 changed = False
 if not base_hasattr(context, 'version_id'):
