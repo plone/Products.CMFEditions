@@ -5,6 +5,8 @@ Changelog
 1.1.10 - unreleased
 -------------------
 
+- Added missing i18n markup to variables in update_version_before_edit.cpy.
+  [WouterVH]
 
 1.1.9 - 2009-05-09
 ------------------
