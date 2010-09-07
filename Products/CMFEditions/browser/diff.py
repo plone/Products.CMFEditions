@@ -24,8 +24,11 @@ class DiffView(BrowserView):
 
 
     def versionTitle(self, version):
-        return translate(_(u"version ${version}",
-                           mapping=dict(version=version)))
+        return translate(
+            _(u"version ${version}",
+              mapping=dict(version=version)),
+            context=self.request
+        )
 
 
     def __call__(self):
