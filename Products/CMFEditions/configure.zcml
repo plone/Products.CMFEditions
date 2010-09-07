@@ -31,7 +31,4 @@
                 handler=".subscriber.objectEdited" />
   </configure>
 
-  <!-- Translations -->
-  <i18n:registerTranslations directory="locales" />
-
 </configure>
