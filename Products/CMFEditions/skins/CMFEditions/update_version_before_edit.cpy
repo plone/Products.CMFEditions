@@ -9,8 +9,9 @@
 ##
 
 from Products.CMFCore.utils import getToolByName
-from Products.CMFEditions.utilities import isObjectChanged, maybeSaveVersion
+from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
+from Products.CMFEditions.utilities import isObjectChanged, maybeSaveVersion
 
 pf = getToolByName(context, 'portal_factory')
 
