@@ -20,10 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """CMFEditions Globals
-
-$Id: __init__.py,v 1.17 2005/02/07 22:09:08 gregweb Exp $
 """
-__version__ = "$Revision: 1.17 $"
 
 
 try:
