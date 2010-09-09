@@ -4,6 +4,10 @@ Changelog
 2.0.2 - unreleased
 ------------------
 
+- Forward port of a i18n fix from branches/1.2. It's used to create a
+  changeset, the message doesn't seem to appear on the history view though.
+  [vincentfretin]
+
 - Added missing i18n markup to variables in update_version_before_edit.cpy.
   [WouterVH]
 
@@ -228,7 +232,8 @@ Changelog
 1.2.7 - Unreleased
 ------------------
 
-- Fix error in history storage selector calculation.  http://dev.plone.org/plone/ticket/8967
+- Fix error in history storage selector calculation. Closes
+  http://dev.plone.org/plone/ticket/8967.
   [alecm]
 
 - Make "Revert to this version" on the versions_history_form an input
