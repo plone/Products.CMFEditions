@@ -1,14 +1,14 @@
 Changelog
 =========
 
-2.0.2 - unreleased
+2.0.2 - 2010-09-09
 ------------------
 
 - Forward port of a i18n fix from branches/1.2. It's used to create a
   changeset, the message doesn't seem to appear on the history view though.
   [vincentfretin]
 
-- Added missing i18n markup to variables in update_version_before_edit.cpy.
+- Added missing i18n markup to variables in ``update_version_before_edit.cpy``.
   [WouterVH]
 
 2.0.1 - 2010-08-08
