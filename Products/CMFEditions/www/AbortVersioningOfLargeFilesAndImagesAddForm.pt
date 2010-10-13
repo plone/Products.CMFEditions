@@ -13,8 +13,8 @@
         Id
       </th>
       <td>
-        <input type="text" name="id" value="" size="40">
-        </td>
+        <input type="text" name="id" value="" size="40"/>
+      </td>
     </tr>
 
     <tr>
@@ -22,14 +22,14 @@
         Title
       </th>
       <td>
-        <input type="text" name="title" value="" size="40">
-        </td>
+        <input type="text" name="title" value="" size="40"/>
+      </td>
     </tr>
 
     <tr>
       <td colspan="2">
-        <input type="submit" name="submit" value="Add">
-        </td>
+        <input type="submit" name="submit" value="Add"/>
+      </td>
     </tr>
 
   </table>

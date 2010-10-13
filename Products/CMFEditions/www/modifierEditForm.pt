@@ -13,24 +13,24 @@
         Title
       </th>
       <td>
-        <input type="text" name="title" value="" size="40" tal:attributes="value here/title">
-        </td>
-      </tr>
+        <input type="text" name="title" value="" size="40" tal:attributes="value here/title"/>
+      </td>
+    </tr>
 
-      <tr>
-        <th>
-          Enabled
-        </th>
-        <td>
-          <input type="checkbox" name="enabled" value="True" tal:attributes="checked here/isEnabled">
-          </td>
-        </tr>
+    <tr>
+      <th>
+        Enabled
+      </th>
+      <td>
+        <input type="checkbox" name="enabled" value="True" tal:attributes="checked here/isEnabled"/>
+      </td>
+    </tr>
 
-        <tr>
-          <td colspan="2">
-            <input type="submit" name="submit" value="Save">
-            </td>
-          </tr>
+    <tr>
+      <td colspan="2">
+        <input type="submit" name="submit" value="Save"/>
+      </td>
+    </tr>
 
   </table>
 

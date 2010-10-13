@@ -4,6 +4,9 @@ Changelog
 2.0.3 - unreleased
 ------------------
 
+- Fixed multiple chameleon incompatibilities.
+  [swampmonkey]
+
 
 2.0.2 - 2010-09-09
 ------------------
