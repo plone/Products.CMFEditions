@@ -23,6 +23,7 @@
 
 $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 """
+from Acquisition import aq_get
 
 from Products.CMFEditions.utilities import isObjectChanged, maybeSaveVersion
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
@@ -46,8 +47,14 @@ def webdavObjectInitialized(event):
 def webdavObjectEdited(event):
     return webdavObjectEventHandler(event, comment='Edited (WebDAV)')
 
+def _getVersionComment(object):
+    request = aq_get(object, 'REQUEST', None)
+    return request and request.get('cmfeditions_version_comment', '')
+
 def objectInitialized(event):
-    return webdavObjectEventHandler(event, comment='Initial revision')
+    comment = _getVersionComment(event.object) or 'Initial revision'
+    return webdavObjectEventHandler(event, comment=comment)
 
 def objectEdited(event):
-    return webdavObjectEventHandler(event, comment='Edited')
+    comment = _getVersionComment(event.object) or 'Edited'
+    return webdavObjectEventHandler(event, comment=comment)
