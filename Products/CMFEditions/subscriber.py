@@ -23,10 +23,14 @@
 
 $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 """
+from zope.i18nmessageid import MessageFactory
 from Acquisition import aq_get
 
 from Products.CMFEditions.utilities import isObjectChanged, maybeSaveVersion
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
+from Products.CMFEditions import CMFEditionsMessageFactory as _
+
+PMF = MessageFactory('plone')
 
 def webdavObjectEventHandler(event, comment):
     obj = event.object
@@ -42,19 +46,19 @@ def webdavObjectEventHandler(event, comment):
         pass # There's no way to emit a warning here. Or is there?
 
 def webdavObjectInitialized(event):
-    return webdavObjectEventHandler(event, comment='Initial revision (WebDAV)')
+    return webdavObjectEventHandler(event, comment=_('Initial revision (WebDAV)'))
 
 def webdavObjectEdited(event):
-    return webdavObjectEventHandler(event, comment='Edited (WebDAV)')
+    return webdavObjectEventHandler(event, comment=_('Edited (WebDAV)'))
 
 def _getVersionComment(object):
     request = aq_get(object, 'REQUEST', None)
     return request and request.get('cmfeditions_version_comment', '')
 
 def objectInitialized(event):
-    comment = _getVersionComment(event.object) or 'Initial revision'
+    comment = _getVersionComment(event.object) or _('Initial revision')
     return webdavObjectEventHandler(event, comment=comment)
 
 def objectEdited(event):
-    comment = _getVersionComment(event.object) or 'Edited'
+    comment = _getVersionComment(event.object) or PMF('Edited')
     return webdavObjectEventHandler(event, comment=comment)

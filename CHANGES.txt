@@ -4,6 +4,9 @@ Changelog
 2.0.3 - unreleased
 ------------------
 
+- Internationalized default version comments ('Initial revision', etc.)
+  [thomasdesvenain]
+
 - Fixed: version comment was not considered
   when saving a content with automatic version policy.
   http://dev.plone.org/plone/ticket/8535
