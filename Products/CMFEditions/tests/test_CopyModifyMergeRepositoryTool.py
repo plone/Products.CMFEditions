@@ -258,7 +258,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
     def test08_purgingDisallowedWithoutPurgingPolicy(self):
         portal_repository = self.portal.portal_repository
         doc = self.portal.doc
-        
+
         # remove purge policy for this test
         portal_purgepolicy = self.portal.portal_purgepolicy
         del self.portal.portal_purgepolicy

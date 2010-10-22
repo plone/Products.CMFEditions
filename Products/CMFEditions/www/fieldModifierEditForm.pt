@@ -34,7 +34,7 @@
             <input type="text" name="condition" value="" size="80" tal:attributes="value here/getTalesCondition" />
           </td>
         </tr>
-          
+
         <tr>
           <th>
             Field names to check
@@ -45,7 +45,7 @@
             </textarea>
           </td>
         </tr>
-          
+
         <tr>
           <th>
             Maximum file size in bytes <br />

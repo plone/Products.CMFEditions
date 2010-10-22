@@ -3,19 +3,19 @@
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
 # All Rights Reserved.
-# 
+#
 # This file is part of CMFEditions.
-# 
+#
 # CMFEditions is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # CMFEditions is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -105,29 +105,29 @@ class LoggingModifierBase:
 
     def getReferencedAttributes(self, obj):
         referenced_data = {
-            'k1': 'v1:'+str(self.__class__.__name__), 
-            'k2': 'v2:'+str(self.__class__.__name__), 
+            'k1': 'v1:'+str(self.__class__.__name__),
+            'k2': 'v2:'+str(self.__class__.__name__),
         }
-        mlog.append("%s.getReferencedAttributes: %s" % 
+        mlog.append("%s.getReferencedAttributes: %s" %
                     (self.__class__.__name__, dictToString(referenced_data)))
         return referenced_data
-        
+
     def getOnCloneModifiers(self, obj):
         mlog.append("%s.getOnCloneModifiers" % (self.__class__.__name__))
-        
+
         def persistent_id(obj):
             return None
-            
+
         def persistent_load(pid):
             # should never reach this!
             assert False
-        
+
         return persistent_id, persistent_load, [], [], ''
 
     def beforeSaveModifier(self, obj, obj_clone):
         mlog.append("%s.beforeSaveModifier" % (self.__class__.__name__))
         return {}, [], []
-        
+
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         mlog.append("%s.afterRetrieveModifier" % (self.__class__.__name__))
         return [], [], {}

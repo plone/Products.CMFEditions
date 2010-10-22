@@ -124,7 +124,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
         doc_histid = portal_historyidhandler.queryUid(doc)
-        vdata = portal_archivist.retrieve(history_id=doc_histid, selector=0, 
+        vdata = portal_archivist.retrieve(history_id=doc_histid, selector=0,
                                           preserve=('gaga', 'gugus'))
         retr_doc = vdata.data.object
         retr_meta = vdata.app_metadata
@@ -179,7 +179,7 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         portal_archivist.save(prep)
 
         counter = 0
-        
+
         for vdata in portal_archivist.getHistory(doc):
             counter += 1
             self.assertEqual(vdata.data.object.text, 'text v%s' % counter)
@@ -266,17 +266,17 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
 
         self.assertEqual(len(prep.referenced_data), 1)
         self.failUnless(prep.referenced_data['title'] is fol.title)
-        
+
         self.assertEqual(prep.metadata['app_metadata'], 'save number 1')
         self.failUnless('timestamp' in prep.metadata['sys_metadata'])
         self.failUnless('principal' in prep.metadata['sys_metadata'])
-        
+
         self._setDummyTool(DummyModifier())
 
     def test08_retrieveWithReferences(self):
         # test with a different modifier
         self._setDummyTool(FolderishContentObjectModifier())
-        
+
         portal_archivist = self.portal.portal_archivist
         portal_hidhandler = self.portal.portal_historyidhandler
         IVersionAwareReference = portal_archivist.interfaces.IVersionAwareReference
@@ -285,30 +285,30 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         doc1_inside = fol.doc1_inside
         doc2_inside = fol.doc2_inside
         doc3_outside = fol.doc3_outside
-        
+
         doc1_inside.text = 'doc1_inside: inside reference'
         doc2_inside.text = 'doc2_inside: inside reference'
         doc3_outside.text = 'doc3_outside: outside reference'
-        
+
         prep = portal_archivist.prepare(fol, app_metadata='save number 1')
-        
-        # just set the info to some value before save to test if the 
+
+        # just set the info to some value before save to test if the
         # reference stuff is saved and retrieved correctly
         inside_refs = prep.clone.inside_refs
         outside_refs = prep.clone.outside_refs
         refs = [ref.getAttribute() for ref in inside_refs+outside_refs]
         for ref in refs:
             ref.info = refs.index(ref)
-        
+
         portal_archivist.save(prep, autoregister=True)
-        
+
         retr = portal_archivist.retrieve(fol)
-        
+
         # check metadata
         self.assertEqual(retr.app_metadata, 'save number 1')
         self.failUnless('timestamp' in retr.sys_metadata)
         self.failUnless('principal' in retr.sys_metadata)
-        
+
         # check the references
         inside_refs = retr.data.inside_refs
         outside_refs = retr.data.outside_refs

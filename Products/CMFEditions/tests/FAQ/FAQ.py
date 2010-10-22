@@ -11,7 +11,7 @@ RCS-ID $Id: FAQ.py,v 1.1 2005/04/20 15:43:37 duncanb Exp $
 # Generator: ArchGenXML Version 1.2 devel 3 http://sf.net/projects/archetypes/
 #
 # GNU General Public Licence (GPL)
-# 
+#
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation; either version 2 of the License, or (at your option) any later
@@ -40,9 +40,9 @@ from Products.FAQ import PROJECTNAME
 
 class FAQ(OrderedBaseFolder):
     security = ClassSecurityInfo()
-    portal_type = meta_type = 'FAQ' 
-    archetype_name = 'FAQ'   #this name appears in the 'add' box 
-    allowed_content_types = ['FAQQuestion'] 
+    portal_type = meta_type = 'FAQ'
+    archetype_name = 'FAQ'   #this name appears in the 'add' box
+    allowed_content_types = ['FAQQuestion']
     _at_fti_meta_type = DynamicViewTypeInformation.meta_type
     implements(INonStructuralFolder)
 
@@ -58,7 +58,7 @@ class FAQ(OrderedBaseFolder):
                 label_msgid='FAQ_label_summary',
             ),
         ),
-        
+
         TextField('introduction',
             widget=TextAreaWidget(description='Enter a value for introduction.',
                 description_msgid='FAQ_help_introduction',
@@ -67,7 +67,7 @@ class FAQ(OrderedBaseFolder):
                 label_msgid='FAQ_label_introduction',
             ),
         ),
-        
+
         LinesField('sections',
             widget=LinesWidget(description='Enter a value for sections.',
                 description_msgid='FAQ_help_sections',
@@ -76,7 +76,7 @@ class FAQ(OrderedBaseFolder):
                 label_msgid='FAQ_label_sections',
             ),
         ),
-        
+
 
         ReferenceField('links',
             allowed_types=(),
@@ -90,7 +90,7 @@ class FAQ(OrderedBaseFolder):
                 label_msgid='FAQ_label_links',
             ),
         ),
-        
+
 
         ReferenceField('sectionLinks',
             allowed_types=(),
@@ -103,7 +103,7 @@ class FAQ(OrderedBaseFolder):
                 label_msgid='FAQ_label_sectionLinks',
             ),
         ),
-        
+
     ),
     )
 
@@ -120,9 +120,9 @@ class FAQ(OrderedBaseFolder):
         'filter_content_types':1,
         }
 
-        
+
     actions=  (
-        
+
 
        {'action':      '''string:$object_url/faq_view''',
         'category':    '''object''',
@@ -130,10 +130,10 @@ class FAQ(OrderedBaseFolder):
         'name':        'view',
         'permissions': ('''View''',),
         'condition'  : 'python:1'},
-        
+
 
           )
-        
+
 
 registerType(FAQ, PROJECTNAME)
 # end of class FAQ

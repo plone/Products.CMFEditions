@@ -14,7 +14,7 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
-        
+
         # add a folder with two documents in it
         self.portal.invokeFactory('Folder', 'fol')
         self.portal.fol.invokeFactory('Document', 'doc1')
@@ -115,8 +115,8 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         # indexed:
         rc = self.portal.reference_catalog
         self.failIf(rc(sourceUID=doc1.UID()))
-        
-        
+
+
 
     def test_contentReferencesAreSavedAndRestored(self):
 
@@ -172,36 +172,36 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         # just configure the standard folder to treat the childrens as
         # inside refrences. For this we reconfigure the standard modifiers.
         portal_modifier = self.portal.portal_modifier
-        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False, 
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False,
                              condition="python: False")
-        portal_modifier.edit("OMInsideChildrensModifier", enabled=True, 
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True,
                              condition="python: portal_type=='Folder'")
         repo.applyVersionControl(fol)
         doc1.setTitle('v1')
         doc1.addReference(doc2)
         doc2.addReference(doc1)
         repo.save(fol)
-        
+
         doc1.setTitle('changed')
         doc1.deleteReference(doc2)
         doc2.deleteReference(doc1)
         self.failIf(doc1.getReferences())
         self.failIf(doc2.getReferences())
         repo.revert(fol, 1)
-        
+
         doc1 = self.portal.fol.doc1
         doc2 = self.portal.fol.doc2
         self.assertEqual(doc1.Title(), 'v1')
         self.assertEqual([doc1], doc2.getReferences())
         self.assertEqual([doc2], doc1.getReferences())
-        
+
     def test_refOnWorkingCopyArePreserved(self):
         repo = self.portal.portal_repository
         fol = self.portal.fol
         doc1 = self.portal.fol.doc1
         portal_modifier = self.portal.portal_modifier
         portal_modifier.edit("RetainATRefs",
-                             enabled=True, 
+                             enabled=True,
                              condition="python: True")
         repo.applyVersionControl(doc1)
         doc1.addReference(fol)

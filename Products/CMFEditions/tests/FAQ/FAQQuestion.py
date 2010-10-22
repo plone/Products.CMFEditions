@@ -11,7 +11,7 @@ RCS-ID $Id: FAQQuestion.py,v 1.1 2005/04/20 15:43:37 duncanb Exp $
 # Generator: ArchGenXML Version 1.2 devel 3 http://sf.net/projects/archetypes/
 #
 # GNU General Public Licence (GPL)
-# 
+#
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation; either version 2 of the License, or (at your option) any later
@@ -38,9 +38,9 @@ from Products.FAQ import PROJECTNAME
 
 class FAQQuestion(BaseContent):
     security = ClassSecurityInfo()
-    portal_type = meta_type = 'FAQQuestion' 
-    archetype_name = 'Question'   #this name appears in the 'add' box 
-    allowed_content_types = [] 
+    portal_type = meta_type = 'FAQQuestion'
+    archetype_name = 'Question'   #this name appears in the 'add' box
+    allowed_content_types = []
     _at_fti_meta_type = DynamicViewTypeInformation.meta_type
 
     ##code-section class-header #fill in your manual code here
@@ -55,7 +55,7 @@ class FAQQuestion(BaseContent):
                 label_msgid='FAQ_label_section',
             ),
         ),
-        
+
         StringField('title',
             widget=StringWidget(description='Enter a value for title.',
                 description_msgid='FAQ_help_title',
@@ -64,7 +64,7 @@ class FAQQuestion(BaseContent):
                 label_msgid='FAQ_label_title',
             ),
         ),
-        
+
         TextField('answer',
             widget=TextAreaWidget(description='Enter a value for answer.',
                 description_msgid='FAQ_help_answer',
@@ -73,7 +73,7 @@ class FAQQuestion(BaseContent):
                 label_msgid='FAQ_label_answer',
             ),
         ),
-        
+
 
         ReferenceField('links',
             allowed_types=(),
@@ -86,7 +86,7 @@ class FAQQuestion(BaseContent):
                 label_msgid='FAQ_label_links',
             ),
         ),
-        
+
     ),
     )
 
@@ -103,9 +103,9 @@ class FAQQuestion(BaseContent):
         'filter_content_types':1,
         }
 
-        
+
     actions=  (
-        
+
 
        {'action':      '''string:$object_url/view''',
         'category':    '''object''',
@@ -113,10 +113,10 @@ class FAQQuestion(BaseContent):
         'name':        'view',
         'permissions': ('''View''',),
         'condition'  : 'python:1'},
-        
+
 
           )
-        
+
 
 registerType(FAQQuestion, PROJECTNAME)
 # end of class FAQQuestion

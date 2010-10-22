@@ -38,8 +38,8 @@ class IAttributeModifier(Interface):
 
     def getReferencedAttributes(obj):
         """Returns attributes which should be passe dto the storage by reference.
-        
-        Returns a dict of the format ``name:attribute``. 
+
+        Returns a dict of the format ``name:attribute``.
         """
 
     def reattachReferencedAttributes(obj, attrs_dict):
@@ -124,23 +124,23 @@ class ISaveRetrieveModifier(Interface):
         'obj' may be None. This signifies there is no working copy object.
 
         Returns:
-        
+
         - a list of references to be deleted on revert (providing
-          ``IReferenceAdapter``) 
+          ``IReferenceAdapter``)
         - a list of attribute names beeing in charge of holding reference
-          information (e.g. an ObjectManager with ``doc1`` and ``doc2`` 
+          information (e.g. an ObjectManager with ``doc1`` and ``doc2``
           as childrens: ['_objects', 'doc1', 'doc2'])
-        - a dictionary of the data having been preserved from beeing 
+        - a dictionary of the data having been preserved from beeing
           overwritten.
         """
 
 class IReferenceAdapter(Interface):
     """Adapts to a references.
-    
+
     Currently used to be able to remove a reference without having to
     know how.
     """
-    
+
     def remove():
         """Removes the refrence adapted to.
         """
@@ -166,115 +166,115 @@ class IModifierRegistrySet(Interface):
 
     def edit(id, enabled=None, condition=None):
         """Edits a before save and after retrieve modifier.
-        
+
         None values leave the respective parameter unchanged.
-        
+
         The respective modifier only gets called if it is enabled and
         the 'condition' evaluates to a True value.
         """
-    
-    
+
+
 class IModifierRegistryQuery(Interface):
     """Querying a modifier registry.
     """
 
     def get(id):
         """Returns the conditional modifier with the given id.
-           
+
         Returns a 'IConditionalModifier' object.
-        
+
         Raises an exception if the item doesn't exist.
         """
-    
+
     def query(id, default=None):
         """Returns the condition and the modifier with the given id.
-           
+
         Returns the default value if the item does not exist..
         """
-    
-    
+
+
 class IConditionalModifier(Interface):
     """A modifier with a condition.
-    
-    The modifiers get only called if it is enabled and if a possibly 
+
+    The modifiers get only called if it is enabled and if a possibly
     existing implicit condition evaluates to a true value.
     """
-    
+
     def __init__(id, modifier, title=''):
         """Initialize with a modifier.
-        
+
         The conditional modifier is disabled by default.
         """
-        
+
     def edit(enabled=None):
         """Modifies an existing conditional modifier.
-        
+
         None values leave the respective parameter unchanged.
         """
-        
+
     def isApplicable(obj, portal=None):
         """Returns True if the modifier is applicable.
-        
+
         A modifier is applicable if it is enabled and if an additional
         condition evaluates to a true value.
         """
-        
+
     def isEnabled():
         """Returns the enable status.
         """
-        
+
     def getModifier():
         """Returns the modifier.
         """
-    
-    
+
+
 class IConditionalTalesModifier(IConditionalModifier):
     """A modifier with a condition.
-    
+
     The modifiers get only called if it is enabled and if the TALES
     condition evaluates to a true value.
     """
-    
+
     def edit(enabled=None, condition=None):
         """Modifies an existing conditional TALES modifier.
-        
+
         'condition' is a TALES expression.
-        
+
         None values leave the respective parameter unchanged.
         """
-        
+
     def getTalesCondition():
         """Returns the TALES expression.
         """
-    
-    
+
+
 # not yet implemented stuff, subject to change
 class IBulkEditableModifierRegistry(Interface):
     """A extension of a modifier registry that allows bulk editing.
-    
+
     Used for management screens.
     """
-    
+
     def listModifiers():
         """Returns the subscribers in string format for use in forms.
-        
+
         Returns a list of dictionaries with the following keys:
-        
+
             id -- the id of the subscriber
             pos -- the position of the subscriber in the hsitory
-            before_save -- a string representation of the "before save 
+            before_save -- a string representation of the "before save
                            subscriber"
             after_retrieve -- a string representation of the "after
                               retrieve subscriber"
-            on_clone -- a string representation of the "on clone" 
+            on_clone -- a string representation of the "on clone"
                         modifier.
-            editable -- A flag signalizing if the subscribers are 
+            editable -- A flag signalizing if the subscribers are
                         editable
         """
-    
+
     def setModifiers(ids, pos, before_save, after_retrieve, on_clone):
         """Replaces all the subscribers passed
-        
+
         Use this to set all subscribers at once from a form.
         """
 

@@ -34,7 +34,7 @@
            be automatically versioned, and you can also opt to create a version
            when you revert a revision.
         </p>
-        
+
         <form action="."
             name="configure_multisite"
             method="post">

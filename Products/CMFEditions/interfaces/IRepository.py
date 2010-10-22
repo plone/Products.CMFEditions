@@ -101,9 +101,9 @@ class ICopyModifyMergeRepository(Interface):
 
     def restore(history_id, selector, container, new_id=None):
         """Restore a Specific version of an Object into a Container
-        
+
         Usage Hint:
-        
+
         May be used to restore a deleted object (delted from the tree).
         A version having been purged from the storage may never be restored.
         A new id may be chosen.
@@ -111,16 +111,16 @@ class ICopyModifyMergeRepository(Interface):
 
     def isUpToDate(obj, selector=None):
         """Returns True if the working copy is modified.
-        
+
         Comparison is done with the selected version.
         """
 
     def getHistory(obj, oldestFirst=False, preserve=()):
         """Returns the history of a content.
 
-        Return the oldest version first  when ``oldestFirst`` set to 
+        Return the oldest version first  when ``oldestFirst`` set to
         ``True``. Default is ``False`` (youngest version first).
-        
+
         Returns a sequence (``IHistory``) of ``IVersionData`` objects.
         """
 
@@ -131,60 +131,60 @@ class ICopyModifyMergeRepository(Interface):
 
 class IPurgeSupport(Interface):
     """Repository Purge Support
-    
+
     Purging a version removes that version irrevocably.
-    
-    Adds ``purge`` method and extends the signature of the ``isUpToDate``, 
+
+    Adds ``purge`` method and extends the signature of the ``isUpToDate``,
     ``retrieve``, ``revert``, ``restore`` and ``getHistory`` methods.
-    The defaults of the extended methods mimique the standard behaviour of 
+    The defaults of the extended methods mimique the standard behaviour of
     the original methods.
-    
-    With the introduction of purging two selection scheme exist for 
-    retrieving versions. Either purged versions are taken into account 
+
+    With the introduction of purging two selection scheme exist for
+    retrieving versions. Either purged versions are taken into account
     or not:
-    
+
     - By passing ``countPurged=True`` purged versions are taken into
       account when accessing a version. When a purged version is accessed
       the archivist tool decides what to do.
     - By passing ``countPurged=False`` purged versions are **not taken into
       account** when accessing a version.
-    
-    Example: 
-    
-    An object got saved ten times. Two versions got purged in earlier 
+
+    Example:
+
+    An object got saved ten times. Two versions got purged in earlier
     calls. The history looks like this (``s`` means: depends on storage,
     ``e`` means: exception raised)::
-    
+
       countPurged==True:
-      
+
         selector:          0, 1, 2, 3, 4, 5, 6, 7, 8, 9
         version retrieved: 0, 1, 2, s, s, 5, 6, 7, 8, 9
-        
+
       countPurged==False:
-       
+
         selector:          0, 1, 2, 3, 4, 5, 6, 7, 8, 9
         version retrieved: 0, 1, 2, 5, 6, 7, 8, 9, e, e
     """
-    
+
     def purge(obj, selector, comment="", metadata={}, countPurged=True):
         """Purge a Version of a Content
-        
-        Purge the given version of the object. Referenced content objects 
+
+        Purge the given version of the object. Referenced content objects
         versions aren't purged. No recursive purging takes place.
-        
+
         Also counts purged versions if ``True`` is passed to ``countPurged``
         (see interface documentation for details).
-        
-        Example: 
-        
-        An object got saved ten times. Two versions got purged in earlier 
+
+        Example:
+
+        An object got saved ten times. Two versions got purged in earlier
         calls. The histor looks like this (a ``p`` stands for purged)::
-        
+
             versions: 0, 1, 2, 3p, 4p, 5, 6, 7, 8, 9
             selector: 0, 1, 2, 3,  4,  5, 6, 7, 8, 9 (countPurged==True)
             selector: 0, 1, 2, -,  -,  3, 4, 5, 6, 7 (countPurged==False)
-        
-        The comment and metadata passed may be used to store informations 
+
+        The comment and metadata passed may be used to store informations
         about the reasons of the purging.
         """
 
@@ -194,7 +194,7 @@ class IPurgeSupport(Interface):
 
         Reverts to the most recently saved version if no selector
         is passed.
-        
+
         Also counts purged versions if ``True`` is passed to ``countPurged``
         (see interface documentation for details).
         """
@@ -205,30 +205,30 @@ class IPurgeSupport(Interface):
 
         It returns an ``IVersionData`` object and doesn't modify the working
         copy in any way.
-        
+
         Also counts purged versions if ``True`` is passed to ``countPurged``
         (see interface documentation for details).
         """
 
-    def restore(history_id, selector, container, new_id=None, 
+    def restore(history_id, selector, container, new_id=None,
                 countPurged=True):
         """Restore a Specific version of an Object into a Container
-        
+
         Usage Hint:
-        
+
         May be used to restore a deleted object (delted from the tree).
         A version having been purged from the storage may never be restored.
         A new id may be chosen.
-        
+
         Also counts purged versions if ``True`` is passed to ``countPurged``
         (see interface documentation for details).
         """
 
     def isUpToDate(obj, selector=None, countPurged=True):
         """Returns True if the working copy is modified.
-        
+
         Comparison is done with the selected version.
-        
+
         Also counts purged versions if ``True`` is passed to ``countPurged``
         (see interface documentation for details).
         """
@@ -236,11 +236,11 @@ class IPurgeSupport(Interface):
     def getHistory(obj, oldestFirst=False, preserve=(), countPurged=True):
         """Returns the history of a content.
 
-        Return the oldest version first  when ``oldestFirst`` set to 
+        Return the oldest version first  when ``oldestFirst`` set to
         ``True``. Default is ``False`` (youngest version first).
-        
+
         Returns a sequence (``IHistory``) of ``IVersionData`` objects.
-        
+
         Also counts purged versions if ``True`` is passed to ``countPurged``
         (see interface documentation for details).
         """

@@ -61,8 +61,8 @@ def editEvent(context, version=0):
         desc = "%s%s" % (version, desc[1:])
         location = "%s%s" % (version, location[1:])
         contact = "%s%s" % (version, contact[1:])
-    
-    context.update(title=title, description=desc, 
+
+    context.update(title=title, description=desc,
                    eventType=eventType, location=location,
                    contactName=contact)
 
@@ -203,7 +203,7 @@ def createTestHierarchy(context):
                 ext = type[4]
             else:
                 ext = ""
-                
+
             # create and save
             objName = name[:-1]+str(i+1)+ext
             logger.log(logging.INFO, "createTestHierarchy: creating %s(%s)" \
@@ -213,7 +213,7 @@ def createTestHierarchy(context):
             logger.log(logging.INFO, "createTestHierarchy: save #0")
             repo.save(obj, comment="save #0")
             nbrOfSaves += 1
-            
+
             # edit and save a number of times
             for j in range(1, type[3]):
                 logger.log(logging.INFO, "createTestHierarchy: editing")
@@ -222,7 +222,7 @@ def createTestHierarchy(context):
                 logger.log(logging.INFO, "createTestHierarchy: save #%s" % j)
                 repo.save(obj, comment="save #%s" % j)
                 nbrOfSaves += 1
-                
+
                 vers = j + i*(type[3]-1)
                 logger.log(logging.INFO, "createTestHierarchy: editing parent")
                 edit(folder, vers)
@@ -230,10 +230,10 @@ def createTestHierarchy(context):
                 logger.log(logging.INFO, "createTestHierarchy: save parent #%s" % vers)
                 repo.save(folder, comment="save #%s" % vers)
                 nbrOfSaves += 1
-    
+
     totalTime = time.time() - startTime
     logger.log(logging.INFO,
         "createTestHierarchy: created %s objects, edited them %s times and saved %s versions in total in %.1f seconds" \
         % (nbrOfObjects, nbrOfEdits, nbrOfSaves, round(totalTime, 1)))
-    
+
     return testRoot

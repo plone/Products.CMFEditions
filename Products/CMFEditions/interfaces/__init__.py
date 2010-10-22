@@ -12,4 +12,4 @@ class IVersioned(interface.Interface):
     thus versioned.
     """
     version_id = interface.Attribute('The version id of this object.')
-    
+

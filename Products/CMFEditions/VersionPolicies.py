@@ -35,7 +35,7 @@ class VersionPolicy(SimpleItem):
     """A simple class for storing version policy information"""
 
     implements(IVersionPolicy)
-    
+
     security = ClassSecurityInfo()
 
     def __init__(self, obj_id, title, **kw):

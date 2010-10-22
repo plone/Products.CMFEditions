@@ -20,7 +20,7 @@ force = REQUEST.get('cmfeditions_save_new_version', None) is not None
 
 if not (isObjectChanged(context) or force):
     return state.set(status='success')
-    
+
 try:
     maybeSaveVersion(context, comment=comment, force=force)
 except FileTooLargeToVersionError:

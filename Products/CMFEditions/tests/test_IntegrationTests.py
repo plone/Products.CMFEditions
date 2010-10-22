@@ -708,7 +708,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
     def disabled_test19_retrieveDeletedObjectWhichHasBeenReplacedInAnInsideRefsFolder(self):
         # disabled by gregweb/21-10-2006
-        # reason: Needs concentrated and deeper look. 
+        # reason: Needs concentrated and deeper look.
         # --> Ideas exist, pleas contact us on the list if you like to work on that.
         # I know one should not do that! But solving this would bring more risks
         # into the 1.0final than leaving the bug to be solved afterwards.
@@ -763,7 +763,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
     def disabled_test20_retrieveMovedObjectWhichHasBeenReplacedInAnInsideRefsFolder(self):
         # disabled by gregweb/21-10-2006
-        # reason: Needs concentrated and deeper look. 
+        # reason: Needs concentrated and deeper look.
         # --> Ideas exist, pleas contact us on the list if you like to work on that.
         # I know one should not do that! But solving this would bring more risks
         # into the 1.0final than leaving the bug to be solved afterwards.

@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 #########################################################################
-# Copyright (c) 2005 Gregoire Weber. 
+# Copyright (c) 2005 Gregoire Weber.
 # All Rights Reserved.
-# 
+#
 # This file is part of CMFEditions.
-# 
+#
 # CMFEditions is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # CMFEditions is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -44,20 +44,20 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
     implements(
         IReferenceFactories,
     )
-    
+
     id = 'portal_referencefactories'
     alternative_id = 'portal_referencefactoryregistry'
 
     meta_type = 'Reference Factory Registry'
-    
+
     security = ClassSecurityInfo()
-    
+
     # be aware that the tool implements also the OrderedObjectManager API
-    
+
     # -------------------------------------------------------------------
     # methods implementing IFactories
     # -------------------------------------------------------------------
-    
+
     security.declarePrivate('invokeFactory')
     def invokeFactory(self, repo_clone, source, selector=None):
         """See IReferenceFactories
@@ -82,7 +82,7 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
             portal_hidhandler.setUid(obj, history_id)
         except portal_hidhandler.UniqueIdError:
             portal_hidhandler.register(obj)
-        
+
         return obj
 
     security.declarePrivate('hasBeenMoved')

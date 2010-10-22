@@ -22,9 +22,9 @@
 
     <h1 class="documentFirstHeading"
         tal:content="here/title_or_id" />
-     
-    <div id="content-core">   
-        <div>        
+
+    <div id="content-core">
+        <div>
             <div metal:use-macro="here/diff_legend/macros/diff_legend" />
             <h3 class="diff-head" tal:condition="python:id1=='current'"
                 i18n:translate="title_changes_since_rev">Changes since revision <tal:block i18n:name="id2" tal:content="id2">id</tal:block></h3>

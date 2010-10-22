@@ -60,7 +60,7 @@ class TestATContents(PloneTestCase.PloneTestCase):
         self.assertEqual(content.getIntroduction(), 'intro '+tag)
         self.assertEqual(content.getSections(), ('sections '+tag+' 1', 'sections '+tag+' 2'))
         self.metadata_test(content, 'content '+tag)
-        
+
     def testFAQ(self):
         self.folder.invokeFactory('FAQ', id='test_faq')
         portal_repository = self.portal_repository
@@ -182,7 +182,7 @@ class TestATContents(PloneTestCase.PloneTestCase):
             # XXX
             self.assertEquals(folderLinks, links,
                  "Version %d: links on object do not match reference catalog\nfolder %r, links %r" % (version, explinks, links))
-            
+
             explinks.sort()
             self.assertEquals(explinks, folderLinks,
                 "Version %d, expected %r, actual %r" % (version, explinks, folderLinks))

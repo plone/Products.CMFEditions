@@ -102,7 +102,7 @@
       <td align="right" tal:content="histData/size">size</td>
       <td align="right" tal:content="histData/sizeState">size state</td>
       <td tal:content="histData/portal_type">portal type</td>
-      <td><a tal:attributes="href histData/url" 
+      <td><a tal:attributes="href histData/url"
              tal:content="histData/path">current path</a></td>
     </tr>
 

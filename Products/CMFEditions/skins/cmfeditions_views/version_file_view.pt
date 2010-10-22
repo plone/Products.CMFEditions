@@ -6,7 +6,7 @@
 <body>
 
 <metal:main fill-slot="main">
-    <tal:main-macro metal:define-macro="main" 
+    <tal:main-macro metal:define-macro="main"
            tal:define="size python:here.getObjSize(here);
                        content_type here/get_content_type|here/Format;
                       ">
@@ -22,7 +22,7 @@
            tal:condition="here/Description">
             Description
         </div>
-    
+
         <div id="content-core">
             <p>
                 <a href=""
@@ -34,37 +34,37 @@
                     </tal:block>
                 </a>
             </p>
-    
+
             <small class="discreet">
                 <span i18n:translate="label_size" i18n:domain="plone">
                 Size
                 </span>
-            
+
                 <span tal:condition="size"
                     tal:content="size">
                 257 KB
                 </span>
-    
+
                 <span tal:condition="python:test(size,0,1)" i18n:translate="no_file_uploaded">
                   (No file has been uploaded yet)
                 </span>
-    
+
                 -
-            
+
                 <span i18n:translate="label_file_type">
                 File type
                 </span>
-    
+
                 <span tal:content="content_type">
                 Content type
                 </span>
             </small>
-    
+
             <div class="row"
                  tal:condition="python:test(content_type.find('text')>-1, 1,0)">
-    
+
                     <h2 i18n:translate="heading_file_contents" i18n:domain="plone">File contents</h2>
-    
+
                     <pre tal:content="here/get_data|here/data|nothing">
                     </pre>
 

@@ -77,7 +77,7 @@
                                tal:attributes="href string:${here_url}/version_diff?version_id1=current&amp;version_id2=${reverted_vid}">
                               <span tal:condition="isReverted"
                                     i18n:translate="label_compare_to_revision">
-                                Compare to revision 
+                                Compare to revision
                                 <span tal:replace="reverted_vid"
                                       i18n:name="version_id" />
                               </span>
@@ -190,7 +190,7 @@
     </form>
 
     <a name="version_preview">
-      <label for="description" 
+      <label for="description"
              tal:condition="version_id"
              i18n:translate="label_preview_version">
         Preview of Revision <span i18n:name="version_id" tal:replace="version_id">0</span>
@@ -214,7 +214,7 @@
           <div i18n:translate="">Preview is not available.</div>
         </tal:nopreview>
       </tal:block>
-      
+
     </div>
   </div>
   </metal:main>
