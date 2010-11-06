@@ -1,21 +1,18 @@
 Changelog
 =========
 
-2.0.3 - unreleased
+2.0.3 - 2010-11-06
 ------------------
 
-- Internationalized default version comments ('Initial revision', etc.)
+- Internationalized default version comments ('Initial revision', etc.).
   [thomasdesvenain]
 
-- Fixed: version comment was not considered
-  when saving a content with automatic version policy.
-  http://dev.plone.org/plone/ticket/8535
+- Fixed: version comment was not considered when saving a content with
+  automatic version policy. Closes http://dev.plone.org/plone/ticket/8535.
   [thomasdesvenain]
-
 
 - Fixed multiple chameleon incompatibilities.
   [swampmonkey]
-
 
 2.0.2 - 2010-09-09
 ------------------
