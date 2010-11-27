@@ -27,23 +27,23 @@ $Id: Permissions.py,v 1.1 2005/02/13 11:52:58 gregweb Exp $
 from Products.CMFCore.permissions import setDefaultRoles
 
 ApplyVersionControl = 'CMFEditions: Apply version control'
-setDefaultRoles(ApplyVersionControl, ('Manager',))
+setDefaultRoles(ApplyVersionControl, ('Manager', 'Site Administrator'))
 
 SaveNewVersion = 'CMFEditions: Save new version'
-setDefaultRoles(SaveNewVersion, ('Manager',))
+setDefaultRoles(SaveNewVersion, ('Manager', 'Site Administrator'))
 
 PurgeVersion = 'CMFEditions: Purge version'
-setDefaultRoles(PurgeVersion, ('Manager',))
+setDefaultRoles(PurgeVersion, ('Manager', 'Site Administrator'))
 
 AccessPreviousVersions = 'CMFEditions: Access previous versions'
-setDefaultRoles(AccessPreviousVersions, ('Manager',))
+setDefaultRoles(AccessPreviousVersions, ('Manager', 'Site Administrator'))
 
 RevertToPreviousVersions = 'CMFEditions: Revert to previous versions'
-setDefaultRoles(RevertToPreviousVersions, ('Manager',))
+setDefaultRoles(RevertToPreviousVersions, ('Manager', 'Site Administrator'))
 
 CheckoutToLocation = 'CMFEditions: Checkout to location'
-setDefaultRoles(CheckoutToLocation, ('Manager',))
+setDefaultRoles(CheckoutToLocation, ('Manager', 'Site Administrator'))
 
 ManageVersioningPolicies = 'CMFEditions: Manage versioning policies'
-setDefaultRoles(ManageVersioningPolicies, ('Manager',))
+setDefaultRoles(ManageVersioningPolicies, ('Manager', 'Site Administrator'))
 

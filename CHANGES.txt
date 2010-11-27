@@ -4,6 +4,9 @@ Changelog
 2.0.4 - unreleased
 ------------------
 
+- Add Site Administrator role to various permissions, for forward compatibility
+  with Plone 4.1.
+  [davisagli]
 
 2.0.3 - 2010-11-06
 ------------------
