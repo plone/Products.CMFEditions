@@ -4,6 +4,10 @@ Changelog
 2.0.4 - unreleased
 ------------------
 
+- Do not provide "Compare to ... revision" link in versions history actions
+  if content type has no diffable field.
+  [thomasdesvenain]
+
 - Add Site Administrator role to various permissions, for forward compatibility
   with Plone 4.1.
   [davisagli]
