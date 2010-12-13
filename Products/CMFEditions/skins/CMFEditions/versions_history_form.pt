@@ -9,7 +9,9 @@
                    version_id python:request.get('version_id', None);
                    history python:pr.getHistoryMetadata(context);
                    revisions python:history and history.getLength(countPurged=False) or 0;
-                   histrange python:range(revisions-1, -1, -1)"
+                   histrange python:range(revisions-1, -1, -1);
+                   portal_diff nocall:here/portal_diff|nothing;
+                   can_diff python:portal_diff and len(portal_diff.getDiffForPortalType(here.portal_type)) > 0;"
                    tal:condition="python: pr.isVersionable(context)">
     <h1 class="documentFirstHeading"
         i18n:translate="versions_of_title">Revisions of
@@ -73,7 +75,7 @@
                   </td>
                   <td class="VersionActions">
                     <ul>
-                        <li tal:condition="exists:here/portal_diff">
+                        <li tal:condition="can_diff">
                             <a href=""
                                style="text-decoration: none"
                                tal:attributes="href string:$here_url/version_diff?version_id1=current&amp;version_id2=${reverted_vid}">
@@ -123,7 +125,7 @@
                   </td>
                   <td class="VersionActions">
                     <ul>
-                        <tal:diffs condition="exists:here/portal_diff">
+                        <tal:diffs condition="can_diff">
                         <li tal:condition="not:current_version">
                             <a href=""
                                style="text-decoration: none"
