@@ -8,6 +8,7 @@
 ##parameters=
 ##
 from Products.CMFPlone.utils import base_hasattr
+from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredError
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 
