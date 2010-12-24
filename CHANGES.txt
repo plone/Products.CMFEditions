@@ -4,6 +4,9 @@ Changelog
 2.0.4 - unreleased
 ------------------
 
+- Depend on ``Products.CMFPlone`` instead of ``Plone``.
+  [elro]
+
 - Do not provide "Compare to ... revision" link in versions history actions
   if content type has no diffable field.
   [thomasdesvenain]

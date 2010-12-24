@@ -25,7 +25,7 @@ setup(name='Products.CMFEditions',
       extras_require=dict(
         test=[
             'zope.testing',
-            'Plone',
+            'Products.CMFPlone',
             'Products.Archetypes',
             'Products.CMFDynamicViewFTI',
             'Products.PloneTestCase',
