@@ -12,13 +12,16 @@ Changelog
 - Added missing i18n markup to variables in update_version_before_edit.cpy.
   [WouterVH]
 
-- Fix error in history storage selector calculation.  http://dev.plone.org/plone/ticket/8967
+- Fix error in history storage selector calculation. Closes
+  http://dev.plone.org/plone/ticket/8967
   [alecm]
 
-- Don't fail when there's no view macro for previews. http://dev.plone.org/plone/ticket/9963
+- Don't fail when there's no view macro for previews. Closes
+  http://dev.plone.org/plone/ticket/9963
   [alecm]
 
-- Fix version display when history is non-existent.  http://dev.plone.org/plone/ticket/9674
+- Fix version display when history is non-existent. Closes
+  http://dev.plone.org/plone/ticket/9674
   [alecm]
 
 - Make "Revert to this version" on the versions_history_form an input
