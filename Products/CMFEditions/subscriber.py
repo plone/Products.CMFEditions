@@ -32,7 +32,7 @@ from Products.CMFEditions import CMFEditionsMessageFactory as _
 
 PMF = MessageFactory('plone')
 
-def webdavObjectEventHandler(event, comment):
+def webdavObjectEventHandler(obj, event, comment):
     obj = event.object
 
     changed = isObjectChanged(obj)
@@ -45,20 +45,20 @@ def webdavObjectEventHandler(event, comment):
     except FileTooLargeToVersionError:
         pass # There's no way to emit a warning here. Or is there?
 
-def webdavObjectInitialized(event):
-    return webdavObjectEventHandler(event, comment=_('Initial revision (WebDAV)'))
+def webdavObjectInitialized(obj, event):
+    return webdavObjectEventHandler(obj, event, comment=_('Initial revision (WebDAV)'))
 
-def webdavObjectEdited(event):
-    return webdavObjectEventHandler(event, comment=_('Edited (WebDAV)'))
+def webdavObjectEdited(obj, event):
+    return webdavObjectEventHandler(obj, event, comment=_('Edited (WebDAV)'))
 
 def _getVersionComment(object):
     request = aq_get(object, 'REQUEST', None)
     return request and request.get('cmfeditions_version_comment', '')
 
-def objectInitialized(event):
+def objectInitialized(obj, event):
     comment = _getVersionComment(event.object) or _('Initial revision')
-    return webdavObjectEventHandler(event, comment=comment)
+    return webdavObjectEventHandler(obj, event, comment=comment)
 
-def objectEdited(event):
+def objectEdited(obj, event):
     comment = _getVersionComment(event.object) or PMF('Edited')
-    return webdavObjectEventHandler(event, comment=comment)
+    return webdavObjectEventHandler(obj, event, comment=comment)

@@ -18,16 +18,20 @@
               handler=".ArchivistTool.object_copied" />
 
   <configure zcml:condition="installed Products.Archetypes">
-    <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectInitializedEvent"
+    <subscriber for="*
+                     Products.Archetypes.interfaces.IWebDAVObjectInitializedEvent"
                 handler=".subscriber.webdavObjectInitialized" />
 
-    <subscriber for="Products.Archetypes.interfaces.IWebDAVObjectEditedEvent"
+    <subscriber for="*
+                     Products.Archetypes.interfaces.IWebDAVObjectEditedEvent"
                 handler=".subscriber.webdavObjectEdited" />
 
-    <subscriber for="Products.Archetypes.interfaces.IObjectInitializedEvent"
+    <subscriber for="*
+                     Products.Archetypes.interfaces.IObjectInitializedEvent"
                 handler=".subscriber.objectInitialized" />
 
-    <subscriber for="Products.Archetypes.interfaces.IObjectEditedEvent"
+    <subscriber for="*
+                     Products.Archetypes.interfaces.IObjectEditedEvent"
                 handler=".subscriber.objectEdited" />
   </configure>
 
