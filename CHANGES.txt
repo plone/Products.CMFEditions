@@ -4,6 +4,12 @@ Changelog
 2.0.5 - Unreleased
 ------------------
 
+- Workaround some potential issues with event handlers and
+  transaction.savepoint which can cause exceptions when, for example,
+  zope.sendmail is used to send mail in the same transaction as saving
+  an edition.
+  [rossp]
+
 2.0.4 - 2011-01-03
 ------------------
 
