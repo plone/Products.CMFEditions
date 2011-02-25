@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <repositorytool>
- <policies>
+ <policies purge="true">
   <policy name="at_edit_autoversion"
      title="Create version on edit (AT objects only)"
      class="Products.CMFEditions.VersionPolicies.ATVersionOnEditPolicy"/>
   <policy name="version_on_revert" title="Create version on version revert"/>
  </policies>
- <policymap>
+ <policymap purge="true">
   <type name="ATDocument">
    <policy name="at_edit_autoversion"/>
    <policy name="version_on_revert"/>

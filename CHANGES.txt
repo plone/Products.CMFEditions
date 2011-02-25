@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.1.1 - 2011-02-25
+------------------
+
+- Fix bug when loading GenericSetup profile with ``<policymap purge="true">``.
+  [elro]
+
 2.1.0 - 2011-02-25
 ------------------
 

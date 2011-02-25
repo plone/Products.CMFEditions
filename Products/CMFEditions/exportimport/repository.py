@@ -80,7 +80,7 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
 
     def _purgeTypePolicies(self):
         self.context.manage_setTypePolicies({})
-        self.setVersionableContentTypes([])
+        self.context.setVersionableContentTypes([])
 
     def _initTypePolicies(self, node):
         tool = self.context
