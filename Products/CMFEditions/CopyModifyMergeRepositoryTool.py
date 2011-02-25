@@ -49,6 +49,7 @@ from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeReposito
 from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
 from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
+from Products.CMFEditions.interfaces.IRepository import IRepositoryTool
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.interfaces.IRepository import IHistory
 
@@ -90,6 +91,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         IPurgeSupport,
         ICopyModifyMergeRepository,
         IContentTypeVersionPolicySupport,
+        IRepositoryTool,
         )
 
     id = 'portal_repository'

@@ -19,4 +19,21 @@
            Products.GenericSetup.interfaces.ISetupEnviron"
       />
 
+  <genericsetup:importStep
+      name="repositorytool"
+      title="CMFEditions Repository Tool"
+      description="Import repository tool's settings."
+      handler=".repository.importRepositoryTool">
+    <depends name="toolset" />
+    <depends name="typeinfo" />
+    <depends name="cmfeditions_various" />
+  </genericsetup:importStep>
+
+  <genericsetup:exportStep
+      name="repositorytool"
+      title="CMFEditions Repository Tool"
+      description="Export repository tool's settings."
+      handler=".repository.exportRepositoryTool"
+      />
+
 </configure>

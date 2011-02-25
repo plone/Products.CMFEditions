@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.1.0 - 2011-02-25
+------------------
+
+- Generic Setup export/import support.
+  [elro]
+
 2.0.5 - 2011-02-25
 ------------------
 
