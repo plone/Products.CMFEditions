@@ -2,8 +2,13 @@
 Changelog
 =========
 
-1.2.7 (unreleased)
+1.2.8 - Unreleased
 ------------------
+
+- No changes yet.
+
+1.2.7 - February 28, 2011
+-------------------------
 
 - Do not provide "Compare to ... revision" link in versions history actions
   if content type has no diffable field.
