@@ -312,6 +312,21 @@ def manage_addCloneBlobs(self, id, title=None, REQUEST=None):
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
+manage_Skip_z3c_blobfileAddForm =  \
+    PageTemplateFile('www/Skip_z3c_blobfile.pt',
+                   globals(),
+                   __name__='manage_Skip_z3c_blobfileAddForm')
+
+def manage_addSkip_z3c_blobfile(self, id, title=None, REQUEST=None):
+    """Add a skip z3c.blobfile modifier
+    """
+    modifier = Skip_z3c_blobfile(id, title)
+    self._setObject(id, modifier)
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+
 #----------------------------------------------------------------------
 # Standard modifier implementation
 #----------------------------------------------------------------------
@@ -1073,10 +1088,58 @@ class CloneBlobs:
         for name, blob in attrs_dict.iteritems():
             obj.getField(name).get(obj).setBlob(blob)
 
-
-
 InitializeClass(CloneBlobs)
 
+class Skip_z3c_blobfile:
+    """Standard avoid storing blob data, may be useful for extremely
+    large files where versioing the non-file metadata is important but
+    the cost of versioning the file data is too high.
+    """
+
+    implements(ICloneModifier, ISaveRetrieveModifier)
+
+    def getOnCloneModifiers(self, obj):
+        """Removes z3c.blobfile fields
+        """
+        try:
+            from z3c.blobfile.file import File
+        except ImportError:
+            return
+
+        blob_refs = set(id(v) for v in obj.__dict__.itervalues()
+                        if isinstance(v, File))
+
+        def persistent_id(obj):
+            if id(aq_base(obj)) in blob_refs:
+                return True
+            return None
+
+        def persistent_load(ignored):
+            return None
+
+        return persistent_id, persistent_load, [], []
+
+    def beforeSaveModifier(self, obj, clone):    
+        return {}, [], []
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        try:
+            from z3c.blobfile.file import File
+        except ImportError:
+            return [], [], {}
+
+        if obj is None:
+            return [], [], {}
+
+        blob_fields = ((k, v) for k, v in obj.__dict__.iteritems()
+                        if isinstance(v, File))
+
+        for k, v in blob_fields:
+            setattr(repo_clone, k, v)
+
+        return [], [], {}
+
+InitializeClass(Skip_z3c_blobfile)
 
 #----------------------------------------------------------------------
 # Standard modifier configuration
@@ -1232,6 +1295,17 @@ modifiers = (
         'modifier': CloneBlobs,
         'form': manage_CloneBlobsAddForm,
         'factory': manage_addCloneBlobs,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'Skip_z3c_blobfile',
+        'title': "Skip storing z3c.blobfile.file.File fields on objects",
+        'enabled': True,
+        'condition': "python:True",
+        'wrapper': ConditionalTalesModifier,
+        'modifier': Skip_z3c_blobfile,
+        'form': manage_Skip_z3c_blobfileAddForm,
+        'factory': manage_addSkip_z3c_blobfile,
         'icon': 'www/modifier.gif',
     },
 )

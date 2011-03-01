@@ -4,6 +4,10 @@ Changelog
 2.1.2 - unreleased
 ------------------
 
+- Skip z3c.blobfile File (notable subclasess plone.namedfile BlobFile and
+  BlobImage) as blobfile versioning is not there yet.
+  [elro]
+
 2.1.1 - 2011-02-25
 ------------------
 
