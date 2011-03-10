@@ -39,8 +39,15 @@ from Products.CMFCore.permissions import ManagePortal
 from Products.CMFUid.interfaces import IUniqueIdHandler
 from Products.CMFUid.interfaces import IUniqueIdBrainQuery
 from Products.CMFUid.interfaces import UniqueIdError
+from Products.CMFUid.UniqueIdHandlerTool import (UniqueIdHandlerTool
+    as CMFUidUniqueIdHandlerTool)
 
 UID_ATTRIBUTE_NAME = 'cmf_uid'
+
+
+class HistoryIdHandlerTool(CMFUidUniqueIdHandlerTool):
+    id = 'portal_historyidhandler'
+
 
 class UniqueIdHandlerTool(UniqueObject, SimpleItem):
     __doc__ = __doc__ # copy from module

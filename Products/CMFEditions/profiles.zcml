@@ -11,4 +11,14 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+    <genericsetup:upgradeSteps
+        source="2.0"
+        destination="3"
+        profile="Products.CMFEditions:CMFEditions">
+
+        <genericsetup:upgradeDepends
+           import_steps="toolset"
+          />
+        
+    </genericsetup:upgradeSteps>
 </configure>
