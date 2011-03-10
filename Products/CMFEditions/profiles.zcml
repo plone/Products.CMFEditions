@@ -17,7 +17,7 @@
         profile="Products.CMFEditions:CMFEditions">
 
         <genericsetup:upgradeDepends
-           title="Fix toolset"
+           title="Fix portal_historyidhandler"
            import_steps="toolset"
           />
         
