@@ -4,8 +4,8 @@ Changelog
 2.0.6 - Unreleased
 ------------------
 
-- fix portal_historyidhandler class to avoid issue where GenericSetup toolset
-  import step trieds to change the class default id
+- Fix portal_historyidhandler class to avoid issue where GenericSetup toolset
+  import step tried to change the class default id
   [gotcha]
 
 2.0.5 - 2011-02-25
