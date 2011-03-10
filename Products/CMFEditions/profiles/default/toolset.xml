@@ -5,7 +5,7 @@
  <required tool_id="portal_repository"
            class="Products.CMFEditions.CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool"/>
  <required tool_id="portal_historyidhandler"
-           class="Products.CMFUid.UniqueIdHandlerTool.UniqueIdHandlerTool"/>
+           class="Products.CMFEditions.UniqueIdHandlerTool.HistoryIdHandlerTool"/>
  <required tool_id="portal_purgepolicy"
            class="Products.CMFEditions.KeepLastNVersionsTool.KeepLastNVersionsTool"/>
  <required tool_id="portal_modifier"

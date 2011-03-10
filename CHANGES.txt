@@ -4,6 +4,10 @@ Changelog
 2.1.2 - unreleased
 ------------------
 
+- fix portal_historyidhandler class to avoid issue where GenericSetup toolset
+  import step tried to change the class default id
+  [gotcha]
+
 - Skip z3c.blobfile File (notable subclasess plone.namedfile BlobFile and
   BlobImage) as blobfile versioning is not there yet.
   [elro]

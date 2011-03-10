@@ -29,6 +29,7 @@ setup(name='Products.CMFEditions',
             'Products.Archetypes',
             'Products.CMFDynamicViewFTI',
             'Products.PloneTestCase',
+            'collective.monkeypatcher',  # [test] dependency of plone.app.blob
         ]
       ),
       install_requires=[
@@ -37,7 +38,7 @@ setup(name='Products.CMFEditions',
         'zope.i18nmessageid',
         'zope.interface',
         'Products.CMFCore >=2.1',
-        'Products.CMFDiffTool', # dependency in diff template
+        'Products.CMFDiffTool',  # dependency in diff template
         'Products.CMFUid',
         'Products.GenericSetup >=1.4.0',
         'Products.ZopeVersionControl',
