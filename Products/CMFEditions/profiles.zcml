@@ -17,6 +17,7 @@
         profile="Products.CMFEditions:CMFEditions">
 
         <genericsetup:upgradeDepends
+           title="Fix toolset"
            import_steps="toolset"
           />
         
