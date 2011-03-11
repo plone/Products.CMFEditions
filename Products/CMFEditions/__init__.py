@@ -32,7 +32,7 @@ from AccessControl import ModuleSecurityInfo
 
 from Products.CMFCore import utils
 
-from Products.CMFEditions import UniqueIdHandlerTool
+from Products.CMFEditions import historyidhandlertool
 from Products.CMFEditions import ModifierRegistryTool
 from Products.CMFEditions import ArchivistTool
 from Products.CMFEditions import ZVCStorageTool
@@ -46,7 +46,7 @@ GLOBALS = globals()
 PACKAGE_HOME = package_home(GLOBALS)
 
 tools = (
-    UniqueIdHandlerTool.UniqueIdHandlerTool,
+    historyidhandlertool.HistoryIdHandlerTool,
     ModifierRegistryTool.ModifierRegistryTool,
     ArchivistTool.ArchivistTool,
     ZVCStorageTool.ZVCStorageTool,

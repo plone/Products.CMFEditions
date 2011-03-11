@@ -5,15 +5,13 @@
  <required tool_id="portal_repository"
            class="Products.CMFEditions.CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool"/>
  <required tool_id="portal_historyidhandler"
-           class="Products.CMFEditions.UniqueIdHandlerTool.HistoryIdHandlerTool"/>
+           class="Products.CMFEditions.historyidhandlertool.HistoryIdHandlerTool"/>
  <required tool_id="portal_purgepolicy"
            class="Products.CMFEditions.KeepLastNVersionsTool.KeepLastNVersionsTool"/>
  <required tool_id="portal_modifier"
            class="Products.CMFEditions.ModifierRegistryTool.ModifierRegistryTool"/>
  <required tool_id="portal_referencefactories"
            class="Products.CMFEditions.ReferenceFactoriesTool.ReferenceFactoriesTool"/>
- <required tool_id="portal_uidhandler"
-           class="Products.CMFEditions.UniqueIdHandlerTool.UniqueIdHandlerTool"/>
  <required tool_id="portal_historiesstorage"
            class="Products.CMFEditions.ZVCStorageTool.ZVCStorageTool"/>
  <required tool_id="portal_uidannotation"
