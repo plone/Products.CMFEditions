@@ -4,6 +4,10 @@ Changelog
 2.1.2 - unreleased
 ------------------
 
+- remove UniqueIdHandlerTool, it was not used anymore;
+  nobody (including vds and hannosch) seems to remember what it was for.
+  [gotcha]
+
 - fix portal_historyidhandler class to avoid issue where GenericSetup toolset
   import step tried to change the class default id
   [gotcha]
