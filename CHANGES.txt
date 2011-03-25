@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.2 - unreleased
+2.1.2 (2011-03-25)
 ------------------
 
 - remove UniqueIdHandlerTool, it was not used anymore;
