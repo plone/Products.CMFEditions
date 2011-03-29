@@ -10,8 +10,8 @@
                    history python:pr.getHistoryMetadata(context);
                    revisions python:history and history.getLength(countPurged=False) or 0;
                    histrange python:range(revisions-1, -1, -1);
-                   portal_diff nocall:here/portal_diff|nothing;
-                   can_diff python:portal_diff and len(portal_diff.getDiffForPortalType(here.portal_type)) > 0;"
+                   view nocall:context/@@historyview;
+                   can_diff view/can_diff"
                    tal:condition="python: pr.isVersionable(context)">
     <h1 class="documentFirstHeading"
         i18n:translate="versions_of_title">Revisions of

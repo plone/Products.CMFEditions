@@ -16,5 +16,13 @@
         permission="cmf.ModifyPortalContent"
         />
 
+    <browser:page
+        for="*"
+        name="historyview"
+        class=".diff.HistoryView"
+        allowed_attributes="can_diff"
+        permission="zope2.View"
+        />
+
 </configure>
 
