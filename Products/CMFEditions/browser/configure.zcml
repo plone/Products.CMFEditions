@@ -19,5 +19,13 @@
           />
     </configure>
 
+    <browser:page
+        for="*"
+        name="candiff"
+        class=".diff.CanDiff"
+        attribute="can_diff"
+        permission="zope2.View"
+        />
+
 </configure>
 
