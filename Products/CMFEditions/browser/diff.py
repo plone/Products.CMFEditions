@@ -59,7 +59,7 @@ class DiffView(BrowserView):
 
 class HistoryView(BrowserView):
 
-    def can_diff(self, portal_type):
+    def can_diff(self):
         """Return True if content is diffable
         """
         context = self.context
