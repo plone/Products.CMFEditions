@@ -11,8 +11,8 @@
                    revisions python:history and history.getLength(countPurged=False) or 0;
                    histrange python:range(revisions-1, -1, -1);
                    here_url context/absolute_url;
-                   portal_diff nocall:context/portal_diff|nothing;
-                   can_diff python:portal_diff and len(portal_diff.getDiffForPortalType(context.portal_type)) > 0;"
+                   view nocall:context/@@candiff;
+                   can_diff view/can_diff"
                    tal:condition="python: pr.isVersionable(context)">
 
     <div tal:replace="structure provider:plone.abovecontenttitle" />
