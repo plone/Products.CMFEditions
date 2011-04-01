@@ -66,7 +66,7 @@ A handful of tools provide the whole functionality:
   and has full control over the version to save and the whole history.
   The current implementation may be configured to only hold the n 
   current versions by purging the older versions from the repository.
-  This functionality is by default disabled. It may be disabled through 
+  This functionality is by default disabled. It may be enabled through 
   the ZMI. You should take care when you're saving objects with a lot 
   of interrelations. Purging functionality is quite new!
 
