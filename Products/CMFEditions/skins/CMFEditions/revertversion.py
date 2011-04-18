@@ -28,7 +28,7 @@ if not isinstance(title, unicode):
     title = unicode(title, 'utf-8', 'ignore')
 
 msg = _(u'${title} has been reverted to revision ${version}.',
-        mapping={'title': context.title_or_id(),
+        mapping={'title': title,
                  'version': version_id})
 
 if pr.supportsPolicy(context, 'version_on_revert'):
