@@ -158,7 +158,6 @@ def editDocument(context, version=0):
 
 
 def editTopic(context, version=0):
-#    import pdb; pdb.set_trace()
     pass
 
 editMethods = {
