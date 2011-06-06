@@ -6,6 +6,8 @@ Changelog
 ------------------
 
 - Fixed: Unauthorized error on versions history form for non managers.
+  [thomasdesvenain]
+
 
 1.2.7 - February 28, 2011
 -------------------------
