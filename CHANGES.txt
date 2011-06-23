@@ -2,8 +2,8 @@
 Changelog
 =========
 
-1.2.8 - Unreleased
-------------------
+1.2.8 - June 23, 2011
+---------------------
 
 - Fixed: Unauthorized error on versions history form for non managers.
   [thomasdesvenain]
