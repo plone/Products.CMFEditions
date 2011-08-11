@@ -4,6 +4,11 @@ Changelog
 2.1.4 (unreleased)
 ------------------
 
+- Remove references to blobs when cloning blob fields. They are handled as
+  referenced attributes anyway. This eliminates the creation of an additional 
+  empty blob when cloning blob fields.
+  [buchi]
+
 - No longer store references in the ZVC wrapper. They are stored in the shadow
   history and retrieved from there. This eliminates the creation of an
   additional empty blob when cloning blob fields.

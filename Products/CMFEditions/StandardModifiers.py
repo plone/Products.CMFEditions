@@ -1034,7 +1034,7 @@ class CloneBlobs:
     being packed away.
     """
 
-    implements(IAttributeModifier)
+    implements(IAttributeModifier, ICloneModifier)
 
     def getReferencedAttributes(self, obj):
         blob_fields = (f for f in obj.Schema().fields()
@@ -1087,6 +1087,23 @@ class CloneBlobs:
         obj = aq_base(obj)
         for name, blob in attrs_dict.iteritems():
             obj.getField(name).get(obj).setBlob(blob)
+
+    def getOnCloneModifiers(self, obj):
+        """Removes references to blobs.
+        """
+        blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
+                         for f in obj.Schema().fields()
+                         if IBlobField.providedBy(f))
+
+        def persistent_id(obj):
+            if id(aq_base(obj)) in blob_refs:
+                return True
+            return None
+
+        def persistent_load(obj):
+            return None
+
+        return persistent_id, persistent_load, [], []
 
 InitializeClass(CloneBlobs)
 
