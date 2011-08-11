@@ -354,7 +354,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             removedInfo = Removed("purged", metadata)
 
             # digging into ZVC internals: remove the stored object
-            version._data = ZVCAwareWrapper(removedInfo, None, metadata)
+            version._data = ZVCAwareWrapper(removedInfo, metadata)
 
             # digging into ZVC internals: replace the message
             logEntry = self._retrieveZVCLogEntry(zvc_histid, zvc_selector)
@@ -390,7 +390,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         #   (selector=None).
         # - Wrap the object, the referenced data and metadata
         vc_info = self._getVcInfo(object, shadowInfo)
-        zvc_obj = ZVCAwareWrapper(object, referenced_data, metadata,
+        zvc_obj = ZVCAwareWrapper(object, metadata,
                                   vc_info)
         message = self._encodeMetadata(metadata)
 
@@ -950,9 +950,8 @@ class ZVCAwareWrapper(Persistent):
 
     ZVC, arghh ...
     """
-    def __init__(self, object, referenced_data, metadata, vc_info=None):
+    def __init__(self, object, metadata, vc_info=None):
         self._object = object
-        self._referenced_data = referenced_data
         self._physicalPath = \
             metadata['sys_metadata'].get('physicalPath', ())[:] # copy
         if vc_info is not None:
@@ -960,9 +959,6 @@ class ZVCAwareWrapper(Persistent):
 
     def getWrappedObject(self):
         return self._object
-
-    def getReferencedData(self):
-        return self._referenced_data
 
     def getPhysicalPath(self):
         return self._physicalPath
