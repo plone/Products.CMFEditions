@@ -1,0 +1,36 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+  
+  <!-- Make Zope 2 permissions available as Zope 3-style permissions. 
+       This file must be kept in sync with `Permissions.py`.
+  -->    
+  <permission
+      id="CMFEditions.AccessPreviousVersions"
+      title="CMFEditions: Access previous versions"
+  />
+  <permission
+      id="CMFEditions.RevertToPreviousVersions"
+      title="CMFEditions: Revert to previous versions"
+  /> 
+  <permission
+      id="CMFEditions.ApplyVersionControl"
+      title="CMFEditions: Apply version control"
+  /> 
+  <permission
+      id="CMFEditions.SaveNewVersion"
+      title="CMFEditions: Save new version"
+  /> 
+  <permission
+      id="CMFEditions.PurgeVersion"
+      title="CMFEditions: Purge version"
+  /> 
+  <permission
+      id="CMFEditions.CheckoutToLocation"
+      title="CMFEditions: Checkout to location"
+  /> 
+  <permission
+      id="CMFEditions.ManagVersioningPolicies"
+      title="CMFEditions: Manage versioning policies"
+  /> 
+
+</configure>    
+
