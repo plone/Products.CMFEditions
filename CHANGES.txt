@@ -13,6 +13,9 @@ Changelog
   history and retrieved from there. This eliminates the creation of an
   additional empty blob when cloning blob fields.
   [buchi]
+  
+- Allow to translate the string "current" in the diff view (``@@history``).
+  [rafaelbco]  
 
 2.1.3 (2011-04-03)
 ------------------

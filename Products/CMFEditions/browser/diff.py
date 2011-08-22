@@ -22,11 +22,20 @@ class DiffView(BrowserView):
         else:
             return self.repo_tool.retrieve(context, int(version)).object
 
-
+    
+    def versionName(self, version):
+        """
+        Translate the version name. This is needed to allow translation when `version` is the
+        string 'current'.
+        """ 
+        return _(version)
+    
     def versionTitle(self, version):
+        version_name = self.versionName(version)
+        
         return translate(
             _(u"version ${version}",
-              mapping=dict(version=version)),
+              mapping=dict(version=version_name)),
             context=self.request
         )
 
