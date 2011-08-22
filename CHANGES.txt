@@ -16,7 +16,19 @@ Changelog
   
 - Allow to translate the string "current" in the diff view (``@@history``).
   [rafaelbco]  
+  
+- Make Zope 2 permissions available as Zope 3-style permissions.  
+  [rafaelbco]
+  
+- Changed ``@@history`` to be protected by ``CMFEditions.AccessPreviousVersions`` instead of 
+  ``cmf.ModifyPortalContent``.
+  [rafaelbco]
 
+- Only show the "Revert to this version" button if the user has the ``Revert to previous versions``
+  permission in ``versions_history_form``.
+  [rafaelbco]
+
+  
 2.1.3 (2011-04-03)
 ------------------
 
