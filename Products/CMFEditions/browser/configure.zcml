@@ -7,7 +7,7 @@
         for="*"
         name="history"
         class=".diff.DiffView"
-        permission="cmf.ModifyPortalContent"
+        permission="CMFEditions.AccessPreviousVersions"
         />
 
     <configure zcml:condition="installed Products.Archetypes">
