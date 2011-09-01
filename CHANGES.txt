@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.4 (unreleased)
+2.1.4 (2011-08-31)
 ------------------
 
 - Remove references to blobs when cloning blob fields. They are handled as
