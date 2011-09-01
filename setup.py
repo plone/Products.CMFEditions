@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-version = '2.1.4'
+version = '2.1.5dev'
 
 setup(name='Products.CMFEditions',
       version=version,
