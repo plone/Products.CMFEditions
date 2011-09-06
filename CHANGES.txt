@@ -4,8 +4,13 @@ Changelog
 2.1.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Only save an initial version before edit when content is not yet versioned,
+  rather than every time there are unsaved changes. Otherwise there is an
+  "Initial version" generated for every edit after publish/retract, as these
+  change the publishing date without a new version being saved. Possibly a
+  version should be saved on publish, but not sure the extra versioning noise
+  is useful.
+  [lentinj]
 
 2.1.4 (2011-08-31)
 ------------------

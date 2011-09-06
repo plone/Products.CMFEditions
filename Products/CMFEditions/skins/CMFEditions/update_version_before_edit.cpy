@@ -11,7 +11,7 @@
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
-from Products.CMFEditions.utilities import isObjectChanged, maybeSaveVersion
+from Products.CMFEditions.utilities import isObjectVersioned, maybeSaveVersion
 
 pf = getToolByName(context, 'portal_factory')
 
@@ -20,9 +20,8 @@ if pf.isTemporary(context):
     return state.set(status='success')
 
 comment = _("Initial revision")
-changed = isObjectChanged(context)
 
-if not changed:
+if isObjectVersioned(context):
     return state.set(status='success')
 
 try:
