@@ -4,6 +4,9 @@ Changelog
 2.1.5 (unreleased)
 ------------------
 
+- Translate the commit message, so version id is substituted.
+  [lentinj]
+
 - Only save an initial version before edit when content is not yet versioned,
   rather than every time there are unsaved changes. Otherwise there is an
   "Initial version" generated for every edit after publish/retract, as these
