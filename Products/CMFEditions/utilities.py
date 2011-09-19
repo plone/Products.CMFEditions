@@ -87,6 +87,11 @@ def generateId(parent, prefix='', volatile=False):
         if id not in existingIds:
             return id
 
+def isObjectVersioned(obj):
+    """Return true iff object has a version_id.
+    """
+    return getattr(aq_base(obj), 'version_id', None) is not None
+
 def isObjectChanged(obj):
     pr = getToolByName(obj, 'portal_repository', None)
     if pr is None:

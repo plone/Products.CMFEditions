@@ -64,6 +64,7 @@ ModuleSecurityInfo('Products.CMFEditions').declarePublic('CMFEditionsMessageFact
 ModuleSecurityInfo('Products.CMFEditions.interfaces.IArchivist').declarePublic('ArchivistUnregisteredError')
 ModuleSecurityInfo('Products.CMFEditions.interfaces.IModifier').declarePublic('FileTooLargeToVersionError')
 ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('isObjectChanged')
+ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('isObjectVersioned')
 ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('maybeSaveVersion')
 
 def initialize(context):
