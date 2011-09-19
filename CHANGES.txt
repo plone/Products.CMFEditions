@@ -7,7 +7,7 @@ Changelog
 - Nothing changed yet.
 
 
-2.2 (Unreleased)
+2.2 (2011-08-23)
 ----------------
 
 - Make Zope 2 permissions available as Zope 3-style permissions.  
@@ -35,7 +35,7 @@ Changelog
   is useful.
   [lentinj]
 
-2.1.4 (unreleased)
+2.1.4 (2011-08-31)
 ------------------
 
 - Remove references to blobs when cloning blob fields. They are handled as
