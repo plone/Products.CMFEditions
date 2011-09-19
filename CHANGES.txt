@@ -1,11 +1,11 @@
 Changelog
 =========
 
-2.2.1 (unreleased)
+2.2.1 (2011-09-19)
 ------------------
 
-- Nothing changed yet.
-
+- Merged changes from 2.1.5.
+  [lentinj]
 
 2.2 (2011-08-23)
 ----------------
