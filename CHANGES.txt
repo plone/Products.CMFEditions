@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.1.6 (Unreleased)
+------------------
+
+- Don't string convert blobs.  Fixes MemoryErrors or excessive memory
+  consumption with large blobs.
+  [rossp]
+
 2.1.5 (2011-09-19)
 ------------------
 
