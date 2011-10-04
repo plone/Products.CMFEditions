@@ -60,7 +60,7 @@ from Products.CMFEditions.interfaces import IVersioned
 
 RETRIEVING_UNREGISTERED_FAILED = \
     "Retrieving a version of an unregistered object is not possible. " \
-    "Register the object '%s' first. "
+    "Register the object '%r' first. "
 
 def deepcopy(obj):
     """Makes a deep copy of the object using the pickle mechanism.
@@ -280,7 +280,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
                 return self.register(prepared_obj)
             raise ArchivistSaveError(
                 "Saving an unregistered object is not possible. Register "
-                "the object '%s' first. "% prepared_obj.original.object)
+                "the object '%r' first. "% prepared_obj.original.object)
         
         storage = getToolByName(self, 'portal_historiesstorage')
         return storage.save(prepared_obj.history_id, 
@@ -315,7 +315,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
             return history[selector]
         except StorageRetrieveError:
             raise ArchivistRetrieveError(
-                "Retrieving of '%s' failed. Version '%s' does not exist. "
+                "Retrieving of '%r' failed. Version '%s' does not exist. "
                 % (obj, selector))
     
     security.declarePrivate('getHistory')
@@ -328,7 +328,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
         except StorageUnregisteredError:
             raise ArchivistUnregisteredError(
                 "Retrieving a version of an unregistered object is not "
-                "possible. Register the object '%s' first. " % obj)
+                "possible. Register the object '%r' first. " % obj)
 
     security.declarePrivate('getHistoryMetadata')
     def getHistoryMetadata(self, obj=None, history_id=None):
@@ -344,7 +344,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
         except StorageUnregisteredError:
             raise ArchivistUnregisteredError(
                 "Retrieving a version of an unregistered object is not "
-                "possible. Register the object '%s' first. " % obj)
+                "possible. Register the object '%r' first. " % obj)
 
     security.declarePrivate('queryHistory')
     def queryHistory(self, obj=None, history_id=None, preserve=(), default=[],
@@ -365,7 +365,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
         obj, history_id = dereference(obj, history_id, self)
         if not storage.isRegistered(history_id):
             raise ArchivistUnregisteredError(
-                "The object %s is not registered" % obj)
+                "The object %r is not registered" % obj)
         
         modified = storage.getModificationDate(history_id, selector,
                                                countPurged)

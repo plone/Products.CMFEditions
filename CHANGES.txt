@@ -5,7 +5,9 @@ Changelog
 1.2.9 - Unreleased
 ------------------
 
-No changes yet
+- Don't string convert blobs.  Fixes MemoryErrors or excessive memory
+  consumption with large blobs.
+  [rossp]
 
 1.2.8 - June 23, 2011
 ---------------------

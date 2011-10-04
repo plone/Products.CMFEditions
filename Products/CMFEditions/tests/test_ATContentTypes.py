@@ -153,10 +153,28 @@ class TestATContents(PloneTestCase.PloneTestCase):
         portal_repository.revert(content, 0)
         self.assertEqual(content.Title(), titleOne)
 
+    def testBlobsNotStringConverted(self):
+        file1 = open(os.path.join(PACKAGE_HOME, 'tests/file1.dat')).read()
+        content = self.folder[
+            self.folder.invokeFactory('File', id='file', file=file1)]
+
+        from Products.CMFCore.utils import getToolByName
+        from Products.CMFEditions.interfaces import IArchivist
+        archivist = getToolByName(content, 'portal_archivist')
+
+        prepared = archivist.prepare(content)
+        for method in ('retrieve', 'isUpToDate', 'save'):
+            try:
+                getattr(archivist, method)(prepared)
+            except IArchivist.ArchivistError, err:
+                self.assertFalse(file1 in str(err))
+                self.assertFalse(file1 in repr(err))
+            else:
+                self.fail("Didn't raise ArchivistError")
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestATContents))
     return suite
-
