@@ -8,6 +8,9 @@ Changelog
   consumption with large blobs.
   [rossp]
 
+- Protect against anonymous access to KwAsAttributes.
+  [mj]
+
 2.1.5 (2011-09-19)
 ------------------
 

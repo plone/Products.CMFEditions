@@ -36,6 +36,10 @@ STUB_OBJECT_PREFIX = '_CMFEditionsTempId'
 class KwAsAttributes(Persistent):
     """Class attaching to itself passed keyword attributes.
     """
+
+    # Not web accessable
+    __roles__ = ()
+
     def __init__(self, **kw):
         for key, val in kw.items():
             setattr(self, key, val)
