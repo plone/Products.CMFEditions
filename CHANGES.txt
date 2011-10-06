@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.6 (Unreleased)
+2.1.6 (2011-10-06)
 ------------------
 
 - Don't string convert blobs.  Fixes MemoryErrors or excessive memory
