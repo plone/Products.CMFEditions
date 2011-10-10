@@ -4,6 +4,9 @@ Changelog
 2.0.8 (Unreleased)
 ------------------
 
+- Backport security fix 20110928 for Plone 4.0.x. 
+  [esteele]
+
 2.0.7 (2011-03-31)
 ------------------
 
