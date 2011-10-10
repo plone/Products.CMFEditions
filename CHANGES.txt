@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.8 (Unreleased)
+2.0.8 (2011-10-10)
 ------------------
 
 - Backport security fix 20110928 for Plone 4.0.x. 
