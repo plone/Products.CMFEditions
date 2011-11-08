@@ -1040,6 +1040,84 @@ class TestIntegration(PloneTestCase.PloneTestCase):
                              None)
         self.failUnlessEqual(fol._mt_index['ATDocument']['doc3'], 1)
 
+    def test25_versioningRestoresInsideRefsFolderOrder(self):
+        # Enable OMInsideChildrensModifier
+        portal_modifier = self.portal.portal_modifier
+        portal_modifier.edit("OMOutsideChildrensModifier", enabled=False,
+                             condition="python: False")
+        portal_modifier.edit("OMInsideChildrensModifier", enabled=True,
+                             condition="python: portal_type=='Folder'")
+
+        portal_repo = self.portal.portal_repository
+        fol = self.portal.fol
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        fol.invokeFactory('Document', 'doc3')
+        fol.invokeFactory('Document', 'doc4')
+        portal_repo.applyVersionControl(fol, comment='first save')
+
+        orig_order = fol.objectIds()
+
+        fol.setTitle('v2 of fol')
+        fol.moveObjectsToTop(['doc2'])
+
+        self.failUnlessEqual(fol.objectIds()[0], 'doc2')
+
+        # Test that a retrieve uses the order from the repo copy
+        repo_fol1 = portal_repo.retrieve(fol, 0).object
+        self.failUnlessEqual(fol.objectIds()[0], 'doc2')
+        self.failIfEqual(fol.objectIds(), orig_order)
+        self.failUnlessEqual(repo_fol1.objectIds()[0], 'doc1')
+
+        # Test that a revert restores the order and objects from the
+        # repo copy
+        portal_repo.revert(fol)
+        self.failUnlessEqual(fol.objectIds()[0], 'doc1')
+        self.failUnlessEqual(fol.objectIds(), orig_order)
+
+        # See how we interact with some adds deletes and reorders
+        fol.invokeFactory('Document', 'doc5')
+        fol.moveObjectsToTop(['doc3'])
+        fol.moveObjectsToTop(['doc4'])
+        fol.manage_delObjects(['doc2'])
+        transaction.savepoint(optimistic=True)
+        doc3 = fol['doc3']
+        doc4 = fol['doc4']
+
+        self.failIfEqual(fol.objectIds(), orig_order)
+
+        repo_fol1 = portal_repo.retrieve(fol, 0).object
+
+        # Test that a retrieve uses the repository order and items,
+        # but does not affect the working copy
+        repo_fol1 = portal_repo.retrieve(fol, 0).object
+        self.failUnlessEqual(repo_fol1.objectIds(), orig_order)
+        self.failIfEqual(getattr(repo_fol1, 'doc2', None), None)
+        self.failUnlessEqual(getattr(repo_fol1, 'doc5', None), None)
+
+        self.failIfEqual(fol.objectIds(), orig_order)
+        self.failUnlessEqual(fol.objectIds()[0], 'doc4')
+        self.failUnlessEqual(fol.objectIds()[1], 'doc3')
+        self.failUnlessEqual(fol['doc3'], doc3)
+        self.failUnlessEqual(fol['doc4'], doc4)
+        self.failUnlessEqual(getattr(fol, 'doc2', None), None)
+        self.failIfEqual(getattr(fol, 'doc5', None), None)
+
+        # Test that a revert restores the missing child from the repo
+        # copy, removed the newly created child and restored the order
+        portal_repo.revert(fol)
+
+        self.failUnlessEqual(list(fol.objectIds()), orig_order)
+        self.failUnlessEqual(getattr(fol, 'doc5', None), None)
+
+        # Test the BTreeFolder internals
+        self.failUnlessEqual(fol._tree.get('doc5', None), None)
+        self.failUnlessEqual(fol._count(), 4)
+        self.failUnlessEqual(fol._mt_index['ATDocument'].get('doc5', None),
+                             None)
+        self.failUnlessEqual(fol._tree['doc3'], fol['doc3'].aq_base)
+        self.failUnlessEqual(fol._mt_index['ATDocument']['doc3'], 1)
 
 
 from unittest import TestSuite, makeSuite
