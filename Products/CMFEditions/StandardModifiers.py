@@ -30,6 +30,7 @@ $Id: StandardModifiers.py,v 1.13 2005/06/26 13:28:36 gregweb Exp $
 import os,sys
 from itertools import izip
 from App.class_init import InitializeClass
+from zope.copy import copy
 
 from Acquisition import aq_base
 from zope.interface import implements, Interface
@@ -65,7 +66,19 @@ except ImportError:
     class IBlobField(Interface):
         pass
 
+try:
+    from plone.folder.default import DefaultOrdering
+    from plone.folder.default import IOrderableFolder
+except ImportError:
+    class DefaultOrdering(object):
+        ORDER_KEY = "plone.folder.ordered.order"
+        POS_KEY = "plone.folder.ordered.pos"
+    class IOrderableFolder(Interface):
+        pass
+
+
 HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
+_marker = []
 
 
 #----------------------------------------------------------------------
@@ -331,9 +344,41 @@ def manage_addSkip_z3c_blobfile(self, id, title=None, REQUEST=None):
 # Standard modifier implementation
 #----------------------------------------------------------------------
 
-class OMBaseModifier:
+class RetainAttributeAnnotationItemsBase:
+    """Standard modifier retaining values of specific annotations from
+    the working copy
+    """
+    implements(ISaveRetrieveModifier)
+
+    PRESERVE_ANNOTATION_KEYS = ()
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        # replace specific annotation elements with those from the working copy
+        repo_annotations = getattr(repo_clone, '__annotations__', None)
+        obj_annotations = getattr(obj, '__annotations__', None)
+
+        # check if the modifier is called with a valid working copy
+        # with annotations
+        if obj is None or obj_annotations is None or repo_annotations is None:
+            return [], [], {}
+
+        for annotation_key in self.PRESERVE_ANNOTATION_KEYS:
+            obj_val = obj_annotations.get(annotation_key, _marker)
+            if obj_val is not _marker:
+                # overwrite it with a copy from the working copy, need
+                # to deep-copy so that it's not part of the
+                # transaction
+                repo_annotations[annotation_key] = copy(obj_val)
+
+        return [], [], {}
+
+
+class OMBaseModifier(RetainAttributeAnnotationItemsBase):
     """Base class for ObjectManager modifiers.
     """
+
+    PRESERVE_ANNOTATION_KEYS = (DefaultOrdering.ORDER_KEY,
+                                DefaultOrdering.POS_KEY)
 
     def _getOnCloneModifiers(self, obj):
         """Removes all childrens and returns them as references.
@@ -378,17 +423,13 @@ class OMBaseModifier:
         return result_refs
 
     def _getAttributeNamesHandlingSubObjects(self, obj, repo_clone):
+        attrs = list(set(tuple(repo_clone.objectIds())+tuple(obj.objectIds())))
+
         if isinstance(obj, BTreeFolder2Base):
-            # XXX: we should not have to treat the entire set of
-            # __annotations__ as a reference, but the default IExplicitOrdering
-            # implementation would appear to force it.
-            attrs = ['_tree', '_count', '_mt_index', '__annotations__']
+            attrs.extend(['_tree', '_count', '_mt_index'])
         elif isinstance(obj, ObjectManager):
-            attrs = ['_objects']
-        else:
-            # No idea how this folder is implemented
-            attrs = []
-        attrs.extend(set(tuple(repo_clone.objectIds())+tuple(obj.objectIds())))
+            attrs.extend(['_objects'])
+
         return attrs
 
 class OMOutsideChildrensModifier(OMBaseModifier):
@@ -443,6 +484,10 @@ class OMOutsideChildrensModifier(OMBaseModifier):
             orig_objects = getattr(obj, attr_name, _marker)
             if orig_objects is not _marker:
                 setattr(repo_clone, attr_name, orig_objects)
+
+        RetainAttributeAnnotationItemsBase.afterRetrieveModifier(self, obj,
+                                                                 repo_clone,
+                                                                 preserve)
 
         return [], ref_names, {}
 
@@ -514,6 +559,13 @@ class OMInsideChildrensModifier(OMBaseModifier):
         # return all attribute names that have something to do with
         # referencing
         ref_names = self._getAttributeNamesHandlingSubObjects(obj, repo_clone)
+
+        # We copy the ordering annotations from the working copy to
+        # the repo clone, so that we don't have inconsistencies between the
+        # objectValues and objectIds.
+        RetainAttributeAnnotationItemsBase.afterRetrieveModifier(self, obj,
+                                                                 repo_clone)
+
         return refs_to_be_deleted, ref_names, {}
 
 InitializeClass(OMInsideChildrensModifier)
@@ -548,12 +600,10 @@ class OMSubObjectAdapter:
         # CopyModifyMerge tool which is aware of the distinction between
         # retrieve and revert.
         if permanent:
-            self._obj.manage_delObjects(ids=[self._name])
+            self._obj._delObject(self._name)
         else:
-            self._obj._delOb(self._name)
+            self._obj._delObject(self._name, suppress_events=True)
 
-
-_marker = []
 
 class RetainWorkflowStateAndHistory:
     """Standard modifier retaining the working copies workflow state

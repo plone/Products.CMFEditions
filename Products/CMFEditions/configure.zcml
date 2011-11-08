@@ -10,6 +10,8 @@
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
 
   <include package="Products.CMFUid" />
+  <!-- provides hooks for zope.copy -->
+  <include package="zope.location" />
   <include package=".browser" />
   <include package=".exportimport" />
 

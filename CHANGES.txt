@@ -4,7 +4,10 @@ Changelog
 2.2.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Implement a special base modifier that allows retention of specific
+  annotation elements from the working copy.  Use this in the OM
+  modifiers to ensure we don't stomp annotations for folders on retrieval.
+  [alecm]
 
 
 2.2.2 (2011-10-17)

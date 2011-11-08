@@ -951,6 +951,96 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(self.portal.doc.Title(), "v2")
         self.assertEqual(self.portal.doc.__parent__, self.portal.aq_base)
 
+    def test23_versioningPreservesFolderAnnotations(self):
+        portal_repo = self.portal.portal_repository
+        fol = self.portal.fol
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        fol.__annotations__['something'] = True
+        portal_repo.applyVersionControl(fol, comment='first save')
+
+        # save change no 2
+        fol.setTitle('v2 of fol')
+        fol.__annotations__['something'] = False
+        portal_repo.save(fol, comment='second save')
+
+        # change no 3 (without saving)
+        fol.setTitle('v3 of fol')
+        fol.__annotations__['something'] = None
+        fol.__annotations__['another_thing'] = True
+
+        # retrieve change 1 and 2
+        repo_fol1 = portal_repo.retrieve(fol, 0).object
+        repo_fol2 = portal_repo.retrieve(fol, 1).object
+
+        # Test values on the repository copies and the working copy
+        self.failUnlessEqual(repo_fol1.__annotations__['something'], True)
+        self.failUnlessEqual(repo_fol2.__annotations__['something'], False)
+        self.failUnlessEqual(fol.__annotations__['something'], None)
+        self.failUnlessEqual(repo_fol2.__annotations__.get('another_thing',
+                                                           None), None)
+
+        # Test that revert brings in the original annotation
+        portal_repo.revert(fol)
+        self.failUnlessEqual(fol.__annotations__['something'], False)
+        self.failUnlessEqual(fol.__annotations__.get('another_thing', None),
+                             None)
+
+        portal_repo.revert(fol, 0)
+        self.failUnlessEqual(fol.__annotations__['something'], True)
+
+    def test24_versioningPreservesFolderOrder(self):
+        portal_repo = self.portal.portal_repository
+        fol = self.portal.fol
+
+        # save change no 1
+        fol.setTitle('v1 of fol')
+        portal_repo.applyVersionControl(fol, comment='first save')
+
+        # save change no 2
+        fol.setTitle('v2 of fol')
+        fol.moveObjectsToTop(['doc2'])
+
+        self.failUnlessEqual(fol.objectIds()[0], 'doc2')
+
+        working_ids = fol.objectIds()
+
+        # Test that a retrieve provides the order and content from
+        # the working copy on the repo copy
+        repo_fol1 = portal_repo.retrieve(fol, 0).object
+        self.failUnlessEqual(repo_fol1.objectIds(), working_ids)
+
+        # Test that a revert preserves the order from the working copy
+        portal_repo.revert(fol)
+        self.failUnlessEqual(fol.objectIds(), working_ids)
+
+        # See how we interact with delete
+        fol.invokeFactory('Document', 'doc3')
+        fol.moveObjectsToTop(['doc3'])
+        fol.manage_delObjects(['doc2'])
+        transaction.savepoint(optimistic=True)
+
+        working_ids = fol.objectIds()
+        doc3 = fol['doc3']
+        portal_repo.revert(fol)
+
+        # Test that we kept the ids from working copy, kept the new child
+        # restored the deleted child
+        self.failUnlessEqual(fol.objectIds(), working_ids)
+        self.failUnlessEqual(fol.objectIds()[0], 'doc3')
+        self.failUnlessEqual(getattr(fol, 'doc2', None), None)
+        self.failUnlessEqual(fol['doc3'], doc3)
+
+        # Test the BTreeFolder internals
+        self.failUnlessEqual(fol._tree.get('doc2', None), None)
+        self.failUnlessEqual(fol._tree['doc3'], doc3)
+        self.failUnlessEqual(fol._count(), 2)
+        self.failUnlessEqual(fol._mt_index['ATDocument'].get('doc2', None),
+                             None)
+        self.failUnlessEqual(fol._mt_index['ATDocument']['doc3'], 1)
+
+
 
 from unittest import TestSuite, makeSuite
 def test_suite():
