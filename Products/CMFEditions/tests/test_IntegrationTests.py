@@ -993,6 +993,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
     def test24_versioningPreservesFolderOrder(self):
         portal_repo = self.portal.portal_repository
         fol = self.portal.fol
+        doc2 = fol['doc2']
 
         # save change no 1
         fol.setTitle('v1 of fol')
@@ -1036,9 +1037,9 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.failUnlessEqual(fol._tree.get('doc2', None), None)
         self.failUnlessEqual(fol._tree['doc3'], doc3)
         self.failUnlessEqual(fol._count(), 2)
-        self.failUnlessEqual(fol._mt_index['ATDocument'].get('doc2', None),
+        self.failUnlessEqual(fol._mt_index[doc2.meta_type].get('doc2', None),
                              None)
-        self.failUnlessEqual(fol._mt_index['ATDocument']['doc3'], 1)
+        self.failUnlessEqual(fol._mt_index[doc3.meta_type]['doc3'], 1)
 
     def test25_versioningRestoresInsideRefsFolderOrder(self):
         # Enable OMInsideChildrensModifier
@@ -1114,10 +1115,10 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         # Test the BTreeFolder internals
         self.failUnlessEqual(fol._tree.get('doc5', None), None)
         self.failUnlessEqual(fol._count(), 4)
-        self.failUnlessEqual(fol._mt_index['ATDocument'].get('doc5', None),
+        self.failUnlessEqual(fol._mt_index[doc3.meta_type].get('doc5', None),
                              None)
         self.failUnlessEqual(fol._tree['doc3'], fol['doc3'].aq_base)
-        self.failUnlessEqual(fol._mt_index['ATDocument']['doc3'], 1)
+        self.failUnlessEqual(fol._mt_index[doc3.meta_type]['doc3'], 1)
 
 
 from unittest import TestSuite, makeSuite
