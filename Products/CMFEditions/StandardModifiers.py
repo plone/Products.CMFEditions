@@ -34,6 +34,8 @@ from zope.copy import copy
 
 from Acquisition import aq_base
 from zope.interface import implements, Interface
+from zope.component import globalregistry
+from zope.location.interfaces import ISite
 from ZODB.blob import Blob
 from OFS.ObjectManager import ObjectManager
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
@@ -292,6 +294,20 @@ def manage_addSkipParentPointers(self, id, title=None, REQUEST=None):
     """Add a skip parent pointers modifier
     """
     modifier = SkipParentPointers(id, title)
+    self._setObject(id, modifier)
+
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+manage_SkipRegistryBasesPointersAddForm =  \
+    PageTemplateFile('www/SkipRegistryBasesPointersAddForm.pt',
+                   globals(),
+                   __name__='manage_SkipRegistryBasesPointersAddForm')
+
+def manage_addSkipRegistryBasesPointers(self, id, title=None, REQUEST=None):
+    """Add a skip component registry bases modifier
+    """
+    modifier = SkipRegistryBasesPointers(id, title)
     self._setObject(id, modifier)
 
     if REQUEST is not None:
@@ -844,6 +860,62 @@ class SkipParentPointers:
 InitializeClass(SkipParentPointers)
 
 
+class SkipRegistryBasesPointers:
+    """Standard modifier to avoid cloning of component registry
+    __bases__ and restore them from context
+    """
+
+    implements(ICloneModifier, ISaveRetrieveModifier)
+
+    def getOnCloneModifiers(self, obj):
+        """Removes component registry bases pointers and stores a marker
+        """
+        if not ISite.providedBy(obj):
+            return None
+
+        registry = obj.getSiteManager()
+        component_bases = dict(
+            registry=dict((id(aq_base(base)), aq_base(base))
+                          for base in registry.__bases__),
+            utilities=dict((id(aq_base(base)), aq_base(base))
+                           for base in registry.utilities.__bases__),
+            adapters=dict((id(aq_base(base)), aq_base(base))
+                           for base in registry.adapters.__bases__))
+
+        def persistent_id(obj):
+            obj_id = id(aq_base(obj))
+            for key, bases in component_bases.iteritems():
+                if obj_id in bases:
+                    return '%s:%s' % (key, obj_id)
+            return None
+
+        def persistent_load(obj):
+            key, base_id = obj.split(':')
+            return component_bases[key][int(base_id)]
+
+        return persistent_id, persistent_load, [], []
+
+    def beforeSaveModifier(self, obj, clone):
+        """Don't save the bases."""
+        if ISite.providedBy(clone):
+            sm = clone.getSiteManager()
+            sm.__bases__ = ()
+            sm.utilities.__bases__ = ()
+            sm.adapters.__bases__ = ()
+        return {}, [], []
+
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
+        """Does nothing, the pickler does the work"""
+        if ISite.providedBy(repo_clone) and obj is not None:
+            sm = repo_clone.getSiteManager()
+            obj_sm = obj.getSiteManager()
+            sm.__bases__ = obj_sm.__bases__
+            sm.utilities.__bases__ = obj_sm.utilities.__bases__
+            sm.adapters.__bases__ = obj_sm.adapters.__bases__
+        return [], [], {}
+InitializeClass(SkipRegistryBasesPointers)
+
+
 class SillyDemoRetrieveModifier:
     """Silly Retrieve Modifier for Demos
 
@@ -1318,6 +1390,17 @@ modifiers = (
         'modifier': SkipParentPointers,
         'form': manage_SkipParentPointersAddForm,
         'factory': manage_addSkipParentPointers,
+        'icon': 'www/modifier.gif',
+    },
+    {
+        'id': 'SkipRegistryBasesPointers',
+        'title': "Skip Saving of Component Registry Bases",
+        'enabled': True,
+        'condition': "python: True",
+        'wrapper': ConditionalTalesModifier,
+        'modifier': SkipRegistryBasesPointers,
+        'form': manage_SkipRegistryBasesPointersAddForm,
+        'factory': manage_addSkipRegistryBasesPointers,
         'icon': 'www/modifier.gif',
     },
     {

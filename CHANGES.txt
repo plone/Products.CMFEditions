@@ -9,6 +9,10 @@ Changelog
   modifiers to ensure we don't stomp annotations for folders on retrieval.
   [alecm]
 
+- If an object has a component registry (AKA site manager), make sure
+  the bases of that registry are not recursively copied when saving
+  versions.
+  [rossp]
 
 2.2.2 (2011-10-17)
 ------------------
