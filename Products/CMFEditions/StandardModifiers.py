@@ -900,8 +900,6 @@ class SkipRegistryBasesPointers:
         if ISite.providedBy(clone):
             sm = clone.getSiteManager()
             sm.__bases__ = ()
-            sm.utilities.__bases__ = ()
-            sm.adapters.__bases__ = ()
         return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
@@ -910,8 +908,6 @@ class SkipRegistryBasesPointers:
             sm = repo_clone.getSiteManager()
             obj_sm = obj.getSiteManager()
             sm.__bases__ = obj_sm.__bases__
-            sm.utilities.__bases__ = obj_sm.utilities.__bases__
-            sm.adapters.__bases__ = obj_sm.adapters.__bases__
         return [], [], {}
 InitializeClass(SkipRegistryBasesPointers)
 
