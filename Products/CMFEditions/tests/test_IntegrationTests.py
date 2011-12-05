@@ -38,8 +38,6 @@ from zope.component.persistentregistry import PersistentComponents
 import ZODB.interfaces
 from ZODB import broken
 from Acquisition import aq_base
-from Products.Five.component import enableSite
-from Products.Five.component.interfaces import IObjectManagerSite
 
 
 class TestIntegration(PloneTestCase.PloneTestCase):
@@ -1139,7 +1137,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         fol.setTitle("v1")
         # Make it a component registry with bases
         base = aq_base(self.portal.getSiteManager())
-        enableSite(fol, iface=IObjectManagerSite)
         components = PersistentComponents()
         components.__bases__ = (base,)
         fol.setSiteManager(components)
