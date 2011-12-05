@@ -33,8 +33,8 @@ from App.class_init import InitializeClass
 
 from Acquisition import aq_base
 from zope.interface import implements, Interface
-from zope.component import globalregistry
-from zope.location.interfaces import ISite
+from zope.component.interfaces import ComponentLookupError
+from zope.location.interfaces import IPossibleSite
 from ZODB.blob import Blob
 from OFS.ObjectManager import ObjectManager
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
@@ -817,13 +817,22 @@ class SkipRegistryBasesPointers:
 
     implements(ICloneModifier, ISaveRetrieveModifier)
 
+    def getSiteManager(self, obj):
+        if not IPossibleSite.providedBy(obj):
+            return
+        try:
+            registry = obj.getSiteManager()
+        except ComponentLookupError:
+            return
+        return registry
+
     def getOnCloneModifiers(self, obj):
         """Removes component registry bases pointers and stores a marker
         """
-        if not ISite.providedBy(obj):
-            return None
+        registry = self.getSiteManager(obj)
+        if registry is None:
+            return
 
-        registry = obj.getSiteManager()
         component_bases = dict(
             registry=dict((id(aq_base(base)), aq_base(base))
                           for base in registry.__bases__),
@@ -847,15 +856,15 @@ class SkipRegistryBasesPointers:
 
     def beforeSaveModifier(self, obj, clone):
         """Don't save the bases."""
-        if ISite.providedBy(clone):
-            sm = clone.getSiteManager()
+        sm = self.getSiteManager(clone)
+        if sm is not None:
             sm.__bases__ = ()
         return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         """Does nothing, the pickler does the work"""
-        if ISite.providedBy(repo_clone) and obj is not None:
-            sm = repo_clone.getSiteManager()
+        sm = self.getSiteManager(repo_clone)
+        if sm is not None and obj is not None:
             obj_sm = obj.getSiteManager()
             sm.__bases__ = obj_sm.__bases__
         return [], [], {}
