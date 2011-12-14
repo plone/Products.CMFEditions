@@ -28,7 +28,17 @@ $Id: test_IntegrationTests.py,v 1.15 2005/06/24 11:42:01 gregweb Exp $
 from Products.PloneTestCase import PloneTestCase
 PloneTestCase.setupPloneSite()
 
+import sys
+import imp
+
 import transaction
+
+from zope.interface.interface import InterfaceClass
+from zope.component.persistentregistry import PersistentComponents
+import ZODB.interfaces
+from ZODB import broken
+from Acquisition import aq_base
+
 
 class TestIntegration(PloneTestCase.PloneTestCase):
 
@@ -1119,6 +1129,42 @@ class TestIntegration(PloneTestCase.PloneTestCase):
                              None)
         self.failUnlessEqual(fol._tree['doc3'], fol['doc3'].aq_base)
         self.failUnlessEqual(fol._mt_index[doc3.meta_type]['doc3'], 1)
+
+    def test23_RegistryBasesNotVersionedOrRestored(self):
+        portal_repo = self.portal.portal_repository
+        fol = self.portal.fol
+
+        fol.setTitle("v1")
+        # Make it a component registry with bases
+        base = aq_base(self.portal.getSiteManager())
+        components = PersistentComponents()
+        components.__bases__ = (base,)
+        fol.setSiteManager(components)
+        portal_repo.applyVersionControl(fol)
+
+        broken_iface = broken.find_global(
+            'never_gonna_be_real', 'IMissing',
+            Broken=ZODB.interfaces.IBroken, type=InterfaceClass)
+        sys.modules[broken_iface.__module__] = module = imp.new_module(
+            broken_iface.__module__)
+        module.IMissing = broken_iface
+
+        # add a broken registrsation but do a savepoint before
+        # breaking the interfaces to simulate a broken registrion from
+        # a previous commit
+        base.registerUtility(component=None, provided=broken_iface)
+        transaction.savepoint(optimistic=True)
+        del sys.modules[broken_iface.__module__]
+
+        fol.setTitle("v2")
+
+        # If an attempt was made to pickle the parent registry's
+        # broken registration we would see an error here
+        portal_repo.save(fol)
+
+        self.assertEqual(self.portal.fol.Title(), "v2")
+        self.assertTrue(
+            self.portal.fol.getSiteManager().__bases__[0] is base)
 
 
 from unittest import TestSuite, makeSuite
