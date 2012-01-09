@@ -27,5 +27,13 @@
         permission="zope2.View"
         />
 
+    <browser:page
+        for="*"
+        name="get_macros"
+        class=".utils.GetMacros"
+        attribute="get_macros"
+        permission="zope2.View"
+        />
+
 </configure>
 

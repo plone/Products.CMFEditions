@@ -4,6 +4,11 @@ Changelog
 2.2.3 (unreleased)
 ------------------
 
+- Changed the get_macros python skin script into a browser view.  This
+  avoids an Unauthorized exception when viewing revisions when using
+  five.pt (Chameleon).
+  [maurits]
+
 - Implement a special base modifier that allows retention of specific
   annotation elements from the working copy.  Use this in the OM
   modifiers to ensure we don't stomp annotations for folders on retrieval.
