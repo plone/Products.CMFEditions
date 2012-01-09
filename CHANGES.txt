@@ -4,6 +4,11 @@ Changelog
 2.1.7 (unreleased)
 ------------------
 
+- Changed the get_macros python skin script into a browser view.  This
+  avoids an Unauthorized exception when viewing revisions when using
+  five.pt (Chameleon).
+  [maurits]
+
 - If an object has a component registry (AKA site manager), make sure
   the bases of that registry are not recursively copied when saving
   versions.

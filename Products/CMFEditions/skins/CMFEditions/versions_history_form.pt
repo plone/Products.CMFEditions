@@ -201,7 +201,7 @@
     <div style="border:solid 1px gray"
          tal:condition="version_id">
       <tal:block define="vdata python:pr.retrieve(context, version_id);
-                         version_view_macro python: context.get_macros(vdata);
+                         version_view_macro python: context.restrictedTraverse('@@get_macros')(vdata);
                          context nocall:vdata/object;
                          portal_type python:context.getPortalTypeName().lower().replace(' ', '_');
                          object_title context/Title;
