@@ -37,8 +37,6 @@ from BTrees.OOBTree import OOBTree
 from zope.event import notify
 from zope.interface import implements, Interface
 from zope.lifecycleevent import ObjectModifiedEvent
-from Products.Archetypes.event import ObjectEditedEvent
-from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
 
@@ -63,6 +61,14 @@ from Products.CMFEditions.Permissions import RevertToPreviousVersions
 from Products.CMFEditions.Permissions import ManageVersioningPolicies
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
+
+try:
+    from Products.Archetypes.event import ObjectEditedEvent
+    from Products.Archetypes.interfaces import IBaseObject
+except ImportError:
+    class IBaseObject(Interface):
+        pass
+
 try:
     from Products.Archetypes.interfaces.referenceable import IReferenceable
     from Products.Archetypes.config import REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME

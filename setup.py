@@ -29,7 +29,7 @@ setup(name='Products.CMFEditions',
             'Products.Archetypes',
             'Products.CMFDynamicViewFTI',
             'Products.PloneTestCase',
-            'collective.monkeypatcher',  # [test] dependency of plone.app.blob
+            'plone.app.blob [test]',
         ]
       ),
       install_requires=[
@@ -47,7 +47,6 @@ setup(name='Products.CMFEditions',
         'transaction',
         'ZODB3',
         'Zope2',
-        'plone.app.blob',
       ],
       entry_points="""
       [z3c.autoinclude.plugin]
