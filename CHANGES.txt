@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.7 (unreleased)
+2.1.7 (2012-02-07)
 ------------------
 
 - Changed the get_macros python skin script into a browser view.  This
