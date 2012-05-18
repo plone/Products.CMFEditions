@@ -4,7 +4,8 @@ Changelog
 2.2.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Declare missing dependency on zope.copy.
+  [hannosch]
 
 
 2.2.3 (2012-01-26)

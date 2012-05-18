@@ -34,6 +34,7 @@ setup(name='Products.CMFEditions',
       ),
       install_requires=[
         'setuptools',
+        'zope.copy',
         'zope.dottedname',
         'zope.i18nmessageid',
         'zope.interface',
