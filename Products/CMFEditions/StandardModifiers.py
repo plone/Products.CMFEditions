@@ -1256,7 +1256,7 @@ class Skip_z3c_blobfile:
             pass
         else:
             blob_file_classes.append(NamedBlobFile)
-        return blob_file_classes        
+        return tuple(blob_file_classes)
 
     def getOnCloneModifiers(self, obj):
         """Removes z3c.blobfile fields
