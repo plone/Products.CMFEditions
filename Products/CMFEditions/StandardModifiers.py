@@ -1261,7 +1261,7 @@ class Skip_z3c_blobfile:
     def getOnCloneModifiers(self, obj):
         """Removes z3c.blobfile fields
         """
-        blob_file_classes = self._file_classes()
+        blob_file_classes = self._blob_file_classes()
         if not blob_file_classes:
             return
 
@@ -1282,7 +1282,7 @@ class Skip_z3c_blobfile:
         return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        blob_file_classes = self._file_classes()
+        blob_file_classes = self._blob_file_classes()
         if not blob_file_classes:
             return [], [], {}
 
