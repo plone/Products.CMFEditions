@@ -4,6 +4,10 @@ Changelog
 2.2.4 (unreleased)
 ------------------
 
+- Skip blob files from plone.namedfile even when they no longer
+  extend the classes from z3c.blobfile.
+  [davisagli]
+
 - Declare missing dependency on zope.copy.
   [hannosch]
 

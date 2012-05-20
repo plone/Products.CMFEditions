@@ -1242,16 +1242,31 @@ class Skip_z3c_blobfile:
 
     implements(ICloneModifier, ISaveRetrieveModifier)
 
-    def getOnCloneModifiers(self, obj):
-        """Removes z3c.blobfile fields
-        """
+    def _blob_file_classes(self):
+        blob_file_classes = []
         try:
             from z3c.blobfile.file import File
         except ImportError:
+            pass
+        else:
+            blob_file_classes.append(File)
+        try:
+            from plone.namedfile.file import NamedBlobFile
+        except ImportError:
+            pass
+        else:
+            blob_file_classes.append(NamedBlobFile)
+        return blob_file_classes        
+
+    def getOnCloneModifiers(self, obj):
+        """Removes z3c.blobfile fields
+        """
+        blob_file_classes = self._file_classes()
+        if not blob_file_classes:
             return
 
         blob_refs = set(id(v) for v in obj.__dict__.itervalues()
-                        if isinstance(v, File))
+                        if isinstance(v, blob_file_classes))
 
         def persistent_id(obj):
             if id(aq_base(obj)) in blob_refs:
@@ -1267,16 +1282,15 @@ class Skip_z3c_blobfile:
         return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        try:
-            from z3c.blobfile.file import File
-        except ImportError:
+        blob_file_classes = self._file_classes()
+        if not blob_file_classes:
             return [], [], {}
 
         if obj is None:
             return [], [], {}
 
         blob_fields = ((k, v) for k, v in obj.__dict__.iteritems()
-                        if isinstance(v, File))
+                        if isinstance(v, blob_file_classes))
 
         for k, v in blob_fields:
             setattr(repo_clone, k, v)
