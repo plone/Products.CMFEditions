@@ -98,11 +98,13 @@ def initialize(context):
             icon = m['icon'],
         )
 
-def install(portal_modifier):
+def install(portal_modifier, ids=None):
     """Registers modifiers in the modifier registry (at tool install time).
     """
     for m in modifiers:
         id = m['id']
+        if ids is not None and id not in ids:
+            continue
         if id in portal_modifier.objectIds():
             continue
         title = m['title']

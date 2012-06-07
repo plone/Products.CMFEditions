@@ -24,3 +24,9 @@ def importVarious(context):
     portal_repository = getToolByName(site, 'portal_repository')
     portal_repository.setAutoApplyMode(True)
     portal_repository._migrateVersionPolicies()
+
+
+def installSkipRegistryBasesPointersModifier(context):
+    """Upgrade step to install the component registry bases modifier."""
+    portal_modifier = getToolByName(context, 'portal_modifier', None)
+    StandardModifiers.install(portal_modifier, ['SkipRegistryBasesPointers'])

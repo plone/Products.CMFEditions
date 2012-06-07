@@ -4,6 +4,9 @@ Changelog
 2.2.4 (unreleased)
 ------------------
 
+- Add upgrade step to install the component registry bases modifier.
+  [rossp]
+
 - Skip blob files from plone.namedfile even when they no longer
   extend the classes from z3c.blobfile.
   [davisagli]
