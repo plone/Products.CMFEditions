@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.4 (unreleased)
+2.2.4 (2012-06-27)
 ------------------
 
 - Add upgrade step to install the component registry bases modifier.
