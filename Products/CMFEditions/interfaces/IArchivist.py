@@ -120,7 +120,7 @@ class IArchivist(Interface):
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
 
-    def queryHistory(obj=None, history_id=None, preserve=(), default=[]):
+    def queryHistory(obj=None, history_id=None, preserve=(), default=None):
         """Return the history of an object.
 
         Does the same as ``getHistory`` with the difference of returning
@@ -246,7 +246,7 @@ class IPurgeSupport(Interface):
         (see interface documentation for details).
         """
 
-    def queryHistory(obj=None, history_id=None, preserve=(), default=[],
+    def queryHistory(obj=None, history_id=None, preserve=(), default=None,
                      countPurged=True):
         """Return the history of an object.
 
