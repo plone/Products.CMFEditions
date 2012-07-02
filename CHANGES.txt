@@ -4,7 +4,9 @@ Changelog
 2.2.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- ArchivistTool.py, DummyTools.py, IArchivist.py, ModifierRegistryTool.py: 
+  Don't use list as default parameter value.
+  [kleist]
 
 
 2.2.4 (2012-06-27)
