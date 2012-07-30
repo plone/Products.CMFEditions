@@ -1130,7 +1130,7 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.failUnlessEqual(fol._tree['doc3'], fol['doc3'].aq_base)
         self.failUnlessEqual(fol._mt_index[doc3.meta_type]['doc3'], 1)
 
-    def test23_RegistryBasesNotVersionedOrRestored(self):
+    def test26_RegistryBasesNotVersionedOrRestored(self):
         portal_repo = self.portal.portal_repository
         fol = self.portal.fol
 
