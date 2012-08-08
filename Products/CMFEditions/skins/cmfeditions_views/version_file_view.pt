@@ -12,18 +12,6 @@
                        content_type context/get_content_type|context/Format;
                       ">
 
-        <h1 tal:content="object_title" class="documentFirstHeading">
-            Title or id
-        </h1>
-
-        <div tal:replace="structure provider:plone.belowcontenttitle" />
-
-        <div class="documentDescription"
-           tal:content="context/Description"
-           tal:condition="context/Description">
-            Description
-        </div>
-
         <div id="content-core">
             <p tal:condition="size_value">
                 <a href=""
