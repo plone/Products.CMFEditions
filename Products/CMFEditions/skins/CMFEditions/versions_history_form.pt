@@ -146,7 +146,7 @@
                         </li>
                         </tal:diffs>
                         <li tal:condition="python: (not current_version) and canRevertToPrevious">
-                            
+
                             <form action="" method="post"
                                   tal:attributes="action string:$here_url/revertversion">
                               <input type="hidden" name="version_id" value="" tal:attributes="value id" />
@@ -210,8 +210,9 @@
                          object_title context/Title;
                          suppress_preview python:True;
                          view_macro python:version_view_macro;">
-        <h1 class="documentFirstHeading" tal:content="vdata/object/Title"/>
+        <!-- <h1 class="documentFirstHeading" tal:content="vdata/object/Title"/>
         <div class="documentDescription" tal:content="vdata/object/Description"></div>
+        -->
         <tal:preview condition="view_macro">
           <metal:use_body use-macro="view_macro" />
         </tal:preview>
