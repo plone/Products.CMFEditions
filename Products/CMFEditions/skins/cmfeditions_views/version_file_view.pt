@@ -7,8 +7,8 @@
 
 <metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main"
-           tal:define="size python:here.getObjSize(here);
-                       content_type here/get_content_type|here/Format;
+           tal:define="size python:context.getObjSize(context);
+                       content_type context/get_content_type|context/Format;
                       ">
 
         <h1 tal:content="object_title" class="documentFirstHeading">
@@ -18,8 +18,8 @@
         <div tal:replace="structure provider:plone.belowcontenttitle" />
 
         <div class="documentDescription"
-           tal:content="here/Description"
-           tal:condition="here/Description">
+           tal:content="context/Description"
+           tal:condition="context/Description">
             Description
         </div>
 
@@ -65,7 +65,7 @@
 
                     <h2 i18n:translate="heading_file_contents" i18n:domain="plone">File contents</h2>
 
-                    <pre tal:content="here/get_data|here/data|nothing">
+                    <pre tal:content="context/get_data|context/data|nothing">
                     </pre>
 
             </div>
