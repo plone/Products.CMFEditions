@@ -4,6 +4,10 @@ Changelog
 2.2.5 (unreleased)
 ------------------
 
+- Fixed versions history form:
+  Title and description aren't displayed two times.
+  [thomasdesvenain]
+
 - Fixed version_file_view:
   some displayed values of a previous version where values of current version.
   [thomasdesvenain]
