@@ -7,7 +7,8 @@
 
 <metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main"
-           tal:define="size python:context.getObjSize(context);
+           tal:define="size_value context/get_size;
+                       size_label python:size_value and context.getObjSize(context) or None;
                        content_type context/get_content_type|context/Format;
                       ">
 
@@ -24,7 +25,7 @@
         </div>
 
         <div id="content-core">
-            <p>
+            <p tal:condition="size_value">
                 <a href=""
                    tal:define="here_url context/absolute_url"
                    tal:attributes="href string:$here_url/file_download_version?version_id=${version_id}">
@@ -36,17 +37,19 @@
             </p>
 
             <small class="discreet">
+
+              <span tal:condition="not:size_value" i18n:translate="no_file_uploaded">
+                  (No file has been uploaded yet)
+              </span>
+
+              <tal:fileinfo condition="size_value">
                 <span i18n:translate="label_size" i18n:domain="plone">
                 Size
                 </span>
 
-                <span tal:condition="size"
-                    tal:content="size">
+                <span tal:condition="size_value"
+                    tal:content="size_label">
                 257 KB
-                </span>
-
-                <span tal:condition="python:test(size,0,1)" i18n:translate="no_file_uploaded">
-                  (No file has been uploaded yet)
                 </span>
 
                 -
@@ -58,10 +61,11 @@
                 <span tal:content="content_type">
                 Content type
                 </span>
+              </tal:fileinfo>
             </small>
 
             <div class="row"
-                 tal:condition="python:test(content_type.find('text')>-1, 1,0)">
+                 tal:condition="python:test(size_value and content_type.find('text')>-1, 1,0)">
 
                     <h2 i18n:translate="heading_file_contents" i18n:domain="plone">File contents</h2>
 

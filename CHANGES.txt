@@ -4,8 +4,15 @@ Changelog
 2.2.5 (unreleased)
 ------------------
 
-- Fixed version_file_view:
-  some displayed values of a previous version where values of current version.
+- Fixed version file preview for empty files.
+  [thomasdesvenain]
+
+- Fixed versions history form:
+  title and description aren't displayed two times.
+  [thomasdesvenain]
+
+- Fixed version file preview:
+  some displayed values of a previous version were values of current version.
   [thomasdesvenain]
 
 - ArchivistTool.py, DummyTools.py, IArchivist.py, ModifierRegistryTool.py:
