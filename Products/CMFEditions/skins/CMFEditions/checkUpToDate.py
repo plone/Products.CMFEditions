@@ -14,6 +14,7 @@ version_id = getattr(context, "version_id", None)
 if version_id is None:
     isModified = True
     reverted_vid = None
+    isReverted = False
 else:
     isModified = not repo.isUpToDate(context, version_id)
     historyLength = len(history)
@@ -26,7 +27,7 @@ else:
         version_id = historyLength
 
 return {
-    "isModified": isModified, 
+    "isModified": isModified,
     "version_id": version_id,
     "isReverted": isReverted,
     "reverted_vid": reverted_vid,
