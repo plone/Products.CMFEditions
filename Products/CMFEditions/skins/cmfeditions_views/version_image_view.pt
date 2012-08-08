@@ -10,18 +10,6 @@
                     tal:define="size here/size;
                                 here_url context/absolute_url;">
 
-        <h1 tal:content="object_title" class="documentFirstHeading">
-            Title or id
-        </h1>
-
-        <div tal:replace="structure provider:plone.belowcontenttitle" />
-
-        <div class="documentDescription"
-           tal:content="here/Description"
-           tal:condition="here/Description">
-            Description
-        </div>
-
         <div id="content-core">
             <a href=""
                class="discreet"
