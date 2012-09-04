@@ -35,7 +35,7 @@ from zope.copy import copy
 from Acquisition import aq_base
 from zope.interface import implements, Interface
 from zope.component.interfaces import ComponentLookupError
-from zope.location.interfaces import IPossibleSite
+from zope.component.interfaces import IPossibleSite
 from ZODB.blob import Blob
 from OFS.ObjectManager import ObjectManager
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base

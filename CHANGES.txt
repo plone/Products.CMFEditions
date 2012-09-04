@@ -4,8 +4,8 @@ Changelog
 2.2.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Update ``IPossibleSite`` import to ``zope.component``.
+  [elro]
 
 2.2.5 (2012-08-11)
 ------------------
