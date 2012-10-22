@@ -4,8 +4,10 @@ Changelog
 2.2.7 (unreleased)
 ------------------
 
-- Site administrators do revisioning
+- put back the history legend for compare/diff versions, fixes #9371
+  [maartenkling]
 
+- Site administrators do revisioning
 
 2.2.6 (2012-10-16)
 ------------------
@@ -1073,4 +1075,3 @@ Features added
 ----------------------------
 
 no changes recorded
-
