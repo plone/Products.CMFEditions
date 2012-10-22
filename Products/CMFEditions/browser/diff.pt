@@ -85,6 +85,8 @@
               </noscript>
             </form>
 
+            <div metal:use-macro="here/diff_legend/macros/diff_legend" />
+
             <p tal:condition="not:view/changes" i18n:translate="">
               There are no changes between the selected revisions.
             </p>
@@ -135,4 +137,3 @@
     </metal:main>
   </body>
 </html>
-
