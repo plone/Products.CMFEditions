@@ -4,7 +4,7 @@ Changelog
 2.2.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Site administrators do revisioning
 
 
 2.2.6 (2012-10-16)
