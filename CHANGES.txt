@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.7 (unreleased)
+2.2.7 (2013-01-01)
 ------------------
 
 - put back the history legend for compare/diff versions, fixes #9371
