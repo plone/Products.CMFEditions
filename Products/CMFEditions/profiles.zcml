@@ -22,4 +22,14 @@
           />
         
     </genericsetup:upgradeSteps>
+
+    <genericsetup:upgradeSteps
+        source="3"
+        destination="4"
+        profile="Products.CMFEditions:CMFEditions">
+        <genericsetup:upgradeStep
+           title="Install the component registry bases modifier."
+           handler=".setuphandlers.installSkipRegistryBasesPointersModifier" />
+    </genericsetup:upgradeSteps>
+
 </configure>

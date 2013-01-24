@@ -232,9 +232,11 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         return metadata, inside_crefs, outside_crefs
 
     security.declarePrivate('afterRetrieveModifier')
-    def afterRetrieveModifier(self, obj, repo_clone, preserve=[]):
+    def afterRetrieveModifier(self, obj, repo_clone, preserve=None):
         """See IModifier
         """
+        if preserve is None:
+            preserve = []
         # before letting the after retrieve modifiers replace
         # attributes save those attributes away that may got
         # overwritten but have to be preserved.

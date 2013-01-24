@@ -244,7 +244,9 @@ class DummyArchivist(SimpleItem):
         return [item['metadata'] for item in self._archive[history_id]]
 
     def queryHistory(self, obj=None, history_id=None,
-                     preserve=(), default=[]):
+                     preserve=(), default=None):
+        if default is None:
+            default = []
         try:
             history = self.getHistory(obj=obj, history_id=history_id, preserve=preserve)
         except KeyError:

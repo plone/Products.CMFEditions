@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-version = '2.2.3dev'
+version = '2.2.8.dev0'
 
 setup(name='Products.CMFEditions',
       version=version,
@@ -34,6 +34,7 @@ setup(name='Products.CMFEditions',
       ),
       install_requires=[
         'setuptools',
+        'zope.copy',
         'zope.dottedname',
         'zope.i18nmessageid',
         'zope.interface',

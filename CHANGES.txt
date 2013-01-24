@@ -1,7 +1,60 @@
 Changelog
 =========
 
-2.2.3 (unreleased)
+2.2.8 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
+2.2.7 (2013-01-01)
+------------------
+
+- put back the history legend for compare/diff versions, fixes #9371
+  [maartenkling]
+
+- Site administrators do revisioning
+
+2.2.6 (2012-10-16)
+------------------
+
+- Update ``IPossibleSite`` import to ``zope.component``.
+  [elro]
+
+2.2.5 (2012-08-11)
+------------------
+
+- Fixed version file preview for empty files.
+  [thomasdesvenain]
+
+- Fixed versions history form:
+  title and description aren't displayed two times.
+  [thomasdesvenain]
+
+- Fixed version file preview:
+  some displayed values of a previous version were values of current version.
+  [thomasdesvenain]
+
+- ArchivistTool.py, DummyTools.py, IArchivist.py, ModifierRegistryTool.py:
+  Don't use list as default parameter value.
+  [kleist]
+
+
+2.2.4 (2012-06-27)
+------------------
+
+- Add upgrade step to install the component registry bases modifier.
+  [rossp]
+
+- Skip blob files from plone.namedfile even when they no longer
+  extend the classes from z3c.blobfile.
+  [davisagli]
+
+- Declare missing dependency on zope.copy.
+  [hannosch]
+
+
+2.2.3 (2012-01-26)
 ------------------
 
 - Changed the get_macros python skin script into a browser view.  This
@@ -38,10 +91,10 @@ Changelog
 2.2 (2011-08-23)
 ----------------
 
-- Make Zope 2 permissions available as Zope 3-style permissions.  
+- Make Zope 2 permissions available as Zope 3-style permissions.
   [rafaelbco]
-  
-- Changed ``@@history`` to be protected by ``CMFEditions.AccessPreviousVersions`` instead of 
+
+- Changed ``@@history`` to be protected by ``CMFEditions.AccessPreviousVersions`` instead of
   ``cmf.ModifyPortalContent``.
   [rafaelbco]
 
@@ -67,7 +120,7 @@ Changelog
 ------------------
 
 - Remove references to blobs when cloning blob fields. They are handled as
-  referenced attributes anyway. This eliminates the creation of an additional 
+  referenced attributes anyway. This eliminates the creation of an additional
   empty blob when cloning blob fields.
   [buchi]
 
@@ -75,11 +128,11 @@ Changelog
   history and retrieved from there. This eliminates the creation of an
   additional empty blob when cloning blob fields.
   [buchi]
-  
-- Allow to translate the string "current" in the diff view (``@@history``) and in the 
+
+- Allow to translate the string "current" in the diff view (``@@history``) and in the
   ``version_diff`` template.
-  [rafaelbco]  
-  
+  [rafaelbco]
+
 2.1.3 (2011-04-03)
 ------------------
 
@@ -1028,4 +1081,3 @@ Features added
 ----------------------------
 
 no changes recorded
-

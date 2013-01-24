@@ -4,6 +4,7 @@
     <permission name="CMFEditions: Access previous versions"
                 acquire="True">
       <role name="Manager"/>
+      <role name="Site Administrator"/>
       <role name="Owner"/>
       <role name="Editor"/>
       <role name="Reviewer"/>
@@ -12,6 +13,7 @@
     <permission name="CMFEditions: Apply version control"
                 acquire="True">
       <role name="Manager"/>
+      <role name="Site Administrator"/>
       <role name="Owner"/>
       <role name="Editor"/>
       <role name="Reviewer"/>
@@ -20,6 +22,7 @@
     <permission name="CMFEditions: Checkout to location"
                 acquire="True">
       <role name="Manager"/>
+      <role name="Site Administrator"/>
       <role name="Owner"/>
       <role name="Editor"/>
       <role name="Reviewer"/>
@@ -27,6 +30,7 @@
     <permission name="CMFEditions: Revert to previous versions"
                 acquire="True">
       <role name="Manager"/>
+      <role name="Site Administrator"/>
       <role name="Owner"/>
       <role name="Editor"/>
       <role name="Reviewer"/>
@@ -34,6 +38,7 @@
     <permission name="CMFEditions: Save new version"
                 acquire="True">
       <role name="Manager"/>
+      <role name="Site Administrator"/>
       <role name="Owner"/>
       <role name="Editor"/>
       <role name="Reviewer"/>

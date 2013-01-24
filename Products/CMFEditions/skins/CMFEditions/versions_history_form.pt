@@ -106,7 +106,7 @@
                     <span tal:condition="not:current_version" tal:content="id">1</span>
                     <a href="#"
                        class="version-table-version"
-                       tal:attributes="href string:${here_url}/versions_history_form?version_id=${id}"
+                       tal:attributes="href string:${here_url}/versions_history_form?version_id=${id}#version_preview"
                        tal:condition="python:version_id!=id and not current_version"
                        i18n:translate="label_preview_version_link">(preview)</a>
                     <a href="#"
@@ -146,7 +146,7 @@
                         </li>
                         </tal:diffs>
                         <li tal:condition="python: (not current_version) and canRevertToPrevious">
-                            
+
                             <form action="" method="post"
                                   tal:attributes="action string:$here_url/revertversion">
                               <input type="hidden" name="version_id" value="" tal:attributes="value id" />
@@ -210,8 +210,12 @@
                          object_title context/Title;
                          suppress_preview python:True;
                          view_macro python:version_view_macro;">
+
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+
         <h1 class="documentFirstHeading" tal:content="vdata/object/Title"/>
         <div class="documentDescription" tal:content="vdata/object/Description"></div>
+
         <tal:preview condition="view_macro">
           <metal:use_body use-macro="view_macro" />
         </tal:preview>

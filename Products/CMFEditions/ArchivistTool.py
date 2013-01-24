@@ -372,10 +372,12 @@ class ArchivistTool(UniqueObject, SimpleItem):
                 "possible. Register the object '%r' first. " % obj)
 
     security.declarePrivate('queryHistory')
-    def queryHistory(self, obj=None, history_id=None, preserve=(), default=[],
+    def queryHistory(self, obj=None, history_id=None, preserve=(), default=None,
                      countPurged=True):
         """See IPurgeSupport.
         """
+        if default is None:
+            default = []
         try:
             return LazyHistory(self, obj, history_id, preserve, countPurged)
         except StorageUnregisteredError:
