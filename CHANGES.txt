@@ -4,8 +4,8 @@ Changelog
 2.2.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Remove hard dependency on Archetypes.
+  [davisagli]
 
 2.2.7 (2013-01-01)
 ------------------
