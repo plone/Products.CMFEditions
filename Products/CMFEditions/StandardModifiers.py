@@ -872,7 +872,7 @@ class SkipRegistryBasesPointers:
 
     implements(ICloneModifier, ISaveRetrieveModifier)
 
-    def getSiteManager(self, obj):
+    def querySiteManager(self, obj):
         if not IPossibleSite.providedBy(obj):
             return
         try:
@@ -884,7 +884,7 @@ class SkipRegistryBasesPointers:
     def getOnCloneModifiers(self, obj):
         """Removes component registry bases pointers and stores a marker
         """
-        registry = self.getSiteManager(obj)
+        registry = self.querySiteManager(obj)
         if registry is None:
             return
 
@@ -911,14 +911,14 @@ class SkipRegistryBasesPointers:
 
     def beforeSaveModifier(self, obj, clone):
         """Don't save the bases."""
-        sm = self.getSiteManager(clone)
+        sm = self.querySiteManager(clone)
         if sm is not None:
             sm.__bases__ = ()
         return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         """Does nothing, the pickler does the work"""
-        sm = self.getSiteManager(repo_clone)
+        sm = self.querySiteManager(repo_clone)
         if sm is not None and obj is not None:
             obj_sm = obj.getSiteManager()
             sm.__bases__ = obj_sm.__bases__
