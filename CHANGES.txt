@@ -4,6 +4,10 @@ Changelog
 2.2.8 (unreleased)
 ------------------
 
+- Fix modifier check that made AT assumptions about Dexterity
+  content.
+  [rpatterson]
+
 - Remove hard dependency on Archetypes.
   [davisagli]
 

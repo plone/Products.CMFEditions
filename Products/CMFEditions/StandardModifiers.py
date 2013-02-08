@@ -723,13 +723,16 @@ class RetainUIDs:
 
         #Preserve ATUID
         uid = getattr(aq_base(obj), 'UID', None)
-        if UUID_ATTR is not None and uid is not None and callable(obj.UID):
+        get_clone_annos = getattr(
+            aq_base(repo_clone), '_getReferenceAnnotations', None)
+        if (UUID_ATTR is not None and uid is not None and callable(obj.UID)
+            and get_clone_annos is not None):
             working_atuid = obj.UID()
             repo_uid = repo_clone.UID()
             setattr(repo_clone, UUID_ATTR, working_atuid)
             if working_atuid != repo_uid:
                 # XXX: We need to do something with forward references
-                annotations = repo_clone._getReferenceAnnotations()
+                annotations = get_clone_annos()
                 for ref in annotations.objectValues():
                     ref.sourceUID = working_atuid
 
