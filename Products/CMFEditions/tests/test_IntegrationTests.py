@@ -1160,7 +1160,8 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
         # If an attempt was made to pickle the parent registry's
         # broken registration we would see an error here
-        portal_repo.save(fol)
+        portal_archivist = self.portal.portal_archivist
+        portal_archivist._cloneByPickle(fol)
 
         self.assertEqual(self.portal.fol.Title(), "v2")
         self.assertTrue(
