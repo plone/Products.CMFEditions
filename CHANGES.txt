@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.8 (unreleased)
+2.2.8 (2013-03-05)
 ------------------
 
 - Fix modifier check that made AT assumptions about Dexterity
