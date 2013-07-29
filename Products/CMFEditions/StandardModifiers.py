@@ -54,6 +54,7 @@ from Products.CMFEditions.interfaces.IModifier import IReferenceAdapter
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
+from zope.schema import getFieldsInOrder
 
 try:
     from Products.Archetypes.interfaces.referenceable import IReferenceable
@@ -1131,7 +1132,7 @@ class SkipBlobs:
         """
 
         blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
-                         for f in obj.Schema().fields()
+                         for f in getFieldsInOrder(obj.getTypeInfo().lookupSchema())
                          if IBlobField.providedBy(f))
 
         def persistent_id(obj):
@@ -1150,7 +1151,7 @@ class SkipBlobs:
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         """If we find any BlobProxies, replace them with the values
         from the current working copy."""
-        blob_fields = (f for f in obj.Schema().fields()
+        blob_fields = (f for f in getFieldsInOrder(obj.getTypeInfo().lookupSchema())
                        if IBlobField.providedBy(f))
         for f in blob_fields:
             blob = f.getUnwrapped(obj, raw=True).getBlob()
@@ -1169,7 +1170,7 @@ class CloneBlobs:
     implements(IAttributeModifier, ICloneModifier)
 
     def getReferencedAttributes(self, obj):
-        blob_fields = (f for f in obj.Schema().fields()
+        blob_fields = (f for f in getFieldsInOrder(obj.getTypeInfo().lookupSchema())
                        if IBlobField.providedBy(f))
         file_data = {}
         # try to get last revision, only store a new blob if the
@@ -1224,7 +1225,7 @@ class CloneBlobs:
         """Removes references to blobs.
         """
         blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
-                         for f in obj.Schema().fields()
+                         for f in getFieldsInOrder(obj.getTypeInfo().lookupSchema())
                          if IBlobField.providedBy(f))
 
         def persistent_id(obj):
@@ -1283,7 +1284,7 @@ class Skip_z3c_blobfile:
 
         return persistent_id, persistent_load, [], []
 
-    def beforeSaveModifier(self, obj, clone):    
+    def beforeSaveModifier(self, obj, clone):
         return {}, [], []
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
