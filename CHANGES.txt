@@ -4,8 +4,7 @@ Changelog
 2.2.9 (unreleased)
 ------------------
 
-- Check IBlobField.providedBy based on schema information for dexterity and at
-  [maartenkling]
+- Nothing changed yet.
 
 2.2.8 (2013-03-05)
 ------------------
