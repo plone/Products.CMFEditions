@@ -54,7 +54,6 @@ from Products.CMFEditions.interfaces.IModifier import IReferenceAdapter
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
-from zope.schema import getFieldsInOrder
 
 try:
     from Products.Archetypes.interfaces.referenceable import IReferenceable
@@ -68,12 +67,6 @@ try:
 except ImportError:
     class IBlobField(Interface):
         pass
-
-try:
-    from plone.dexterity.interfaces import IDexterityContent
-    DEXTERITY_INSTALLED = True
-except:
-    DEXTERITY_INSTALLED = False
 
 try:
     from plone.folder.default import DefaultOrdering
@@ -1136,12 +1129,9 @@ class SkipBlobs:
     def getOnCloneModifiers(self, obj):
         """Removes blob objects and stores a marker
         """
-        if IDexterityContent.providedBy(obj):
-            schema = getFieldsInOrder(obj.getTypeInfo().lookupSchema())
-        else:
-            schema = obj.Schema().fields()
+
         blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
-                         for f in schema
+                         for f in obj.Schema().fields()
                          if IBlobField.providedBy(f))
 
         def persistent_id(obj):
@@ -1160,11 +1150,7 @@ class SkipBlobs:
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         """If we find any BlobProxies, replace them with the values
         from the current working copy."""
-        if IDexterityContent.providedBy(obj):
-            schema = getFieldsInOrder(obj.getTypeInfo().lookupSchema())
-        else:
-            schema = obj.Schema().fields()
-        blob_fields = (f for f in schema
+        blob_fields = (f for f in obj.Schema().fields()
                        if IBlobField.providedBy(f))
         for f in blob_fields:
             blob = f.getUnwrapped(obj, raw=True).getBlob()
@@ -1183,11 +1169,7 @@ class CloneBlobs:
     implements(IAttributeModifier, ICloneModifier)
 
     def getReferencedAttributes(self, obj):
-        if IDexterityContent.providedBy(obj):
-            schema = getFieldsInOrder(obj.getTypeInfo().lookupSchema())
-        else:
-            schema = obj.Schema().fields()
-        blob_fields = (f for f in schema
+        blob_fields = (f for f in obj.Schema().fields()
                        if IBlobField.providedBy(f))
         file_data = {}
         # try to get last revision, only store a new blob if the
@@ -1241,12 +1223,8 @@ class CloneBlobs:
     def getOnCloneModifiers(self, obj):
         """Removes references to blobs.
         """
-        if IDexterityContent.providedBy(obj):
-            schema = getFieldsInOrder(obj.getTypeInfo().lookupSchema())
-        else:
-            schema = obj.Schema().fields()
         blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
-                         for f in schema
+                         for f in obj.Schema().fields()
                          if IBlobField.providedBy(f))
 
         def persistent_id(obj):
