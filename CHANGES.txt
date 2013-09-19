@@ -4,7 +4,8 @@ Changelog
 2.2.9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Do not depend on the ``jq`` variable in the history view.
+  [maurits]
 
 2.2.8 (2013-03-05)
 ------------------

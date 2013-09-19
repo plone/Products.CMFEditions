@@ -15,29 +15,32 @@
 
   <tal:block metal:fill-slot="javascript_head_slot">
     <script type="text/javascript">
+    (function($) {
       update_display = function() {
-          var style = jq(this).attr('value');
+          var style = $(this).attr('value');
           if (! this.checked) {
               return;
           }
 
-          jq(".fieldDiff").hide();
+          $(".fieldDiff").hide();
 
           if (style=="visual") {
-              jq(".inline-diff").show();
+              $(".inline-diff").show();
           }
           else {
-              jq(".code-diff").show();
+              $(".code-diff").show();
           }
       }
 
-      jq(document).ready(function() {
-          jq(".jsOnly").show();
+      $(document).ready(function() {
+          $(".jsOnly").show();
 
-          jq("#versionSelector select").change(function() { this.form.submit(); });
-          jq("#diffTypeSelector input").click(update_display);
-          jq("#diffTypeSelector input").each(update_display);
+          $("#versionSelector select").change(function() { this.form.submit(); });
+          $("#diffTypeSelector input").click(update_display);
+          $("#diffTypeSelector input").each(update_display);
       });
+    })(jQuery);
+
 </script>
   </tal:block>
 
