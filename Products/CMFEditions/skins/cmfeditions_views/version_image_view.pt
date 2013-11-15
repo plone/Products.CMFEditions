@@ -17,7 +17,7 @@
                 <tal:block condition="size" replace="structure python: here.version_image_tag(here_url, version_id)" />
                 <br />
                 <span class="visualNoPrint">
-                    <img src="" alt="" tal:replace="structure here/search_icon.gif" />
+                    <img src="" alt="" tal:replace="structure here/search_icon.png" />
                     <span i18n:translate="label_click_to_view_full_image">Click to view full-size image&hellip;</span>
                 </span>
             </a>

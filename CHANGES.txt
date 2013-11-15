@@ -4,6 +4,10 @@ Changelog
 2.2.9 (unreleased)
 ------------------
 
+- Use search_icon.png instead of search_icon.gif in version_image_view.pt.
+  The page crashed because search_icon.gif couldn't be found.
+  [vincentfretin]
+
 - Do not depend on the ``jq`` variable in the history view.
   [maurits]
 
