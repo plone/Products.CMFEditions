@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.9 (unreleased)
+2.2.9 (2013-12-07)
 ------------------
 
 - Use search_icon.png instead of search_icon.gif in version_image_view.pt.
