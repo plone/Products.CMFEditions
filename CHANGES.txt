@@ -4,8 +4,9 @@ Changelog
 2.2.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Purging old versions did not properly remove all references
+  to the blob fields, resulting in old blobs to stay there forever.
+  [do3cc]
 
 2.2.9 (2013-12-07)
 ------------------

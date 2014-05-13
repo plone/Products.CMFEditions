@@ -862,6 +862,7 @@ class ShadowHistory(Persistent):
         del self._available[version_pos]
         try:
             del self._full[version_id]["referenced_data"]
+            self._full._p_changed = True
         except KeyError:
             pass
 
