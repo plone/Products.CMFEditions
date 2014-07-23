@@ -4,6 +4,10 @@ Changelog
 2.2.10 (unreleased)
 -------------------
 
+- Fix bug: ``CopyModifyMergeRepositoryTool.manage_setTypePolicies`` method
+  modifies sequence while iterating over it.
+  [rafaelbco]
+
 - Purging old versions did not properly remove all references
   to the blob fields, resulting in old blobs to stay there forever.
   [do3cc]

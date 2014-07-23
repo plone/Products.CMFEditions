@@ -473,6 +473,21 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         self.failUnless(portal_repository.supportsPolicy(self.portal.doc,
                                                        'at_edit_autoversion'))
 
+        # assign two policies and then unassign them.
+        # this demonstrates a bug related to modifying the list of policies
+        # of a type while iterating through it.
+        portal_repository.addPolicy('version_on_publish',
+                                            'Create version when published')
+        portal_repository.manage_setTypePolicies({'Document': [
+                                                    'at_edit_autoversion',
+                                                    'version_on_publish']})
+        portal_repository.manage_setTypePolicies({'Document': []})
+        self.failIf(portal_repository.supportsPolicy(self.portal.doc,
+                                                       'at_edit_autoversion'))
+        self.failIf(portal_repository.supportsPolicy(self.portal.doc,
+                                                       'version_on_publish'))
+
+
     def test04_add_policy(self):
         # test adding a new policy
         portal_repository = self.portal.portal_repository
