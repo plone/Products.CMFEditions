@@ -187,7 +187,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     def manage_setTypePolicies(self, policy_map, **kw):
         assert isinstance(policy_map, dict)
         for p_type, policies in self._version_policy_mapping.items():
-            for policy_id in policies:
+            for policy_id in list(policies):
                 self.removePolicyFromContentType(p_type, policy_id, **kw)
         for p_type, policies in policy_map.items():
             assert isinstance(policies, list), \
