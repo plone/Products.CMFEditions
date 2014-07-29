@@ -63,7 +63,7 @@
               <fieldset>
                 <legend i18n:translate="legend_revisions">Revisions</legend>
                 <label for="two"><span tal:omit-tag="" i18n:translate="">First revision</span>
-                  <select id="two" name="two" tal:define="rev request/form/two|string:current">
+                  <select id="two" name="two" tal:define="rev request/two|string:current">
                     <option i18n:translate="label_current" value="current" tal:attributes="selected python:rev=='current' and 'yes' or None">Current</option>
                     <option tal:repeat="version view/history"
                             tal:attributes="value version/version_id; selected python:str(rev)==str(version['version_id']) and 'yes' or None"
@@ -134,6 +134,40 @@
                   </p>
                 </div>
               </fieldset>
+
+              <tal:block tal:condition="view/changeset/recursive">
+
+
+                <tal:changed define="subdiffs view/changeset/getSubDiffs;
+                                     subdiffs python:[c for c in subdiffs if not c.same if c.id];"
+                             condition="subdiffs">
+
+                  <h2>Changed files</h2>
+
+                  <ul tal:condition="subdiffs">
+                    <li tal:repeat="cs subdiffs">
+                      <a tal:content="cs/id" tal:attributes="href cs/id">[filename]</a>
+                    </li>
+                  </ul>
+
+                </tal:changed>
+
+                <tal:changed condition="view/changeset/getRemovedItems">
+                  <h2>Removed files</h2>
+                  <ul>
+                    <li tal:repeat="id view/changeset/getRemovedItems" tal:content="id">[filename]</li>
+                  </ul>
+                </tal:changed>
+
+                <tal:changed condition="view/changeset/getAddedItems">
+                  <h2>Added files</h2>
+                  <ul tal:condition="view/changeset/getAddedItems">
+                    <li tal:repeat="id view/changeset/getAddedItems"><a tal:content="id" tal:attributes="href id">[filename]</a></li>
+                  </ul>
+                </tal:changed>
+
+              </tal:block>
+
             </tal:changes>
           </tal:block>
       </div>

@@ -4,6 +4,10 @@ Changelog
 2.2.10 (unreleased)
 -------------------
 
+- Fix #14: Duplicate functionality in @@history and version_diff.pt. Now ``version_diff`` is
+  deprecated.
+  [rafaelbco]
+
 - Fix bug: ``CopyModifyMergeRepositoryTool.manage_setTypePolicies`` method
   modifies sequence while iterating over it.
   [rafaelbco]
