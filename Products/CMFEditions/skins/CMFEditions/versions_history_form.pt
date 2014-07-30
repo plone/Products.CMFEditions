@@ -204,24 +204,31 @@
     <div style="border:solid 1px gray"
          tal:condition="version_id">
       <tal:block define="vdata python:pr.retrieve(context, version_id);
-                         version_view_macro python: context.restrictedTraverse('@@get_macros')(vdata);
                          context nocall:vdata/object;
                          portal_type python:context.getPortalTypeName().lower().replace(' ', '_');
                          object_title context/Title;
                          suppress_preview python:True;
-                         view_macro python:version_view_macro;">
+                         version_view context/@@version-view|nothing;">
 
         <div tal:replace="structure provider:plone.belowcontenttitle" />
 
         <h1 class="documentFirstHeading" tal:content="vdata/object/Title"/>
         <div class="documentDescription" tal:content="vdata/object/Description"></div>
 
-        <tal:preview condition="view_macro">
-          <metal:use_body use-macro="view_macro" />
-        </tal:preview>
-        <tal:nopreview condition="not:view_macro">
-          <div i18n:translate="">Preview is not available.</div>
-        </tal:nopreview>
+        <div tal:condition="version_view" tal:replace="structure version_view" />
+
+        <tal:noversionview
+          condition="not:version_view"
+          define="version_view_macro python:context.restrictedTraverse('@@get_macros')(vdata);">
+
+          <tal:viewmacro condition="version_view_macro">
+            <metal:use_body use-macro="version_view_macro" />
+          </tal:viewmacro>
+
+          <div tal:condition="not:version_view_macro" i18n:translate="">Preview is not available.</div>
+
+        </tal:noversionview>
+
       </tal:block>
 
     </div>
