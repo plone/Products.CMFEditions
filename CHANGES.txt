@@ -4,8 +4,12 @@ Changelog
 2.2.10 (unreleased)
 -------------------
 
-- Fix #14: Duplicate functionality in @@history and version_diff.pt. Now ``version_diff`` is
-  deprecated.
+- Fix #16: Allow developers to define a ``@@version-view`` to customize how a version of an item is
+  displayed in ``versions_history_form.pt``.
+  [rafaelbco]
+
+- Fix #14: Duplicate functionality in ``@@history`` and ``version_diff.pt``.
+  Now ``version_diff.pt`` is deprecated.
   [rafaelbco]
 
 - Fix bug: ``CopyModifyMergeRepositoryTool.manage_setTypePolicies`` method
