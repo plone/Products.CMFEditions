@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.10 (unreleased)
+2.2.10 (2014-09-07)
 -------------------
 
 - Fix #16: Allow developers to define a ``@@version-view`` to customize how a version of an item is
