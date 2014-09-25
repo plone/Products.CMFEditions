@@ -7,8 +7,8 @@ version = '2.2.11.dev0'
 setup(name='Products.CMFEditions',
       version=version,
       description="Versioning for Plone",
-      long_description=open("README.txt").read() + '\n' +
-                       open("CHANGES.txt").read(),
+      long_description=open("README.rst").read() + '\n' +
+                       open("CHANGES.rst").read(),
       classifiers=[
         'Framework :: Plone',
         'Framework :: Zope2',

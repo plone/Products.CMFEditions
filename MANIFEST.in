@@ -1,4 +1,6 @@
+global-exclude *.pyc
+include *
+include *.rst
+include *.txt
 recursive-include Products *
 recursive-include doc *
-include *
-global-exclude *.pyc
