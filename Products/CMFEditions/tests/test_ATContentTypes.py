@@ -29,10 +29,15 @@ try:
     pkg_resources.get_distribution('plone.app.blob')
     has_blob = True
 except pkg_resources.DistributionNotFound:
-    pass
+    has_blob = False
 
 if has_blob:
-    from plone.app.blob.tests import db
+    try:
+        # needed for plone.app.blob < 1.5.11
+        from plone.app.blob.tests import db  # noqa
+    except ImportError:
+        # fail is ok for plone.app.blob >=1.5.11
+        pass
     from plone.app.blob.tests.base import BlobReplacementLayer
 
 import os
@@ -40,6 +45,7 @@ from Products.PloneTestCase import PloneTestCase
 
 PloneTestCase.setupPloneSite()
 from Products.CMFEditions import PACKAGE_HOME
+
 
 class TestATContents(PloneTestCase.PloneTestCase):
     if has_blob:
@@ -112,8 +118,14 @@ class TestATContents(PloneTestCase.PloneTestCase):
 
     def testImage(self):
         self.folder.invokeFactory('Image', id='image')
-        img1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
-        img2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
+        img1 = open(
+            os.path.join(PACKAGE_HOME, 'tests/images/img1.png'),
+            'rb'
+        ).read()
+        img2 = open(
+            os.path.join(PACKAGE_HOME, 'tests/images/img2.png'),
+            'rb'
+        ).read()
         portal_repository = self.portal_repository
         content = self.folder.image
         content.edit(image=img1)
@@ -131,8 +143,14 @@ class TestATContents(PloneTestCase.PloneTestCase):
 
     def testFile(self):
         self.folder.invokeFactory('File', id='file')
-        file1 = open(os.path.join(PACKAGE_HOME, 'tests/file1.dat'), 'rb').read()
-        file2 = open(os.path.join(PACKAGE_HOME, 'tests/file2.dat'), 'rb').read()
+        file1 = open(
+            os.path.join(PACKAGE_HOME, 'tests/file1.dat'),
+            'rb'
+        ).read()
+        file2 = open(
+            os.path.join(PACKAGE_HOME, 'tests/file2.dat'),
+            'rb'
+        ).read()
         portal_repository = self.portal_repository
         content = self.folder.file
         content.edit(file=file1)
@@ -169,8 +187,14 @@ class TestATContents(PloneTestCase.PloneTestCase):
 
     def testBlobsNotResavedUnlessChanged(self):
         self.folder.invokeFactory('File', id='file')
-        file1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
-        file2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
+        file1 = open(
+            os.path.join(PACKAGE_HOME, 'tests/images/img1.png'),
+            'rb'
+        ).read()
+        file2 = open(
+            os.path.join(PACKAGE_HOME, 'tests/images/img2.png'),
+            'rb'
+        ).read()
         portal_repository = self.portal_repository
         content = self.folder.file
         content.edit(file=file1)

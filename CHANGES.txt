@@ -4,7 +4,8 @@ Changelog
 2.2.11 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix AT tests to work with plone.app.blob plone.app.blob >=1.5.11
+  [jensens]
 
 
 2.2.10 (2014-09-07)
