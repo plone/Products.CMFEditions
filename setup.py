@@ -10,7 +10,11 @@ setup(name='Products.CMFEditions',
       long_description=open("README.rst").read() + '\n' +
                        open("CHANGES.rst").read(),
       classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Programming Language :: Python :: 2.7',
         'Framework :: Plone',
+        'Framework :: Plone :: 4.3',
+        'Framework :: Plone :: 5.0',
         'Framework :: Zope2',
       ],
       keywords='Versioning Plone',
