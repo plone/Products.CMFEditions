@@ -32,12 +32,6 @@ except pkg_resources.DistributionNotFound:
     has_blob = False
 
 if has_blob:
-    try:
-        # needed for plone.app.blob < 1.5.11
-        from plone.app.blob.tests import db  # noqa
-    except ImportError:
-        # fail is ok for plone.app.blob >=1.5.11
-        pass
     from plone.app.blob.tests.base import BlobReplacementLayer
 
 import os
