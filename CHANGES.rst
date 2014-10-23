@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.11 (unreleased)
+2.2.11 (2014-10-22)
 -------------------
 
 - Fix AT tests to work with plone.app.blob plone.app.blob >=1.5.11
