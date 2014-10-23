@@ -1,8 +1,11 @@
 Changelog
 =========
 
-2.2.11 (2014-10-22)
+2.2.11 (2014-10-23)
 -------------------
+
+- Depend on ZODB3>=3.9.0 for blob support.
+  [tomgross]
 
 - Fix AT tests to work with plone.app.blob plone.app.blob >=1.5.11
   [jensens]
