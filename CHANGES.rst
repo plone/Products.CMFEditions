@@ -4,7 +4,8 @@ Changelog
 2.2.12 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Remove dependency on old Archetypes tests
+  [tomgross]
 
 
 2.2.11 (2014-10-23)
