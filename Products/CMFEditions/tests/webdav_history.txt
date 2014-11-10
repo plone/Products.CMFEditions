@@ -8,9 +8,8 @@ objects trigger versioning correctly:
   >>> from StringIO import StringIO
   >>> from Products.Archetypes.tests.utils import makeContent
   >>> from Products.Archetypes.interfaces import IBaseObject
-  >>> from Products.Archetypes.tests.attestcase import user_name
-  >>> from Products.Archetypes.tests.attestcase import user_password
-  >>> from Products.Archetypes.tests.atsitetestcase import portal_name
+  >>> from plone.app.testing import TEST_USER_ID as user_name
+  >>> from plone.app.testing import TEST_USER_PASSWORD as user_password
 
 Doing a `PUT` request that creates a brand new object, and so should
 create and save an initial version as happens when creating a brand
