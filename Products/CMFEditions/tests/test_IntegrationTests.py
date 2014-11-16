@@ -23,9 +23,8 @@
 """Top level integration tests (without UI)
 
 """
-
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
-
+from unittest import TestSuite, makeSuite
+import doctest
 import sys
 import imp
 
@@ -36,6 +35,7 @@ from zope.component.persistentregistry import PersistentComponents
 import ZODB.interfaces
 from ZODB import broken
 from Acquisition import aq_base
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 
 class TestIntegration(CMFEditionsBaseTestCase):
@@ -1164,17 +1164,3 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(self.portal.fol.Title(), "v2")
         self.assertTrue(
             self.portal.fol.getSiteManager().__bases__[0] is base)
-
-
-from unittest import TestSuite, makeSuite
-import doctest
-def test_suite():
-    from plone.app.testing.bbb import PTC_FIXTURE
-    from plone.testing import layered
-
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestIntegration))
-    suite.addTest(layered(doctest.DocFileSuite('webdav_history.txt',
-                                package='Products.CMFEditions.tests',),
-                          layer=PTC_FIXTURE))
-    return suite

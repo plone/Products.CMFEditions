@@ -8,17 +8,18 @@ objects trigger versioning correctly:
   >>> from StringIO import StringIO
   >>> from Products.Archetypes.tests.utils import makeContent
   >>> from Products.Archetypes.interfaces import IBaseObject
-  >>> from plone.app.testing import TEST_USER_ID as user_name
-  >>> from plone.app.testing import TEST_USER_PASSWORD as user_password
+  >>> from plone.app.testing import TEST_USER_ID
+  >>> from plone.app.testing import TEST_USER_NAME
+  >>> from plone.app.testing import TEST_USER_PASSWORD
 
 Doing a `PUT` request that creates a brand new object, and so should
 create and save an initial version as happens when creating a brand
 new object via the Plone UI:
 
-  >>> portal = layer['portal']
   >>> from plone.app.testing import setRoles
-  >>> setRoles(portal, user_name, ['Manager'])
-  >>> folder = portal.portal_membership.getHomeFolder(user_name)
+  >>> portal = layer['portal']
+  >>> setRoles(portal, TEST_USER_ID, ['Manager'])
+  >>> folder = portal.portal_membership.getHomeFolder(TEST_USER_ID)
 
   >>> 'some-document' in folder.objectIds()
   False
@@ -32,7 +33,7 @@ new object via the Plone UI:
   ... Content-Type: text/plain; charset="utf-8"
   ...
   ... Some Content
-  ... """ % ('/'.join(folder.getPhysicalPath()), user_name, user_password))
+  ... """ % ('/'.join(folder.getPhysicalPath()), TEST_USER_NAME, TEST_USER_PASSWORD))
   HTTP/1.1 201 Created
   ...
 
@@ -58,7 +59,7 @@ another version of the object to be saved:
   ... Content-Type: text/plain; charset="utf-8"
   ...
   ... Some Other Content
-  ... """ % ('/'.join(folder.getPhysicalPath()), user_name, user_password))
+  ... """ % ('/'.join(folder.getPhysicalPath()), TEST_USER_NAME, TEST_USER_PASSWORD))
   HTTP/1.1 204 No Content
   ...
 
@@ -74,7 +75,7 @@ not configured for folders:
   >>> print http(r"""
   ... MKCOL /%s/some-folder HTTP/1.1
   ... Authorization: Basic %s:%s
-  ... """ % ('/'.join(folder.getPhysicalPath()), user_name, user_password))
+  ... """ % ('/'.join(folder.getPhysicalPath()), TEST_USER_NAME, TEST_USER_PASSWORD))
   HTTP/1.1 201 Created
   ...
 
