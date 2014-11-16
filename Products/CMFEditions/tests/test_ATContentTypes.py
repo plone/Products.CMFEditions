@@ -22,9 +22,6 @@
 #########################################################################
 """Test the ATContentTypes content
 """
-
-
-#from plone.app.blob.tests.base import BlobReplacementLayer
 import os
 
 from Products.CMFEditions import PACKAGE_HOME
@@ -32,8 +29,6 @@ from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 
 class TestATContents(CMFEditionsBaseTestCase):
-    
-#    layer = BlobReplacementLayer
 
     def afterSetUp(self):
         self.membership = self.portal.portal_membership

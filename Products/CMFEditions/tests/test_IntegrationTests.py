@@ -23,8 +23,6 @@
 """Top level integration tests (without UI)
 
 """
-from unittest import TestSuite, makeSuite
-import doctest
 import sys
 import imp
 
@@ -173,7 +171,6 @@ class TestIntegration(CMFEditionsBaseTestCase):
     def test07_cloneObjectUnderVersionControlRemovesOriginalsHistory(self):
         portal_repo = self.portal.portal_repository
         portal_historyidhandler = self.portal.portal_historyidhandler
-        UniqueIdError = portal_historyidhandler.UniqueIdError
         doc = self.portal.doc
 
         # put the object under version control
@@ -193,8 +190,6 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
     def test08_loopOverHistory(self):
         portal_repo = self.portal.portal_repository
-        portal_historyidhandler = self.portal.portal_historyidhandler
-        UniqueIdError = portal_historyidhandler.UniqueIdError
         doc = self.portal.doc
 
         # put the object under version control
@@ -344,7 +339,6 @@ class TestIntegration(CMFEditionsBaseTestCase):
         perm = 'Access contents information'
         roles = list(doc.valid_roles())
         member_role = 'p0r%s' % roles.index('Member')
-        manager_role = 'p0r%s' % roles.index('Manager')
 
         doc.manage_permission(perm, ('Manager',), 0)
 
@@ -569,7 +563,6 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
         # check if reversion worked correctly
         self.assertEqual(fol.objectIds(), orig_ids)
-        rev_values = fol.objectValues()
         for i in range(len(ret_values)):
             self.assertEqual(ret_values[i].getId(), orig_values[i].getId())
             self.assertEqual(ret_values[i].Title(), orig_values[i].Title())

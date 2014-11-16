@@ -38,7 +38,6 @@ class TestPloneContents(CMFEditionsBaseTestCase):
     def testDocument(self):
         self.folder.invokeFactory('Document', id='doc')
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.doc
         content.edit('text/plain','text v1')
         content.editMetadata(title='content',
@@ -73,7 +72,6 @@ class TestPloneContents(CMFEditionsBaseTestCase):
     def testNewsItem(self):
         self.folder.invokeFactory('News Item', id='news_one')
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.news_one
         content.edit('text v1', text_format='text/plain')
         content.editMetadata(title='content',
@@ -108,7 +106,6 @@ class TestPloneContents(CMFEditionsBaseTestCase):
     def testImage(self):
         self.folder.invokeFactory('Image', id='image')
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         img1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
         img2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
         content = self.folder.image
@@ -147,7 +144,6 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         file1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
         file2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.file
         content.edit(file=file1)
         content.editMetadata(title='content',
@@ -182,7 +178,6 @@ class TestPloneContents(CMFEditionsBaseTestCase):
     def testFolder(self):
         self.folder.invokeFactory('Image', id='folder')
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.folder
         # Use private method because webDAV locking is tripping this up
         # using the public method and ATCT

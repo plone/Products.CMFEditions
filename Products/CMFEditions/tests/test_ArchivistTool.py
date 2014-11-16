@@ -78,7 +78,6 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
     def test01_registerAttachesAHistoryId(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
-        portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         portal_archivist.register(prep)
@@ -88,7 +87,6 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
     def test02_retrieve(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
-        portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
         doc.text = 'text v1'
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
@@ -113,7 +111,6 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
     def test03_retrieveById(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
-        portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
         doc.text = 'text v1'
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
@@ -136,8 +133,6 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
     def test04_getHistory(self):
         portal_archivist = self.portal.portal_archivist
-        portal_historyidhandler = self.portal.portal_historyidhandler
-        portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
 
         doc.text = 'text v1'
@@ -186,7 +181,6 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
     def test06_getHistoryById(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
-        portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
 
         doc.text = 'text v1'
@@ -215,7 +209,6 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         self._setDummyTool(FolderishContentObjectModifier())
 
         portal_archivist = self.portal.portal_archivist
-        portal_hidhandler = self.portal.portal_historyidhandler
         IVersionAwareReference = portal_archivist.interfaces.IVersionAwareReference
         fol = self.portal.fol
         fol.title = "BLOB title ..."
@@ -276,7 +269,6 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         self._setDummyTool(FolderishContentObjectModifier())
 
         portal_archivist = self.portal.portal_archivist
-        portal_hidhandler = self.portal.portal_historyidhandler
         IVersionAwareReference = portal_archivist.interfaces.IVersionAwareReference
         fol = self.portal.fol
         fol.title = "BLOB title ..."

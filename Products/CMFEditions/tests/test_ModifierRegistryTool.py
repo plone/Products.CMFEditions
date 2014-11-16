@@ -330,7 +330,7 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
                                  condition='python:True')
 
         mlog.append('<save>')
-        referenced_data = portal_modifier.getReferencedAttributes(doc)
+        portal_modifier.getReferencedAttributes(doc)
         portal_modifier.getOnCloneModifiers(doc)
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         mlog.append('<retrieve>')

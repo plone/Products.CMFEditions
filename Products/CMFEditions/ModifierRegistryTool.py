@@ -21,9 +21,7 @@
 #########################################################################
 """Registry of Modifiers
 
-$Id: ModifierRegistryTool.py,v 1.17 2005/06/24 11:42:01 gregweb Exp $
 """
-__version__ = "$Revision: 1.17 $"
 
 from zope.interface import implements
 
@@ -208,7 +206,6 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
 
         def persistent_load(named_pid):
             # call the right modifiers persistent_load callback
-            obj = None
             name, pid = named_pid.split('/', 1)
             return pers_load_byname[name](pid)
 
@@ -240,7 +237,6 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         # before letting the after retrieve modifiers replace
         # attributes save those attributes away that may got
         # overwritten but have to be preserved.
-        _marker = []
         preserved = {}
         for key in preserve:
             v = getattr(repo_clone, key, MV)
