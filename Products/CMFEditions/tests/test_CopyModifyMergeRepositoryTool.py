@@ -22,11 +22,9 @@
 #########################################################################
 """Test the standard archivist
 
-$Id: test_CopyModifyMergeRepositoryTool.py,v 1.17 2005/06/22 10:43:46 gregweb Exp $
 """
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 import transaction
 from zope.interface.verify import verifyObject
@@ -58,7 +56,7 @@ class dummyPolicyWithHooks(VersionPolicy):
     def disablePolicyOnTypeHook(self, portal, p_type, out):
         out.append('disabled %s'%p_type)
 
-class TestCopyModifyMergeRepositoryToolBase(PloneTestCase.PloneTestCase):
+class TestCopyModifyMergeRepositoryToolBase(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -379,7 +377,7 @@ retrieve doc2_inside: hid=%(doc2_id)s, selector=0"""%{
                         'doc3_outside title text v2')
 
 
-class TestRegressionTests(PloneTestCase.PloneTestCase):
+class TestRegressionTests(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -661,14 +659,3 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         portal_repository.removePolicyFromContentType('Document',
                                                         'version_on_revert')
         self.failIf(portal_repository.hasPolicy(self.portal.doc))
-
-
-
-from unittest import TestSuite, makeSuite
-def test_suite():
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestCopyModifyMergeRepositoryTool))
-    suite.addTest(makeSuite(TestRepositoryWithDummyArchivist))
-    suite.addTest(makeSuite(TestRegressionTests))
-    suite.addTest(makeSuite(TestPolicyVersioning))
-    return suite

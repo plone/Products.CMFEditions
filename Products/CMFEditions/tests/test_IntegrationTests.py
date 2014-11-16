@@ -22,11 +22,9 @@
 #########################################################################
 """Top level integration tests (without UI)
 
-$Id: test_IntegrationTests.py,v 1.15 2005/06/24 11:42:01 gregweb Exp $
 """
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 import sys
 import imp
@@ -40,7 +38,7 @@ from ZODB import broken
 from Acquisition import aq_base
 
 
-class TestIntegration(PloneTestCase.PloneTestCase):
+class TestIntegration(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -1169,20 +1167,14 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
 
 from unittest import TestSuite, makeSuite
+import doctest
 def test_suite():
-    from Products.PloneTestCase import PloneTestCase
-    from Testing.ZopeTestCase import FunctionalDocFileSuite as FileSuite
+    from plone.app.testing.bbb import PTC_FIXTURE
+    from plone.testing import layered
 
     suite = TestSuite()
     suite.addTest(makeSuite(TestIntegration))
-
-    # The webdav tests are Archetypes specific
-    try:
-        from Products.Archetypes import atapi
-        suite.addTest(FileSuite('webdav_history.txt',
-                                package='Products.CMFEditions.tests',
-                                test_class=PloneTestCase.FunctionalTestCase))
-    except ImportError:
-        pass
-
+    suite.addTest(layered(doctest.DocFileSuite('webdav_history.txt',
+                                package='Products.CMFEditions.tests',),
+                          layer=PTC_FIXTURE))
     return suite

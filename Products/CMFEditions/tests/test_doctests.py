@@ -2,6 +2,7 @@
 import doctest
 import unittest
 
+# These two classes are needed in the doctest. Don't remove it
 class DummyFile(object):
     """A sized object"""
     def __init__(self, size):
@@ -18,12 +19,8 @@ class DummyContent(object):
         self.id = obid
         self.__annotations__ = {}
 
-
 def test_suite():
     res = unittest.TestSuite((
         doctest.DocFileSuite('large_file_modifiers.txt'),
         ))
     return res
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

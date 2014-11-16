@@ -22,11 +22,9 @@
 #########################################################################
 """Test the standard archivist
 
-$Id: test_ArchivistTool.py,v 1.10 2005/02/25 22:04:00 tomek1024 Exp $
 """
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 from zope.interface.verify import verifyObject
 
@@ -40,7 +38,7 @@ from DummyTools import notifyModified
 from DummyTools import FolderishContentObjectModifier
 
 
-class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
+class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         self.setRoles(['Manager',])
@@ -395,11 +393,3 @@ class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):
        # reset the shadow storage to avoid the effect of any versions created
        # during portal setup
        self.portal.portal_historiesstorage._shadowStorage = None
-
-
-from unittest import TestSuite, makeSuite
-def test_suite():
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestArchivistToolMemoryStorage))
-    suite.addTest(makeSuite(TestArchivistToolZStorage))
-    return suite

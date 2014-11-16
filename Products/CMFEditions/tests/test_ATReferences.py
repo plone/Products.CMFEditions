@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 #
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
-class TestATReferences(PloneTestCase.PloneTestCase):
+class TestATReferences(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -208,15 +207,3 @@ class TestATReferences(PloneTestCase.PloneTestCase):
         repo.save(doc1)
         repo.revert(doc1, 1)
         self.assertEqual([fol], doc1.getReferences())
-
-from unittest import TestSuite, makeSuite
-# Only run these tests if AT is installed
-try:
-    from Products.Archetypes import atapi
-
-    def test_suite():
-        suite = TestSuite()
-        suite.addTest(makeSuite(TestATReferences))
-        return suite
-except ImportError:
-    pass

@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 #
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 import os
 from Products.CMFEditions import PACKAGE_HOME
 
-class TestPloneContents(PloneTestCase.PloneTestCase):
+class TestPloneContents(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         self.membership = self.portal.portal_membership
@@ -211,10 +210,3 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         self.metadata_test_two(obj)
         portal_repository.revert(content, 0)
         self.metadata_test_one(content)
-
-
-def test_suite():
-    from unittest import TestSuite, makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestPloneContents))
-    return suite
