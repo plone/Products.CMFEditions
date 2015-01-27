@@ -22,8 +22,7 @@
 #########################################################################
 """Test the versions_history_form template."""
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 from zope.component import provideAdapter
 from zope.interface import Interface
@@ -34,7 +33,7 @@ _TEXT_INITIAL = 'Initial text.'
 _TEXT_NEW = 'New text.'
 
 
-class TestVersionsHistoryForm(PloneTestCase.PloneTestCase):
+class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -90,10 +89,3 @@ class TestVersionsHistoryForm(PloneTestCase.PloneTestCase):
     def _render_versions_history_form(self, item, version_id):
         self.request['version_id'] = version_id
         return item.unrestrictedTraverse('versions_history_form')()
-
-
-from unittest import TestSuite, makeSuite
-def test_suite():
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestVersionsHistoryForm))
-    return suite

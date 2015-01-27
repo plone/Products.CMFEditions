@@ -22,28 +22,13 @@
 #########################################################################
 """Test the ATContentTypes content
 """
-
-
-import pkg_resources
-try:
-    pkg_resources.get_distribution('plone.app.blob')
-    has_blob = True
-except pkg_resources.DistributionNotFound:
-    has_blob = False
-
-if has_blob:
-    from plone.app.blob.tests.base import BlobReplacementLayer
-
 import os
-from Products.PloneTestCase import PloneTestCase
 
-PloneTestCase.setupPloneSite()
 from Products.CMFEditions import PACKAGE_HOME
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 
-class TestATContents(PloneTestCase.PloneTestCase):
-    if has_blob:
-        layer = BlobReplacementLayer
+class TestATContents(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         self.membership = self.portal.portal_membership
@@ -244,10 +229,3 @@ class TestATContents(PloneTestCase.PloneTestCase):
                 self.assertFalse(file1 in repr(err))
             else:
                 self.fail("Didn't raise ArchivistError")
-
-
-def test_suite():
-    from unittest import TestSuite, makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestATContents))
-    return suite

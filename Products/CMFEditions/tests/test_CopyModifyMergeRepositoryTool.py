@@ -22,11 +22,9 @@
 #########################################################################
 """Test the standard archivist
 
-$Id: test_CopyModifyMergeRepositoryTool.py,v 1.17 2005/06/22 10:43:46 gregweb Exp $
 """
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 import transaction
 from zope.interface.verify import verifyObject
@@ -39,7 +37,6 @@ from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolic
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.CMFEditions.VersionPolicies import ATVersionOnEditPolicy
-from Products.CMFEditions.utilities import dereference
 
 from DummyTools import DummyArchivist
 from DummyTools import notifyModified
@@ -58,7 +55,7 @@ class dummyPolicyWithHooks(VersionPolicy):
     def disablePolicyOnTypeHook(self, portal, p_type, out):
         out.append('disabled %s'%p_type)
 
-class TestCopyModifyMergeRepositoryToolBase(PloneTestCase.PloneTestCase):
+class TestCopyModifyMergeRepositoryToolBase(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -87,7 +84,6 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
 
     def test00_interface(self):
         portal_repository = self.portal.portal_repository
-        portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
 
         # test the tools interface conformance
@@ -120,7 +116,6 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
 
     def test02_retrieve(self):
         portal_repository = self.portal.portal_repository
-        portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
 
         doc.text = 'text v1'
@@ -136,7 +131,6 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
 
     def test03_recursiveRevertOfFolderWithOutsideObject(self):
         portal_repository = self.portal.portal_repository
-        portal_archivist = self.portal.portal_archivist
         fol = self.portal.fol
         doc3_outside = fol.doc3_outside
 
@@ -160,7 +154,6 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
 
     def test04_isUptoDate(self):
         portal_repository = self.portal.portal_repository
-        portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
 
         doc.text = 'text v1'
@@ -172,7 +165,6 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
 
     def test05_getHistory(self):
         portal_repository = self.portal.portal_repository
-        portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
 
         doc.text = 'text v1'
@@ -189,7 +181,6 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
 
     def test06_retrieveWithNoMoreExistentObject(self):
         portal_repository = self.portal.portal_repository
-        portal_archivist = self.portal.portal_archivist
         portal_hidhandler = self.portal.portal_historyidhandler
         doc = self.portal.doc
 
@@ -229,7 +220,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         # delete the object we want to retrieve later
         self.portal.manage_delObjects(ids=['doc'])
         self.failIf('doc' in self.portal.objectIds())
-        vdata = portal_repository.restore(history_id, selector=0, container=self.portal)
+        portal_repository.restore(history_id, selector=0, container=self.portal)
         self.failUnless('doc' in self.portal.objectIds())
         restored = self.portal.doc
         self.assertEqual(restored.text, 'text v1')
@@ -249,7 +240,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         # delete the object we want to retrieve later
         self.portal.manage_delObjects(ids=['doc'])
         self.failIf('doc' in self.portal.objectIds())
-        vdata = portal_repository.restore(history_id, selector=0,
+        portal_repository.restore(history_id, selector=0,
                                          container=self.portal, new_id='doc2')
         self.failUnless('doc2' in self.portal.objectIds())
         restored = self.portal.doc2
@@ -379,7 +370,7 @@ retrieve doc2_inside: hid=%(doc2_id)s, selector=0"""%{
                         'doc3_outside title text v2')
 
 
-class TestRegressionTests(PloneTestCase.PloneTestCase):
+class TestRegressionTests(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -400,7 +391,6 @@ class TestRegressionTests(PloneTestCase.PloneTestCase):
 
     def test_idModification(self):
         portal_repository = self.portal.portal_repository
-        portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
         doc.text = 'text v1'
         portal_repository.applyVersionControl(doc, comment='save no 1')
@@ -661,14 +651,3 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         portal_repository.removePolicyFromContentType('Document',
                                                         'version_on_revert')
         self.failIf(portal_repository.hasPolicy(self.portal.doc))
-
-
-
-from unittest import TestSuite, makeSuite
-def test_suite():
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestCopyModifyMergeRepositoryTool))
-    suite.addTest(makeSuite(TestRepositoryWithDummyArchivist))
-    suite.addTest(makeSuite(TestRegressionTests))
-    suite.addTest(makeSuite(TestPolicyVersioning))
-    return suite
