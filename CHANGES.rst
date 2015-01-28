@@ -7,6 +7,14 @@ Changelog
 - Remove dependency on old Archetypes tests
   [tomgross]
 
+- Ported tests to plone.app.testing
+  [tomgross]
+
+- Removed old FAQ testing code. Should go in a seperate product, if needed.
+  [tomgross]
+
+- Frosted cleanups
+  [tomgross]
 
 2.2.11 (2014-10-23)
 -------------------

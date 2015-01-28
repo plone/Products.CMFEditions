@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 #
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 import os
 from Products.CMFEditions import PACKAGE_HOME
 
-class TestPloneContents(PloneTestCase.PloneTestCase):
+class TestPloneContents(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         self.membership = self.portal.portal_membership
@@ -39,7 +38,6 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
     def testDocument(self):
         self.folder.invokeFactory('Document', id='doc')
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.doc
         content.edit('text/plain','text v1')
         content.editMetadata(title='content',
@@ -74,7 +72,6 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
     def testNewsItem(self):
         self.folder.invokeFactory('News Item', id='news_one')
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.news_one
         content.edit('text v1', text_format='text/plain')
         content.editMetadata(title='content',
@@ -109,7 +106,6 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
     def testImage(self):
         self.folder.invokeFactory('Image', id='image')
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         img1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
         img2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
         content = self.folder.image
@@ -148,7 +144,6 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         file1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
         file2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.file
         content.edit(file=file1)
         content.editMetadata(title='content',
@@ -183,7 +178,6 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
     def testFolder(self):
         self.folder.invokeFactory('Image', id='folder')
         portal_repository = self.portal_repository
-        portal_archivist = self.portal_archivist
         content = self.folder.folder
         # Use private method because webDAV locking is tripping this up
         # using the public method and ATCT
@@ -211,10 +205,3 @@ class TestPloneContents(PloneTestCase.PloneTestCase):
         self.metadata_test_two(obj)
         portal_repository.revert(content, 0)
         self.metadata_test_one(content)
-
-
-def test_suite():
-    from unittest import TestSuite, makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestPloneContents))
-    return suite

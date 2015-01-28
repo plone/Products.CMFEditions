@@ -22,12 +22,7 @@
 #########################################################################
 """Top level integration tests (without UI)
 
-$Id: test_IntegrationTests.py,v 1.15 2005/06/24 11:42:01 gregweb Exp $
 """
-
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
-
 import sys
 import imp
 
@@ -38,9 +33,10 @@ from zope.component.persistentregistry import PersistentComponents
 import ZODB.interfaces
 from ZODB import broken
 from Acquisition import aq_base
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 
-class TestIntegration(PloneTestCase.PloneTestCase):
+class TestIntegration(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -175,7 +171,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
     def test07_cloneObjectUnderVersionControlRemovesOriginalsHistory(self):
         portal_repo = self.portal.portal_repository
         portal_historyidhandler = self.portal.portal_historyidhandler
-        UniqueIdError = portal_historyidhandler.UniqueIdError
         doc = self.portal.doc
 
         # put the object under version control
@@ -195,8 +190,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
     def test08_loopOverHistory(self):
         portal_repo = self.portal.portal_repository
-        portal_historyidhandler = self.portal.portal_historyidhandler
-        UniqueIdError = portal_historyidhandler.UniqueIdError
         doc = self.portal.doc
 
         # put the object under version control
@@ -346,7 +339,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         perm = 'Access contents information'
         roles = list(doc.valid_roles())
         member_role = 'p0r%s' % roles.index('Member')
-        manager_role = 'p0r%s' % roles.index('Manager')
 
         doc.manage_permission(perm, ('Manager',), 0)
 
@@ -571,7 +563,6 @@ class TestIntegration(PloneTestCase.PloneTestCase):
 
         # check if reversion worked correctly
         self.assertEqual(fol.objectIds(), orig_ids)
-        rev_values = fol.objectValues()
         for i in range(len(ret_values)):
             self.assertEqual(ret_values[i].getId(), orig_values[i].getId())
             self.assertEqual(ret_values[i].Title(), orig_values[i].Title())
@@ -1166,23 +1157,3 @@ class TestIntegration(PloneTestCase.PloneTestCase):
         self.assertEqual(self.portal.fol.Title(), "v2")
         self.assertTrue(
             self.portal.fol.getSiteManager().__bases__[0] is base)
-
-
-from unittest import TestSuite, makeSuite
-def test_suite():
-    from Products.PloneTestCase import PloneTestCase
-    from Testing.ZopeTestCase import FunctionalDocFileSuite as FileSuite
-
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestIntegration))
-
-    # The webdav tests are Archetypes specific
-    try:
-        from Products.Archetypes import atapi
-        suite.addTest(FileSuite('webdav_history.txt',
-                                package='Products.CMFEditions.tests',
-                                test_class=PloneTestCase.FunctionalTestCase))
-    except ImportError:
-        pass
-
-    return suite

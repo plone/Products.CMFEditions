@@ -22,11 +22,9 @@
 #########################################################################
 """Test the standard archivist
 
-$Id: test_ArchivistTool.py,v 1.10 2005/02/25 22:04:00 tomek1024 Exp $
 """
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 from zope.interface.verify import verifyObject
 
@@ -40,7 +38,7 @@ from DummyTools import notifyModified
 from DummyTools import FolderishContentObjectModifier
 
 
-class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
+class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         self.setRoles(['Manager',])
@@ -80,7 +78,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
     def test01_registerAttachesAHistoryId(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
-        portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         portal_archivist.register(prep)
@@ -90,7 +87,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
     def test02_retrieve(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
-        portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
         doc.text = 'text v1'
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
@@ -115,7 +111,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
     def test03_retrieveById(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
-        portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
         doc.text = 'text v1'
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
@@ -138,8 +133,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
 
     def test04_getHistory(self):
         portal_archivist = self.portal.portal_archivist
-        portal_historyidhandler = self.portal.portal_historyidhandler
-        portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
 
         doc.text = 'text v1'
@@ -188,7 +181,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
     def test06_getHistoryById(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
-        portal_historiesstorage = self.portal.portal_historiesstorage
         doc = self.portal.doc
 
         doc.text = 'text v1'
@@ -217,7 +209,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self._setDummyTool(FolderishContentObjectModifier())
 
         portal_archivist = self.portal.portal_archivist
-        portal_hidhandler = self.portal.portal_historyidhandler
         IVersionAwareReference = portal_archivist.interfaces.IVersionAwareReference
         fol = self.portal.fol
         fol.title = "BLOB title ..."
@@ -278,7 +269,6 @@ class TestArchivistToolMemoryStorage(PloneTestCase.PloneTestCase):
         self._setDummyTool(FolderishContentObjectModifier())
 
         portal_archivist = self.portal.portal_archivist
-        portal_hidhandler = self.portal.portal_historyidhandler
         IVersionAwareReference = portal_archivist.interfaces.IVersionAwareReference
         fol = self.portal.fol
         fol.title = "BLOB title ..."
@@ -395,11 +385,3 @@ class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):
        # reset the shadow storage to avoid the effect of any versions created
        # during portal setup
        self.portal.portal_historiesstorage._shadowStorage = None
-
-
-from unittest import TestSuite, makeSuite
-def test_suite():
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestArchivistToolMemoryStorage))
-    suite.addTest(makeSuite(TestArchivistToolZStorage))
-    return suite

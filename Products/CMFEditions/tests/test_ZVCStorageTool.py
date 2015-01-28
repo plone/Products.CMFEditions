@@ -22,11 +22,9 @@
 #########################################################################
 """Test the standard archivist
 
-$Id: test_ZVCStorageTool.py,v 1.12 2005/02/24 21:53:44 tomek1024 Exp $
 """
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 from zope.interface.verify import verifyObject
 from OFS.ObjectManager import ObjectManager
@@ -45,7 +43,7 @@ from DummyTools import notifyModified
 class DummyOM(ObjectManager):
     pass
 
-class TestZVCStorageTool(PloneTestCase.PloneTestCase):
+class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -455,10 +453,3 @@ class TestMemoryStorage(TestZVCStorageTool):
         # install the memory storage
         tool = MemoryStorage()
         setattr(self.portal, tool.getId(), tool)
-
-from unittest import TestSuite, makeSuite
-def test_suite():
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestZVCStorageTool))
-    suite.addTest(makeSuite(TestMemoryStorage))
-    return suite
