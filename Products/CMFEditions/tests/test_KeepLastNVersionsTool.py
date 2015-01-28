@@ -21,11 +21,9 @@
 #########################################################################
 """Test the keep the last n version purge policy
 
-$Id$
 """
 
-from Products.PloneTestCase import PloneTestCase
-PloneTestCase.setupPloneSite()
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 from zope.interface.verify import verifyObject
 from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
@@ -34,7 +32,7 @@ from DummyTools import PurgePolicyTestDummyStorage
 from DummyTools import DummyData, RemovedData
 
 
-class TestKeepLastNVersionsTool(PloneTestCase.PloneTestCase):
+class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -113,10 +111,3 @@ class TestKeepLastNVersionsTool(PloneTestCase.PloneTestCase):
         # next older
         data = purgepolicy.retrieveSubstitute(history_id=1, selector=3)
         self.assertEquals(data.data, 1)
-
-
-from unittest import TestSuite, makeSuite
-def test_suite():
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestKeepLastNVersionsTool))
-    return suite
