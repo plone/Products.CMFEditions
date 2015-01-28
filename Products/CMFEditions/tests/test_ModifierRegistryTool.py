@@ -21,9 +21,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """
+$Id: test_ModifierRegistryTool.py,v 1.12 2005/02/25 22:04:00 tomek1024 Exp $
 """
 
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from Products.PloneTestCase import PloneTestCase
+PloneTestCase.setupPloneSite()
+
 
 from pickle import dumps, loads, HIGHEST_PROTOCOL
 
@@ -148,7 +151,7 @@ loggingModifiers = (
     LoggingModifier_D(),
 )
 
-class TestModifierRegistryTool(CMFEditionsBaseTestCase):
+class TestModifierRegistryTool(PloneTestCase.PloneTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -330,7 +333,7 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
                                  condition='python:True')
 
         mlog.append('<save>')
-        portal_modifier.getReferencedAttributes(doc)
+        referenced_data = portal_modifier.getReferencedAttributes(doc)
         portal_modifier.getOnCloneModifiers(doc)
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         mlog.append('<retrieve>')
@@ -360,3 +363,10 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
 %(class)s_A.afterRetrieveModifier
 <end>"""%{'class':'LoggingModifier'}
         self.assertEqual(mlog_str, expected_result)
+
+
+from unittest import TestSuite, makeSuite
+def test_suite():
+    suite = TestSuite()
+    suite.addTest(makeSuite(TestModifierRegistryTool))
+    return suite
