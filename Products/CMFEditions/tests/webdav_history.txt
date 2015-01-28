@@ -8,46 +8,39 @@ objects trigger versioning correctly:
   >>> from StringIO import StringIO
   >>> from Products.Archetypes.tests.utils import makeContent
   >>> from Products.Archetypes.interfaces import IBaseObject
-  >>> from plone.app.testing import TEST_USER_ID
-  >>> from plone.app.testing import TEST_USER_NAME
-  >>> from plone.app.testing import TEST_USER_PASSWORD
+  >>> from plone.app.testing import TEST_USER_ID as user_name
+  >>> from plone.app.testing import TEST_USER_PASSWORD as user_password
 
 Doing a `PUT` request that creates a brand new object, and so should
 create and save an initial version as happens when creating a brand
 new object via the Plone UI:
 
-  >>> from plone.app.testing import setRoles
-  >>> portal = layer['portal']
-  >>> setRoles(portal, TEST_USER_ID, ['Manager'])
-  >>> folder = portal.portal_membership.getHomeFolder(TEST_USER_ID)
+  >>> self.setRoles(['Manager'])
 
-  >>> 'some-document' in folder.objectIds()
+  >>> 'some-document' in self.folder.objectIds()
   False
 
-  >>> from Testing.ZopeTestCase.zopedoctest.functional import http
-  >>> from Testing.ZopeTestCase.sandbox import AppZapper
-  >>> AppZapper().set(layer['app'])
   >>> print http(r"""
   ... PUT /%s/some-document HTTP/1.1
   ... Authorization: Basic %s:%s
   ... Content-Type: text/plain; charset="utf-8"
   ...
   ... Some Content
-  ... """ % ('/'.join(folder.getPhysicalPath()), TEST_USER_NAME, TEST_USER_PASSWORD))
+  ... """ % ('/'.join(self.folder.getPhysicalPath()), user_name, user_password))
   HTTP/1.1 201 Created
   ...
 
-  >>> 'some-document' in folder.objectIds()
+  >>> 'some-document' in self.folder.objectIds()
   True
 
-  >>> print str(folder['some-document']['text'])
+  >>> print str(self.folder['some-document']['text'])
   Some Content
 
 
 There should be only one history entry and not two or more
 
-  >>> portal_repo = portal.portal_repository
-  >>> len(portal_repo.getHistory(folder['some-document']))
+  >>> portal_repo = self.portal.portal_repository
+  >>> len(portal_repo.getHistory(self.folder['some-document']))
   1
 
 Doing another `PUT` request to update the same object should cause
@@ -59,14 +52,14 @@ another version of the object to be saved:
   ... Content-Type: text/plain; charset="utf-8"
   ...
   ... Some Other Content
-  ... """ % ('/'.join(folder.getPhysicalPath()), TEST_USER_NAME, TEST_USER_PASSWORD))
+  ... """ % ('/'.join(self.folder.getPhysicalPath()), user_name, user_password))
   HTTP/1.1 204 No Content
   ...
 
-  >>> print str(folder['some-document']['text'])
+  >>> print str(self.folder['some-document']['text'])
   Some Other Content
 
-  >>> len(portal_repo.getHistory(folder['some-document']))
+  >>> len(portal_repo.getHistory(self.folder['some-document']))
   2
 
 Creating a folder does not trigger a revision because the policy is
@@ -75,9 +68,9 @@ not configured for folders:
   >>> print http(r"""
   ... MKCOL /%s/some-folder HTTP/1.1
   ... Authorization: Basic %s:%s
-  ... """ % ('/'.join(folder.getPhysicalPath()), TEST_USER_NAME, TEST_USER_PASSWORD))
+  ... """ % ('/'.join(self.folder.getPhysicalPath()), user_name, user_password))
   HTTP/1.1 201 Created
   ...
 
-  >>> len(portal_repo.getHistory(folder['some-folder']))
+  >>> len(portal_repo.getHistory(self.folder['some-folder']))
   0

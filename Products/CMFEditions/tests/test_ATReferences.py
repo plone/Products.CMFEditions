@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 #
 
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from Products.PloneTestCase import PloneTestCase
+PloneTestCase.setupPloneSite()
 
-class TestATReferences(CMFEditionsBaseTestCase):
+class TestATReferences(PloneTestCase.PloneTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
@@ -23,6 +24,7 @@ class TestATReferences(CMFEditionsBaseTestCase):
         # this case checks restoring a version with a reference to
         # a working copy with no reference
         repo = self.portal.portal_repository
+        fol = self.portal.fol
         doc1 = self.portal.fol.doc1
         doc2 = self.portal.fol.doc2
 
@@ -50,6 +52,7 @@ class TestATReferences(CMFEditionsBaseTestCase):
         # a working copy with no reference
 
         repo = self.portal.portal_repository
+        fol = self.portal.fol
         doc1 = self.portal.fol.doc1
         doc2 = self.portal.fol.doc2
 
@@ -69,6 +72,7 @@ class TestATReferences(CMFEditionsBaseTestCase):
         # with a ref, without using RetainATRefs
 
         repo = self.portal.portal_repository
+        fol = self.portal.fol
         doc1 = self.portal.fol.doc1
         doc2 = self.portal.fol.doc2
 
@@ -79,9 +83,12 @@ class TestATReferences(CMFEditionsBaseTestCase):
         relationship = 'dumb_relationship'
         doc1.addReference(doc2, relationship=relationship)
         doc1.setTitle('v2')
-        from Products.Archetypes.config import REFERENCE_ANNOTATION
+        from Products.Archetypes.config import REFERENCE_ANNOTATION as \
+             refs_container_name
+        refs = getattr(doc1, refs_container_name).objectValues()
+
         repo.revert(doc1, 1)
-        should_be_empty_now = getattr(doc1, REFERENCE_ANNOTATION).objectValues()
+        should_be_empty_now = getattr(doc1, refs_container_name).objectValues()
         self.failIf(should_be_empty_now)
 
     def test_referencesAreSavedAndRestored2(self):
@@ -89,6 +96,7 @@ class TestATReferences(CMFEditionsBaseTestCase):
         # with a ref, without using RetainATRefs
 
         repo = self.portal.portal_repository
+        fol = self.portal.fol
         doc1 = self.portal.fol.doc1
         doc2 = self.portal.fol.doc2
 
@@ -111,7 +119,9 @@ class TestATReferences(CMFEditionsBaseTestCase):
 
 
     def test_contentReferencesAreSavedAndRestored(self):
+
         repo = self.portal.portal_repository
+        fol = self.portal.fol
         doc1 = self.portal.fol.doc1
         doc2 = self.portal.fol.doc2
 
@@ -198,3 +208,15 @@ class TestATReferences(CMFEditionsBaseTestCase):
         repo.save(doc1)
         repo.revert(doc1, 1)
         self.assertEqual([fol], doc1.getReferences())
+
+from unittest import TestSuite, makeSuite
+# Only run these tests if AT is installed
+try:
+    from Products.Archetypes import atapi
+
+    def test_suite():
+        suite = TestSuite()
+        suite.addTest(makeSuite(TestATReferences))
+        return suite
+except ImportError:
+    pass

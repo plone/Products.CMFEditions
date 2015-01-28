@@ -23,6 +23,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """Standard modifiers
+
+$Id: StandardModifiers.py,v 1.13 2005/06/26 13:28:36 gregweb Exp $
 """
 
 import os,sys

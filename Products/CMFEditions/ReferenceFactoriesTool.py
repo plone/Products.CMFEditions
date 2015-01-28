@@ -64,6 +64,7 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
         """
         # Just assuming ObjectManager behaviour for now
         portal_hidhandler = getToolByName(self, 'portal_historyidhandler')
+        portal_archivist = getToolByName(self, 'portal_archivist')
         try:
             portal_type = repo_clone.getPortalTypeName()
         except AttributeError:

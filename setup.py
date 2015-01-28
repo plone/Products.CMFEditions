@@ -11,7 +11,6 @@ setup(name='Products.CMFEditions',
                        open("CHANGES.rst").read(),
       classifiers=[
         'Development Status :: 5 - Production/Stable',
-        'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         'Framework :: Plone',
         'Framework :: Plone :: 4.3',
@@ -33,7 +32,8 @@ setup(name='Products.CMFEditions',
             'Products.CMFPlone',
             'Products.Archetypes',
             'Products.CMFDynamicViewFTI',
-            'plone.app.testing',
+            'Products.PloneTestCase',
+            'plone.app.blob [test]',
         ]
       ),
       install_requires=[
