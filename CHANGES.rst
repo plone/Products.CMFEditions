@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.12 (unreleased)
+2.2.12 (2015-03-13)
 -------------------
 
 - Remove dependency on old Archetypes tests
