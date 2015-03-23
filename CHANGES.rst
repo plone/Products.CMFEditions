@@ -4,7 +4,8 @@ Changelog
 2.2.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Replace deprecated JavaScript functions with their jQuery equivalents.
+  [thet]
 
 
 2.2.12 (2015-03-13)

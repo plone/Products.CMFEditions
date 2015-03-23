@@ -30,9 +30,9 @@
                 comment.style.display = 'none';
             }
         }
-        registerEventListener(save_version, "click", switchComment);
+        jQuery(save_version).bind("click", switchComment);
     }
-    registerPloneFunction(setupSaveNewVersion);
+    jQuery(setupSaveNewVersion);
     -->
     </script>
 
