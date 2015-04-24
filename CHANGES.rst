@@ -4,6 +4,9 @@ Changelog
 2.2.13 (unreleased)
 -------------------
 
+- Drop use of python:exists() in templates.
+  [pbauer]
+
 - Replace deprecated JavaScript functions with their jQuery equivalents.
   [thet]
 

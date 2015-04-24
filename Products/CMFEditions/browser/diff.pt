@@ -121,15 +121,22 @@
                   This field has no inline difference view.
                 </p>
 
-                <div class="fieldDiff code-diff" style="display: none">
-                  <pre tal:condition="exists:diff/html_diff" tal:content="structure python:diff.html_diff(wrapcolumn=80)">
+                <div class="fieldDiff code-diff"
+                     style="display: none"
+                     tal:define="has_html_diff diff/html_diff | nothing;
+                                 has_ndiff diff/ndiff | nothing">
+                  <pre tal:condition="exists:diff/html_diff"
+                       tal:content="structure python:diff.html_diff(wrapcolumn=80)">
                     HTML formatted differences
                   </pre>
 
-                  <pre class="fieldDiff code-diff" tal:condition="python:not exists('diff/html_diff') and exists('diff/ndiff')" tal:content="diff/ndiff">
+                  <pre class="fieldDiff code-diff"
+                       tal:condition="python:not has_html_diff and has_ndiff"
+                       tal:content="diff/ndiff">
                     ndiff formatted differences
                   </pre>
-                  <p class="fieldDiff" tal:condition="python:not exists('diff/html_diff') and not exists('diff/ndiff')">
+                  <p class="fieldDiff"
+                     tal:condition="python:not has_html_diff and not has_ndiff">
                     This field has no code difference view.
                   </p>
                 </div>
