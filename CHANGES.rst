@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.13 (unreleased)
+2.2.13 (2015-04-26)
 -------------------
 
 - Drop use of python:exists() in templates.
