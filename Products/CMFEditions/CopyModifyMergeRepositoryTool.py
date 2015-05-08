@@ -71,12 +71,13 @@ except ImportError:
 
 try:
     from Products.Archetypes.interfaces.referenceable import IReferenceable
-    from Products.Archetypes.config import REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
+    from Products.Archetypes.config import (
+        REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME)
     from Products.Archetypes.exceptions import ReferenceException
-    WRONG_AT=False
+    WRONG_AT = False
     HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
 except ImportError:
-    WRONG_AT=True
+    WRONG_AT = True
 
 
 VERSIONABLE_CONTENT_TYPES = []
@@ -121,13 +122,12 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         if not isinstance(self._policy_defs, OOBTree):
             btree_defs = OOBTree()
             for obj_id, title in self._policy_defs.items():
-                btree_defs[obj_id]=VersionPolicy(obj_id, title)
+                btree_defs[obj_id] = VersionPolicy(obj_id, title)
             self._policy_defs = btree_defs
 
     # -------------------------------------------------------------------
     # methods implementing IContentTypeVersionPolicySupport
     # -------------------------------------------------------------------
-
 
     security.declarePublic('isVersionable')
     def isVersionable(self, obj):
@@ -150,7 +150,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
     security.declareProtected(ManageVersioningPolicies, 'addPolicyForContentType')
     def addPolicyForContentType(self, content_type, policy_id, **kw):
-        assert self._policy_defs.has_key(policy_id), "Unknown policy %s"%policy_id
+        assert policy_id in self._policy_defs, "Unknown policy %s" % policy_id
         policies = self._version_policy_mapping.copy()
         cur_policy = policies.setdefault(content_type, [])
         if policy_id not in cur_policy:
@@ -191,10 +191,10 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                 self.removePolicyFromContentType(p_type, policy_id, **kw)
         for p_type, policies in policy_map.items():
             assert isinstance(policies, list), \
-                            "Policy list for %s must be a list"%str(p_type)
+                "Policy list for %s must be a list" % str(p_type)
             for policy_id in policies:
-                assert self._policy_defs.has_key(policy_id), \
-                                  "Policy %s is unknown"%policy_id
+                assert policy_id in self._policy_defs, \
+                    "Policy %s is unknown" % policy_id
                 self.addPolicyForContentType(p_type, policy_id, **kw)
 
     security.declarePublic('listPolicies')
@@ -207,9 +207,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         return policy_list
 
     security.declareProtected(ManageVersioningPolicies, 'addPolicy')
-    def addPolicy(self, policy_id, policy_title, policy_class=VersionPolicy,
-                                                                        **kw):
-        self._policy_defs[policy_id]=policy_class(policy_id,policy_title)
+    def addPolicy(self, policy_id, policy_title,
+                  policy_class=VersionPolicy, **kw):
+        self._policy_defs[policy_id] = policy_class(policy_id, policy_title)
         self._callPolicyHook('add', policy_id, **kw)
 
     security.declareProtected(ManageVersioningPolicies, 'removePolicy')
@@ -229,26 +229,26 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         assert isinstance(policy_list, list) or isinstance(policy_list, tuple)
         for item in policy_list:
             assert isinstance(item, tuple), \
-                        "List items must be tuples: %s"%str(item)
-            assert len(item) in (2,3,4), \
-            "Each policy definition must contain a title and id: %s"%str(item)
+                "List items must be tuples: %s" % str(item)
+            assert len(item) in (2, 3, 4), \
+                "Each policy definition must contain a title and id: %s" % str(item)
             assert isinstance(item[0], basestring), \
-                        "Policy id must be a string: %s"%str(item[0])
+                "Policy id must be a string: %s" % str(item[0])
             assert isinstance(item[1], basestring), \
-                        "Policy title must be a string: %s"%str(item[1])
+                "Policy title must be a string: %s" % str(item[1])
             # Get optional Policy class and kwargs.
-            if len(item)>=3:
+            if len(item) >= 3:
                 policy_class = item[2]
             else:
                 policy_class = VersionPolicy
-            if len(item)==4:
+            if len(item) == 4:
                 assert isinstance(item[3], dict), \
-                                "Extra args for %s must be a dict"%item[0]
+                    "Extra args for %s must be a dict" % item[0]
                 kw = item[3]
             else:
                 kw = kwargs
             # Add new policy
-            self.addPolicy(item[0],item[1],policy_class,**kw)
+            self.addPolicy(item[0], item[1], policy_class, **kw)
 
     security.declareProtected(ManageVersioningPolicies, 'getPolicyMap')
     def getPolicyMap(self):
@@ -352,8 +352,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # XXX this should go away if _recursiveRetrieve is correctly implemented
         if obj.getId() != original_id:
             obj._setId(original_id)
-            #parent.manage_renameObject(obj.getId(), original_id)
-            #parent._setObject(original_id, obj, set_owner=0)
+            # parent.manage_renameObject(obj.getId(), original_id)
+            # parent._setObject(original_id, obj, set_owner=0)
 
         # run fixups
         self._doInplaceFixups(fixup_queue, True)
@@ -386,7 +386,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             # Make sure we have a _p_jar
             transaction.savepoint()
             container.manage_renameObject(orig_id, new_id)
-            #parent._setObject(original_id, obj, set_owner=0)
+            # parent._setObject(original_id, obj, set_owner=0)
 
         # run fixups
         self._doInplaceFixups(fixup_queue, True)
@@ -412,14 +412,13 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         return hist
 
 
-    security.declarePublic('isUpToDate')
+    security.declarePublic('isUpToDate')  # noqa
     def isUpToDate(self, obj, selector=None, countPurged=True):
         """See IPurgeSupport.
         """
         portal_archivist = getToolByName(self, 'portal_archivist')
         return portal_archivist.isUpToDate(obj=obj, selector=selector,
                                            countPurged=countPurged)
-
 
     # -------------------------------------------------------------------
     # private helper methods
@@ -534,7 +533,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             hasBeenMoved = False
         else:
             if source is None:
-                ##### the source has to be stored with the object at save time
+                # #### the source has to be stored with the object at save time
                 # I(gregweb)'m pretty sure the whole source stuff here gets
                 # obsolete as soon as a va_ref to the source is stored also
                 # XXX for now let's stick with this:
@@ -564,7 +563,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         for key, val in vdata.data.object.__dict__.items():
             if key in attrs_to_leave:
                 continue
-            obj_val = getattr(aq_base(obj), key, _missing)
+            obj_val = getattr(aq_base(obj), key, _missing)  # noqa
             setattr(obj, key, val)
 
         # Delete reference attributes.
@@ -588,14 +587,14 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
 
             # retrieve the referenced version (always count purged versions
             # also!)
-            ref_vdata= self._recursiveRetrieve(history_id=history_id,
-                                               selector=va_ref.version_id,
-                                               preserve=(),
-                                               inplace=inplace,
-                                               source=obj,
-                                               fixup_queue=fixup_queue,
-                                               ignore_existing=ignore_existing,
-                                               countPurged=True)
+            ref_vdata = self._recursiveRetrieve(history_id=history_id,
+                                                selector=va_ref.version_id,
+                                                preserve=(),
+                                                inplace=inplace,
+                                                source=obj,
+                                                fixup_queue=fixup_queue,
+                                                ignore_existing=ignore_existing,
+                                                countPurged=True)
 
             # reattach the python reference
             attr_ref.setAttribute(ref_vdata.data.object)
@@ -623,7 +622,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         # feed the fixup queue defined in revert() and retrieve() to
         # perform post-retrieve fixups on the object
         if fixup_queue is not None:
-           fixup_queue.append(obj)
+            fixup_queue.append(obj)
         return vdata
 
     def _doInplaceFixups(self, queue, inplace):
@@ -675,8 +674,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         """
 
         if (HAVE_Z3_IFACE and IReferenceable.providedBy(obj)
-            or not HAVE_Z3_IFACE and IReferenceable.isImplementedBy(obj)) \
-        and hasattr(obj, REFERENCES_CONTAINER_NAME):
+                or not HAVE_Z3_IFACE and IReferenceable.isImplementedBy(obj)) \
+                and hasattr(obj, REFERENCES_CONTAINER_NAME):
             # Delete refs if their target doesn't exists anymore
             ref_folder = getattr(obj, REFERENCES_CONTAINER_NAME)
             uid_catalog = getToolByName(self, 'uid_catalog')
@@ -697,7 +696,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
             obj._updateCatalog(container)
 
     def _fixIds(self, obj):
-        items = getattr(obj ,'objectItems', None)
+        items = getattr(obj, 'objectItems', None)
         if callable(items):
             temp_ids = []
             # find sub-objects whose id doesn't match the name in the container
@@ -710,7 +709,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                     obj._delOb(orig_id)
                     object_list = getattr(obj, '_objects', None)
                     if object_list is not None:
-                        obj._objects = tuple([o for o in object_list if o['id'] != orig_id])
+                        obj._objects = tuple([o for o in object_list if o['id'] != orig_id])  # noqa
                     temp_ids.append((real_id, child))
             # Make a second pass to move the objects into place if possible
             all_ids = list(obj.objectIds())
@@ -779,7 +778,7 @@ class LazyHistory:
         self._retrieve = repository._retrieve
         self._length = len(archivist.queryHistory(obj=obj, preserve=preserve,
                                                   countPurged=countPurged))
-        self._cache={}
+        self._cache = {}
 
     def __len__(self):
         """See IHistory
@@ -797,8 +796,8 @@ class LazyHistory:
         if selector in self._cache:
             return self._cache[selector]
 
-        result=self._cache[selector]=self._retrieve(self._obj, selector,
-                self._preserve, self._countPurged)
+        result = self._cache[selector] = self._retrieve(
+            self._obj, selector, self._preserve, self._countPurged)
         return result
 
     def __iter__(self):
