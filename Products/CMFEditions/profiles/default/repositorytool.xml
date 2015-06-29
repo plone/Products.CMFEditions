@@ -2,7 +2,7 @@
 <repositorytool>
  <policies purge="true">
   <policy name="at_edit_autoversion"
-     title="Create version on edit (AT objects only)"
+     title="Create version on edit"
      class="Products.CMFEditions.VersionPolicies.ATVersionOnEditPolicy"/>
   <policy name="version_on_revert" title="Create version on version revert"/>
  </policies>
