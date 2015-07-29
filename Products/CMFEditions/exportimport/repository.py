@@ -52,7 +52,7 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
                 if self._shouldPurge(child):
                     self._purgePolicies()
                 for policy in child.childNodes:
-                    if policy.nodeName == '#text':
+                    if policy.nodeName in ('#text', '#comment'):
                         continue
                     assert policy.nodeName == 'policy'
                     policy_id = policy.getAttribute('name')
