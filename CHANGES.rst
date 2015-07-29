@@ -4,7 +4,9 @@ Changelog
 2.2.14 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Remove 'AT objects only' in at_edit_autoversion policy title.
+  Change 'ATVersionOnEditPolicy' class name to 'VersionOnEditPolicy'.
+  [cedricmessiant]
 
 
 2.2.13 (2015-04-26)

@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <repositorytool>
  <policies purge="true">
+  <!--
+    'at_edit_autoversion' policy also works for dexterity content types.
+    (don't modify this id for backwards compatibility)
+  -->
   <policy name="at_edit_autoversion"
      title="Create version on edit"
-     class="Products.CMFEditions.VersionPolicies.ATVersionOnEditPolicy"/>
+     class="Products.CMFEditions.VersionPolicies.VersionOnEditPolicy"/>
   <policy name="version_on_revert" title="Create version on version revert"/>
  </policies>
  <policymap purge="true">

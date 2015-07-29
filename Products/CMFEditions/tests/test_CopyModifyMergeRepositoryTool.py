@@ -36,7 +36,7 @@ from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.VersionPolicies import VersionPolicy
-from Products.CMFEditions.VersionPolicies import ATVersionOnEditPolicy
+from Products.CMFEditions.VersionPolicies import VersionOnEditPolicy
 
 from DummyTools import DummyArchivist
 from DummyTools import notifyModified
@@ -636,7 +636,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                                                      'success', None, None))
         # Add policy and check if hook is added
         portal_repository.addPolicy('at_edit_autoversion', 'Auto policy',
-                                     ATVersionOnEditPolicy)
+                                     VersionOnEditPolicy)
         self.failUnless(self.isFCActionInPlace('validate_integrity',
                                                      'success', None, None))
         self.failUnless(self.isFCActionInPlace('atct_edit',

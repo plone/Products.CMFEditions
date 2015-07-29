@@ -47,8 +47,8 @@ class VersionPolicy(SimpleItem):
         return self.title
 
 
-class ATVersionOnEditPolicy(VersionPolicy):
-    """A policy that implements version creation on edit for AT types,
+class VersionOnEditPolicy(VersionPolicy):
+    """A policy that implements version creation on edit for AT and DX types,
        requires a custom edit_macros.pt and a controller script called
        update_version_on_edit.  This policy automatically adds and removes
        the controller script from the AT edit controller chain on install."""
