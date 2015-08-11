@@ -123,8 +123,8 @@
 
                 <div class="fieldDiff code-diff"
                      style="display: none"
-                     tal:define="has_html_diff diff/html_diff | nothing;
-                                 has_ndiff diff/ndiff | nothing">
+                     tal:define="has_html_diff diff/html_diff|nothing;
+                                 has_ndiff diff/ndiff|nothing">
                   <pre tal:condition="exists:diff/html_diff"
                        tal:content="structure python:diff.html_diff(wrapcolumn=80)">
                     HTML formatted differences

@@ -4,7 +4,10 @@ Changelog
 2.2.14 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fixed possible UnicodeEncodeError by removing strange unicode space
+  from template.  Fixes
+  https://github.com/plone/Products.CMFPlone/issues/820
+  [maurits]
 
 
 2.2.13 (2015-04-26)
