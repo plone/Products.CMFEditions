@@ -4,8 +4,8 @@ Changelog
 2.2.14 (unreleased)
 -------------------
 
-- Fixed possible UnicodeEncodeError by removing strange unicode space
-  from template.  Fixes
+- Do not call ndiff unless there is no html_diff.  Removed strange
+  unicode space from template.  Related to
   https://github.com/plone/Products.CMFPlone/issues/820
   [maurits]
 
