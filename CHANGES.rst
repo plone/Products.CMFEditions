@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.14 (unreleased)
+2.2.14 (2015-08-13)
 -------------------
 
 - Do not call ndiff unless there is no html_diff.  Removed strange
