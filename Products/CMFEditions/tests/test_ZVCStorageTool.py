@@ -23,7 +23,7 @@
 """Test the standard archivist
 
 """
-
+from DateTime.DateTime import DateTime
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 from zope.interface.verify import verifyObject
@@ -42,6 +42,18 @@ from DummyTools import notifyModified
 
 class DummyOM(ObjectManager):
     pass
+
+class CMFDummy(Dummy):
+
+    def __init__(self, id, cmfuid, effective=None, expires=None):
+        super(CMFDummy, self).__init__()
+        self.id = id
+        self.cmf_uid = cmfuid
+        self.effective = effective if effective is not None else self.modification_date
+        self.expires = expires
+
+    def getPortalTypeName(self):
+        return 'Dummy'
 
 class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
@@ -446,6 +458,84 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         self.assertEqual(history.retrieve(2)['metadata']['sys_metadata']['comment'], "saved v3")
         self.assertEqual(history.retrieve(3)['metadata']['sys_metadata']['comment'], "saved v4")
 
+    def test15_storageStatistics(self):
+        self.maxDiff = None
+        portal_storage = self.portal.portal_historiesstorage
+
+        cmf_uid = 1
+        obj1 = CMFDummy('obj', cmf_uid)
+        obj1.text = 'v1 of text'
+        portal_storage.register(cmf_uid, ObjectData(obj1), metadata=self.buildMetadata('saved v1'))
+
+        obj2 = CMFDummy('obj', cmf_uid)
+        obj2.text = 'v2 of text'
+        portal_storage.save(cmf_uid, ObjectData(obj2), metadata=self.buildMetadata('saved v2'))
+
+        obj3 = CMFDummy('obj', cmf_uid)
+        obj3.text = 'v3 of text'
+        portal_storage.save(cmf_uid, ObjectData(obj3), metadata=self.buildMetadata('saved v3'))
+
+        obj4 = CMFDummy('obj', cmf_uid)
+        obj4.text = 'v4 of text'
+        self.portal._setObject('obj', obj4)
+        self.portal.portal_catalog.indexObject(self.portal.obj)
+        portal_storage.save(cmf_uid, ObjectData(obj4), metadata=self.buildMetadata('saved v4'))
+
+        cmf_uid = 2
+        tomorrow = DateTime() + 1
+        obj5 = CMFDummy('tomorrow', cmf_uid, effective=tomorrow)
+        self.portal._setObject('tomorrow', obj5)
+        self.portal.portal_catalog.indexObject(self.portal.tomorrow)
+        portal_storage.register(cmf_uid, ObjectData(obj5), metadata=self.buildMetadata('effective tomorrow'))
+
+        cmf_uid = 3
+        yesterday = DateTime() - 1
+        obj5 = CMFDummy('yesterday', cmf_uid, expires=yesterday)
+        self.portal._setObject('yesterday', obj5)
+        self.portal.portal_catalog.indexObject(self.portal.yesterday)
+        portal_storage.register(cmf_uid, ObjectData(obj5), metadata=self.buildMetadata('expired yesterday'))
+
+        got = portal_storage.zmi_getStorageStatistics()
+        expected = {'deleted': [], 
+                    'summaries': {
+                        'totalHistories': 3, 
+                        'deletedVersions': 0, 
+                        'existingVersions': 6, 
+                        'deletedHistories': 0, 
+                        'time': '0.00', 
+                        'totalVersions': 6, 
+                        'existingAverage': '2.0', 
+                        'existingHistories': 3, 
+                        'deletedAverage': 'n/a', 
+                        'totalAverage': '2.0'}, 
+                    'existing': [
+                        {
+                            'url': 'http://nohost/plone/obj', 
+                            'history_id': 1, 
+                            'length': 4, 
+                            'path': '/obj', 
+                            'sizeState': 'approximate', 
+                            'portal_type': 'Dummy', 
+                            'size': 1718
+                        }, {
+                            'url': 'http://nohost/plone/tomorrow', 
+                            'history_id': 2, 
+                            'length': 1, 
+                            'path': '/tomorrow', 
+                            'sizeState': 'approximate', 
+                            'portal_type': 'Dummy', 
+                            'size': 514
+                        }, {
+                            'url': 'http://nohost/plone/yesterday', 
+                            'history_id': 3, 
+                            'length': 1, 
+                            'path': '/yesterday', 
+                            'sizeState': 'approximate', 
+                            'portal_type': 'Dummy', 
+                            'size': 516
+                        }]}
+        self.assertEqual(expected, got)
+
 
 class TestMemoryStorage(TestZVCStorageTool):
 
@@ -453,3 +543,8 @@ class TestMemoryStorage(TestZVCStorageTool):
         # install the memory storage
         tool = MemoryStorage()
         setattr(self.portal, tool.getId(), tool)
+
+    def test15_storageStatistics(self):
+        """ MemoryStorage does not implement zmi_getStorageStatistics
+        """
+        pass
