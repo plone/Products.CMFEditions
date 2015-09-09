@@ -484,30 +484,40 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         cmf_uid = 2
         tomorrow = DateTime() + 1
         obj5 = CMFDummy('tomorrow', cmf_uid, effective=tomorrow)
+        obj5.allowedRolesAndUsers = ['Anonymous']
         self.portal._setObject('tomorrow', obj5)
         self.portal.portal_catalog.indexObject(self.portal.tomorrow)
         portal_storage.register(cmf_uid, ObjectData(obj5), metadata=self.buildMetadata('effective tomorrow'))
 
         cmf_uid = 3
         yesterday = DateTime() - 1
-        obj5 = CMFDummy('yesterday', cmf_uid, expires=yesterday)
-        self.portal._setObject('yesterday', obj5)
+        obj6 = CMFDummy('yesterday', cmf_uid, expires=yesterday)
+        obj6.allowedRolesAndUsers = ['Anonymous']
+        self.portal._setObject('yesterday', obj6)
         self.portal.portal_catalog.indexObject(self.portal.yesterday)
-        portal_storage.register(cmf_uid, ObjectData(obj5), metadata=self.buildMetadata('expired yesterday'))
+        portal_storage.register(cmf_uid, ObjectData(obj6), metadata=self.buildMetadata('expired yesterday'))
+
+        cmf_uid = 4
+        obj7 = CMFDummy('public', cmf_uid)
+        obj7.text = 'visible for everyone'
+        obj7.allowedRolesAndUsers = ['Anonymous']
+        self.portal._setObject('public', obj7)
+        self.portal.portal_catalog.indexObject(self.portal.public)
+        portal_storage.register(cmf_uid, ObjectData(obj7), metadata=self.buildMetadata('saved public'))
 
         got = portal_storage.zmi_getStorageStatistics()
         expected = {'deleted': [], 
                     'summaries': {
-                        'totalHistories': 3, 
+                        'totalHistories': 4, 
                         'deletedVersions': 0, 
-                        'existingVersions': 6, 
+                        'existingVersions': 7, 
                         'deletedHistories': 0, 
                         'time': '0.00', 
-                        'totalVersions': 6, 
-                        'existingAverage': '2.0', 
-                        'existingHistories': 3, 
+                        'totalVersions': 7, 
+                        'existingAverage': '1.8', 
+                        'existingHistories': 4, 
                         'deletedAverage': 'n/a', 
-                        'totalAverage': '2.0'}, 
+                        'totalAverage': '1.8'}, 
                     'existing': [
                         {
                             'url': 'http://nohost/plone/obj', 
@@ -524,7 +534,7 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
                             'path': '/tomorrow', 
                             'sizeState': 'approximate', 
                             'portal_type': 'Dummy', 
-                            'size': 514
+                            'size': 555
                         }, {
                             'url': 'http://nohost/plone/yesterday', 
                             'history_id': 3, 
@@ -532,7 +542,15 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
                             'path': '/yesterday', 
                             'sizeState': 'approximate', 
                             'portal_type': 'Dummy', 
-                            'size': 516
+                            'size': 557
+                        }, {
+                            'url': 'http://nohost/plone/public', 
+                            'history_id': 4, 
+                            'length': 1, 
+                            'path': '/public', 
+                            'sizeState': 'approximate', 
+                            'portal_type': 'Dummy', 
+                            'size': 557
                         }]}
         self.assertEqual(expected, got)
 
