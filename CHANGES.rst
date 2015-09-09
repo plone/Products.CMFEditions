@@ -4,7 +4,7 @@ Changelog
 2.2.15 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- use unrestricted search for storage statistics [tschorr]
 
 
 2.2.14 (2015-08-13)
