@@ -4,13 +4,15 @@ Changelog
 2.2.16 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Input sanitation for retrieveSubstitute()
+  [zupo]
 
 
 2.2.15 (2015-09-15)
 -------------------
 
-- use unrestricted search for storage statistics [tschorr]
+- use unrestricted search for storage statistics
+  [tschorr]
 
 
 2.2.14 (2015-08-13)
