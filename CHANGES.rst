@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.16 (unreleased)
+2.2.16 (2015-09-27)
 -------------------
 
 - Input sanitation for retrieveSubstitute()
