@@ -526,7 +526,6 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
                             'path': '/obj', 
                             'sizeState': 'approximate', 
                             'portal_type': 'Dummy', 
-                            'size': 1718
                         }, {
                             'url': 'http://nohost/plone/tomorrow', 
                             'history_id': 2, 
@@ -534,7 +533,6 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
                             'path': '/tomorrow', 
                             'sizeState': 'approximate', 
                             'portal_type': 'Dummy', 
-                            'size': 555
                         }, {
                             'url': 'http://nohost/plone/yesterday', 
                             'history_id': 3, 
@@ -542,7 +540,6 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
                             'path': '/yesterday', 
                             'sizeState': 'approximate', 
                             'portal_type': 'Dummy', 
-                            'size': 557
                         }, {
                             'url': 'http://nohost/plone/public', 
                             'history_id': 4, 
@@ -550,9 +547,18 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
                             'path': '/public', 
                             'sizeState': 'approximate', 
                             'portal_type': 'Dummy', 
-                            'size': 557
                         }]}
-        self.assertEqual(expected, got)
+        self.assertEqual(expected['deleted'], got['deleted'])
+        self.assertEqual(expected['summaries'], got['summaries'])
+        self.assertEqual(len(expected['existing']), len(got['existing']))
+        for idx in range(len(expected['existing'])):
+            e = expected['existing'][idx]
+            g = got['existing'][idx]
+            for k, v in e.items():
+                self.assertEqual(g[k], v)
+            # The actual size is not important and we want robust tests,
+            # s. https://github.com/plone/Products.CMFEditions/issues/31
+            self.failUnless(g['size'] > 0)
 
 
 class TestMemoryStorage(TestZVCStorageTool):
