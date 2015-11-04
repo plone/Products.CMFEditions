@@ -552,13 +552,13 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         self.assertEqual(expected['summaries'], got['summaries'])
         self.assertEqual(len(expected['existing']), len(got['existing']))
         for idx in range(len(expected['existing'])):
-            e = expected['existing'][idx]
-            g = got['existing'][idx]
-            for k, v in e.items():
-                self.assertEqual(g[k], v)
+            exp = expected['existing'][idx]
+            actual = got['existing'][idx]
+            for key, value in exp.items():
+                self.assertEqual(actual[key], value)
             # The actual size is not important and we want robust tests,
             # s. https://github.com/plone/Products.CMFEditions/issues/31
-            self.failUnless(g['size'] > 0)
+            self.failUnless(actual['size'] > 0)
 
 
 class TestMemoryStorage(TestZVCStorageTool):
