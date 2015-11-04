@@ -123,22 +123,29 @@
 
                 <div class="fieldDiff code-diff"
                      style="display: none"
-                     tal:define="has_html_diff diff/html_diff | nothing;
-                                 has_ndiff diff/ndiff | nothing">
-                  <pre tal:condition="exists:diff/html_diff"
-                       tal:content="structure python:diff.html_diff(wrapcolumn=80)">
+                     tal:define="exists_html_diff exists:diff/html_diff;
+                                 html_diff python:diff.html_diff(wrapcolumn=80) if exists_html_diff else '';
+                                 has_html_diff python:bool(html_diff)">
+                  <pre tal:condition="has_html_diff"
+                       tal:content="structure html_diff">
                     HTML formatted differences
                   </pre>
 
-                  <pre class="fieldDiff code-diff"
-                       tal:condition="python:not has_html_diff and has_ndiff"
-                       tal:content="diff/ndiff">
-                    ndiff formatted differences
-                  </pre>
-                  <p class="fieldDiff"
-                     tal:condition="python:not has_html_diff and not has_ndiff">
-                    This field has no code difference view.
-                  </p>
+                  <tal:block condition="not:has_html_diff">
+                    <tal:block define="exists_ndiff exists:diff/ndiff;
+                                       ndiff python:diff.ndiff() if exists_ndiff else '';
+                                       has_ndiff python:bool(ndiff)">
+                      <pre class="fieldDiff code-diff"
+                           tal:condition="has_ndiff"
+                           tal:content="ndiff">
+                        ndiff formatted differences
+                      </pre>
+                      <p class="fieldDiff"
+                         tal:condition="not:has_ndiff">
+                        This field has no code difference view.
+                      </p>
+                    </tal:block>
+                  </tal:block>
                 </div>
               </fieldset>
 

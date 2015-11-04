@@ -665,7 +665,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             if shadowStorage is not None:
                 size, sizeState = shadowStorage.getSize()
 
-            workingCopy = hidhandler.queryObject(hid)
+            workingCopy = hidhandler.unrestrictedQueryObject(hid)
             if workingCopy is not None:
                 url = workingCopy.absolute_url()
                 path = url[portal_paths_len:]
@@ -673,8 +673,11 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             else:
                 path = None
                 url = None
-                retrieved = self.retrieve(hid).object.object
-                portal_type = retrieved.getPortalTypeName()
+                object_ = self.retrieve(hid).object
+                if isinstance(object_, Removed):
+                    portal_type = 'Removed'
+                else:
+                    portal_type = object_.object.getPortalTypeName()
             histData = {
                 "history_id": hid,
                 "length": length,

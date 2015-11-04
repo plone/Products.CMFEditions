@@ -20,7 +20,7 @@
            title="Fix portal_historyidhandler"
            import_steps="toolset"
           />
-        
+
     </genericsetup:upgradeSteps>
 
     <genericsetup:upgradeSteps

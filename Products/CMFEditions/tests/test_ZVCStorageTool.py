@@ -23,7 +23,7 @@
 """Test the standard archivist
 
 """
-
+from DateTime.DateTime import DateTime
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 from zope.interface.verify import verifyObject
@@ -42,6 +42,18 @@ from DummyTools import notifyModified
 
 class DummyOM(ObjectManager):
     pass
+
+class CMFDummy(Dummy):
+
+    def __init__(self, id, cmfuid, effective=None, expires=None):
+        super(CMFDummy, self).__init__()
+        self.id = id
+        self.cmf_uid = cmfuid
+        self.effective = effective if effective is not None else self.modification_date
+        self.expires = expires
+
+    def getPortalTypeName(self):
+        return 'Dummy'
 
 class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
@@ -446,6 +458,108 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         self.assertEqual(history.retrieve(2)['metadata']['sys_metadata']['comment'], "saved v3")
         self.assertEqual(history.retrieve(3)['metadata']['sys_metadata']['comment'], "saved v4")
 
+    def test15_storageStatistics(self):
+        self.maxDiff = None
+        portal_storage = self.portal.portal_historiesstorage
+
+        cmf_uid = 1
+        obj1 = CMFDummy('obj', cmf_uid)
+        obj1.text = 'v1 of text'
+        portal_storage.register(cmf_uid, ObjectData(obj1), metadata=self.buildMetadata('saved v1'))
+
+        obj2 = CMFDummy('obj', cmf_uid)
+        obj2.text = 'v2 of text'
+        portal_storage.save(cmf_uid, ObjectData(obj2), metadata=self.buildMetadata('saved v2'))
+
+        obj3 = CMFDummy('obj', cmf_uid)
+        obj3.text = 'v3 of text'
+        portal_storage.save(cmf_uid, ObjectData(obj3), metadata=self.buildMetadata('saved v3'))
+
+        obj4 = CMFDummy('obj', cmf_uid)
+        obj4.text = 'v4 of text'
+        self.portal._setObject('obj', obj4)
+        self.portal.portal_catalog.indexObject(self.portal.obj)
+        portal_storage.save(cmf_uid, ObjectData(obj4), metadata=self.buildMetadata('saved v4'))
+
+        cmf_uid = 2
+        tomorrow = DateTime() + 1
+        obj5 = CMFDummy('tomorrow', cmf_uid, effective=tomorrow)
+        obj5.allowedRolesAndUsers = ['Anonymous']
+        self.portal._setObject('tomorrow', obj5)
+        self.portal.portal_catalog.indexObject(self.portal.tomorrow)
+        portal_storage.register(cmf_uid, ObjectData(obj5), metadata=self.buildMetadata('effective tomorrow'))
+
+        cmf_uid = 3
+        yesterday = DateTime() - 1
+        obj6 = CMFDummy('yesterday', cmf_uid, expires=yesterday)
+        obj6.allowedRolesAndUsers = ['Anonymous']
+        self.portal._setObject('yesterday', obj6)
+        self.portal.portal_catalog.indexObject(self.portal.yesterday)
+        portal_storage.register(cmf_uid, ObjectData(obj6), metadata=self.buildMetadata('expired yesterday'))
+
+        cmf_uid = 4
+        obj7 = CMFDummy('public', cmf_uid)
+        obj7.text = 'visible for everyone'
+        obj7.allowedRolesAndUsers = ['Anonymous']
+        self.portal._setObject('public', obj7)
+        self.portal.portal_catalog.indexObject(self.portal.public)
+        portal_storage.register(cmf_uid, ObjectData(obj7), metadata=self.buildMetadata('saved public'))
+
+        got = portal_storage.zmi_getStorageStatistics()
+        expected = {'deleted': [],
+                    'summaries': {
+                        'totalHistories': 4,
+                        'deletedVersions': 0,
+                        'existingVersions': 7,
+                        'deletedHistories': 0,
+                        'time': '0.00',
+                        'totalVersions': 7,
+                        'existingAverage': '1.8',
+                        'existingHistories': 4,
+                        'deletedAverage': 'n/a',
+                        'totalAverage': '1.8'},
+                    'existing': [
+                        {
+                            'url': 'http://nohost/plone/obj',
+                            'history_id': 1,
+                            'length': 4,
+                            'path': '/obj',
+                            'sizeState': 'approximate',
+                            'portal_type': 'Dummy',
+                        }, {
+                            'url': 'http://nohost/plone/tomorrow',
+                            'history_id': 2,
+                            'length': 1,
+                            'path': '/tomorrow',
+                            'sizeState': 'approximate',
+                            'portal_type': 'Dummy',
+                        }, {
+                            'url': 'http://nohost/plone/yesterday',
+                            'history_id': 3,
+                            'length': 1,
+                            'path': '/yesterday',
+                            'sizeState': 'approximate',
+                            'portal_type': 'Dummy',
+                        }, {
+                            'url': 'http://nohost/plone/public',
+                            'history_id': 4,
+                            'length': 1,
+                            'path': '/public',
+                            'sizeState': 'approximate',
+                            'portal_type': 'Dummy',
+                        }]}
+        self.assertEqual(expected['deleted'], got['deleted'])
+        self.assertEqual(expected['summaries'], got['summaries'])
+        self.assertEqual(len(expected['existing']), len(got['existing']))
+        for idx in range(len(expected['existing'])):
+            exp = expected['existing'][idx]
+            actual = got['existing'][idx]
+            for key, value in exp.items():
+                self.assertEqual(actual[key], value)
+            # The actual size is not important and we want robust tests,
+            # s. https://github.com/plone/Products.CMFEditions/issues/31
+            self.failUnless(actual['size'] > 0)
+
 
 class TestMemoryStorage(TestZVCStorageTool):
 
@@ -453,3 +567,8 @@ class TestMemoryStorage(TestZVCStorageTool):
         # install the memory storage
         tool = MemoryStorage()
         setattr(self.portal, tool.getId(), tool)
+
+    def test15_storageStatistics(self):
+        """ MemoryStorage does not implement zmi_getStorageStatistics
+        """
+        pass
