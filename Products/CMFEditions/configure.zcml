@@ -6,7 +6,7 @@
     i18n_domain="cmfeditions">
 
   <include file="permissions.zcml"/>
-  
+
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
 
   <include package="Products.CMFUid" />

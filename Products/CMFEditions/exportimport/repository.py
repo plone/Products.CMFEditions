@@ -10,7 +10,7 @@ from Products.CMFEditions.VersionPolicies import VersionPolicy
 class RepositoryToolXMLAdapter(XMLAdapterBase):
     """Mode in- and exporter for RepositoryTool.
     """
-    
+
     name = 'repositorytool'
 
     def _exportNode(self):
@@ -112,7 +112,7 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
                         if portal_type in versionable_types:
                             versionable_types.remove(portal_type)
                     tool.setVersionableContentTypes(versionable_types)
-                        
+
 
     def _extractTypePolicies(self):
         node = self._doc.createElement('policymap')
