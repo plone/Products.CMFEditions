@@ -10,7 +10,8 @@ New:
 
 Fixes:
 
-- *add item here*
+- make storage statistics test more robust - see https://github.com/plone/Products.CMFEditions/issues/31
+  [tschorr]
 
 
 2.2.16 (2015-09-27)
