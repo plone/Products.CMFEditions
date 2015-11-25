@@ -4,13 +4,11 @@ Changelog
 2.2.18 (unreleased)
 -------------------
 
-New:
-
-- *add item here*
-
 Fixes:
 
-- *add item here*
+- Removed executable bit from various files.  And do a quick release,
+  as on a test server the previous release was somehow missing a file.
+  [maurits]
 
 
 2.2.17 (2015-11-25)
