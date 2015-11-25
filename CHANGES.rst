@@ -4,13 +4,10 @@ Changelog
 2.2.17 (unreleased)
 -------------------
 
-New:
-
-- *add item here*
-
 Fixes:
 
-- make storage statistics test more robust - see https://github.com/plone/Products.CMFEditions/issues/31
+- Made storage statistics test more robust.
+  See https://github.com/plone/Products.CMFEditions/issues/31
   [tschorr]
 
 
