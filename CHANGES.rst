@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.17 (unreleased)
+2.2.19 (unreleased)
 -------------------
 
 New:
@@ -10,7 +10,26 @@ New:
 
 Fixes:
 
-- make storage statistics test more robust - see https://github.com/plone/Products.CMFEditions/issues/31
+- *add item here*
+
+
+2.2.18 (2015-11-25)
+-------------------
+
+Fixes:
+
+- Removed executable bit from various files.  And do a quick release,
+  as on a test server the previous release was somehow missing a file.
+  [maurits]
+
+
+2.2.17 (2015-11-25)
+-------------------
+
+Fixes:
+
+- Made storage statistics test more robust.
+  See https://github.com/plone/Products.CMFEditions/issues/31
   [tschorr]
 
 
