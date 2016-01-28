@@ -492,8 +492,8 @@ class TestIntegration(CMFEditionsBaseTestCase):
         doc1 = fol.doc1
         doc2 = fol.doc2
 
-        # just configure the standard folder to treat the childrens as
-        # inside refrences. For this we reconfigure the standard modifiers.
+        # just configure the standard folder to treat the children as
+        # inside references. For this we reconfigure the standard modifiers.
         portal_modifier = self.portal.portal_modifier
         portal_modifier.edit("OMOutsideChildrensModifier", enabled=False,
                              condition="python: False")
