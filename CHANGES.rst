@@ -10,7 +10,7 @@ New:
 
 Fixes:
 
-- *add item here*
+- Fixed sometimes failing test.  [maurits]
 
 
 2.2.18 (2015-11-25)

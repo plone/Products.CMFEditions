@@ -512,7 +512,8 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
                         'deletedVersions': 0,
                         'existingVersions': 7,
                         'deletedHistories': 0,
-                        'time': '0.00',
+                        # time may easily be different
+                        # 'time': '0.00',
                         'totalVersions': 7,
                         'existingAverage': '1.8',
                         'existingHistories': 4,
@@ -549,7 +550,10 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
                             'portal_type': 'Dummy',
                         }]}
         self.assertEqual(expected['deleted'], got['deleted'])
-        self.assertEqual(expected['summaries'], got['summaries'])
+        self.assertTrue('summaries' in got)
+        self.assertTrue('time' in got['summaries'])
+        for key, value in expected['summaries'].items():
+            self.assertEqual(value, got['summaries'][key])
         self.assertEqual(len(expected['existing']), len(got['existing']))
         for idx in range(len(expected['existing'])):
             exp = expected['existing'][idx]
