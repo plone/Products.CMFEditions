@@ -10,7 +10,8 @@ New:
 
 Fixes:
 
-- *add item here*
+- Fixed blob modifiers for dexterity content types
+  [Gagaro]
 
 
 2.2.19 (2016-02-14)
