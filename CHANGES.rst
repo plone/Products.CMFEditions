@@ -58,6 +58,9 @@ Bug fixes:
 - Do not log using plone restricted python logging script.
   [jensens]
 
+- Adapt tests to the new indexing operations queueing.
+  Part of PLIP 1343: https://github.com/plone/Products.CMFPlone/issues/1343
+  [gforcada]
 
 2.2.21 (2016-08-18)
 -------------------
