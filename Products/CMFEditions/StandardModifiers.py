@@ -28,6 +28,9 @@
 import os,sys
 from itertools import izip
 from App.class_init import InitializeClass
+from plone.dexterity.interfaces import IDexterityContent, IDexterityFTI
+from plone.namedfile.interfaces import INamedBlobImageField, INamedBlobFileField
+from zope.component import getUtility
 from zope.copy import copy
 
 from Acquisition import aq_base
@@ -1116,7 +1119,46 @@ InitializeClass(SkipVersioningOfLargeFilesAndImages)
 class BlobProxy(object):
     pass
 
-class SkipBlobs:
+
+class BlobModifier:
+    """ Utils method to have AT/Dexterity compatibility. """
+
+    def _getBlobFields(self, obj):
+        if IDexterityContent.providedBy(obj):
+            fti = getUtility(IDexterityFTI, name=obj.portal_type)
+            schema = fti.lookupSchema()
+            blob_fields = (f for name, f in schema.namesAndDescriptions()
+                           if INamedBlobFileField.providedBy(f)
+                               or INamedBlobImageField.providedBy(f))
+        else:
+            blob_fields = (f for f in obj.Schema().fields()
+                           if IBlobField.providedBy(f))
+        return blob_fields
+
+    def _getBlobRefs(self, obj):
+        fields = self._getBlobFields(obj)
+        refs = {}
+        for field in fields:
+            if IBlobField.providedBy(field):
+                refs[id(field.getUnwrapped(obj, raw=True).getBlob())] = True
+            else:
+                refs[id(field.get(obj)._blob)] = True
+        return refs
+
+    def _getBlob(self, field, obj):
+        if IBlobField.providedBy(field):
+            return field.getUnwrapped(obj, raw=True).getBlob()
+        else:
+            return field.get(obj)._blob
+
+    def _getBlobFile(self, field, obj):
+        if IBlobField.providedBy(field):
+            return field.get(obj, raw=True).getBlob().open('r')
+        else:
+            return field.get(obj).open('r')
+
+
+class SkipBlobs(BlobModifier):
     """Standard avoid storing blob data, may be useful for extremely
     large files where versioing the non-file metadata is important but
     the cost of versioning the file data is too high.
@@ -1128,9 +1170,7 @@ class SkipBlobs:
         """Removes blob objects and stores a marker
         """
 
-        blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
-                         for f in obj.Schema().fields()
-                         if IBlobField.providedBy(f))
+        blob_refs = self._getBlobRefs(obj)
 
         def persistent_id(obj):
             if id(aq_base(obj)) in blob_refs:
@@ -1148,18 +1188,25 @@ class SkipBlobs:
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         """If we find any BlobProxies, replace them with the values
         from the current working copy."""
-        blob_fields = (f for f in obj.Schema().fields()
-                       if IBlobField.providedBy(f))
+        blob_fields = self._getBlobFields(obj)
         for f in blob_fields:
-            blob = f.getUnwrapped(obj, raw=True).getBlob()
-            clone_ref = f.getUnwrapped(repo_clone, raw=True)
-            if isinstance(clone_ref.blob, BlobProxy):
-                clone_ref.setBlob(blob)
+            blob = self._getBlob(f, obj)
+            if IBlobField.providedBy(f):
+                # Archetype
+                clone_ref = f.getUnwrapped(repo_clone, raw=True)
+                if isinstance(clone_ref.blob, BlobProxy):
+                    clone_ref.setBlob(blob)
+            else:
+                # Dexterity
+                clone_ref = f.get(repo_clone)
+                if isinstance(clone_ref._blob, BlobProxy):
+                    clone_ref._blob = blob
         return [], [], {}
 
 InitializeClass(SkipBlobs)
 
-class CloneBlobs:
+
+class CloneBlobs(BlobModifier):
     """Standard modifier to save an un-cloned reference to the blob to avoid it
     being packed away.
     """
@@ -1167,8 +1214,8 @@ class CloneBlobs:
     implements(IAttributeModifier, ICloneModifier)
 
     def getReferencedAttributes(self, obj):
-        blob_fields = (f for f in obj.Schema().fields()
-                       if IBlobField.providedBy(f))
+        blob_fields = self._getBlobFields(obj)
+
         file_data = {}
         # try to get last revision, only store a new blob if the
         # contents differ from the prior one, otherwise store a
@@ -1184,12 +1231,12 @@ class CloneBlobs:
         for f in blob_fields:
             # XXX: should only do this if data has changed since last
             # version somehow Resave the blob line by line
-            blob_file = f.get(obj, raw=True).getBlob().open('r')
+            blob_file = self._getBlobFile(f, obj)
             save_new = True
             if prior_rev is not None:
                 prior_obj = prior_rev.object
-                prior_blob = f.get(prior_obj, raw=True).getBlob()
-                prior_file = prior_blob.open('r')
+                prior_blob = self._getBlob(f, prior_obj)
+                prior_file = self._getBlobFile(f, prior_obj)
                 # Check for file size differences
                 if (os.fstat(prior_file.fileno()).st_size ==
                     os.fstat(blob_file.fileno()).st_size):
@@ -1211,19 +1258,21 @@ class CloneBlobs:
                 finally:
                     blob_file.close()
                     new_blob_file.close()
+
         return file_data
 
     def reattachReferencedAttributes(self, obj, attrs_dict):
         obj = aq_base(obj)
         for name, blob in attrs_dict.iteritems():
-            obj.getField(name).get(obj).setBlob(blob)
+            if IDexterityContent.providedBy(obj):
+                getattr(obj, name)._blob = blob
+            else:
+                obj.getField(name).get(obj).setBlob(blob)
 
     def getOnCloneModifiers(self, obj):
         """Removes references to blobs.
         """
-        blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
-                         for f in obj.Schema().fields()
-                         if IBlobField.providedBy(f))
+        blob_refs = self._getBlobRefs(obj)
 
         def persistent_id(obj):
             if id(aq_base(obj)) in blob_refs:
@@ -1236,6 +1285,7 @@ class CloneBlobs:
         return persistent_id, persistent_load, [], []
 
 InitializeClass(CloneBlobs)
+
 
 class Skip_z3c_blobfile:
     """Standard avoid storing blob data, may be useful for extremely
