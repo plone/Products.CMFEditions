@@ -54,6 +54,11 @@ from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
 try:
+    from Products.Archetypes.interfaces.base import IBaseContent
+except ImportError:
+    class IBaseContent(Interface):
+        pass
+try:
     from Products.Archetypes.interfaces.referenceable import IReferenceable
     from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
 except ImportError:
@@ -1167,9 +1172,16 @@ class CloneBlobs:
     implements(IAttributeModifier, ICloneModifier)
 
     def getReferencedAttributes(self, obj):
+
+        file_data = {}
+
+        # This modifier should only be used for ATCT
+        # so return the empty file_data if not an ATCT
+        if not IBaseContent.providedBy(obj):
+            return file_data
+
         blob_fields = (f for f in obj.Schema().fields()
                        if IBlobField.providedBy(f))
-        file_data = {}
         # try to get last revision, only store a new blob if the
         # contents differ from the prior one, otherwise store a
         # reference to the prior one
@@ -1221,6 +1233,10 @@ class CloneBlobs:
     def getOnCloneModifiers(self, obj):
         """Removes references to blobs.
         """
+        # Fix for Dexterity Types
+        if not IBaseContent.providedBy(obj):
+            return None
+
         blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
                          for f in obj.Schema().fields()
                          if IBlobField.providedBy(f))
