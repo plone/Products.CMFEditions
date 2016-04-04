@@ -10,7 +10,9 @@ New:
 
 Fixes:
 
-- *add item here*
+- Fixed CloneBlobs modifier to only react on Archetypes.
+  This fix allows Dexterity Blob-Types (e.g. File, Image) to be versioned.
+  [iham]
 
 
 2.2.19 (2016-02-14)
