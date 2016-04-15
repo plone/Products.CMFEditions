@@ -4,10 +4,6 @@ Changelog
 2.2.20 (unreleased)
 -------------------
 
-New:
-
-- *add item here*
-
 Fixes:
 
 - Fixed CloneBlobs modifier to only react on Archetypes.
