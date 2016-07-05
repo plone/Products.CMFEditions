@@ -31,7 +31,7 @@ from App.class_init import InitializeClass
 from zope.copy import copy
 
 from Acquisition import aq_base
-from zope.interface import implements, Interface
+from zope.interface import implementer, Interface
 from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IPossibleSite
 from ZODB.blob import Blob
@@ -365,11 +365,11 @@ def manage_addSkip_z3c_blobfile(self, id, title=None, REQUEST=None):
 # Standard modifier implementation
 #----------------------------------------------------------------------
 
+@implementer(ISaveRetrieveModifier)
 class RetainAttributeAnnotationItemsBase:
     """Standard modifier retaining values of specific annotations from
     the working copy
     """
-    implements(ISaveRetrieveModifier)
 
     PRESERVE_ANNOTATION_KEYS = ()
 
@@ -453,14 +453,13 @@ class OMBaseModifier(RetainAttributeAnnotationItemsBase):
 
         return attrs
 
+@implementer(ICloneModifier, ISaveRetrieveModifier)
 class OMOutsideChildrensModifier(OMBaseModifier):
     """ObjectManager modifier treating all childrens as outside refs
 
     Treats all childrens as outside references (the repository layer
     knows what to do with that fact).
     """
-
-    implements(ICloneModifier, ISaveRetrieveModifier)
 
     def getOnCloneModifiers(self, obj):
         """Removes all childrens and returns them as references.
@@ -515,14 +514,13 @@ class OMOutsideChildrensModifier(OMBaseModifier):
 InitializeClass(OMOutsideChildrensModifier)
 
 
+@implementer(ICloneModifier, ISaveRetrieveModifier)
 class OMInsideChildrensModifier(OMBaseModifier):
     """ObjectManager modifier treating all childrens as inside refs
 
     Treats all childrens as inside references (the repository layer
     knows what to do with that fact).
     """
-
-    implements(ICloneModifier, ISaveRetrieveModifier)
 
     def getOnCloneModifiers(self, obj):
         """Removes all childrens and returns them as references.
@@ -591,11 +589,10 @@ class OMInsideChildrensModifier(OMBaseModifier):
 
 InitializeClass(OMInsideChildrensModifier)
 
+@implementer(IReferenceAdapter)
 class OMSubObjectAdapter:
     """Adapter to an object manager children.
     """
-
-    implements(IReferenceAdapter)
 
     def __init__(self, obj, name):
         """Initialize the adapter.
@@ -626,13 +623,12 @@ class OMSubObjectAdapter:
             self._obj._delObject(self._name, suppress_events=True)
 
 
+@implementer(ISaveRetrieveModifier)
 class RetainWorkflowStateAndHistory:
     """Standard modifier retaining the working copies workflow state
 
     Avoids the objects workflow state from beeing retrieved also.
     """
-
-    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         # Saving the ``review_state`` as this is hard to achieve at retreive
@@ -673,13 +669,12 @@ class RetainWorkflowStateAndHistory:
 
 InitializeClass(RetainWorkflowStateAndHistory)
 
+@implementer(ISaveRetrieveModifier)
 class RetainPermissionsSettings:
     """Standard modifier retaining permissions settings
 
     This is nearly essential if we are going to be retaining workflow.
     """
-
-    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         return {}, [], []
@@ -700,12 +695,11 @@ class RetainPermissionsSettings:
 
 InitializeClass(RetainPermissionsSettings)
 
+@implementer(ISaveRetrieveModifier)
 class RetainUIDs:
     """Modifier which ensures uid consistency by retaining the uid from the working copy.  Ensuring
        that newly created objects are assigned an appropriate uid is a job for the repository tool.
     """
-
-    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         return {}, [], []
@@ -743,12 +737,11 @@ class RetainUIDs:
 
 InitializeClass(RetainUIDs)
 
+@implementer(ISaveRetrieveModifier)
 class RetainATRefs:
     """Modifier which ensures the Archetypes references of the working
        copy are preserved when reverting to a previous version
     """
-
-    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         return {}, [], []
@@ -769,14 +762,13 @@ class RetainATRefs:
 
 InitializeClass(RetainATRefs)
 
+@implementer(ISaveRetrieveModifier)
 class NotRetainATRefs:
     """Modifier which removes Archetypes references of the working
        copy when reverting to a previous version without those references.
        We need to remove them explicitly by calling deleteReference() to
        keep the reference_catalog in sync, and to call the delHook().
     """
-
-    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         return {}, [], []
@@ -807,13 +799,12 @@ class NotRetainATRefs:
 
 InitializeClass(NotRetainATRefs)
 
+@implementer(IAttributeModifier)
 class SaveFileDataInFileTypeByReference:
     """Standard modifier avoiding unnecessary cloning of the file data.
 
     Called on 'Portal File' objects.
     """
-
-    implements(IAttributeModifier)
 
     def getReferencedAttributes(self, obj):
         return {'data': getattr(aq_base(obj),'data', None)}
@@ -827,12 +818,11 @@ class SaveFileDataInFileTypeByReference:
 
 InitializeClass(SaveFileDataInFileTypeByReference)
 
+@implementer(ICloneModifier, ISaveRetrieveModifier)
 class SkipParentPointers:
     """Standard modifier to avoid cloning of __parent__ pointers and
     restore them from context
     """
-
-    implements(ICloneModifier, ISaveRetrieveModifier)
 
     def getOnCloneModifiers(self, obj):
         """Removes parent pointers and stores a marker
@@ -868,12 +858,11 @@ class SkipParentPointers:
 InitializeClass(SkipParentPointers)
 
 
+@implementer(ICloneModifier, ISaveRetrieveModifier)
 class SkipRegistryBasesPointers:
     """Standard modifier to avoid cloning of component registry
     __bases__ and restore them from context
     """
-
-    implements(ICloneModifier, ISaveRetrieveModifier)
 
     def querySiteManager(self, obj):
         if not IPossibleSite.providedBy(obj):
@@ -929,6 +918,7 @@ class SkipRegistryBasesPointers:
 InitializeClass(SkipRegistryBasesPointers)
 
 
+@implementer(ISaveRetrieveModifier)
 class SillyDemoRetrieveModifier:
     """Silly Retrieve Modifier for Demos
 
@@ -937,8 +927,6 @@ class SillyDemoRetrieveModifier:
 
     This is really just as silly example though for demo purposes!!!
     """
-
-    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, clone):
         return {}, [], []
@@ -965,14 +953,13 @@ InitializeClass(SillyDemoRetrieveModifier)
 
 
 ANNOTATION_PREFIX = 'Archetypes.storage.AnnotationStorage-'
+@implementer(IConditionalTalesModifier, ICloneModifier)
 class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
     """Raises an error if a file or image attribute stored on the
     object in a specified field is larger than a fixed default"""
 
     field_names = ('file', 'image')
     max_size = 26214400 # This represents a 400 element long Pdata list
-
-    implements(IConditionalTalesModifier, ICloneModifier)
 
     modifierEditForm = PageTemplateFile('www/fieldModifierEditForm.pt',
                                         globals(),
@@ -1056,13 +1043,12 @@ class LargeFilePlaceHolder(object):
     def getSize():
         return sys.maxint
 
+@implementer(IConditionalTalesModifier, ICloneModifier,
+                      ISaveRetrieveModifier)
 class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
     """Replaces any excessively large file and images stored as
     annotations or attributes on the object with a marker.  On
     retrieve, the marker will be replaced with the current value.."""
-
-    implements(IConditionalTalesModifier, ICloneModifier,
-                      ISaveRetrieveModifier)
 
     def getOnCloneModifiers(self, obj):
         """Removes large file objects and returns them as references
@@ -1121,13 +1107,12 @@ InitializeClass(SkipVersioningOfLargeFilesAndImages)
 class BlobProxy(object):
     pass
 
+@implementer(ICloneModifier, ISaveRetrieveModifier)
 class SkipBlobs:
     """Standard avoid storing blob data, may be useful for extremely
     large files where versioing the non-file metadata is important but
     the cost of versioning the file data is too high.
     """
-
-    implements(ICloneModifier, ISaveRetrieveModifier)
 
     def getOnCloneModifiers(self, obj):
         """Removes blob objects and stores a marker
@@ -1164,12 +1149,11 @@ class SkipBlobs:
 
 InitializeClass(SkipBlobs)
 
+@implementer(IAttributeModifier, ICloneModifier)
 class CloneBlobs:
     """Standard modifier to save an un-cloned reference to the blob to avoid it
     being packed away.
     """
-
-    implements(IAttributeModifier, ICloneModifier)
 
     def getReferencedAttributes(self, obj):
 
@@ -1253,13 +1237,12 @@ class CloneBlobs:
 
 InitializeClass(CloneBlobs)
 
+@implementer(ICloneModifier, ISaveRetrieveModifier)
 class Skip_z3c_blobfile:
     """Standard avoid storing blob data, may be useful for extremely
     large files where versioing the non-file metadata is important but
     the cost of versioning the file data is too high.
     """
-
-    implements(ICloneModifier, ISaveRetrieveModifier)
 
     def _blob_file_classes(self):
         blob_file_classes = []

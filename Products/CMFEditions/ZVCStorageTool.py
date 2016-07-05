@@ -30,7 +30,7 @@ import time
 import types
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
-from zope.interface import implements
+from zope.interface import implementer
 
 from App.class_init import InitializeClass
 from BTrees.OOBTree import OOBTree
@@ -127,6 +127,10 @@ def getSize(obj):
     return size
 
 
+@implementer(
+        IPurgeSupport,
+        IStorage,
+        IStorageTool,)
 class ZVCStorageTool(UniqueObject, SimpleItem):
     """Zope Version Control Based Version Storage
 
@@ -147,12 +151,6 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
       version) is important when reconstructing relations between
       objects.
     """
-
-    implements(
-        IPurgeSupport,
-        IStorage,
-        IStorageTool,
-    )
 
     id = 'portal_historiesstorage'
     alternative_id = 'portal_zvcstorage'
@@ -981,8 +979,8 @@ class Removed(Persistent):
         self.metadata = metadata
 
 
+@implementer(IVersionData)
 class VersionData:
-    implements(IVersionData)
 
     def __init__(self, object, referenced_data, metadata):
         self.object = object
@@ -994,13 +992,11 @@ class VersionData:
         """
         return not isinstance(self.object, Removed)
 
+@implementer(
+        IHistory,)
 class LazyHistory:
     """Lazy history adapter.
     """
-
-    implements(
-        IHistory,
-    )
 
     def __init__(self, storage, history_id, countPurged=True, substitute=True):
         """See IHistory.

@@ -27,7 +27,7 @@ $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 import time
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler
-from zope.interface import implements, alsoProvides
+from zope.interface import implementer, alsoProvides
 
 from App.class_init import InitializeClass
 from Persistence import Persistent
@@ -72,10 +72,10 @@ def deepcopy(obj):
     u = Unpickler(stream)
     return u.load()
 
+@implementer(IVersionData)
 class VersionData:
     """
     """
-    implements(IVersionData)
 
     def __init__(self, data, refs_to_be_deleted, attr_handling_references,
                  preserved_data, metadata):
@@ -87,8 +87,8 @@ class VersionData:
         self.app_metadata = metadata['app_metadata']
 
 
+@implementer(IAttributeAdapter)
 class AttributeAdapter(Persistent):
-    implements(IAttributeAdapter)
 
     def __init__(self, parent, attr_name, type=None):
         self._parent = aq_base(parent)
@@ -109,8 +109,8 @@ class AttributeAdapter(Persistent):
     def getType(self):
         return self._type
 
+@implementer(IAttributeAdapter)
 class ObjectManagerStorageAdapter(Persistent):
-    implements(IAttributeAdapter)
 
     def __init__(self, parent, attr_name, type=None):
         self._parent = aq_base(parent)
@@ -135,10 +135,10 @@ class ObjectManagerStorageAdapter(Persistent):
         return self._type
 
 
+@implementer(IVersionAwareReference)
 class VersionAwareReference(Persistent):
     """A Reference that is version aware (and in future also location aware).
     """
-    implements(IVersionAwareReference)
 
     def __init__(self, **info):
         self.history_id = None
@@ -172,10 +172,10 @@ class VersionAwareReference(Persistent):
         return self
 
 
+@implementer(IArchivistTool, IArchivist, IPurgeSupport)
 class ArchivistTool(UniqueObject, SimpleItem):
     """
     """
-    implements(IArchivistTool, IArchivist, IPurgeSupport)
 
     id = 'portal_archivist'
     alternative_id = 'portal_standard_archivist'
@@ -405,10 +405,10 @@ def getUserId():
     return getSecurityManager().getUser().getUserName()
 
 
+@implementer(IObjectData)
 class ObjectData(Persistent):
     """
     """
-    implements(IObjectData)
 
     def __init__(self, obj, inside_refs=(), outside_refs=()):
         self.object = obj
@@ -416,10 +416,10 @@ class ObjectData(Persistent):
         self.outside_refs = outside_refs
 
 
+@implementer(IPreparedObject)
 class PreparedObject:
     """
     """
-    implements(IPreparedObject)
 
     def __init__(self, history_id, original, clone, referenced_data,
                  app_metadata, sys_metadata, is_registered, approxSize):
@@ -460,10 +460,10 @@ class PreparedObject:
         self.original.object.version_id = self.clone.object.version_id
 
 
+@implementer(IHistory)
 class LazyHistory:
     """Lazy history.
     """
-    implements(IHistory)
 
     def __init__(self, archivist, obj, history_id, preserve, countPurged):
         """Sets up a lazy history.

@@ -23,7 +23,7 @@
 
 """
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from App.class_init import InitializeClass
 from Missing import MV
@@ -52,16 +52,14 @@ from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 
 
-class ModifierRegistryTool(UniqueObject, OrderedFolder):
-    __doc__ = __doc__ # copy from module
-
-    implements(
+@implementer(
         IAttributeModifier, ISaveRetrieveModifier, ICloneModifier,
         IModifierRegistrySet,
         IModifierRegistryQuery,
 #        IBulkEditableSubscriberRegistry,        # not yet implemented
-        IPortalModifierTool,
-    )
+        IPortalModifierTool,)
+class ModifierRegistryTool(UniqueObject, OrderedFolder):
+    __doc__ = __doc__ # copy from module
 
     id = 'portal_modifier'
     alternative_id = 'portal_modifierregistry'
