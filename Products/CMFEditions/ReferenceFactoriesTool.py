@@ -26,7 +26,7 @@ $Id: $
 
 from App.class_init import InitializeClass
 from AccessControl import ClassSecurityInfo
-from zope.interface import implements
+from zope.interface import implementer
 
 from Acquisition import aq_parent, aq_inner
 from OFS.OrderedFolder import OrderedFolder
@@ -38,12 +38,10 @@ from Products.CMFEditions.utilities import generateId
 from Products.CMFEditions.interfaces.IReferenceFactories \
     import IReferenceFactories
 
+@implementer(
+        IReferenceFactories,)
 class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
     __doc__ = __doc__ # copy from module
-
-    implements(
-        IReferenceFactories,
-    )
 
     id = 'portal_referencefactories'
     alternative_id = 'portal_referencefactoryregistry'

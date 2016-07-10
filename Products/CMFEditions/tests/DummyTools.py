@@ -4,7 +4,7 @@ from cPickle import Pickler, Unpickler
 from StringIO import StringIO
 import types
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from Acquisition import aq_base
 from DateTime import DateTime
@@ -459,9 +459,8 @@ class Removed:
         self.reason = reason
         self.metadata = metadata
 
+@implementer(IStorage, IPurgeSupport)
 class MemoryStorage(DummyBaseTool):
-
-    implements(IStorage, IPurgeSupport)
     id = 'portal_historiesstorage'
 
 
@@ -627,10 +626,10 @@ class HistoryList(types.ListType):
        item = self[selector]
        return {'metadata': item.metadata}
 
+@implementer(IPurgePolicy)
 class DummyPurgePolicy(DummyBaseTool):
     """Dummy Purge Policy
     """
-    implements(IPurgePolicy)
     id = 'portal_purgepolicy'
 
     def beforeSaveHook(self, history_id, obj, metadata={}):
@@ -663,11 +662,10 @@ class DummyPurgePolicy(DummyBaseTool):
         return default
 
 
+@implementer(IStorage, IPurgeSupport)
 class PurgePolicyTestDummyStorage(DummyBaseTool):
     """Partial Storage used for PurgePolicy Tetss
     """
-
-    implements(IStorage, IPurgeSupport)
     id = 'portal_historiesstorage'
 
     def __init__(self):

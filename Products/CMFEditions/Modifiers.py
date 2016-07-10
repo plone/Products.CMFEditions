@@ -26,7 +26,7 @@ $Id: Modifiers.py,v 1.3 2005/06/09 13:07:28 duncanb Exp $
 
 from App.class_init import InitializeClass
 from Acquisition import aq_base, aq_parent, aq_inner
-from zope.interface import implements
+from zope.interface import implementer
 
 from OFS.SimpleItem import SimpleItem
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
@@ -43,13 +43,11 @@ manage_addModifierForm = PageTemplateFile('www/modifierAddForm.pt',
                                           globals(),
                                           __name__='manage_addModifierForm')
 
+@implementer(
+        IConditionalModifier,)
 class ConditionalModifier(SimpleItem):
     """This is a wrapper for a modifier.
     """
-
-    implements(
-        IConditionalModifier,
-    )
 
     modifierEditForm = PageTemplateFile('www/modifierEditForm.pt',
                                         globals(),
@@ -105,13 +103,11 @@ manage_addTalesModifierForm = PageTemplateFile('www/talesModifierAddForm.pt',
                                                globals(),
                                                __name__='manage_addTalesModifierForm')
 
+@implementer(
+        IConditionalTalesModifier,)
 class ConditionalTalesModifier(ConditionalModifier):
     """This is a wrapper with a tales condition for a modifier.
     """
-
-    implements(
-        IConditionalTalesModifier,
-    )
 
     modifierEditForm = PageTemplateFile('www/talesModifierEditForm.pt',
                                         globals(),

@@ -35,7 +35,7 @@ from AccessControl import ClassSecurityInfo, Unauthorized
 from OFS.SimpleItem import SimpleItem
 from BTrees.OOBTree import OOBTree
 from zope.event import notify
-from zope.interface import implements, Interface
+from zope.interface import implementer, Interface
 from zope.lifecycleevent import ObjectModifiedEvent
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.utils import _checkPermission
@@ -88,18 +88,16 @@ HOOKS = {'add': 'setupPolicyHook',
          'enable': 'enablePolicyOnTypeHook',
          'disable': 'disablePolicyOnTypeHook'}
 
+@implementer(
+        IPurgeSupport,
+        ICopyModifyMergeRepository,
+        IContentTypeVersionPolicySupport,
+        IRepositoryTool,)
 class CopyModifyMergeRepositoryTool(UniqueObject,
                                     SimpleItem):
 
     """See ICopyModifyMergeRepository
     """
-
-    implements(
-        IPurgeSupport,
-        ICopyModifyMergeRepository,
-        IContentTypeVersionPolicySupport,
-        IRepositoryTool,
-        )
 
     id = 'portal_repository'
     alternative_id = 'portal_copymergerepository'
@@ -739,10 +737,10 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
         createTestHierarchy(context)
 
 
+@implementer(IVersionData)
 class VersionData:
     """
     """
-    implements(IVersionData)
 
     security = ClassSecurityInfo()
     security.declareObjectPublic()
@@ -761,10 +759,10 @@ class VersionData:
         self.version_id = object.version_id
 
 
+@implementer(IHistory)
 class LazyHistory:
     """Lazy history.
     """
-    implements(IHistory)
 
     __allow_access_to_unprotected_subobjects__ = 1
 
