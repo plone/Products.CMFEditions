@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Do not log using plone restricted python logging script.
+  [jensens]
 
 
 2.2.21 (2016-08-18)
