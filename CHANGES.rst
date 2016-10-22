@@ -14,6 +14,9 @@ New features:
 
 Bug fixes:
 
+- Fix deprecated import from Globals that is changed in Zope4.
+  [pbauer]
+
 - Do not log using plone restricted python logging script.
   [jensens]
 
