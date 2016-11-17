@@ -4,14 +4,6 @@ Changelog
 2.2.22 (unreleased)
 -------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Fix deprecated import from Globals that is changed in Zope4.
