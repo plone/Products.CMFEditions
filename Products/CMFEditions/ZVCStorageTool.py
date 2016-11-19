@@ -773,6 +773,8 @@ class ShadowStorage(Persistent):
         Returns None if ``autoAdd`` is False and the history
         does not exist. Else prepares and returns an empty history.
         """
+        if history_id is None:
+            return None
         # Create a new history if there isn't one yet
         if autoAdd and not self.isRegistered(history_id):
             self._storage[history_id] = ShadowHistory()
