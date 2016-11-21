@@ -14,7 +14,11 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- In ShadowStorage's `isRegistered` and `getHistory` methods,
+  avoid checking for a history_id of None in the storage's BTree.
+  This fixes compatibility with BTrees 4.x,
+  which disallows comparing keys to None.
+  [davisagli]
 
 
 2.2.22 (2016-11-17)

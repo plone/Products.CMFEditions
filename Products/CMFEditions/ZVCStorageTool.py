@@ -755,14 +755,16 @@ class ShadowStorage(Persistent):
     Only cares about containerish operations.
     """
     def __init__(self):
-        # Using a OOBtree to allow history ids of any type. The type
-        # of the history ids higly depends on the unique id tool which
-        # we isn't under our control.
+        # Using an OOBtree to allow history ids of any type. The type
+        # of the history ids highly depends on the unique id tool which
+        # isn't under our control.
         self._storage = OOBTree()
 
     def isRegistered(self, history_id):
         """Returns True if a History With the Given History id Exists
         """
+        if history_id is None:
+            return False
         return history_id in self._storage
 
     def getHistory(self, history_id, autoAdd=False):
@@ -771,6 +773,8 @@ class ShadowStorage(Persistent):
         Returns None if ``autoAdd`` is False and the history
         does not exist. Else prepares and returns an empty history.
         """
+        if history_id is None:
+            return None
         # Create a new history if there isn't one yet
         if autoAdd and not self.isRegistered(history_id):
             self._storage[history_id] = ShadowHistory()
