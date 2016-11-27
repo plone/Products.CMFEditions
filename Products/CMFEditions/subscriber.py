@@ -26,8 +26,13 @@ $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 from zope.i18nmessageid import MessageFactory
 from Acquisition import aq_get
 
-from Products.CMFEditions.utilities import isObjectChanged, maybeSaveVersion
-from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
+from plone import api
+from Products.CMFCore.interfaces import IContentish
+from Products.CMFEditions.utilities import\
+    isObjectChanged, maybeSaveVersion, dereference
+from Products.CMFEditions.interfaces.IModifier import\
+    FileTooLargeToVersionError
+from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 
 PMF = MessageFactory('plone')
@@ -62,3 +67,34 @@ def objectInitialized(obj, event):
 def objectEdited(obj, event):
     comment = _getVersionComment(event.object) or PMF('Edited')
     return webdavObjectEventHandler(obj, event, comment=comment)
+
+def object_removed(obj, event):
+    """ an object is being deleted -
+    also delete it's history
+    """
+    if not IContentish.providedBy(obj):
+        return
+    obj, histid = dereference(obj)
+    if histid is None:
+        return
+    histories_storage = api.portal.get_tool('portal_historiesstorage')
+    repo_tool = api.portal.get_tool('portal_repository')
+    metadata = repo_tool.getHistoryMetadata(obj)
+    num_versions = metadata.getLength(countPurged=False)
+    current = metadata.retrieve(num_versions - 1)
+    sys_metadata = current['metadata']['sys_metadata']
+    if ('parent' in sys_metadata) and \
+            (sys_metadata['parent']['history_id'] != histid):
+        try:
+            histories_storage.retrieve(
+                history_id=sys_metadata['parent']['history_id'])
+            return
+        except StorageRetrieveError:
+            pass
+    length = len(histories_storage.getHistory(histid, countPurged=False))
+    for i in range(length):
+        histories_storage.purge(
+            histid,
+            0,
+            metadata={'sys_metadata': {'comment': 'purged'}},
+            countPurged=False)
