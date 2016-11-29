@@ -80,7 +80,13 @@ def object_removed(obj, event):
     histories_storage = api.portal.get_tool('portal_historiesstorage')
     repo_tool = api.portal.get_tool('portal_repository')
     metadata = repo_tool.getHistoryMetadata(obj)
-    num_versions = metadata.getLength(countPurged=False)
+    try:
+        num_versions = metadata.getLength(countPurged=False)
+    except AttributeError:
+        # portal_historiesstorage will return
+        # an empty list in certain cases,
+        # do nothing
+        return
     current = metadata.retrieve(num_versions - 1)
     sys_metadata = current['metadata']['sys_metadata']
     if ('parent' in sys_metadata) and \
