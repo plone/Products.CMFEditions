@@ -74,9 +74,6 @@ def object_removed(obj, event):
     """
     if not IContentish.providedBy(obj):
         return
-    obj, histid = dereference(obj)
-    if histid is None:
-        return
     try:
         histories_storage = getToolByName(obj, 'portal_historiesstorage')
         repo_tool = getToolByName(obj, 'portal_repository')
@@ -85,6 +82,9 @@ def object_removed(obj, event):
         # This occurs in some Products.CMFDiffTool and
         # Products.CMFTestCase tests for 4.3.x. Maybe it should
         # be fixed there.
+        return
+    obj, histid = dereference(obj)
+    if histid is None:
         return
     metadata = repo_tool.getHistoryMetadata(obj)
     try:
