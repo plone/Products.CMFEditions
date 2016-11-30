@@ -6,7 +6,8 @@ Changelog
 
 Breaking changes:
 
-- *add item here*
+- Purge all old revisions of content about to be removed.
+  [tschorr]
 
 New features:
 
