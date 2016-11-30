@@ -26,8 +26,8 @@ $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 from zope.i18nmessageid import MessageFactory
 from Acquisition import aq_get
 
-from plone import api
 from Products.CMFCore.interfaces import IContentish
+from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.utilities import\
     isObjectChanged, maybeSaveVersion, dereference
 from Products.CMFEditions.interfaces.IModifier import\
@@ -77,8 +77,8 @@ def object_removed(obj, event):
     obj, histid = dereference(obj)
     if histid is None:
         return
-    histories_storage = api.portal.get_tool('portal_historiesstorage')
-    repo_tool = api.portal.get_tool('portal_repository')
+    histories_storage = getToolByName(obj, 'portal_historiesstorage')
+    repo_tool = getToolByName(obj, 'portal_repository')
     metadata = repo_tool.getHistoryMetadata(obj)
     try:
         num_versions = metadata.getLength(countPurged=False)
