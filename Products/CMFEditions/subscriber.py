@@ -77,8 +77,15 @@ def object_removed(obj, event):
     obj, histid = dereference(obj)
     if histid is None:
         return
-    histories_storage = getToolByName(obj, 'portal_historiesstorage')
-    repo_tool = getToolByName(obj, 'portal_repository')
+    try:
+        histories_storage = getToolByName(obj, 'portal_historiesstorage')
+        repo_tool = getToolByName(obj, 'portal_repository')
+    except AttributeError:
+        # XXX If tools are missing, there is nothing we can do.
+        # This occurs in some Products.CMFDiffTool and
+        # Products.CMFTestCase tests for 4.3.x. Maybe it should
+        # be fixed there.
+        return
     metadata = repo_tool.getHistoryMetadata(obj)
     try:
         num_versions = metadata.getLength(countPurged=False)
