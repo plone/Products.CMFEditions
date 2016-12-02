@@ -38,6 +38,10 @@
     <subscriber for="*
                      Products.Archetypes.interfaces.IObjectEditedEvent"
                 handler=".subscriber.objectEdited" />
+
+    <subscriber for="*
+                     zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+                handler=".subscriber.object_removed" />
   </configure>
 
 </configure>

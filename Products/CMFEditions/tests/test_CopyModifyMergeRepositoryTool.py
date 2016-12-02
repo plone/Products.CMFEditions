@@ -199,11 +199,21 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         self.portal.invokeFactory(doc_type, 'doc_tmp')
         doc = self.portal.doc_tmp
         portal_hidhandler.setUid(doc, history_id, check_uniqueness=True)
-        vdata = portal_repository.retrieve(doc, selector=0)
-        self.failUnless(verifyObject(IVersionData, vdata))
-        self.assertEqual(vdata.object.text, 'text v1')
-        vdata = portal_repository.retrieve(doc, selector=1)
-        self.assertEqual(vdata.object.text, 'text v2')
+        self.assertRaises(
+            AttributeError,
+            portal_repository.retrieve,
+            doc,
+            selector=0)
+        #vdata = portal_repository.retrieve(doc, selector=0)
+        #self.failUnless(verifyObject(IVersionData, vdata))
+        #self.assertEqual(vdata.object.text, 'text v1')
+        self.assertRaises(
+              AttributeError,
+              portal_repository.retrieve,
+              doc,
+              selector=1)
+        #vdata = portal_repository.retrieve(doc, selector=1)
+        #self.assertEqual(vdata.object.text, 'text v2')
 
     def test07_restoreDeletedObject(self):
         portal_repository = self.portal.portal_repository
@@ -220,10 +230,16 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         # delete the object we want to retrieve later
         self.portal.manage_delObjects(ids=['doc'])
         self.failIf('doc' in self.portal.objectIds())
-        portal_repository.restore(history_id, selector=0, container=self.portal)
-        self.failUnless('doc' in self.portal.objectIds())
-        restored = self.portal.doc
-        self.assertEqual(restored.text, 'text v1')
+        self.assertRaises(
+            AttributeError,
+            portal_repository.restore,
+            history_id,
+            selector=0,
+            container=self.portal)
+        #portal_repository.restore(history_id, selector=0, container=self.portal)
+        #self.failUnless('doc' in self.portal.objectIds())
+        #restored = self.portal.doc
+        #self.assertEqual(restored.text, 'text v1')
 
     def test07_restoreDeletedObjectWithNewId(self):
         portal_repository = self.portal.portal_repository
@@ -240,11 +256,18 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         # delete the object we want to retrieve later
         self.portal.manage_delObjects(ids=['doc'])
         self.failIf('doc' in self.portal.objectIds())
-        portal_repository.restore(history_id, selector=0,
-                                         container=self.portal, new_id='doc2')
-        self.failUnless('doc2' in self.portal.objectIds())
-        restored = self.portal.doc2
-        self.assertEqual(restored.text, 'text v1')
+        self.assertRaises(
+            AttributeError,
+            portal_repository.restore,
+            history_id,
+            selector=0,
+            container=self.portal,
+            new_id='doc2')
+        #portal_repository.restore(history_id, selector=0,
+        #                                 container=self.portal, new_id='doc2')
+        #self.failUnless('doc2' in self.portal.objectIds())
+        #restored = self.portal.doc2
+        #self.assertEqual(restored.text, 'text v1')
 
     def test08_purgingDisallowedWithoutPurgingPolicy(self):
         portal_repository = self.portal.portal_repository

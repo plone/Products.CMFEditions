@@ -28,8 +28,10 @@ from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
 from zope.interface.verify import verifyObject
 from OFS.ObjectManager import ObjectManager
+from Acquisition import aq_base
 
 from Products.CMFEditions.ArchivistTool import ObjectData
+from Products.CMFEditions.ZVCStorageTool import Removed
 from Products.CMFEditions.interfaces.IStorage import IStorage
 from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
@@ -40,8 +42,10 @@ from DummyTools import DummyPurgePolicy
 from DummyTools import MemoryStorage
 from DummyTools import notifyModified
 
+
 class DummyOM(ObjectManager):
     pass
+
 
 class CMFDummy(Dummy):
 
@@ -49,11 +53,13 @@ class CMFDummy(Dummy):
         super(CMFDummy, self).__init__()
         self.id = id
         self.cmf_uid = cmfuid
-        self.effective = effective if effective is not None else self.modification_date
+        self.effective = \
+            effective if effective is not None else self.modification_date
         self.expires = expires
 
     def getPortalTypeName(self):
         return 'Dummy'
+
 
 class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
@@ -564,6 +570,54 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
             # s. https://github.com/plone/Products.CMFEditions/issues/31
             self.failUnless(actual['size'] > 0)
 
+    def test16_delete_history_on_content_deletion(self):
+        """ If a content item gets deleted, delete it's history
+        as well
+        """
+        portal_hidhandler = self.portal.portal_historyidhandler
+        portal_storage = self.portal.portal_historiesstorage
+        self.portal.invokeFactory('Document', 'doc')
+        self.portal.invokeFactory('Link', 'link')
+        self.portal.invokeFactory('Folder', 'folder')
+        # the event subscriber should be able to handle unversioned content
+        self.portal.invokeFactory('Document', 'unversioned_doc')
+        doc = self.portal.doc
+        doc_histid = portal_hidhandler.register(doc)
+        portal_storage.register(
+            doc_histid, ObjectData(aq_base(doc)),
+            metadata=self.buildMetadata('initial'))
+        portal_storage.save(
+            doc_histid,
+            ObjectData(aq_base(doc)),
+            metadata=self.buildMetadata('v2'))
+        link = self.portal.link
+        link_histid = portal_hidhandler.register(link)
+        portal_storage.register(
+            link_histid, ObjectData(aq_base(link)),
+            metadata=self.buildMetadata('initial'))
+        folder = self.portal.folder
+        folder_histid = portal_hidhandler.register(folder)
+        portal_storage.register(
+            folder_histid, ObjectData(aq_base(folder)),
+            metadata=self.buildMetadata('first draft'))
+        dochist = portal_storage.retrieve(doc_histid).object
+        doctype = dochist.object.portal_type
+        self.assertEqual('Document', doctype)
+        linkhist = portal_storage.retrieve(link_histid).object
+        linktype = linkhist.object.portal_type
+        self.assertEqual('Link', linktype)
+        folderhist = portal_storage.retrieve(folder_histid).object
+        foldertype = folderhist.object.portal_type
+        self.assertEqual('Folder', foldertype)
+        self.portal.manage_delObjects(
+            ids=['doc', 'link', 'folder', 'unversioned_doc'])
+        removed_doc = portal_storage.retrieve(history_id=doc_histid)
+        self.assertTrue(type(removed_doc.object) == Removed)
+        removed_link = portal_storage.retrieve(history_id=link_histid)
+        self.assertTrue(type(removed_link.object) == Removed)
+        removed_folder = portal_storage.retrieve(history_id=folder_histid)
+        self.assertTrue(type(removed_folder.object) == Removed)
+
 
 class TestMemoryStorage(TestZVCStorageTool):
 
@@ -574,5 +628,10 @@ class TestMemoryStorage(TestZVCStorageTool):
 
     def test15_storageStatistics(self):
         """ MemoryStorage does not implement zmi_getStorageStatistics
+        """
+        pass
+
+    def test16_delete_history_on_content_deletion(self):
+        """ MemoryStorage does not implement _getZVCRepo
         """
         pass
