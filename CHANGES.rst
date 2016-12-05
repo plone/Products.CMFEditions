@@ -4,14 +4,6 @@ Changelog
 2.2.23 (unreleased)
 -------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - In ShadowStorage's `isRegistered` and `getHistory` methods,
