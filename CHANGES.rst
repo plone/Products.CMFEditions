@@ -9,6 +9,10 @@ Breaking changes:
 - Purge all old revisions of content about to be removed.
   [tschorr]
 
+
+2.2.23 (2016-12-05)
+-------------------
+
 Bug fixes:
 
 - In ShadowStorage's `isRegistered` and `getHistory` methods,
