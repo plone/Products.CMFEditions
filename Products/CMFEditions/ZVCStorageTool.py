@@ -30,7 +30,7 @@ import time
 import types
 from StringIO import StringIO
 from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
-from zope.interface import implements
+from zope.interface import implementer
 
 from App.class_init import InitializeClass
 from BTrees.OOBTree import OOBTree
@@ -127,6 +127,10 @@ def getSize(obj):
     return size
 
 
+@implementer(
+        IPurgeSupport,
+        IStorage,
+        IStorageTool,)
 class ZVCStorageTool(UniqueObject, SimpleItem):
     """Zope Version Control Based Version Storage
 
@@ -147,12 +151,6 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
       version) is important when reconstructing relations between
       objects.
     """
-
-    implements(
-        IPurgeSupport,
-        IStorage,
-        IStorageTool,
-    )
 
     id = 'portal_historiesstorage'
     alternative_id = 'portal_zvcstorage'
@@ -665,7 +663,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             if shadowStorage is not None:
                 size, sizeState = shadowStorage.getSize()
 
-            workingCopy = hidhandler.queryObject(hid)
+            workingCopy = hidhandler.unrestrictedQueryObject(hid)
             if workingCopy is not None:
                 url = workingCopy.absolute_url()
                 path = url[portal_paths_len:]
@@ -673,8 +671,11 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             else:
                 path = None
                 url = None
-                retrieved = self.retrieve(hid).object.object
-                portal_type = retrieved.getPortalTypeName()
+                object_ = self.retrieve(hid).object
+                if isinstance(object_, Removed):
+                    portal_type = 'Removed'
+                else:
+                    portal_type = object_.object.getPortalTypeName()
             histData = {
                 "history_id": hid,
                 "length": length,
@@ -754,14 +755,16 @@ class ShadowStorage(Persistent):
     Only cares about containerish operations.
     """
     def __init__(self):
-        # Using a OOBtree to allow history ids of any type. The type
-        # of the history ids higly depends on the unique id tool which
-        # we isn't under our control.
+        # Using an OOBtree to allow history ids of any type. The type
+        # of the history ids highly depends on the unique id tool which
+        # isn't under our control.
         self._storage = OOBTree()
 
     def isRegistered(self, history_id):
         """Returns True if a History With the Given History id Exists
         """
+        if history_id is None:
+            return False
         return history_id in self._storage
 
     def getHistory(self, history_id, autoAdd=False):
@@ -770,6 +773,8 @@ class ShadowStorage(Persistent):
         Returns None if ``autoAdd`` is False and the history
         does not exist. Else prepares and returns an empty history.
         """
+        if history_id is None:
+            return None
         # Create a new history if there isn't one yet
         if autoAdd and not self.isRegistered(history_id):
             self._storage[history_id] = ShadowHistory()
@@ -978,8 +983,8 @@ class Removed(Persistent):
         self.metadata = metadata
 
 
+@implementer(IVersionData)
 class VersionData:
-    implements(IVersionData)
 
     def __init__(self, object, referenced_data, metadata):
         self.object = object
@@ -991,13 +996,11 @@ class VersionData:
         """
         return not isinstance(self.object, Removed)
 
+@implementer(
+        IHistory,)
 class LazyHistory:
     """Lazy history adapter.
     """
-
-    implements(
-        IHistory,
-    )
 
     def __init__(self, storage, history_id, countPurged=True, substitute=True):
         """See IHistory.

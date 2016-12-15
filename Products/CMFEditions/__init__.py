@@ -23,11 +23,7 @@
 """
 
 
-try:
-    from App.Common import package_home
-except ImportError:
-    from Globals import package_home
-
+from App.Common import package_home
 from AccessControl import ModuleSecurityInfo
 
 from Products.CMFCore import utils

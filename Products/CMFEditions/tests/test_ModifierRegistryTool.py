@@ -29,7 +29,7 @@ from pickle import dumps, loads, HIGHEST_PROTOCOL
 
 from zope.interface.verify import verifyObject
 from Acquisition import aq_base
-from zope.interface import implements
+from zope.interface import implementer
 
 from Products.CMFCore.utils import getToolByName
 
@@ -49,9 +49,8 @@ def deepcopy(obj):
 deepcopy(Dummy())
 
 
+@implementer(ISaveRetrieveModifier)
 class SimpleModifierBase:
-
-    implements(ISaveRetrieveModifier)
 
     def beforeSaveModifier(self, obj, copy_obj):
         try:
@@ -96,9 +95,8 @@ def dictToString(dict):
         dict_list.append("%s = %s" % (k, dict[k]))
     return ', '.join(dict_list)
 
+@implementer(IAttributeModifier, ICloneModifier, ISaveRetrieveModifier)
 class LoggingModifierBase:
-
-    implements(IAttributeModifier, ICloneModifier, ISaveRetrieveModifier)
 
     def getReferencedAttributes(self, obj):
         referenced_data = {

@@ -1,6 +1,10 @@
 from Acquisition import aq_inner
 from Products.Five.browser import BrowserView
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class GetMacros(BrowserView):
     """Get macros.
@@ -47,8 +51,9 @@ class GetMacros(BrowserView):
         try:
             return versionPreviewTemplate.macros['main']
         except KeyError:
-            context.plone_log(
-                "(CMFEditions: @@get_macros) Internal error: Missing TAL "
-                "macros %s in template '%s'." % (', '.join(macro_names),
-                                                  versionPreviewMethodName))
-            return None
+            logger.warn(
+                'Missing TAL macros {0} in template "{1}".' .format(
+                    ', '.join(macro_names),
+                    versionPreviewMethodName
+                )
+            )

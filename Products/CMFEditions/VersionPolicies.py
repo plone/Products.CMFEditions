@@ -28,13 +28,12 @@ from AccessControl import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IVersionPolicy import IVersionPolicy
-from zope.interface import implements
+from zope.interface import implementer
 
 
+@implementer(IVersionPolicy)
 class VersionPolicy(SimpleItem):
     """A simple class for storing version policy information"""
-
-    implements(IVersionPolicy)
 
     security = ClassSecurityInfo()
 

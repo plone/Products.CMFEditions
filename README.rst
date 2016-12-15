@@ -6,7 +6,7 @@ CMFEditions
 CMFEditions provides versioning in Plone.
 
 - It works out of the box.
-- It's higly extensible for specific use cases.
+- It's highly extensible for specific use cases.
 
 .. contents:: Contents
 

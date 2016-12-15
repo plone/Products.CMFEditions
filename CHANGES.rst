@@ -1,12 +1,125 @@
 Changelog
 =========
 
-2.2.14 (unreleased)
--------------------
+3.0.1 (unreleased)
+------------------
+
+Breaking changes:
+
+- *add item here*
+
+New features:
+
+- *add item here*
+
+Bug fixes:
 
 - Remove 'AT objects only' in at_edit_autoversion policy title.
   Change 'ATVersionOnEditPolicy' class name to 'VersionOnEditPolicy'.
   [cedricmessiant]
+
+
+3.0 (2016-12-05)
+----------------
+
+Breaking changes:
+
+- Purge all old revisions of content about to be removed.
+  [tschorr]
+
+
+2.2.23 (2016-12-05)
+-------------------
+
+Bug fixes:
+
+- In ShadowStorage's `isRegistered` and `getHistory` methods,
+  avoid checking for a history_id of None in the storage's BTree.
+  This fixes compatibility with BTrees 4.x,
+  which disallows comparing keys to None.
+  [davisagli]
+
+
+2.2.22 (2016-11-17)
+-------------------
+
+Bug fixes:
+
+- Fix deprecated import from Globals that is changed in Zope4.
+  [pbauer]
+
+- Do not log using plone restricted python logging script.
+  [jensens]
+
+
+2.2.21 (2016-08-18)
+-------------------
+
+Bug fixes:
+
+- Use zope.interface decorator.
+  [gforcada]
+
+
+2.2.20 (2016-04-15)
+-------------------
+
+Fixes:
+
+- Fixed CloneBlobs modifier to only react on Archetypes.
+  This fix allows Dexterity Blob-Types (e.g. File, Image) to be versioned.
+  [iham]
+
+
+2.2.19 (2016-02-14)
+-------------------
+
+Fixes:
+
+- Fixed sometimes failing test.  [maurits]
+
+
+2.2.18 (2015-11-25)
+-------------------
+
+Fixes:
+
+- Removed executable bit from various files.  And do a quick release,
+  as on a test server the previous release was somehow missing a file.
+  [maurits]
+
+
+2.2.17 (2015-11-25)
+-------------------
+
+Fixes:
+
+- Made storage statistics test more robust.
+  See https://github.com/plone/Products.CMFEditions/issues/31
+  [tschorr]
+
+
+2.2.16 (2015-09-27)
+-------------------
+
+- Input sanitation for retrieveSubstitute()
+  [zupo]
+
+
+2.2.15 (2015-09-15)
+-------------------
+
+- use unrestricted search for storage statistics
+  [tschorr]
+
+
+2.2.14 (2015-08-13)
+-------------------
+
+- Do not call ndiff unless there is no html_diff.  Removed strange
+  unicode space from template.  Related to
+  https://github.com/plone/Products.CMFPlone/issues/820
+  [maurits]
 
 
 2.2.13 (2015-04-26)

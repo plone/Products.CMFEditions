@@ -6,7 +6,7 @@
     i18n_domain="cmfeditions">
 
   <include file="permissions.zcml"/>
-  
+
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
 
   <include package="Products.CMFUid" />
@@ -38,6 +38,10 @@
     <subscriber for="*
                      Products.Archetypes.interfaces.IObjectEditedEvent"
                 handler=".subscriber.objectEdited" />
+
+    <subscriber for="*
+                     zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+                handler=".subscriber.object_removed" />
   </configure>
 
 </configure>
