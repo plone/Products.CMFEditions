@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Make tests run in Zope 4 (includes some cleanup).
+  [pbauer]
 
 
 3.0 (2016-12-05)

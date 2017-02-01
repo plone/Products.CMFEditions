@@ -23,17 +23,17 @@
 """Top level integration tests (without UI)
 
 """
-import sys
-import imp
-
-import transaction
-
-from zope.interface.interface import InterfaceClass
-from zope.component.persistentregistry import PersistentComponents
-import ZODB.interfaces
-from ZODB import broken
+from AccessControl.rolemanager import _string_hash
 from Acquisition import aq_base
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from ZODB import broken
+from zope.component.persistentregistry import PersistentComponents
+from zope.interface.interface import InterfaceClass
+
+import ZODB.interfaces
+import imp
+import sys
+import transaction
 
 
 class TestIntegration(CMFEditionsBaseTestCase):
@@ -41,7 +41,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things
         # to the portal root
-        self.setRoles(['Manager',])
+        self.setRoles(['Manager', ])
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
@@ -136,17 +136,18 @@ class TestIntegration(CMFEditionsBaseTestCase):
         # test some of the log entries"""
         h1 = history[1]
         self.assertEqual(h1.version_id, 1)
-        #self.assertEqual(h1.action, h1.ACTION_CHECKIN)
-        #self.assertEqual(h1.message, 'v2\nsecond line')
-        #self.failUnless(h1.user_id)
-        #self.assertEqual(h1.path, '/'.join(doc.getPhysicalPath()))
-        #self.failUnless(h1.timestamp)
+        # self.assertEqual(h1.action, h1.ACTION_CHECKIN)
+        # self.assertEqual(h1.message, 'v2\nsecond line')
+        # self.failUnless(h1.user_id)
+        # self.assertEqual(h1.path, '/'.join(doc.getPhysicalPath()))
+        # self.failUnless(h1.timestamp)
 
     def test06_retrieveSpecificVersion(self):
         portal_repo = self.portal.portal_repository
         doc = self.portal.doc
 
-        review_state = self.portal.portal_workflow.getInfoFor(doc, 'review_state')
+        review_state = self.portal.portal_workflow.getInfoFor(
+            doc, 'review_state')
 
         # store the work edition two times
         doc.setTitle("v1")
@@ -166,7 +167,8 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
         # since 1.0beta1 the workflows review state is saved to the
         # system metadata by a modifier.
-        self.assertEqual(retrieved_doc.sys_metadata["review_state"], review_state)
+        self.assertEqual(
+            retrieved_doc.sys_metadata["review_state"], review_state)
 
     def test07_cloneObjectUnderVersionControlRemovesOriginalsHistory(self):
         portal_repo = self.portal.portal_repository
@@ -177,7 +179,8 @@ class TestIntegration(CMFEditionsBaseTestCase):
         portal_repo.applyVersionControl(doc)
 
         # copy
-        self.portal.manage_pasteObjects(self.portal.manage_copyObjects(ids=['doc']))
+        self.portal.manage_pasteObjects(
+            self.portal.manage_copyObjects(ids=['doc']))
         copy = self.portal.copy_of_doc
 
         # the copy shall not have a history yet: that's correct
@@ -186,7 +189,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         # just to be sure the history is definitivels different
         self.failIfEqual(
             portal_historyidhandler.queryUid(doc),
-            portal_historyidhandler.queryUid(copy)) # may be None
+            portal_historyidhandler.queryUid(copy))  # may be None
 
     def test08_loopOverHistory(self):
         portal_repo = self.portal.portal_repository
@@ -221,8 +224,8 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
         # ----- retrieve
         # check if retrieved object carries the working copies workflow info
-        retrieved_data = portal_repo.retrieve(doc, 0, preserve=['review_state',
-                                                      'workflow_history'])
+        retrieved_data = portal_repo.retrieve(
+            doc, 0, preserve=['review_state', 'workflow_history'])
         self.assertEqual(retrieved_data.object.review_state,
                          "fake rev state v2")
         self.assertEqual(retrieved_data.object.workflow_history[0],
@@ -332,13 +335,11 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(portal_historyidhandler.queryUid(doc1), orig_uid1)
         self.assertEqual(portal_historyidhandler.queryUid(doc2), orig_uid2)
 
-
     def test12_retrieveAndRevertRetainWorkingCopiesPermissions(self):
         portal_repo = self.portal.portal_repository
         doc = self.portal.doc
         perm = 'Access contents information'
-        roles = list(doc.valid_roles())
-        member_role = 'p0r%s' % roles.index('Member')
+        member_role = 'permission_%srole_%s' % (_string_hash(perm), _string_hash('Member'))
 
         doc.manage_permission(perm, ('Manager',), 0)
 
@@ -351,13 +352,13 @@ class TestIntegration(CMFEditionsBaseTestCase):
         settings = doc.permission_settings(perm)[0]
         self.failUnless(settings['acquire'])
         role_enabled = [r for r in settings['roles']
-                                        if r['name'] == member_role][0]
+                        if r['name'] == member_role][0]
         self.failUnless(role_enabled['checked'])
 
         # ----- retrieve
         # check if retrieved object carries the working copy's permissions
-        retrieved_data = portal_repo.retrieve(doc, 0,
-                        preserve=['_Access_contents_information_Permission'])
+        retrieved_data = portal_repo.retrieve(
+            doc, 0, preserve=['_Access_contents_information_Permission'])
         settings = retrieved_data.object.permission_settings(perm)[0]
         self.failUnless(settings['acquire'])
         role_enabled = [r for r in settings['roles']
@@ -372,7 +373,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.failUnless(role_enabled['checked'])
 
         # check if the preserved data is returned correctly
-        preserved = retrieved_data.preserved_data['_Access_contents_information_Permission']
+        preserved = retrieved_data.preserved_data['_Access_contents_information_Permission']  # noqa
         self.assertEqual(preserved, ('Manager',))
 
         # ----- revert
@@ -381,7 +382,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         settings = doc.permission_settings(perm)[0]
         self.failUnless(settings['acquire'])
         role_enabled = [r for r in settings['roles']
-                                        if r['name'] == member_role][0]
+                        if r['name'] == member_role][0]
         self.failUnless(role_enabled['checked'])
 
     def test13_revertUpdatesCatalog(self):
@@ -400,8 +401,8 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].getObject(), doc)
 
-        retrieved_data = portal_repo.retrieve(doc, 0,
-                        preserve=['_Access_contents_information_Permission'])
+        retrieved_data = portal_repo.retrieve(
+            doc, 0, preserve=['_Access_contents_information_Permission'])
         retrieved_doc = retrieved_data.object
         self.failUnless('Plain text' in retrieved_doc.getText())
         # Test that basic retrieval did not alter the catalog
@@ -602,8 +603,8 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].getObject(), doc)
 
-        retrieved_data = portal_repo.retrieve(fol, 0,
-                        preserve=['_Access_contents_information_Permission'])
+        retrieved_data = portal_repo.retrieve(
+            fol, 0, preserve=['_Access_contents_information_Permission'])
         retrieved_doc = retrieved_data.object.doc1
         self.assertEqual(retrieved_doc.Title(), 'v1 of doc1')
         # Test that basic retrieval did not alter the catalog
@@ -659,7 +660,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         ret_folder = retrieved_data.object
         ret_doc = ret_folder.doc1
         self.failIf(portal_historyidhandler.queryUid(ret_doc) == orig_uid,
-                         "UIDs should not be equal, current value: %s"%orig_uid)
+                    "UIDs should not be equal, current value: %s" % orig_uid)
 
         # revert to original state, ensure that subobject changes are
         # reverted and that uid is changed
@@ -669,7 +670,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
         # check if reversion worked correctly
         self.failIf(portal_historyidhandler.queryUid(reverted_doc) == orig_uid,
-                         "UIDs should not be equal, current value: %s"%orig_uid)
+                    "UIDs should not be equal, current value: %s" % orig_uid)
 
     def test18_retrieveObjectWhichHasBeenReplaced(self):
         portal_repo = self.portal.portal_repository
@@ -686,7 +687,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         portal_repo.applyVersionControl(doc2, comment='first save')
 
         transaction.savepoint(optimistic=True)
-        fol.manage_renameObjects(['doc1','doc2'],['doc1_renamed', 'doc1'])
+        fol.manage_renameObjects(['doc1', 'doc2'], ['doc1_renamed', 'doc1'])
 
         doc1 = fol.doc1_renamed
         doc2 = fol.doc1
@@ -733,7 +734,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
         fol.manage_delObjects(['doc1'])
         transaction.savepoint(optimistic=True)
-        fol.manage_renameObjects(['doc2'],['doc1'])
+        fol.manage_renameObjects(['doc2'], ['doc1'])
 
         doc2 = fol.doc1
 
@@ -788,7 +789,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
         transaction.savepoint(optimistic=True)
         self.portal.manage_pasteObjects(fol.manage_cutObjects(['doc1']))
-        fol.manage_renameObjects(['doc2'],['doc1'])
+        fol.manage_renameObjects(['doc2'], ['doc1'])
 
         doc2 = fol.doc1
         doc1 = self.portal.doc1
@@ -845,7 +846,6 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(len(catalog(getId='doc1')), 0)
 
         portal_repo.save(fol, comment='second save')
-
 
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_fol = retrieved_data.object
