@@ -23,7 +23,6 @@
 """Top level integration tests (without UI)
 
 """
-from AccessControl.rolemanager import _string_hash
 from Acquisition import aq_base
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 from ZODB import broken
@@ -34,6 +33,12 @@ import ZODB.interfaces
 import imp
 import sys
 import transaction
+
+try:
+    from AccessControl.rolemanager import _string_hash
+    has_zope4 = True
+except ImportError:
+    has_zope4 = False
 
 
 class TestIntegration(CMFEditionsBaseTestCase):
@@ -339,7 +344,14 @@ class TestIntegration(CMFEditionsBaseTestCase):
         portal_repo = self.portal.portal_repository
         doc = self.portal.doc
         perm = 'Access contents information'
-        member_role = 'permission_%srole_%s' % (_string_hash(perm), _string_hash('Member'))
+        if has_zope4:
+            member_role = 'permission_{0}role_{1}'.format(
+                _string_hash(perm),
+                _string_hash('Member')
+            )
+        else:
+            roles = list(doc.valid_roles())
+            member_role = 'p0r{0}'.format(roles.index('Member'))
 
         doc.manage_permission(perm, ('Manager',), 0)
 
@@ -361,15 +373,19 @@ class TestIntegration(CMFEditionsBaseTestCase):
             doc, 0, preserve=['_Access_contents_information_Permission'])
         settings = retrieved_data.object.permission_settings(perm)[0]
         self.failUnless(settings['acquire'])
-        role_enabled = [r for r in settings['roles']
-                                        if r['name'] == member_role][0]
+        role_enabled = [
+            r for r in settings['roles']
+            if r['name'] == member_role
+        ][0]
         self.failUnless(role_enabled['checked'])
 
         # check that the working copy's permissions are unchanged
         settings = doc.permission_settings(perm)[0]
         self.failUnless(settings['acquire'])
-        role_enabled = [r for r in settings['roles']
-                                        if r['name'] == member_role][0]
+        role_enabled = [
+            r for r in settings['roles']
+            if r['name'] == member_role
+        ][0]
         self.failUnless(role_enabled['checked'])
 
         # check if the preserved data is returned correctly
@@ -610,7 +626,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         # Test that basic retrieval did not alter the catalog
         results = cat(SearchableText='v1', )
         self.assertEqual(len(results), 0)
-        results = cat(SearchableText='v2',  portal_type='Document')
+        results = cat(SearchableText='v2', portal_type='Document')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].getObject(), doc)
 
@@ -625,10 +641,11 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(results[0].getObject().Title(), 'v1 of doc1')
 
     def test17_moveInsideRefThenRevertChangesUid(self):
-        # When an object is contained in an 'Inside references folder' and has been moved
-        # into another location, it should maintain its CMF Uid, if the folder is then
-        # reverted to a state where it contained the object (which now exists with the same
-        # uid in a different location), the uid of the reverted object should be changed.
+        # When an object is contained in an 'Inside references folder' and
+        # has been moved into another location, it should maintain its CMF Uid,
+        # if the folder is then reverted to a state where it contained the
+        # object (which now exists with the same uid in a different location),
+        # the uid of the reverted object should be changed.
         portal_repo = self.portal.portal_repository
         portal_historyidhandler = self.portal.portal_historyidhandler
         fol = self.portal.fol
@@ -708,12 +725,13 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(rev_doc.getId(), 'doc1_renamed')
         self.assertEqual(rev_doc.Title(), 'v1 of doc1')
 
-    def disabled_test19_retrieveDeletedObjectWhichHasBeenReplacedInAnInsideRefsFolder(self):
+    def disabled_test19_retrieveDeletedObjectWhichHasBeenReplacedInAnInsideRefsFolder(self):  # noqa
         # disabled by gregweb/21-10-2006
         # reason: Needs concentrated and deeper look.
-        # --> Ideas exist, pleas contact us on the list if you like to work on that.
-        # I know one should not do that! But solving this would bring more risks
-        # into the 1.0final than leaving the bug to be solved afterwards.
+        # --> Ideas exist, pleas contact us on the list if you like to work
+        #     on that.
+        # I know one should not do that! But solving this would bring more
+        # risks into the 1.0final than leaving the bug to be solved afterwards.
         portal_repo = self.portal.portal_repository
         fol = self.portal.fol
         doc1 = fol.doc1
@@ -763,12 +781,13 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(rev_doc2.getId(), 'doc2')
         self.assertEqual(rev_doc2.Title(), 'v1 of doc2')
 
-    def disabled_test20_retrieveMovedObjectWhichHasBeenReplacedInAnInsideRefsFolder(self):
+    def disabled_test20_retrieveMovedObjectWhichHasBeenReplacedInAnInsideRefsFolder(self):  # noqa
         # disabled by gregweb/21-10-2006
         # reason: Needs concentrated and deeper look.
-        # --> Ideas exist, pleas contact us on the list if you like to work on that.
-        # I know one should not do that! But solving this would bring more risks
-        # into the 1.0final than leaving the bug to be solved afterwards.
+        # --> Ideas exist, pleas contact us on the list if you like to work
+        #     on that.
+        # I know one should not do that! But solving this would bring more
+        # risks into the 1.0final than leaving the bug to be solved afterwards.
         portal_repo = self.portal.portal_repository
         fol = self.portal.fol
         doc1 = fol.doc1
