@@ -37,6 +37,8 @@ from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 
+from Products.CMFCore.indexing import processQueue
+
 from DummyTools import Dummy as Dummy
 from DummyTools import DummyPurgePolicy
 from DummyTools import MemoryStorage
@@ -511,6 +513,7 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         self.portal.portal_catalog.indexObject(self.portal.public)
         portal_storage.register(cmf_uid, ObjectData(obj7), metadata=self.buildMetadata('saved public'))
 
+        processQueue()
         got = portal_storage.zmi_getStorageStatistics()
         expected = {'deleted': [],
                     'summaries': {

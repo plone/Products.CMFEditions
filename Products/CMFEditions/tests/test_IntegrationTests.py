@@ -24,6 +24,7 @@
 
 """
 from Acquisition import aq_base
+from Products.CMFCore.indexing import processQueue
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 from ZODB import broken
 from zope.component.persistentregistry import PersistentComponents
@@ -539,6 +540,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
         # remove an item
         fol.manage_delObjects('doc2')
+        processQueue()
 
         cur_ids = fol.objectIds()
         self.assertEqual(len(cur_ids), 1)
@@ -1102,6 +1104,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         fol.moveObjectsToTop(['doc3'])
         fol.moveObjectsToTop(['doc4'])
         fol.manage_delObjects(['doc2'])
+        processQueue()
         transaction.savepoint(optimistic=True)
         doc3 = fol['doc3']
         doc4 = fol['doc4']
