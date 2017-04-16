@@ -1184,7 +1184,16 @@ class CloneBlobs:
             save_new = True
             if prior_rev is not None:
                 prior_obj = prior_rev.object
-                prior_blob = f.get(prior_obj, raw=True).getBlob()
+                #prior_blob = f.get(prior_obj, raw=True).getBlob()
+
+                # Skip if it is 'NoneType' object
+                prior_raw_obj = f.get(prior_obj, raw=True)
+                if prior_raw_obj is None:
+                    continue
+                prior_blob = prior_raw_obj.getBlob()
+                if prior_blob is None:
+                    continue
+
                 prior_file = prior_blob.open('r')
                 # Check for file size differences
                 if (os.fstat(prior_file.fileno()).st_size ==
@@ -1212,7 +1221,16 @@ class CloneBlobs:
     def reattachReferencedAttributes(self, obj, attrs_dict):
         obj = aq_base(obj)
         for name, blob in attrs_dict.iteritems():
-            obj.getField(name).get(obj).setBlob(blob)
+            #obj.getField(name).get(obj).setBlob(blob)
+
+            # Skip if it is 'NoneType' object
+            prior_name = obj.getField(name)
+            if prior_name is None:
+                continue
+            prior_obj = prior_name.get(obj)
+            if prior_obj is None:
+                continue
+            prior_obj.setBlob(blob)
 
     def getOnCloneModifiers(self, obj):
         """Removes references to blobs.
