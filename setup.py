@@ -38,6 +38,7 @@ setup(
     ),
     install_requires=[
         'setuptools',
+        'six',
         'zope.copy',
         'zope.dottedname',
         'zope.i18nmessageid',

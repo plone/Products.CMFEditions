@@ -68,7 +68,7 @@ def dereference(obj=None, history_id=None, zodb_hook=None):
 
     if history_id is None:
         if obj is None:
-            raise TypeError, "This method requires either an obj or a history_id"
+            raise TypeError("This method requires either an obj or a history_id")
         else:
             history_id = portal_uidhandler.queryUid(obj, None)
     elif obj is None:

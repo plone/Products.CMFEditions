@@ -25,33 +25,36 @@
 """Standard modifiers
 """
 
-import os,sys
-from itertools import izip
-from App.class_init import InitializeClass
-from zope.copy import copy
-
 from Acquisition import aq_base
-from zope.interface import implementer, Interface
-from zope.component.interfaces import ComponentLookupError
-from zope.component.interfaces import IPossibleSite
-from ZODB.blob import Blob
+from App.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.Expression import Expression
-
+from Products.CMFCore.permissions import ManagePortal
+from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
+from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
-from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
 from Products.CMFEditions.interfaces.IModifier import IReferenceAdapter
-from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
+from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
+
+from ZODB.blob import Blob
+from zope.copy import copy
+from zope.component.interfaces import ComponentLookupError
+from zope.component.interfaces import IPossibleSite
+from zope.interface import implementer
+from zope.interface import Interface
+
+import os
+import six
+import sys
+
 
 try:
     from Products.Archetypes.interfaces.base import IBaseContent
@@ -890,7 +893,7 @@ class SkipRegistryBasesPointers:
 
         def persistent_id(obj):
             obj_id = id(aq_base(obj))
-            for key, bases in component_bases.iteritems():
+            for key, bases in six.iteritems(component_bases):
                 if obj_id in bases:
                     return '%s:%s' % (key, obj_id)
             return None
@@ -1014,7 +1017,7 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
                         size = val.getSize()
                     except (TypeError,AttributeError):
                         size = None
-                    if isinstance(size, (int, long)) and size >= max_size:
+                    if isinstance(size, six.integer_types) and size >= max_size:
                         yield 'annotation', name, val
 
         # Search for fields stored via AttributeStorage
@@ -1023,7 +1026,7 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
             # Skip linked Pdata chains too long for the pickler
             if hasattr(aq_base(val), 'getSize') and callable(val.getSize):
                 size = val.getSize()
-                if isinstance(size, (int, long)) and size >= max_size:
+                if isinstance(size, six.integer_types) and size >= max_size:
                     yield 'attribute', name, val
 
     def getOnCloneModifiers(self, obj):
@@ -1190,7 +1193,7 @@ class CloneBlobs:
                 if (os.fstat(prior_file.fileno()).st_size ==
                     os.fstat(blob_file.fileno()).st_size):
                     # Files are the same size, compare line by line
-                    for line, prior_line in izip(blob_file, prior_file):
+                    for line, prior_line in six.moves.zip(blob_file, prior_file):
                         if line != prior_line:
                             break
                     else:
@@ -1211,7 +1214,7 @@ class CloneBlobs:
 
     def reattachReferencedAttributes(self, obj, attrs_dict):
         obj = aq_base(obj)
-        for name, blob in attrs_dict.iteritems():
+        for name, blob in six.iteritems(attrs_dict):
             obj.getField(name).get(obj).setBlob(blob)
 
     def getOnCloneModifiers(self, obj):
@@ -1267,7 +1270,7 @@ class Skip_z3c_blobfile:
         if not blob_file_classes:
             return
 
-        blob_refs = set(id(v) for v in obj.__dict__.itervalues()
+        blob_refs = set(id(v) for v in six.itervalues(obj.__dict__)
                         if isinstance(v, blob_file_classes))
 
         def persistent_id(obj):
@@ -1291,7 +1294,7 @@ class Skip_z3c_blobfile:
         if obj is None:
             return [], [], {}
 
-        blob_fields = ((k, v) for k, v in obj.__dict__.iteritems()
+        blob_fields = ((k, v) for k, v in six.iteritems(obj.__dict__)
                         if isinstance(v, blob_file_classes))
 
         for k, v in blob_fields:

@@ -25,44 +25,48 @@ $Id: ZVCStorageTool.py,v 1.18 2005/03/11 11:05:12 varun-rastogi Exp $
 """
 __version__ = "$Revision: 1.18 $"
 
+from AccessControl import ClassSecurityInfo
+from App.class_init import InitializeClass
+from BTrees.IOBTree import IOBTree
+from BTrees.OOBTree import OOBTree
+from OFS.SimpleItem import SimpleItem
+from Persistence import Persistent
+
+from Products.CMFCore.permissions import ManagePortal
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.utils import UniqueObject
+
+from Products.CMFEditions.interfaces import IStorageTool
+from Products.CMFEditions.interfaces.IStorage import IHistory
+from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
+from Products.CMFEditions.interfaces.IStorage import IStorage
+from Products.CMFEditions.interfaces.IStorage import IStreamableReference
+from Products.CMFEditions.interfaces.IStorage import IVersionData
+from Products.CMFEditions.interfaces.IStorage import StorageError
+from Products.CMFEditions.interfaces.IStorage import StoragePurgeError
+from Products.CMFEditions.interfaces.IStorage import StorageRegisterError
+from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
+from Products.CMFEditions.interfaces.IStorage import StorageSaveError
+from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
+from Products.CMFEditions.Permissions import AccessPreviousVersions
+
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from Products.ZopeVersionControl.EventLog import LogEntry
+from Products.ZopeVersionControl.Utility import VersionControlError
+from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
+
+from six import StringIO
+from six.moves.cPickle import dumps
+from six.moves.cPickle import HIGHEST_PROTOCOL
+from six.moves.cPickle import loads
+from six.moves.cPickle import Pickler
+from six.moves.cPickle import Unpickler
+from zope.interface import implementer
+
 import logging
 import time
 import types
-from StringIO import StringIO
-from cPickle import Pickler, Unpickler, dumps, loads, HIGHEST_PROTOCOL
-from zope.interface import implementer
 
-from App.class_init import InitializeClass
-from BTrees.OOBTree import OOBTree
-from BTrees.IOBTree import IOBTree
-from Persistence import Persistent
-from AccessControl import ClassSecurityInfo
-
-from OFS.SimpleItem import SimpleItem
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-
-from Products.CMFCore.utils import UniqueObject, getToolByName
-from Products.CMFCore.permissions import ManagePortal
-
-from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
-from Products.ZopeVersionControl.Utility import VersionControlError
-from Products.ZopeVersionControl.EventLog import LogEntry
-
-from Products.CMFEditions.interfaces import IStorageTool
-from Products.CMFEditions.interfaces.IStorage import IStorage
-from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
-from Products.CMFEditions.interfaces.IStorage import IHistory
-from Products.CMFEditions.interfaces.IStorage import IVersionData
-from Products.CMFEditions.interfaces.IStorage import IStreamableReference
-
-from Products.CMFEditions.interfaces.IStorage import StorageError
-from Products.CMFEditions.interfaces.IStorage import StorageRegisterError
-from Products.CMFEditions.interfaces.IStorage import StorageSaveError
-from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
-from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
-from Products.CMFEditions.interfaces.IStorage import StoragePurgeError
-
-from Products.CMFEditions.Permissions import AccessPreviousVersions
 
 logger = logging.getLogger('CMFEditions')
 
@@ -1040,11 +1044,12 @@ class GetItemIterator:
         self._getItem = getItem
         self._stopExceptions = stopExceptions
         self._pos = -1
+        self.next = self.__next__  # In order to keep compatibility with Python 2
 
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         self._pos += 1
         try:
             return self._getItem(self._pos)

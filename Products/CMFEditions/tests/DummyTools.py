@@ -1,28 +1,31 @@
 # -*- coding: utf-8 -*-
-from copy import deepcopy
-from cPickle import Pickler, Unpickler
-from StringIO import StringIO
-import types
-
-from zope.interface import implementer
 
 from Acquisition import aq_base
+from copy import deepcopy
 from DateTime import DateTime
 from OFS.SimpleItem import SimpleItem
 
-from Products.CMFEditions.utilities import dereference
+from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.ArchivistTool import ObjectData
-from Products.CMFEditions.ArchivistTool import PreparedObject
 from Products.CMFEditions.ArchivistTool import ObjectManagerStorageAdapter
+from Products.CMFEditions.ArchivistTool import PreparedObject
 from Products.CMFEditions.ArchivistTool import VersionData
 from Products.CMFEditions.interfaces.IArchivist import ArchivistError
-from Products.CMFEditions.interfaces.IStorage import IStreamableReference
-from Products.CMFEditions.interfaces.IStorage import IStorage
-from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
 from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
-from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
+from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
+from Products.CMFEditions.interfaces.IStorage import IStorage
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
-from Products.CMFCore.utils import getToolByName
+from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
+from Products.CMFEditions.interfaces.IStorage import IStreamableReference
+from Products.CMFEditions.utilities import dereference
+
+from six import StringIO
+from six.moves.cPickle import Pickler
+from six.moves.cPickle import Unpickler
+from zope.interface import implementer
+
+import types
+
 
 # Make alog module level so that it survives transaction rollbacks
 alog = []
@@ -481,7 +484,7 @@ class MemoryStorage(DummyBaseTool):
             if not policy.beforeSaveHook(history_id, metadata):
                 return len(self._histories[history_id]) - 1
 
-        if not self._histories.has_key(history_id):
+        if not history_id in self._histories:
             raise StorageUnregisteredError(
                 "Saving or retrieving an unregistered object is not "
                 "possible. Register the object with history id '%s' first. "

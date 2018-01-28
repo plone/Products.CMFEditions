@@ -40,7 +40,7 @@ new object via the Plone UI:
   >>> 'some-document' in folder.objectIds()
   True
 
-  >>> print str(folder['some-document']['text'])
+  >>> print(str(folder['some-document']['text']))
   Some Content
 
 
@@ -63,7 +63,7 @@ another version of the object to be saved:
   HTTP/1.1 204 No Content
   ...
 
-  >>> print str(folder['some-document']['text'])
+  >>> print(str(folder['some-document']['text']))
   Some Other Content
 
   >>> len(portal_repo.getHistory(folder['some-document']))

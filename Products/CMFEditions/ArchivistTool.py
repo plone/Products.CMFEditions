@@ -24,39 +24,44 @@
 $Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 """
 
-import time
-from StringIO import StringIO
-from cPickle import Pickler, Unpickler
-from zope.interface import implementer, alsoProvides
-
+from AccessControl import ClassSecurityInfo
+from AccessControl import getSecurityManager
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from App.class_init import InitializeClass
-from Persistence import Persistent
-from Acquisition import aq_base, aq_parent, aq_inner
-from AccessControl import ClassSecurityInfo, getSecurityManager
 from OFS.SimpleItem import SimpleItem
+from Persistence import Persistent
 
-from Products.CMFCore.utils import UniqueObject, getToolByName
-
-from Products.CMFEditions.utilities import KwAsAttributes
-from Products.CMFEditions.utilities import dereference
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.utils import UniqueObject
+from Products.CMFEditions.interfaces import IArchivistTool
+from Products.CMFEditions.interfaces import IVersioned
+from Products.CMFEditions.interfaces.IArchivist import ArchivistError
+from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
+from Products.CMFEditions.interfaces.IArchivist import ArchivistSaveError
+from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredError
+from Products.CMFEditions.interfaces.IArchivist import IArchivist
+from Products.CMFEditions.interfaces.IArchivist import IAttributeAdapter
+from Products.CMFEditions.interfaces.IArchivist import IHistory
+from Products.CMFEditions.interfaces.IArchivist import IObjectData
+from Products.CMFEditions.interfaces.IArchivist import IPreparedObject
+from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
+from Products.CMFEditions.interfaces.IArchivist import IVersionAwareReference
+from Products.CMFEditions.interfaces.IArchivist import IVersionData
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
+from Products.CMFEditions.utilities import dereference
+from Products.CMFEditions.utilities import KwAsAttributes
 
-from Products.CMFEditions.interfaces import IArchivistTool
-from Products.CMFEditions.interfaces.IArchivist import IArchivist
-from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
-from Products.CMFEditions.interfaces.IArchivist import IHistory
-from Products.CMFEditions.interfaces.IArchivist import IVersionData
-from Products.CMFEditions.interfaces.IArchivist import IPreparedObject
-from Products.CMFEditions.interfaces.IArchivist import IAttributeAdapter
-from Products.CMFEditions.interfaces.IArchivist import IVersionAwareReference
-from Products.CMFEditions.interfaces.IArchivist import IObjectData
+from six import StringIO
+from six.moves.cPickle import Pickler
+from six.moves.cPickle import Unpickler
+from zope.interface import alsoProvides
+from zope.interface import implementer
 
-from Products.CMFEditions.interfaces.IArchivist import ArchivistError
-from Products.CMFEditions.interfaces.IArchivist import ArchivistSaveError
-from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
-from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredError
-from Products.CMFEditions.interfaces import IVersioned
+import time
+
 
 RETRIEVING_UNREGISTERED_FAILED = \
     "Retrieving a version of an unregistered object is not possible. " \
@@ -531,11 +536,12 @@ class GetItemIterator:
         self._getItem = getItem
         self._stopExceptions = stopExceptions
         self._pos = -1
+        self.next = self.__next__  # In order to keep compatibility with Python 2
 
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         self._pos += 1
         try:
             return self._getItem(self._pos)

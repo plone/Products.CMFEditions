@@ -31,7 +31,7 @@ expected values::
     1000
     >>> modifier.field_names
     ('my_file', 'my_image')
-    >>> print modifier.getFieldNames()
+    >>> print(modifier.getFieldNames())
     my_file
     my_image
     >>> modifier.getModifier() is modifier
