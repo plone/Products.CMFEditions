@@ -14,6 +14,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
+        "License :: OSI Approved :: GNU General Public License (GPL)",
         'Framework :: Plone',
         'Framework :: Plone :: 5.1',
         'Framework :: Zope2',
