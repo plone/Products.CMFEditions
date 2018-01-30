@@ -224,7 +224,7 @@ class TestATContents(CMFEditionsBaseTestCase):
         for method in ('retrieve', 'isUpToDate', 'save'):
             try:
                 getattr(archivist, method)(prepared)
-            except IArchivist.ArchivistError, err:
+            except IArchivist.ArchivistError as err:
                 self.assertFalse(file1 in str(err))
                 self.assertFalse(file1 in repr(err))
             else:

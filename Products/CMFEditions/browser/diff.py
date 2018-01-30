@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from zope.i18n import translate
+
 from Acquisition import aq_inner
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import CMFEditionsMessageFactory as _
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from six.moves import range
+from zope.i18n import translate
 
 
 class DiffView(BrowserView):
@@ -46,7 +48,7 @@ class DiffView(BrowserView):
         getId = history_metadata.getVersionId
         history = self.history = []
         # Count backwards from most recent to least recent
-        for i in xrange(history_metadata.getLength(countPurged=False)-1, -1, -1):
+        for i in range(history_metadata.getLength(countPurged=False) - 1, -1, -1):
             version = retrieve(i, countPurged=False)['metadata'].copy()
             version['version_id'] = getId(i, countPurged=False)
             history.append(version)

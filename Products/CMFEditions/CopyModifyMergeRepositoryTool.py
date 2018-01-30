@@ -25,42 +25,49 @@
 $Id: CopyModifyMergeRepositoryTool.py,v 1.20 2005/06/24 11:42:01 gregweb Exp $
 """
 
+from AccessControl import ClassSecurityInfo
+from AccessControl import Unauthorized
+from Acquisition import aq_base
+from Acquisition import aq_parent
+from Acquisition import aq_inner
+from Acquisition import ImplicitAcquisitionWrapper
+from App.class_init import InitializeClass
+from BTrees.OOBTree import OOBTree
+from OFS.SimpleItem import SimpleItem
+from Products.CMFCore.utils import _checkPermission
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.utils import UniqueObject
+
+from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
+from Products.CMFEditions.interfaces.IModifier import ModifierException
+from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
+from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
+from Products.CMFEditions.interfaces.IRepository import IHistory
+from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
+from Products.CMFEditions.interfaces.IRepository import IRepositoryTool
+from Products.CMFEditions.interfaces.IRepository import IVersionData
+from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
+
+from Products.CMFEditions.Permissions import AccessPreviousVersions
+from Products.CMFEditions.Permissions import ApplyVersionControl
+from Products.CMFEditions.Permissions import ManageVersioningPolicies
+from Products.CMFEditions.Permissions import PurgeVersion
+from Products.CMFEditions.Permissions import RevertToPreviousVersions
+from Products.CMFEditions.Permissions import SaveNewVersion
+from Products.CMFEditions.utilities import dereference
+from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
+from Products.CMFEditions.utilities import wrap
+from Products.CMFEditions.VersionPolicies import VersionPolicy
+
+from zope.event import notify
+from zope.interface import implementer
+from zope.interface import Interface
+from zope.lifecycleevent import ObjectModifiedEvent
+
+import six
 import time
 import transaction
 
-from App.class_init import InitializeClass
-from Acquisition import aq_base, aq_parent, aq_inner
-from Acquisition import ImplicitAcquisitionWrapper
-from AccessControl import ClassSecurityInfo, Unauthorized
-from OFS.SimpleItem import SimpleItem
-from BTrees.OOBTree import OOBTree
-from zope.event import notify
-from zope.interface import implementer, Interface
-from zope.lifecycleevent import ObjectModifiedEvent
-from Products.CMFCore.utils import UniqueObject, getToolByName
-from Products.CMFCore.utils import _checkPermission
-
-from Products.CMFEditions.utilities import dereference, wrap
-from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
-
-from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
-from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
-from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
-from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
-from Products.CMFEditions.interfaces.IRepository import IRepositoryTool
-from Products.CMFEditions.interfaces.IRepository import IVersionData
-from Products.CMFEditions.interfaces.IRepository import IHistory
-
-from Products.CMFEditions.interfaces.IModifier import ModifierException
-
-from Products.CMFEditions.Permissions import ApplyVersionControl
-from Products.CMFEditions.Permissions import SaveNewVersion
-from Products.CMFEditions.Permissions import PurgeVersion
-from Products.CMFEditions.Permissions import AccessPreviousVersions
-from Products.CMFEditions.Permissions import RevertToPreviousVersions
-from Products.CMFEditions.Permissions import ManageVersioningPolicies
-from Products.CMFEditions.VersionPolicies import VersionPolicy
-from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
 
 try:
     from Products.Archetypes.event import ObjectEditedEvent
@@ -230,9 +237,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
                 "List items must be tuples: %s" % str(item)
             assert len(item) in (2, 3, 4), \
                 "Each policy definition must contain a title and id: %s" % str(item)
-            assert isinstance(item[0], basestring), \
+            assert isinstance(item[0], six.string_types), \
                 "Policy id must be a string: %s" % str(item[0])
-            assert isinstance(item[1], basestring), \
+            assert isinstance(item[1], six.string_types), \
                 "Policy title must be a string: %s" % str(item[1])
             # Get optional Policy class and kwargs.
             if len(item) >= 3:
@@ -812,11 +819,12 @@ class GetItemIterator:
         self._getItem = getItem
         self._stopExceptions = stopExceptions
         self._pos = -1
+        self.next = self.__next__  # In order to keep compatibility with Python 2
 
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         self._pos += 1
         try:
             return self._getItem(self._pos)

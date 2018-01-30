@@ -10,6 +10,9 @@
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 
+import six
+
+
 RESPONSE = context.REQUEST.RESPONSE
 putils = container.plone_utils
 pr = container.portal_repository
@@ -24,8 +27,8 @@ else:
     view_url = context.absolute_url()
 
 title = context.title_or_id()
-if not isinstance(title, unicode):
-    title = unicode(title, 'utf-8', 'ignore')
+if not isinstance(title, six.text_type):
+    title = six.text_type(title, 'utf-8', 'ignore')
 
 msg = _(u'${title} has been reverted to revision ${version}.',
         mapping={'title': title,

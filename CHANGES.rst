@@ -10,7 +10,8 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Prepare for Python 2 / 3 compatibility
+  [davilima6]
 
 Bug fixes:
 
