@@ -60,7 +60,7 @@ class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
 
         storage.save(history_id=1, obj=DummyData(0))
         res = purgepolicy.beforeSaveHook(history_id=1, obj=2, metadata={})
-        self.failUnless(res)
+        self.assertTrue(res)
         self.assertEqual(len(storage.getHistory(history_id=1)), 1)
 
     def test02_beforeSaveHookKeepsMaximumTwoVersions(self):
@@ -71,20 +71,20 @@ class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
         # call hook explicitely before save (dummy tool doesn't call it,
         # we wan't to do it explicitely)
         res = purgepolicy.beforeSaveHook(history_id=1, obj=2, metadata={})
-        self.failUnless(res)
+        self.assertTrue(res)
         storage.save(history_id=1, obj=DummyData(0))
         self.assertEqual(len(storage.getHistory(history_id=1)), 1)
 
         # call hook explicitely before save (dummy tool doesn't call it,
         # we wan't to do it explicitely)
         res = purgepolicy.beforeSaveHook(history_id=1, obj=2, metadata={})
-        self.failUnless(res)
+        self.assertTrue(res)
         storage.save(history_id=1, obj=DummyData(1))
         self.assertEqual(len(storage.getHistory(history_id=1)), 2)
 
         # check the first saved version was purged
         res = purgepolicy.beforeSaveHook(history_id=1, obj=2, metadata={})
-        self.failUnless(res)
+        self.assertTrue(res)
         storage.save(history_id=1, obj=DummyData(2))
         history = storage.getHistory(history_id=1)
         self.assertEqual(len(history), 2)

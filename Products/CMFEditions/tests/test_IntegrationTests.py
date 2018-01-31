@@ -190,10 +190,10 @@ class TestIntegration(CMFEditionsBaseTestCase):
         copy = self.portal.copy_of_doc
 
         # the copy shall not have a history yet: that's correct
-        self.failIf(portal_repo.getHistory(copy))
+        self.assertFalse(portal_repo.getHistory(copy))
 
         # just to be sure the history is definitivels different
-        self.failIfEqual(
+        self.assertNotEqual(
             portal_historyidhandler.queryUid(doc),
             portal_historyidhandler.queryUid(copy))  # may be None
 
@@ -333,7 +333,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         fol = self.portal.fol
         doc1 = fol.doc1
         self.failUnless('doc2' in fol.objectIds())
-        self.failIf('doc3' in fol.objectIds())
+        self.assertFalse('doc3' in fol.objectIds())
         doc2 = fol.doc2
         self.assertEqual(fol.Title(), "v2 of fol")
         self.assertEqual(doc1.Title(), "v2 of doc1")
@@ -678,7 +678,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         retrieved_data = portal_repo.retrieve(fol, 0)
         ret_folder = retrieved_data.object
         ret_doc = ret_folder.doc1
-        self.failIf(portal_historyidhandler.queryUid(ret_doc) == orig_uid,
+        self.assertFalse(portal_historyidhandler.queryUid(ret_doc) == orig_uid,
                     "UIDs should not be equal, current value: %s" % orig_uid)
 
         # revert to original state, ensure that subobject changes are
@@ -688,7 +688,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         reverted_doc = fol.doc1
 
         # check if reversion worked correctly
-        self.failIf(portal_historyidhandler.queryUid(reverted_doc) == orig_uid,
+        self.assertFalse(portal_historyidhandler.queryUid(reverted_doc) == orig_uid,
                     "UIDs should not be equal, current value: %s" % orig_uid)
 
     def test18_retrieveObjectWhichHasBeenReplaced(self):
@@ -944,7 +944,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(len(catalog(Title='v2 of doc1')), 1)
         # The reverted document should have a new uid, because an object with
         # the original uid exists
-        self.failIf(portal_hidhandler.queryUid(res_doc) == history_id)
+        self.assertFalse(portal_hidhandler.queryUid(res_doc) == history_id)
 
     def test22_ParentPointerNotVersionedOrRestored(self):
         portal_repo = self.portal.portal_repository
@@ -1090,7 +1090,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         # Test that a retrieve uses the order from the repo copy
         repo_fol1 = portal_repo.retrieve(fol, 0).object
         self.failUnlessEqual(fol.objectIds()[0], 'doc2')
-        self.failIfEqual(fol.objectIds(), orig_order)
+        self.assertNotEqual(fol.objectIds(), orig_order)
         self.failUnlessEqual(repo_fol1.objectIds()[0], 'doc1')
 
         # Test that a revert restores the order and objects from the
@@ -1109,7 +1109,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         doc3 = fol['doc3']
         doc4 = fol['doc4']
 
-        self.failIfEqual(fol.objectIds(), orig_order)
+        self.assertNotEqual(fol.objectIds(), orig_order)
 
         repo_fol1 = portal_repo.retrieve(fol, 0).object
 
@@ -1117,16 +1117,16 @@ class TestIntegration(CMFEditionsBaseTestCase):
         # but does not affect the working copy
         repo_fol1 = portal_repo.retrieve(fol, 0).object
         self.failUnlessEqual(repo_fol1.objectIds(), orig_order)
-        self.failIfEqual(getattr(repo_fol1, 'doc2', None), None)
+        self.assertNotEqual(getattr(repo_fol1, 'doc2', None), None)
         self.failUnlessEqual(getattr(repo_fol1, 'doc5', None), None)
 
-        self.failIfEqual(fol.objectIds(), orig_order)
+        self.assertNotEqual(fol.objectIds(), orig_order)
         self.failUnlessEqual(fol.objectIds()[0], 'doc4')
         self.failUnlessEqual(fol.objectIds()[1], 'doc3')
         self.failUnlessEqual(fol['doc3'], doc3)
         self.failUnlessEqual(fol['doc4'], doc4)
         self.failUnlessEqual(getattr(fol, 'doc2', None), None)
-        self.failIfEqual(getattr(fol, 'doc5', None), None)
+        self.assertNotEqual(getattr(fol, 'doc5', None), None)
 
         # Test that a revert restores the missing child from the repo
         # copy, removed the newly created child and restored the order

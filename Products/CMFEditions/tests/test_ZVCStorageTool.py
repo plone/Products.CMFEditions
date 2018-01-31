@@ -279,19 +279,19 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         # ``retrieve`` returns the removed info because there is no purge
         # policy installed
         retrieved_obj = portal_storage.retrieve(history_id=1, selector=2)
-        self.failIf(retrieved_obj.isValid())
+        self.assertFalse(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.reason, "purged")
         self.assertEqual(self.getComment(retrieved_obj), "purged v3")
 
         retrieved_obj = portal_storage.retrieve(history_id=1, selector=2,
                                                 substitute=False)
-        self.failIf(retrieved_obj.isValid())
+        self.assertFalse(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.reason, "purged")
         self.assertEqual(self.getComment(retrieved_obj), "purged v3")
 
         retrieved_obj = portal_storage.retrieve(history_id=1, selector=2,
                                                 countPurged=False)
-        self.failUnless(retrieved_obj.isValid())
+        self.assertTrue(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.object.text, 'v4 of text')
         self.assertEqual(self.getComment(retrieved_obj), 'saved v4')
 
@@ -318,30 +318,30 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
         # ``retrieve`` returns the next older object
         retrieved_obj = portal_storage.retrieve(history_id=1, selector=1)
-        self.failUnless(retrieved_obj.isValid())
+        self.assertTrue(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.object.text, 'v1 of text')
         self.assertEqual(self.getComment(retrieved_obj), 'saved v1')
 
         retrieved_obj = portal_storage.retrieve(history_id=1, selector=2)
-        self.failUnless(retrieved_obj.isValid())
+        self.assertTrue(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.object.text, 'v1 of text')
         self.assertEqual(self.getComment(retrieved_obj), 'saved v1')
 
         # ``retrieve`` returns existing object
         retrieved_obj = portal_storage.retrieve(history_id=1, selector=3)
-        self.failUnless(retrieved_obj.isValid())
+        self.assertTrue(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.object.text, 'v4 of text')
         self.assertEqual(self.getComment(retrieved_obj), 'saved v4')
 
         # check with substitute=False: should return the removed info
         retrieved_obj = portal_storage.retrieve(history_id=1, selector=1,
                                                 substitute=False)
-        self.failIf(retrieved_obj.isValid())
+        self.assertFalse(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.reason, "purged")
         self.assertEqual(self.getComment(retrieved_obj), "purged v2")
         retrieved_obj = portal_storage.retrieve(history_id=1, selector=2,
                                                 substitute=False)
-        self.failIf(retrieved_obj.isValid())
+        self.assertFalse(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.reason, "purged")
         self.assertEqual(self.getComment(retrieved_obj), "purged v3")
 
@@ -571,7 +571,7 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
                 self.assertEqual(actual[key], value)
             # The actual size is not important and we want robust tests,
             # s. https://github.com/plone/Products.CMFEditions/issues/31
-            self.failUnless(actual['size'] > 0)
+            self.assertTrue(actual['size'] > 0)
 
     def test16_delete_history_on_content_deletion(self):
         """ If a content item gets deleted, delete it's history
