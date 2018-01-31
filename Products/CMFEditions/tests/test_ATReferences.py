@@ -37,7 +37,7 @@ class TestATReferences(CMFEditionsBaseTestCase):
         refs = getattr(doc1, refs_container_name).objectValues()
         doc1.deleteReference(doc2)
         should_be_empty_now = getattr(doc1, refs_container_name).objectValues()
-        self.failIf(should_be_empty_now)
+        self.assertFalse(should_be_empty_now)
         repo.revert(doc1, 1)
         after_retrieve_refs = getattr(doc1, refs_container_name).objectValues()
         self.assertEqual(refs[0].targetUID, after_retrieve_refs[0].targetUID)
@@ -60,7 +60,7 @@ class TestATReferences(CMFEditionsBaseTestCase):
         doc1.setTitle('v1')
         repo.save(doc1)
         doc1.deleteReference(doc2)
-        self.failIf(doc1.getReferences(targetObject=doc2))
+        self.assertFalse(doc1.getReferences(targetObject=doc2))
         repo.revert(doc1, 1)
         self.assertEqual(doc1.getReferences(targetObject=doc2), [doc2])
 
@@ -82,7 +82,7 @@ class TestATReferences(CMFEditionsBaseTestCase):
         from Products.Archetypes.config import REFERENCE_ANNOTATION
         repo.revert(doc1, 1)
         should_be_empty_now = getattr(doc1, REFERENCE_ANNOTATION).objectValues()
-        self.failIf(should_be_empty_now)
+        self.assertFalse(should_be_empty_now)
 
     def test_referencesAreSavedAndRestored2(self):
         # this case checks restoring a version with no refs, to a workin copy
@@ -100,13 +100,13 @@ class TestATReferences(CMFEditionsBaseTestCase):
         doc1.addReference(doc2)
         self.assertEqual(doc1.getReferences(targetObject=doc2), [doc2])
         repo.revert(doc1, 1)
-        self.failIf(doc1.getReferences(targetObject=doc2))
+        self.assertFalse(doc1.getReferences(targetObject=doc2))
         # The above does not fail because ReferenceCatalog.getReferences calls
         # _resolveBrains after a catalog query to get the reference objects - so
         # the returned list is empty. But the reference_catalog still has the reference
         # indexed:
         rc = self.portal.reference_catalog
-        self.failIf(rc(sourceUID=doc1.UID()))
+        self.assertFalse(rc(sourceUID=doc1.UID()))
 
 
 
@@ -127,7 +127,7 @@ class TestATReferences(CMFEditionsBaseTestCase):
 #         ref_doc.setTitle('ref_doc v1')
 #         repo.save(doc1)
 #         doc1.deleteReference(doc2)
-#         self.failIf(doc1.getReferences(targetObject=doc2))
+#         self.assertFalse(doc1.getReferences(targetObject=doc2))
 #         repo.revert(doc1, 1)
 #         self.assertEqual(aq_base(doc1.getReferences(targetObject=doc2)[0]),
 #                          aq_base(doc2))
@@ -150,7 +150,7 @@ class TestATReferences(CMFEditionsBaseTestCase):
         fol.manage_delObjects('doc2')
         repo.revert(doc1, 1)
         self.assertEqual(doc1.getReferences(), [])
-        self.failIf(doc1.getReferenceImpl())
+        self.assertFalse(doc1.getReferenceImpl())
 
     def test_refcatalogIsUpdatedWithInsideRefsAndATRefsBetweenChildrenObjs(self):
 
@@ -175,8 +175,8 @@ class TestATReferences(CMFEditionsBaseTestCase):
         doc1.setTitle('changed')
         doc1.deleteReference(doc2)
         doc2.deleteReference(doc1)
-        self.failIf(doc1.getReferences())
-        self.failIf(doc2.getReferences())
+        self.assertFalse(doc1.getReferences())
+        self.assertFalse(doc2.getReferences())
         repo.revert(fol, 1)
 
         doc1 = self.portal.fol.doc1

@@ -82,7 +82,7 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         portal_archivist.register(prep)
         history_id = portal_historyidhandler.queryUid(doc)
-        self.failUnless(history_id)
+        self.assertTrue(history_id)
 
     def test02_retrieve(self):
         portal_archivist = self.portal.portal_archivist
@@ -147,8 +147,8 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
-        self.failUnless(history[0].sys_metadata['timestamp'])
-        self.failUnless(history[0].sys_metadata['principal'])
+        self.assertTrue(history[0].sys_metadata['timestamp'])
+        self.assertTrue(history[0].sys_metadata['principal'])
         # check if correct data and metadata retrieved
         self.assertEqual(history[0].data.object.text, 'text v1')
         self.assertEqual(history[0].app_metadata, 'save number 1')
@@ -196,8 +196,8 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
-        self.failUnless(history[0].sys_metadata['timestamp'])
-        self.failUnless(history[0].sys_metadata['principal'])
+        self.assertTrue(history[0].sys_metadata['timestamp'])
+        self.assertTrue(history[0].sys_metadata['principal'])
         # check if correct data and metadata retrieved
         self.assertEqual(history[0].data.object.text, 'text v1')
         self.assertEqual(history[0].app_metadata, 'save number 1')
@@ -233,10 +233,10 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         self.assertEqual(len(outside_refs), 1)
         refs = [ref.getAttribute() for ref in inside_refs+outside_refs]
         for ref in refs:
-            self.failUnless(IVersionAwareReference.providedBy(ref))
+            self.assertTrue(IVersionAwareReference.providedBy(ref))
         cloneValues = prep.clone.object.objectValues()
         for sub in cloneValues:
-            self.failUnless(sub in refs)
+            self.assertTrue(sub in refs)
 
         # it is important that the originals returned reference info contain
         # references to the outgoing references
@@ -248,7 +248,7 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         originalValues = prep.original.object.objectValues()
 
         for sub in originalValues:
-            self.failUnless(sub in refs)
+            self.assertTrue(sub in refs)
 
         # the clones and the originals refs must also reference the
         # "same" object
@@ -256,11 +256,11 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
                          prep.original.object.objectIds())
 
         self.assertEqual(len(prep.referenced_data), 1)
-        self.failUnless(prep.referenced_data['title'] is fol.title)
+        self.assertTrue(prep.referenced_data['title'] is fol.title)
 
         self.assertEqual(prep.metadata['app_metadata'], 'save number 1')
-        self.failUnless('timestamp' in prep.metadata['sys_metadata'])
-        self.failUnless('principal' in prep.metadata['sys_metadata'])
+        self.assertTrue('timestamp' in prep.metadata['sys_metadata'])
+        self.assertTrue('principal' in prep.metadata['sys_metadata'])
 
         self._setDummyTool(DummyModifier())
 
@@ -296,8 +296,8 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
         # check metadata
         self.assertEqual(retr.app_metadata, 'save number 1')
-        self.failUnless('timestamp' in retr.sys_metadata)
-        self.failUnless('principal' in retr.sys_metadata)
+        self.assertTrue('timestamp' in retr.sys_metadata)
+        self.assertTrue('principal' in retr.sys_metadata)
 
         # check the references
         inside_refs = retr.data.inside_refs
@@ -306,7 +306,7 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         self.assertEqual(len(outside_refs), 1)
         refs = [ref.getAttribute() for ref in inside_refs+outside_refs]
         for ref in refs:
-            self.failUnless(IVersionAwareReference.providedBy(ref))
+            self.assertTrue(IVersionAwareReference.providedBy(ref))
             # check info value (see note above)
             self.assertEquals(ref.info, refs.index(ref))
 
@@ -317,19 +317,19 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         prep = portal_archivist.prepare(doc, app_metadata='save number 1')
         v1 = portal_archivist.register(prep)
 
-        self.failUnless(portal_archivist.isUpToDate(obj=doc))
-        self.failUnless(portal_archivist.isUpToDate(obj=doc, selector=v1))
+        self.assertTrue(portal_archivist.isUpToDate(obj=doc))
+        self.assertTrue(portal_archivist.isUpToDate(obj=doc, selector=v1))
 
         doc.text = 'text v2'
         notifyModified(doc)
-        self.failIf(portal_archivist.isUpToDate(obj=doc))
+        self.assertFalse(portal_archivist.isUpToDate(obj=doc))
 
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         v2 = portal_archivist.save(prep)
 
-        self.failUnless(portal_archivist.isUpToDate(obj=doc))
-        self.failUnless(portal_archivist.isUpToDate(obj=doc, selector=v2))
-        self.failIf(portal_archivist.isUpToDate(obj=doc, selector=v1))
+        self.assertTrue(portal_archivist.isUpToDate(obj=doc))
+        self.assertTrue(portal_archivist.isUpToDate(obj=doc, selector=v2))
+        self.assertFalse(portal_archivist.isUpToDate(obj=doc, selector=v1))
 
     def test09_getHistoryMetadata(self):
         portal_archivist = self.portal.portal_archivist
@@ -347,8 +347,8 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
-        self.failUnless(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
-        self.failUnless(history.retrieve(0)['metadata']['sys_metadata']['principal'])
+        self.assertTrue(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
+        self.assertTrue(history.retrieve(0)['metadata']['sys_metadata']['principal'])
         # check if correct data and metadata retrieved
         self.assertEqual(history.retrieve(0)['metadata']['app_metadata'], 'save number 1')
         self.assertEqual(history.retrieve(1)['metadata']['app_metadata'], 'save number 2')
@@ -370,8 +370,8 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
-        self.failUnless(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
-        self.failUnless(history.retrieve(0)['metadata']['sys_metadata']['principal'])
+        self.assertTrue(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
+        self.assertTrue(history.retrieve(0)['metadata']['sys_metadata']['principal'])
         # check if correct data and metadata retrieved
         self.assertEqual(history.retrieve(0)['metadata']['app_metadata'], 'save number 1')
         self.assertEqual(history.retrieve(1)['metadata']['app_metadata'], 'save number 2')

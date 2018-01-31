@@ -200,13 +200,13 @@ class TestATContents(CMFEditionsBaseTestCase):
         # The blobs we use for versioning are different from the
         # original blob though.  Otherwise we wouldn't have a reliable
         # solution
-        self.failIfEqual(original_blob, blob1)
+        self.assertNotEqual(original_blob, blob1)
         # Our third revision has a distinct blob from the current
         # object even though the contents are the same
         vdata = portal_repository.retrieve(content, 2)
         obj = vdata.object
         self.assertEqual(str(obj.getFile()), file2)
-        self.failIfEqual(obj.getFile().getBlob(), content.getFile().getBlob())
+        self.assertNotEqual(obj.getFile().getBlob(), content.getFile().getBlob())
         # Reverting gives us the blob saved in versioning, not the original
         portal_repository.revert(content, 0)
         self.assertEqual(content.getFile().getBlob(), blob1)
