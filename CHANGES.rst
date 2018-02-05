@@ -4,18 +4,10 @@ Changelog
 3.1.1 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Prepare for Python 2 / 3 compatibility
   [davilima6]
-
-Bug fixes:
-
-- *add item here*
 
 
 3.1 (2017-03-31)
