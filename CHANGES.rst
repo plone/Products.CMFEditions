@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Make imports Python 3 compatible
+  [ale-rt]
 
 
 3.1.1 (2018-02-05)
