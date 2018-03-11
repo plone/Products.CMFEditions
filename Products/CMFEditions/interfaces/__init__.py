@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from zope import interface
 
-from _tools import IArchivistTool
-from _tools import IPortalModifierTool
-from _tools import IPurgePolicyTool
-from _tools import IStorageTool
+from Products.CMFEditions.interfaces._tools import IArchivistTool  # noqa: F401
+from Products.CMFEditions.interfaces._tools import IPortalModifierTool  # noqa: F401,E501
+from Products.CMFEditions.interfaces._tools import IPurgePolicyTool  # noqa: F401,E501
+from Products.CMFEditions.interfaces._tools import IStorageTool  # noqa: F401
 
 
 class IVersioned(interface.Interface):
@@ -12,4 +12,3 @@ class IVersioned(interface.Interface):
     thus versioned.
     """
     version_id = interface.Attribute('The version id of this object.')
-
