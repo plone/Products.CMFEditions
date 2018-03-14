@@ -52,7 +52,6 @@ setup(
         'Acquisition',
         'DateTime',
         'transaction',
-        'ZODB3>=3.9.0',  # blob support
         'Zope2',
     ],
     entry_points="""

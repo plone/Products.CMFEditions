@@ -21,7 +21,6 @@
 #########################################################################
 """Histories Storage using ZVC
 
-$Id: ZVCStorageTool.py,v 1.18 2005/03/11 11:05:12 varun-rastogi Exp $
 """
 __version__ = "$Revision: 1.18 $"
 

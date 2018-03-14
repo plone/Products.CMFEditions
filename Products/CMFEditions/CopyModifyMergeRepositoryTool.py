@@ -21,8 +21,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """Copy Modify Merge Repository implementation.
-
-$Id: CopyModifyMergeRepositoryTool.py,v 1.20 2005/06/24 11:42:01 gregweb Exp $
 """
 
 from AccessControl import ClassSecurityInfo
@@ -138,6 +136,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject,
     def isVersionable(self, obj):
         """See interface.
         """
+        if hasattr(aq_base(obj), 'versioning_enabled') \
+                and not getattr(obj, 'versioning_enabled'):
+            return False
         return obj.portal_type in self.getVersionableContentTypes()
 
     security.declarePublic('getVersionableContentTypes')
