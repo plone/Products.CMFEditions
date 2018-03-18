@@ -10,13 +10,17 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Allow disabling versioning per object
+  https://github.com/plone/Products.CMFPlone/issues/2341
+  [tomgross]
 
 Bug fixes:
 
 - Make imports Python 3 compatible
   [ale-rt]
 
+- Don't depend on ZODB version 3 directly
+  [tomgross]
 
 3.1.1 (2018-02-05)
 ------------------
