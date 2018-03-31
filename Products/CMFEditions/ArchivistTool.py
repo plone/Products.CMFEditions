@@ -54,7 +54,7 @@ from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.utilities import KwAsAttributes
 
-from six import StringIO
+from six import BytesIO
 from six.moves.cPickle import Pickler
 from six.moves.cPickle import Unpickler
 from zope.interface import alsoProvides
@@ -70,7 +70,7 @@ RETRIEVING_UNREGISTERED_FAILED = \
 def deepcopy(obj):
     """Makes a deep copy of the object using the pickle mechanism.
     """
-    stream = StringIO()
+    stream = BytesIO()
     p = Pickler(stream, 1)
     p.dump(aq_base(obj))
     stream.seek(0)
@@ -219,7 +219,7 @@ class ArchivistTool(UniqueObject, SimpleItem):
         else:
             inside_orefs, outside_orefs = (), ()
 
-        stream = StringIO()
+        stream = BytesIO()
         p = Pickler(stream, 1)
         if callbacks is not None:
             p.persistent_id = pers_id

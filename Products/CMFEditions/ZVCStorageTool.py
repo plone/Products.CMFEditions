@@ -54,7 +54,7 @@ from Products.ZopeVersionControl.EventLog import LogEntry
 from Products.ZopeVersionControl.Utility import VersionControlError
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
 
-from six import StringIO
+from six import BytesIO
 from six.moves.cPickle import dumps
 from six.moves.cPickle import HIGHEST_PROTOCOL
 from six.moves.cPickle import loads
@@ -70,7 +70,7 @@ import types
 logger = logging.getLogger('CMFEditions')
 
 def deepCopy(obj):
-    stream = StringIO()
+    stream = BytesIO()
     p = Pickler(stream, 1)
     p.dump(obj)
     stream.seek(0)
@@ -120,7 +120,7 @@ def getSize(obj):
 
     try:
         # fallback: pickling the object
-        stream = StringIO()
+        stream = BytesIO()
         p = Pickler(stream, 1)
         p.dump(obj)
         size = stream.tell()
@@ -521,11 +521,11 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             comment = dumps(comment)
         except KeyError:
             comment = ''
-        return '\x00\n'.join((comment, dumps(metadata, HIGHEST_PROTOCOL)))
+        return b'\x00\n'.join((comment, dumps(metadata, HIGHEST_PROTOCOL)))
 
     def _retrieveMetadataFromZVC(self, zvc_histid, zvc_selector):
         logEntry = self._retrieveZVCLogEntry(zvc_histid, zvc_selector)
-        metadata = loads(logEntry.message.split('\x00\n', 1)[1])
+        metadata = loads(logEntry.message.split(b'\x00\n', 1)[1])
         return metadata
 
 

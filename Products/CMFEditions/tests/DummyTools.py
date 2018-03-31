@@ -19,7 +19,7 @@ from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.interfaces.IStorage import IStreamableReference
 from Products.CMFEditions.utilities import dereference
 
-from six import StringIO
+from six import BytesIO
 from six.moves.cPickle import Pickler
 from six.moves.cPickle import Unpickler
 from zope.interface import implementer
@@ -52,7 +52,7 @@ class DummyBaseTool(SimpleItem):
         return self.id
 
 def deepCopy(obj):
-    stream = StringIO()
+    stream = BytesIO()
     p = Pickler(stream, 1)
     p.dump(obj)
     stream.seek(0)
