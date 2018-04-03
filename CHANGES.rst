@@ -10,8 +10,8 @@ Breaking changes:
 
 New features:
 
-- Allow disabling versioning per object
-  https://github.com/plone/Products.CMFPlone/issues/2341
+- Allow disabling versioning per object.
+  `Plone issue 2341 <https://github.com/plone/Products.CMFPlone/issues/2341>`_
   [tomgross]
 
 Bug fixes:
