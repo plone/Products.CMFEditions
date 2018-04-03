@@ -4,10 +4,6 @@ Changelog
 3.2.0 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Allow disabling versioning per object.
