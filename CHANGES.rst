@@ -29,7 +29,7 @@ New features:
 Bug fixes:
 
 - Make imports Python 3 compatible
-  [ale-rt]
+  [ale-rt, pbauer]
 
 - Don't depend on ZODB version 3 directly
   [tomgross]
