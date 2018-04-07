@@ -21,7 +21,6 @@
 #########################################################################
 """Archivist implementation
 
-$Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 """
 
 from AccessControl import ClassSecurityInfo

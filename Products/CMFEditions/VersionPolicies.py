@@ -20,6 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """Default Version Policy implementations.
+
 """
 
 from AccessControl import ClassSecurityInfo
@@ -43,6 +44,12 @@ class VersionPolicy(SimpleItem):
     def Title(self):
         return self.title
 
+
+class ATVersionOnEditPolicy(VersionPolicy):
+    """A policy that implements version creation on edit for AT types,
+       requires a custom edit_macros.pt and a controller script called
+       update_version_on_edit.  This policy automatically adds and removes
+       the controller script from the AT edit controller chain on install."""
     FC_ACTION_LIST = ({'template': 'atct_edit',
                        'status': 'success',
                        'action': 'traverse_to',
@@ -94,7 +101,6 @@ def remove_form_controller_overrides(portal, actions):
                 fake_req.form['old_status_%s'%i]=action['status'] or ''
     # Use the private method because the public one does a redirect
     fc._delFormActions(fc.actions,fake_req)
-
 
 # Fake request class to satisfy formcontroller removal policy
 class DummyRequest(dict):

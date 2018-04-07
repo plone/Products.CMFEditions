@@ -21,9 +21,7 @@
 #########################################################################
 """Storage Purge Policy Tool Keeping Only the Last n Versions
 
-$Id$
 """
-__version__ = "$Revision$"
 
 from zope.interface import implementer
 

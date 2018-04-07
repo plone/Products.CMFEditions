@@ -26,7 +26,6 @@
 storage. The other interface definitions are defintions for types
 returned by storage methods.
 
-$Id$
 """
 
 from zope.interface import Interface, Attribute

@@ -144,9 +144,9 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(h1.version_id, 1)
         # self.assertEqual(h1.action, h1.ACTION_CHECKIN)
         # self.assertEqual(h1.message, 'v2\nsecond line')
-        # self.failUnless(h1.user_id)
+        # self.assertTrue(h1.user_id)
         # self.assertEqual(h1.path, '/'.join(doc.getPhysicalPath()))
-        # self.failUnless(h1.timestamp)
+        # self.assertTrue(h1.timestamp)
 
     def test06_retrieveSpecificVersion(self):
         portal_repo = self.portal.portal_repository
@@ -332,7 +332,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         # check if revertion worked correctly
         fol = self.portal.fol
         doc1 = fol.doc1
-        self.failUnless('doc2' in fol.objectIds())
+        self.assertTrue('doc2' in fol.objectIds())
         self.assertFalse('doc3' in fol.objectIds())
         doc2 = fol.doc2
         self.assertEqual(fol.Title(), "v2 of fol")
@@ -363,31 +363,31 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
         # just check the original is unchanged
         settings = doc.permission_settings(perm)[0]
-        self.failUnless(settings['acquire'])
+        self.assertTrue(settings['acquire'])
         role_enabled = [r for r in settings['roles']
                         if r['name'] == member_role][0]
-        self.failUnless(role_enabled['checked'])
+        self.assertTrue(role_enabled['checked'])
 
         # ----- retrieve
         # check if retrieved object carries the working copy's permissions
         retrieved_data = portal_repo.retrieve(
             doc, 0, preserve=['_Access_contents_information_Permission'])
         settings = retrieved_data.object.permission_settings(perm)[0]
-        self.failUnless(settings['acquire'])
+        self.assertTrue(settings['acquire'])
         role_enabled = [
             r for r in settings['roles']
             if r['name'] == member_role
         ][0]
-        self.failUnless(role_enabled['checked'])
+        self.assertTrue(role_enabled['checked'])
 
         # check that the working copy's permissions are unchanged
         settings = doc.permission_settings(perm)[0]
-        self.failUnless(settings['acquire'])
+        self.assertTrue(settings['acquire'])
         role_enabled = [
             r for r in settings['roles']
             if r['name'] == member_role
         ][0]
-        self.failUnless(role_enabled['checked'])
+        self.assertTrue(role_enabled['checked'])
 
         # check if the preserved data is returned correctly
         preserved = retrieved_data.preserved_data['_Access_contents_information_Permission']  # noqa
@@ -397,10 +397,10 @@ class TestIntegration(CMFEditionsBaseTestCase):
         # check that the working copies permissions are unchanged after revert
         portal_repo.revert(doc, 0)
         settings = doc.permission_settings(perm)[0]
-        self.failUnless(settings['acquire'])
+        self.assertTrue(settings['acquire'])
         role_enabled = [r for r in settings['roles']
                         if r['name'] == member_role][0]
-        self.failUnless(role_enabled['checked'])
+        self.assertTrue(role_enabled['checked'])
 
     def test13_revertUpdatesCatalog(self):
         portal_repo = self.portal.portal_repository
@@ -421,7 +421,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         retrieved_data = portal_repo.retrieve(
             doc, 0, preserve=['_Access_contents_information_Permission'])
         retrieved_doc = retrieved_data.object
-        self.failUnless('Plain text' in retrieved_doc.getText())
+        self.assertTrue('Plain text' in retrieved_doc.getText())
         # Test that basic retrieval did not alter the catalog
         results = cat(SearchableText='Plain Text')
         self.assertEqual(len(results), 0)
@@ -997,20 +997,20 @@ class TestIntegration(CMFEditionsBaseTestCase):
         repo_fol2 = portal_repo.retrieve(fol, 1).object
 
         # Test values on the repository copies and the working copy
-        self.failUnlessEqual(repo_fol1.__annotations__['something'], True)
-        self.failUnlessEqual(repo_fol2.__annotations__['something'], False)
-        self.failUnlessEqual(fol.__annotations__['something'], None)
-        self.failUnlessEqual(repo_fol2.__annotations__.get('another_thing',
+        self.assertEqual(repo_fol1.__annotations__['something'], True)
+        self.assertEqual(repo_fol2.__annotations__['something'], False)
+        self.assertEqual(fol.__annotations__['something'], None)
+        self.assertEqual(repo_fol2.__annotations__.get('another_thing',
                                                            None), None)
 
         # Test that revert brings in the original annotation
         portal_repo.revert(fol)
-        self.failUnlessEqual(fol.__annotations__['something'], False)
-        self.failUnlessEqual(fol.__annotations__.get('another_thing', None),
+        self.assertEqual(fol.__annotations__['something'], False)
+        self.assertEqual(fol.__annotations__.get('another_thing', None),
                              None)
 
         portal_repo.revert(fol, 0)
-        self.failUnlessEqual(fol.__annotations__['something'], True)
+        self.assertEqual(fol.__annotations__['something'], True)
 
     def test24_versioningPreservesFolderOrder(self):
         portal_repo = self.portal.portal_repository
@@ -1025,18 +1025,18 @@ class TestIntegration(CMFEditionsBaseTestCase):
         fol.setTitle('v2 of fol')
         fol.moveObjectsToTop(['doc2'])
 
-        self.failUnlessEqual(fol.objectIds()[0], 'doc2')
+        self.assertEqual(fol.objectIds()[0], 'doc2')
 
         working_ids = fol.objectIds()
 
         # Test that a retrieve provides the order and content from
         # the working copy on the repo copy
         repo_fol1 = portal_repo.retrieve(fol, 0).object
-        self.failUnlessEqual(repo_fol1.objectIds(), working_ids)
+        self.assertEqual(repo_fol1.objectIds(), working_ids)
 
         # Test that a revert preserves the order from the working copy
         portal_repo.revert(fol)
-        self.failUnlessEqual(fol.objectIds(), working_ids)
+        self.assertEqual(fol.objectIds(), working_ids)
 
         # See how we interact with delete
         fol.invokeFactory('Document', 'doc3')
@@ -1050,18 +1050,18 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
         # Test that we kept the ids from working copy, kept the new child
         # restored the deleted child
-        self.failUnlessEqual(fol.objectIds(), working_ids)
-        self.failUnlessEqual(fol.objectIds()[0], 'doc3')
-        self.failUnlessEqual(getattr(fol, 'doc2', None), None)
-        self.failUnlessEqual(fol['doc3'], doc3)
+        self.assertEqual(fol.objectIds(), working_ids)
+        self.assertEqual(fol.objectIds()[0], 'doc3')
+        self.assertEqual(getattr(fol, 'doc2', None), None)
+        self.assertEqual(fol['doc3'], doc3)
 
         # Test the BTreeFolder internals
-        self.failUnlessEqual(fol._tree.get('doc2', None), None)
-        self.failUnlessEqual(fol._tree['doc3'], doc3)
-        self.failUnlessEqual(fol._count(), 2)
-        self.failUnlessEqual(fol._mt_index[doc2.meta_type].get('doc2', None),
+        self.assertEqual(fol._tree.get('doc2', None), None)
+        self.assertEqual(fol._tree['doc3'], doc3)
+        self.assertEqual(fol._count(), 2)
+        self.assertEqual(fol._mt_index[doc2.meta_type].get('doc2', None),
                              None)
-        self.failUnlessEqual(fol._mt_index[doc3.meta_type]['doc3'], 1)
+        self.assertEqual(fol._mt_index[doc3.meta_type]['doc3'], 1)
 
     def test25_versioningRestoresInsideRefsFolderOrder(self):
         # Enable OMInsideChildrensModifier
@@ -1085,19 +1085,19 @@ class TestIntegration(CMFEditionsBaseTestCase):
         fol.setTitle('v2 of fol')
         fol.moveObjectsToTop(['doc2'])
 
-        self.failUnlessEqual(fol.objectIds()[0], 'doc2')
+        self.assertEqual(fol.objectIds()[0], 'doc2')
 
         # Test that a retrieve uses the order from the repo copy
         repo_fol1 = portal_repo.retrieve(fol, 0).object
-        self.failUnlessEqual(fol.objectIds()[0], 'doc2')
+        self.assertEqual(fol.objectIds()[0], 'doc2')
         self.assertNotEqual(fol.objectIds(), orig_order)
-        self.failUnlessEqual(repo_fol1.objectIds()[0], 'doc1')
+        self.assertEqual(repo_fol1.objectIds()[0], 'doc1')
 
         # Test that a revert restores the order and objects from the
         # repo copy
         portal_repo.revert(fol)
-        self.failUnlessEqual(fol.objectIds()[0], 'doc1')
-        self.failUnlessEqual(fol.objectIds(), orig_order)
+        self.assertEqual(fol.objectIds()[0], 'doc1')
+        self.assertEqual(fol.objectIds(), orig_order)
 
         # See how we interact with some adds deletes and reorders
         fol.invokeFactory('Document', 'doc5')
@@ -1116,32 +1116,32 @@ class TestIntegration(CMFEditionsBaseTestCase):
         # Test that a retrieve uses the repository order and items,
         # but does not affect the working copy
         repo_fol1 = portal_repo.retrieve(fol, 0).object
-        self.failUnlessEqual(repo_fol1.objectIds(), orig_order)
+        self.assertEqual(repo_fol1.objectIds(), orig_order)
         self.assertNotEqual(getattr(repo_fol1, 'doc2', None), None)
-        self.failUnlessEqual(getattr(repo_fol1, 'doc5', None), None)
+        self.assertEqual(getattr(repo_fol1, 'doc5', None), None)
 
         self.assertNotEqual(fol.objectIds(), orig_order)
-        self.failUnlessEqual(fol.objectIds()[0], 'doc4')
-        self.failUnlessEqual(fol.objectIds()[1], 'doc3')
-        self.failUnlessEqual(fol['doc3'], doc3)
-        self.failUnlessEqual(fol['doc4'], doc4)
-        self.failUnlessEqual(getattr(fol, 'doc2', None), None)
+        self.assertEqual(fol.objectIds()[0], 'doc4')
+        self.assertEqual(fol.objectIds()[1], 'doc3')
+        self.assertEqual(fol['doc3'], doc3)
+        self.assertEqual(fol['doc4'], doc4)
+        self.assertEqual(getattr(fol, 'doc2', None), None)
         self.assertNotEqual(getattr(fol, 'doc5', None), None)
 
         # Test that a revert restores the missing child from the repo
         # copy, removed the newly created child and restored the order
         portal_repo.revert(fol)
 
-        self.failUnlessEqual(list(fol.objectIds()), orig_order)
-        self.failUnlessEqual(getattr(fol, 'doc5', None), None)
+        self.assertEqual(list(fol.objectIds()), orig_order)
+        self.assertEqual(getattr(fol, 'doc5', None), None)
 
         # Test the BTreeFolder internals
-        self.failUnlessEqual(fol._tree.get('doc5', None), None)
-        self.failUnlessEqual(fol._count(), 4)
-        self.failUnlessEqual(fol._mt_index[doc3.meta_type].get('doc5', None),
+        self.assertEqual(fol._tree.get('doc5', None), None)
+        self.assertEqual(fol._count(), 4)
+        self.assertEqual(fol._mt_index[doc3.meta_type].get('doc5', None),
                              None)
-        self.failUnlessEqual(fol._tree['doc3'], fol['doc3'].aq_base)
-        self.failUnlessEqual(fol._mt_index[doc3.meta_type]['doc3'], 1)
+        self.assertEqual(fol._tree['doc3'], fol['doc3'].aq_base)
+        self.assertEqual(fol._mt_index[doc3.meta_type]['doc3'], 1)
 
     def test26_RegistryBasesNotVersionedOrRestored(self):
         portal_repo = self.portal.portal_repository

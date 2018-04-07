@@ -24,7 +24,6 @@
 #########################################################################
 """Intercepts/modifies saving/retrieving of versions to/from the repository.
 
-$Id: IModifier.py,v 1.7 2005/06/24 11:42:01 gregweb Exp $
 """
 
 from zope.interface import Interface

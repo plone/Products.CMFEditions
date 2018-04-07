@@ -38,8 +38,6 @@ working copy
 former version
   A specific version in the past.
 
-
-$Id: IRepository.py,v 1.8 2005/04/01 17:41:56 disommav Exp $
 """
 
 from zope.interface import Interface, Attribute

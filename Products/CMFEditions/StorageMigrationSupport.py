@@ -23,7 +23,6 @@
 
 Creating a test hierarchy for migration tests.
 
-$Id$
 """
 import logging
 import os.path

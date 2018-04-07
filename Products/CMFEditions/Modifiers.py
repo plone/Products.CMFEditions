@@ -21,7 +21,6 @@
 #########################################################################
 """Modifier wrappers
 
-$Id: Modifiers.py,v 1.3 2005/06/09 13:07:28 duncanb Exp $
 """
 
 from App.class_init import InitializeClass
