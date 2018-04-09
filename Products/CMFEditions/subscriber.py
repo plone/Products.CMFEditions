@@ -20,8 +20,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """Event Subscribers
-
-$Id: ArchivistTool.py,v 1.15 2005/06/24 11:34:08 gregweb Exp $
 """
 from zope.i18nmessageid import MessageFactory
 from Acquisition import aq_get
@@ -37,36 +35,41 @@ from Products.CMFEditions import CMFEditionsMessageFactory as _
 
 PMF = MessageFactory('plone')
 
+
 def webdavObjectEventHandler(obj, event, comment):
     obj = event.object
 
-    changed = isObjectChanged(obj)
-
-    if not changed:
+    if not isObjectChanged(obj):
         return
 
     try:
         maybeSaveVersion(obj, comment=comment, force=False)
     except FileTooLargeToVersionError:
-        pass # There's no way to emit a warning here. Or is there?
+        pass  # There's no way to emit a warning here. Or is there?
+
 
 def webdavObjectInitialized(obj, event):
     return webdavObjectEventHandler(obj, event, comment=_('Initial revision (WebDAV)'))
 
+
 def webdavObjectEdited(obj, event):
     return webdavObjectEventHandler(obj, event, comment=_('Edited (WebDAV)'))
+
 
 def _getVersionComment(object):
     request = aq_get(object, 'REQUEST', None)
     return request and request.get('cmfeditions_version_comment', '')
 
+
 def objectInitialized(obj, event):
     comment = _getVersionComment(event.object) or _('Initial revision')
     return webdavObjectEventHandler(obj, event, comment=comment)
 
+
 def objectEdited(obj, event):
     comment = _getVersionComment(event.object) or PMF('Edited')
     return webdavObjectEventHandler(obj, event, comment=comment)
+
 
 def object_removed(obj, event):
     """ an object is being deleted -

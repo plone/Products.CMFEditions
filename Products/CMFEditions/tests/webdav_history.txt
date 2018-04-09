@@ -4,10 +4,6 @@ WebDAV and Versioning
 This doctest makes sure that WebDAV changes to Archetypes-based
 objects trigger versioning correctly:
 
-  >>> from pprint import pprint
-  >>> from StringIO import StringIO
-  >>> from Products.Archetypes.tests.utils import makeContent
-  >>> from Products.Archetypes.interfaces import IBaseObject
   >>> from plone.app.testing import TEST_USER_ID
   >>> from plone.app.testing import TEST_USER_NAME
   >>> from plone.app.testing import TEST_USER_PASSWORD
@@ -20,6 +16,7 @@ new object via the Plone UI:
   >>> portal = layer['portal']
   >>> setRoles(portal, TEST_USER_ID, ['Manager'])
   >>> folder = portal.portal_membership.getHomeFolder(TEST_USER_ID)
+  >>> folder_path = '/'.join(folder.getPhysicalPath())
 
   >>> 'some-document' in folder.objectIds()
   False
@@ -33,7 +30,7 @@ new object via the Plone UI:
   ... Content-Type: text/plain; charset="utf-8"
   ...
   ... Some Content
-  ... """ % ('/'.join(folder.getPhysicalPath()), TEST_USER_NAME, TEST_USER_PASSWORD))
+  ... """ % (folder_path, TEST_USER_NAME, TEST_USER_PASSWORD))
   HTTP/1.1 201 Created
   ...
 
@@ -59,7 +56,7 @@ another version of the object to be saved:
   ... Content-Type: text/plain; charset="utf-8"
   ...
   ... Some Other Content
-  ... """ % ('/'.join(folder.getPhysicalPath()), TEST_USER_NAME, TEST_USER_PASSWORD))
+  ... """ % (folder_path, TEST_USER_NAME, TEST_USER_PASSWORD))
   HTTP/1.1 204 No Content
   ...
 
@@ -75,7 +72,7 @@ not configured for folders:
   >>> print http(r"""
   ... MKCOL /%s/some-folder HTTP/1.1
   ... Authorization: Basic %s:%s
-  ... """ % ('/'.join(folder.getPhysicalPath()), TEST_USER_NAME, TEST_USER_PASSWORD))
+  ... """ % (folder_path, TEST_USER_NAME, TEST_USER_PASSWORD))
   HTTP/1.1 201 Created
   ...
 

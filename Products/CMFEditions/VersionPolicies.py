@@ -21,7 +21,6 @@
 #########################################################################
 """Default Version Policy implementations.
 
-$Id$
 """
 
 from AccessControl import ClassSecurityInfo
@@ -77,31 +76,17 @@ class ATVersionOnEditPolicy(VersionPolicy):
                        'button':None},)
 
     def setupPolicyHook(self, portal, **kw):
-        add_form_controller_overrides(portal, self.FC_ACTION_LIST)
+        pass
 
     def removePolicyHook(self, portal, **kw):
         remove_form_controller_overrides(portal, self.FC_ACTION_LIST)
-
-
-# Helper methods
-def add_form_controller_overrides(portal, actions):
-    fc = getToolByName(portal, 'portal_form_controller', None)
-    if fc is not None:
-        for action in actions:
-            fc.addFormAction(action['template'],
-                        action['status'],
-                        action['context'],
-                        action['button'],
-                        action['action'],
-                        action['expression'])
 
 
 def remove_form_controller_overrides(portal, actions):
     fc = getToolByName(portal, 'portal_form_controller', None)
     # Fake a request because form controller needs one to delete actions
     fake_req = DummyRequest()
-    i = 0
-    for fc_act in fc.listFormActions(1):
+    for i, fc_act in enumerate(fc.listFormActions(1)):
         for action in actions:
             if (action['template'] == fc_act.getObjectId() and
                     action['status'] == fc_act.getStatus() and
@@ -114,11 +99,9 @@ def remove_form_controller_overrides(portal, actions):
                 fake_req.form['old_context_type_%s'%i]=action['context'] or ''
                 fake_req.form['old_button_%s'%i]=action['button'] or ''
                 fake_req.form['old_status_%s'%i]=action['status'] or ''
-        i = i+1
     # Use the private method because the public one does a redirect
     fc._delFormActions(fc.actions,fake_req)
 
 # Fake request class to satisfy formcontroller removal policy
 class DummyRequest(dict):
-    def __init__(self):
-        self.form = {}
+    form = {}

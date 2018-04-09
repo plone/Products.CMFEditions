@@ -21,7 +21,6 @@
 #########################################################################
 """Manages Reference Factories.
 
-$Id: $
 """
 
 from zope.interface import Interface

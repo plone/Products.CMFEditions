@@ -21,7 +21,6 @@
 #########################################################################
 """Manages Factories for diffrenet kinds of references.
 
-$Id: $
 """
 
 from App.class_init import InitializeClass

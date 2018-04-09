@@ -20,8 +20,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """Utilities
-
-$Id: utilities.py,v 1.1 2005/01/06 14:25:44 gregweb Exp $
 """
 
 import random
@@ -114,6 +112,7 @@ def isObjectChanged(obj):
             changed = True
     return changed
 
+
 def maybeSaveVersion(obj, policy='at_edit_autoversion', comment='', force=False):
     pr = getToolByName(obj, 'portal_repository', None)
     if pr is not None:
@@ -121,6 +120,7 @@ def maybeSaveVersion(obj, policy='at_edit_autoversion', comment='', force=False)
 
         if isVersionable and (force or pr.supportsPolicy(obj, policy)):
             pr.save(obj=obj, comment=comment)
+
 
 def wrap(obj, parent):
     """Copy the context and containment from one object to another.

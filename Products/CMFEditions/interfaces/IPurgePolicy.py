@@ -24,7 +24,6 @@
 At save time control is handed over to the purge policy which has full
 control over all versions from a resources history.
 
-$Id$
 """
 
 from zope.interface import Interface

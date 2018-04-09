@@ -35,5 +35,40 @@
         permission="zope2.View"
         />
 
+    <browser:page
+        for="*"
+        name="update_version_on_edit"
+        class=".views.UpdateVersionOnEditView"
+        permission="zope2.View"
+        />
+
+    <browser:page
+        for="*"
+        name="update_version_before_edit"
+        class=".views.UpdateVersionBeforeEditView"
+        permission="zope2.View"
+        />
+
+    <browser:page
+        for="*"
+        name="version_file_view"
+        template="templates/version_file_view.pt"
+        permission="zope2.View"
+        />
+
+    <browser:page
+        for="*"
+        name="version_image_view"
+        template="templates/version_image_view.pt"
+        permission="zope2.View"
+        />
+
+    <browser:page
+        for="*"
+        name="version_metadata_view"
+        template="templates/version_metadata_view.pt"
+        permission="zope2.View"
+        />
+
 </configure>
 

@@ -36,7 +36,6 @@ from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.VersionPolicies import VersionPolicy
-from Products.CMFEditions.VersionPolicies import ATVersionOnEditPolicy
 
 from DummyTools import DummyArchivist
 from DummyTools import notifyModified
@@ -124,7 +123,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         portal_repository.save(doc, comment='save no 2')
 
         vdata = portal_repository.retrieve(doc, selector=0)
-        self.failUnless(verifyObject(IVersionData, vdata))
+        self.assertTrue(verifyObject(IVersionData, vdata))
         self.assertEqual(vdata.object.text, 'text v1')
         vdata = portal_repository.retrieve(doc, selector=1)
         self.assertEqual(vdata.object.text, 'text v2')
@@ -205,7 +204,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
             doc,
             selector=0)
         #vdata = portal_repository.retrieve(doc, selector=0)
-        #self.failUnless(verifyObject(IVersionData, vdata))
+        #self.assertTrue(verifyObject(IVersionData, vdata))
         #self.assertEqual(vdata.object.text, 'text v1')
         self.assertRaises(
               AttributeError,
@@ -237,7 +236,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
             selector=0,
             container=self.portal)
         #portal_repository.restore(history_id, selector=0, container=self.portal)
-        #self.failUnless('doc' in self.portal.objectIds())
+        #self.assertTrue('doc' in self.portal.objectIds())
         #restored = self.portal.doc
         #self.assertEqual(restored.text, 'text v1')
 
@@ -265,7 +264,7 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
             new_id='doc2')
         #portal_repository.restore(history_id, selector=0,
         #                                 container=self.portal, new_id='doc2')
-        #self.failUnless('doc2' in self.portal.objectIds())
+        #self.assertTrue('doc2' in self.portal.objectIds())
         #restored = self.portal.doc2
         #self.assertEqual(restored.text, 'text v1')
 
@@ -299,8 +298,8 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
         # The history is acquisition wrapped
         self.assertEqual(history.aq_parent, doc)
         # check if timestamp and principal available
-        self.failUnless(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
-        self.failUnless(history.retrieve(0)['metadata']['sys_metadata']['principal'])
+        self.assertTrue(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
+        self.assertTrue(history.retrieve(0)['metadata']['sys_metadata']['principal'])
         # check if correct data and metadata retrieved
         self.assertEqual(history.retrieve(0)['metadata']['sys_metadata']['comment'], 'save number 1')
         self.assertEqual(history.retrieve(1)['metadata']['sys_metadata']['comment'], 'save number 2')
@@ -423,7 +422,7 @@ class TestRegressionTests(CMFEditionsBaseTestCase):
         portal_repository.save(doc, comment='save no 2')
         portal_repository.revert(doc, 0)
         self.assertEqual(doc.getId(), 'newdoc')
-        self.failUnless('newdoc' in self.portal.objectIds())
+        self.assertTrue('newdoc' in self.portal.objectIds())
 
 class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
 
@@ -451,7 +450,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         # test that policies can be removed
         portal_repository = self.portal.portal_repository
         # Set it twice to ensure that duplicates aren't created
-        self.failUnless(portal_repository.supportsPolicy(self.portal.doc,
+        self.assertTrue(portal_repository.supportsPolicy(self.portal.doc,
                                                         'at_edit_autoversion'))
         portal_repository.removePolicyFromContentType('Document',
                                                         'at_edit_autoversion')
@@ -461,7 +460,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
     def test02_set_policy_on_type(self):
         # test that policies can be set and retrieved
         portal_repository = self.portal.portal_repository
-        self.failUnless(portal_repository.supportsPolicy(self.portal.doc,
+        self.assertTrue(portal_repository.supportsPolicy(self.portal.doc,
                                                         'at_edit_autoversion'))
         portal_repository.removePolicyFromContentType('Document',
                                                         'at_edit_autoversion')
@@ -469,7 +468,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                                                         'at_edit_autoversion'))
         portal_repository.addPolicyForContentType('Document',
                                                         'at_edit_autoversion')
-        self.failUnless(portal_repository.supportsPolicy(self.portal.doc,
+        self.assertTrue(portal_repository.supportsPolicy(self.portal.doc,
                                                         'at_edit_autoversion'))
 
     def test03_set_policy_types_map(self):
@@ -483,7 +482,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         # update the mapping
         portal_repository.manage_setTypePolicies({'Document':
                                                      ['at_edit_autoversion']})
-        self.failUnless(portal_repository.supportsPolicy(self.portal.doc,
+        self.assertTrue(portal_repository.supportsPolicy(self.portal.doc,
                                                        'at_edit_autoversion'))
 
         # assign two policies and then unassign them.
@@ -509,7 +508,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                                             'Create version when published')
         policies = portal_repository.listPolicies()
         self.assertEqual(len(policies), self.np+1)
-        self.failUnless('version_on_publish' in [p.getId() for p in policies])
+        self.assertTrue('version_on_publish' in [p.getId() for p in policies])
 
     def test04_add_policy_updates(self):
         # test calling addPolicy with an existing Id updates the title
@@ -519,7 +518,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                                             'Fake policy title')
         policies = portal_repository.listPolicies()
         self.assertEqual(len(policies), self.np)
-        self.failUnless('Fake policy title' in [p.Title() for p in policies])
+        self.assertTrue('Fake policy title' in [p.Title() for p in policies])
 
     def test05_remove_policy(self):
         # test removing a policy removes the policy from all content types
@@ -542,7 +541,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                                             'Fake policy title'),))
         policies = portal_repository.listPolicies()
         self.assertEqual(len(policies), 1)
-        self.failUnless('Fake policy title' in [p.Title() for p in policies])
+        self.assertTrue('Fake policy title' in [p.Title() for p in policies])
 
     def test08_mutators_fail_on_invalid_input(self):
         portal_repository = self.portal.portal_repository
@@ -589,7 +588,7 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         self.assertEqual(len(portal_repository.listPolicies()), self.np+1)
         portal_repository.addPolicyForContentType('Document',
                                                    'my_bogus_policy', out=out)
-        self.failUnless(portal_repository.supportsPolicy(self.portal.doc,
+        self.assertTrue(portal_repository.supportsPolicy(self.portal.doc,
                                                         'my_bogus_policy'))
         self.assertEqual(out, ['added','enabled Document'])
         portal_repository.removePolicyFromContentType('Document',
@@ -646,29 +645,17 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
 
     def test13_at_auto_version_hooks(self):
         portal_repository = self.portal.portal_repository
-        # Check if the form controller hook is in place:
-        self.failUnless(self.isFCActionInPlace('validate_integrity',
-                                                     'success', None, None))
-        self.failUnless(self.isFCActionInPlace('atct_edit',
-                                                     'success', None, None))
         # Remove policy and check if hook is removed
         portal_repository.removePolicy('at_edit_autoversion')
-        self.assertFalse(self.isFCActionInPlace('validate_integrity',
-                                                 'success', None, None))
-        self.assertFalse(self.isFCActionInPlace('atct_edit',
-                                                     'success', None, None))
-        # Add policy and check if hook is added
-        portal_repository.addPolicy('at_edit_autoversion', 'Auto policy',
-                                     ATVersionOnEditPolicy)
-        self.failUnless(self.isFCActionInPlace('validate_integrity',
-                                                     'success', None, None))
-        self.failUnless(self.isFCActionInPlace('atct_edit',
-                                                     'success', None, None))
+        self.assertFalse(self.isFCActionInPlace(
+            'validate_integrity', 'success', None, None))
+        self.assertFalse(self.isFCActionInPlace(
+            'atct_edit', 'success', None, None))
 
     def test14_has_policy(self):
         portal_repository = self.portal.portal_repository
         # We already have two policies by default
-        self.failUnless(portal_repository.hasPolicy(self.portal.doc))
+        self.assertTrue(portal_repository.hasPolicy(self.portal.doc))
         portal_repository.removePolicyFromContentType('Document',
                                                         'at_edit_autoversion')
         portal_repository.removePolicyFromContentType('Document',

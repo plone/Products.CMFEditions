@@ -59,6 +59,9 @@ Bug fixes:
 - Make tests run in Zope 4 (includes some cleanup).
   [pbauer]
 
+- Get rid of CMFFormController scripts
+  [tomgross]
+
 
 3.0 (2016-12-05)
 ----------------
