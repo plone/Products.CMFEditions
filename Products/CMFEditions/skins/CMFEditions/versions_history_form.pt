@@ -55,7 +55,7 @@
                     tal:condition="isModified">
                   <td class="VersionId"
                       tal:define="id current/version_id;">
-                    <span i18n:translate="">Working Copy</span>
+                    <span i18n:translate="">Current version</span>
                   </td>
                   <td class="VersionUser">
                     <span tal:replace="context/Creator">user</span>
@@ -102,7 +102,7 @@
                                 even repeat/vdatai/even;"
                     tal:attributes="class python:(current_version and 'CurrentVersion' or '') + (even and ' even' or '')">
                   <td class="VersionId">
-                    <span tal:condition="current_version" i18n:translate="">Working Copy</span>
+                    <span tal:condition="current_version" i18n:translate="">Current version</span>
                     <span tal:condition="not:current_version" tal:content="id">1</span>
                     <a href="#"
                        class="version-table-version"
