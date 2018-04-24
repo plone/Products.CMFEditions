@@ -10,7 +10,7 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Replaced label 'Working Copy' with 'Current version' [rristow]
 
 Bug fixes:
 
