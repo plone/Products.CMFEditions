@@ -24,6 +24,7 @@
 
 """
 from Acquisition import aq_base
+from plone.app.textfield.value import RichTextValue
 from Products.CMFCore.indexing import processQueue
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 from ZODB import broken
@@ -407,9 +408,9 @@ class TestIntegration(CMFEditionsBaseTestCase):
         cat = self.portal.portal_catalog
         doc = self.portal.doc
 
-        doc.edit(text='Plain text')
+        doc.text = RichTextValue(u'Plain text', 'text/plain', 'text/plain')
         portal_repo.applyVersionControl(doc)
-        doc.edit(text='blahblah')
+        doc.text = RichTextValue(u'blahblah', 'text/plain', 'text/plain')
         portal_repo.save(doc)
         # Test that catalog has current value
         results = cat(SearchableText='Plain Text')
@@ -421,7 +422,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         retrieved_data = portal_repo.retrieve(
             doc, 0, preserve=['_Access_contents_information_Permission'])
         retrieved_doc = retrieved_data.object
-        self.assertTrue('Plain text' in retrieved_doc.getText())
+        self.assertTrue('Plain text' in retrieved_doc.text.raw)
         # Test that basic retrieval did not alter the catalog
         results = cat(SearchableText='Plain Text')
         self.assertEqual(len(results), 0)
@@ -435,7 +436,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         self.assertEqual(len(results), 0)
         results = cat(SearchableText='Plain Text')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].getObject().getRawText(), 'Plain text')
+        self.assertEqual(results[0].getObject().text.raw, 'Plain text')
 
     def test14_retrieveFolderWithAddedOrDeletedObjects(self):
         portal_repo = self.portal.portal_repository

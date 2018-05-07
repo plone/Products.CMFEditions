@@ -32,10 +32,12 @@ setup(
         test=[
             'zope.testing',
             'Products.CMFPlone',
-            'Products.Archetypes',
             'Products.CMFDynamicViewFTI',
             'plone.app.testing',
         ],
+        archetypes=[
+            'Products.Archetypes',
+        ]
     ),
     install_requires=[
         'setuptools',

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-#
 
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from Products.CMFEditions.tests.base import CMFEditionsATBaseTestCase
 
-class TestATReferences(CMFEditionsBaseTestCase):
+
+class TestATReferences(CMFEditionsATBaseTestCase):
 
     def afterSetUp(self):
         # we need to have the Manager role to be able to add things

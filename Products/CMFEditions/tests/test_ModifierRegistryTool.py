@@ -240,6 +240,8 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
 
     def test06_modifierAddedToTheCorrectPosition(self):
         portal_modifier = self.portal.portal_modifier
+        for id in list(portal_modifier.objectIds()):
+            portal_modifier.unregister(id)
 
         m1 = SimpleModifier1()
         m2 = SimpleModifier2()
@@ -254,6 +256,8 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
 
     def test07_unregisterModifer(self):
         portal_modifier = self.portal.portal_modifier
+        for id in list(portal_modifier.objectIds()):
+            portal_modifier.unregister(id)
 
         m1 = SimpleModifier1()
         m2 = SimpleModifier2()
@@ -315,6 +319,8 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
     def test10_callingOrder(self):
         global mlog
         portal_modifier = self.portal.portal_modifier
+        for id in list(portal_modifier.objectIds()):
+            portal_modifier.unregister(id)
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
 

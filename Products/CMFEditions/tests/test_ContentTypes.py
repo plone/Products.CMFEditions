@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
-#
 
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
-
-import os
+from plone.app.textfield.value import RichTextValue
+from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.file import NamedBlobImage
 from Products.CMFEditions import PACKAGE_HOME
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from Products.CMFPlone.utils import _createObjectByType
+import os
+
 
 class TestPloneContents(CMFEditionsBaseTestCase):
 
@@ -14,6 +17,8 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         self.workflow = self.portal.portal_workflow
         self.portal_repository = self.portal.portal_repository
         self.portal_archivist = self.portal.portal_archivist
+        _createObjectByType('Folder', self.portal, id='folder')
+        self.folder = self.portal.folder
 
     def getPermissionsOfRole(self, role):
         perms = self.portal.permissionsOfRole(role)
@@ -39,68 +44,60 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         self.folder.invokeFactory('Document', id='doc')
         portal_repository = self.portal_repository
         content = self.folder.doc
-        content.edit('text/plain','text v1')
-        content.editMetadata(title='content',
-                              subject=['content'],
-                              description='content',
-                              contributors='content',
-                              format='text/plain',
-                              language='content',
-                              rights='content',
-                              )
+        content.text = RichTextValue(u'text v1', 'text/plain', 'text/plain')
+        content.title = u'content'
+        content.subject = [u'content']
+        content.description = u'content'
+        content.contributors = [u'content']
+        content.language = 'content'
+        content.rights = u'content'
         portal_repository.applyVersionControl(content, comment='save no 1')
-        content.edit('text/plain','text v2')
-        content.editMetadata(title='contentOK',
-                              subject=['contentOK'],
-                              description='contentOK',
-                              contributors='contentOK',
-                              format='text/plain',
-                              language='contentOK',
-                              rights='contentOK',
-                              )
+        content.text = RichTextValue(u'text v2', 'text/plain', 'text/plain')
+        content.title = u'contentOK'
+        content.subject = [u'contentOK']
+        content.description = u'contentOK'
+        content.contributors = [u'contentOK']
+        content.language = 'contentOK'
+        content.rights = u'contentOK'
         portal_repository.save(content, comment='save no 2')
         obj = portal_repository.retrieve(content, 0).object
-        self.assertEqual(obj.EditableBody(), 'text v1')
+        self.assertEqual(obj.text.raw, 'text v1')
         self.metadata_test_one(obj)
         obj = portal_repository.retrieve(content, 1).object
-        self.assertEqual(obj.EditableBody(), 'text v2')
+        self.assertEqual(obj.text.raw, 'text v2')
         self.metadata_test_two(obj)
         portal_repository.revert(content, 0)
-        self.assertEqual(content.EditableBody(), 'text v1')
+        self.assertEqual(content.text.raw, 'text v1')
         self.metadata_test_one(content)
 
     def testNewsItem(self):
         self.folder.invokeFactory('News Item', id='news_one')
         portal_repository = self.portal_repository
         content = self.folder.news_one
-        content.edit('text v1', text_format='text/plain')
-        content.editMetadata(title='content',
-                              subject=['content'],
-                              description='content',
-                              contributors='content',
-                              format='text/plain',
-                              language='content',
-                              rights='content',
-                              )
+        content.text = RichTextValue(u'text v1', 'text/plain', 'text/plain')
+        content.title = u'content'
+        content.subject = [u'content']
+        content.description = u'content'
+        content.contributors = [u'content']
+        content.language = 'content'
+        content.rights = u'content'
         portal_repository.applyVersionControl(content, comment='save no 1')
-        content.edit('text v2', text_format='text/plain')
-        content.editMetadata(title='contentOK',
-                              subject=['contentOK'],
-                              description='contentOK',
-                              contributors='contentOK',
-                              format='text/plain',
-                              language='contentOK',
-                              rights='contentOK',
-                              )
+        content.text = RichTextValue(u'text v2', 'text/plain', 'text/plain')
+        content.title = u'contentOK'
+        content.subject = [u'contentOK']
+        content.description = u'contentOK'
+        content.contributors = [u'contentOK']
+        content.language = 'contentOK'
+        content.rights = u'contentOK'
         portal_repository.save(content, comment='save no 2')
         obj = portal_repository.retrieve(content, 0).object
-        self.assertEqual(obj.EditableBody(), 'text v1')
+        self.assertEqual(obj.text.raw, 'text v1')
         self.metadata_test_one(obj)
         obj = portal_repository.retrieve(content, 1).object
-        self.assertEqual(obj.EditableBody(), 'text v2')
+        self.assertEqual(obj.text.raw, 'text v2')
         self.metadata_test_two(obj)
         portal_repository.revert(content, 0)
-        self.assertEqual(content.EditableBody(), 'text v1')
+        self.assertEqual(content.text.raw, 'text v1')
         self.metadata_test_one(content)
 
     def testImage(self):
@@ -109,34 +106,30 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         img1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
         img2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
         content = self.folder.image
-        content.edit(file=img1)
-        content.editMetadata(title='content',
-                              subject=['content'],
-                              description='content',
-                              contributors='content',
-                              format='image/png',
-                              language='content',
-                              rights='content',
-                              )
+        content.image = NamedBlobImage(img1, u'img1.png', u'image/png')
+        content.title = u'content'
+        content.subject = [u'content']
+        content.description = u'content'
+        content.contributors = [u'content']
+        content.language = 'content'
+        content.rights = u'content'
         portal_repository.applyVersionControl(content, comment='save no 1')
-        content.edit(file=img2)
-        content.editMetadata(title='contentOK',
-                              subject=['contentOK'],
-                              description='contentOK',
-                              contributors='contentOK',
-                              format='image/png',
-                              language='contentOK',
-                              rights='contentOK',
-                              )
+        content.image = NamedBlobImage(img2, u'img2.png', u'image/png')
+        content.title = u'contentOK'
+        content.subject = [u'contentOK']
+        content.description = u'contentOK'
+        content.contributors = [u'contentOK']
+        content.language = 'contentOK'
+        content.rights = u'contentOK'
         portal_repository.save(content, comment='save no 2')
         obj = portal_repository.retrieve(content, 0).object
-        self.assertEqual(obj.data, img1)
+        self.assertEqual(obj.image.data, img1)
         self.metadata_test_one(obj)
         obj = portal_repository.retrieve(content, 1).object
-        self.assertEqual(obj.data, img2)
+        self.assertEqual(obj.image.data, img2)
         self.metadata_test_two(obj)
         portal_repository.revert(content, 0)
-        self.assertEqual(content.data, img1)
+        self.assertEqual(content.image.data, img1)
         self.metadata_test_one(content)
 
     def testFile(self):
@@ -145,59 +138,49 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         file2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
         portal_repository = self.portal_repository
         content = self.folder.file
-        content.edit(file=file1)
-        content.editMetadata(title='content',
-                              subject=['content'],
-                              description='content',
-                              contributors='content',
-                              format='image/png',
-                              language='content',
-                              rights='content',
-                              )
+        content.file = NamedBlobFile(file1, u'img1.png', u'image/png')
+        content.title = u'content'
+        content.subject = [u'content']
+        content.description = u'content'
+        content.contributors = [u'content']
+        content.language = 'content'
+        content.rights = u'content'
         portal_repository.applyVersionControl(content, comment='save no 1')
-        content.edit(file=file2)
-        content.editMetadata(title='contentOK',
-                              subject=['contentOK'],
-                              description='contentOK',
-                              contributors='contentOK',
-                              format='image/png',
-                              language='contentOK',
-                              rights='contentOK',
-                              )
+        content.file = NamedBlobImage(file2, u'img2.png', u'image/png')
+        content.title = u'contentOK'
+        content.subject = [u'contentOK']
+        content.description = u'contentOK'
+        content.contributors = [u'contentOK']
+        content.language = 'contentOK'
+        content.rights = u'contentOK'
         portal_repository.save(content, comment='save no 2')
         obj = portal_repository.retrieve(content, 0).object
-        self.assertEqual(obj.data, file1)
+        self.assertEqual(obj.file.data, file1)
         self.metadata_test_one(obj)
         obj = portal_repository.retrieve(content, 1).object
-        self.assertEqual(obj.data, file2)
+        self.assertEqual(obj.file.data, file2)
         self.metadata_test_two(obj)
         portal_repository.revert(content, 0)
-        self.assertEqual(content.data, file1)
+        self.assertEqual(content.file.data, file1)
         self.metadata_test_one(content)
 
     def testFolder(self):
         self.folder.invokeFactory('Image', id='folder')
         portal_repository = self.portal_repository
         content = self.folder.folder
-        # Use private method because webDAV locking is tripping this up
-        # using the public method and ATCT
-        content._editMetadata(title='content',
-                              subject=['content'],
-                              description='content',
-                              contributors='content',
-                              format='image/png',
-                              language='content',
-                              rights='content',
-                              )
+        content.title = u'content'
+        content.subject = [u'content']
+        content.description = u'content'
+        content.contributors = [u'content']
+        content.language = 'content'
+        content.rights = u'content'
         portal_repository.applyVersionControl(content, comment='save no 1')
-        content._editMetadata(title='contentOK',
-                              subject=['contentOK'],
-                              description='contentOK',
-                              contributors='contentOK',
-                              format='image/png',
-                              language='contentOK',
-                              rights='contentOK',
-                              )
+        content.title = u'contentOK'
+        content.subject = [u'contentOK']
+        content.description = u'contentOK'
+        content.contributors = [u'contentOK']
+        content.language = 'contentOK'
+        content.rights = u'contentOK'
         portal_repository.save(content, comment='save no 2')
         obj = portal_repository.retrieve(content, 0).object
         self.metadata_test_one(obj)
