@@ -30,12 +30,15 @@ setup(
     zip_safe=False,
     extras_require=dict(
         test=[
-            'zope.testing',
-            'Products.CMFPlone',
-            'Products.Archetypes',
-            'Products.CMFDynamicViewFTI',
             'plone.app.testing',
+            'plone.app.textfield',
+            'Products.CMFPlone',
+            'Products.CMFDynamicViewFTI',
+            'zope.testing',
         ],
+        archetypes=[
+            'Products.Archetypes',
+        ]
     ),
     install_requires=[
         'setuptools',

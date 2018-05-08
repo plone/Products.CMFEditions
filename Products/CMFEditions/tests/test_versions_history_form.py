@@ -24,13 +24,14 @@
 
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 
+from plone.app.textfield.value import RichTextValue
 from zope.component import provideAdapter
 from zope.interface import Interface
 from zope.publisher.interfaces.browser import IBrowserView
 from Products.Five.browser import BrowserView
 
-_TEXT_INITIAL = 'Initial text.'
-_TEXT_NEW = 'New text.'
+_TEXT_INITIAL = u'Initial text.'
+_TEXT_NEW = u'New text.'
 
 
 class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
@@ -44,7 +45,7 @@ class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
             'Document',
             'doc',
             title='Document 1',
-            text=_TEXT_INITIAL,
+            text=RichTextValue(_TEXT_INITIAL, 'text/plain', 'text/plain'),
         )
         self.doc = self.portal.doc
         self.portal_repository.applyVersionControl(
@@ -54,7 +55,7 @@ class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
         self.request = self.portal.REQUEST
 
     def test_versions_history_form(self):
-        self.doc.setText(_TEXT_NEW)
+        self.doc.text = RichTextValue(_TEXT_NEW, 'text/plain', 'text/plain')
         self.portal_repository.save(self.doc, comment='save version 1')
 
         html = self._render_versions_history_form(item=self.doc, version_id='0')

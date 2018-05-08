@@ -20,15 +20,13 @@
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
-"""Test the ATContentTypes content
-"""
-import os
 
 from Products.CMFEditions import PACKAGE_HOME
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from Products.CMFEditions.tests.base import CMFEditionsATBaseTestCase
+import os
 
 
-class TestATContents(CMFEditionsBaseTestCase):
+class TestATContents(CMFEditionsATBaseTestCase):
 
     def afterSetUp(self):
         self.membership = self.portal.portal_membership
