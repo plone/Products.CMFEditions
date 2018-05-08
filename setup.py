@@ -30,10 +30,11 @@ setup(
     zip_safe=False,
     extras_require=dict(
         test=[
-            'zope.testing',
+            'plone.app.testing',
+            'plone.app.textfield',
             'Products.CMFPlone',
             'Products.CMFDynamicViewFTI',
-            'plone.app.testing',
+            'zope.testing',
         ],
         archetypes=[
             'Products.Archetypes',
