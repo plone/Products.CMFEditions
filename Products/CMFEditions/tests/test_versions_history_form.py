@@ -36,10 +36,8 @@ _TEXT_NEW = u'New text.'
 
 class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
-        # we need to have the Manager role to be able to add things
-        # to the portal root
-        self.setRoles(['Manager'])
+    def setUp(self):
+        super(TestVersionsHistoryForm, self).setUp()
         self.portal_repository = self.portal.portal_repository
         self.portal.invokeFactory(
             'Document',

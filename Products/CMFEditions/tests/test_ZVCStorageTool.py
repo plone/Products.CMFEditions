@@ -39,10 +39,10 @@ from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 
 from Products.CMFCore.indexing import processQueue
 
-from DummyTools import Dummy as Dummy
-from DummyTools import DummyPurgePolicy
-from DummyTools import MemoryStorage
-from DummyTools import notifyModified
+from .DummyTools import Dummy as Dummy
+from .DummyTools import DummyPurgePolicy
+from .DummyTools import MemoryStorage
+from .DummyTools import notifyModified
 
 
 class DummyOM(ObjectManager):
@@ -65,10 +65,8 @@ class CMFDummy(Dummy):
 
 class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
-        # we need to have the Manager role to be able to add things
-        # to the portal root
-        self.setRoles(['Manager',])
+    def setUp(self):
+        super(TestZVCStorageTool, self).setUp()
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',

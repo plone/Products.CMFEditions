@@ -31,17 +31,18 @@ from zope.interface.verify import verifyObject
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
 
-from DummyTools import DummyModifier
-from DummyTools import DummyHistoryIdHandler
-from DummyTools import MemoryStorage
-from DummyTools import notifyModified
-from DummyTools import FolderishContentObjectModifier
+from .DummyTools import DummyModifier
+from .DummyTools import DummyHistoryIdHandler
+from .DummyTools import MemoryStorage
+from .DummyTools import notifyModified
+from .DummyTools import FolderishContentObjectModifier
 
 
 class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
-        self.setRoles(['Manager',])
+    def setUp(self):
+        super(TestArchivistToolMemoryStorage, self).setUp()
+
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
         self.portal.invokeFactory('Document', 'doc')

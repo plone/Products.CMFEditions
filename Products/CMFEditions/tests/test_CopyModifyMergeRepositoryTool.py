@@ -37,8 +37,8 @@ from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolic
 from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 
-from DummyTools import DummyArchivist
-from DummyTools import notifyModified
+from .DummyTools import DummyArchivist
+from .DummyTools import notifyModified
 
 class dummyPolicyWithHooks(VersionPolicy):
     """A dummy policy to test the hooks"""
@@ -56,10 +56,8 @@ class dummyPolicyWithHooks(VersionPolicy):
 
 class TestCopyModifyMergeRepositoryToolBase(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
-        # we need to have the Manager role to be able to add things
-        # to the portal root
-        self.setRoles(['Manager',])
+    def setUp(self):
+        super(TestCopyModifyMergeRepositoryToolBase, self).setUp()
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
@@ -394,10 +392,8 @@ retrieve doc2_inside: hid=%(doc2_id)s, selector=0"""%{
 
 class TestRegressionTests(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
-        # we need to have the Manager role to be able to add things
-        # to the portal root
-        self.setRoles(['Manager',])
+    def setUp(self):
+        super(TestRegressionTests, self).setUp()
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
 
@@ -426,9 +422,9 @@ class TestRegressionTests(CMFEditionsBaseTestCase):
 
 class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
 
-    def afterSetUp(self):
+    def setUp(self):
         # define number of default policies
-        TestCopyModifyMergeRepositoryToolBase.afterSetUp(self)
+        TestCopyModifyMergeRepositoryToolBase.setUp(self)
         self.np = len(self.portal.portal_repository.listPolicies())
 
     def isFCActionInPlace(self, object_id, status, button, context):

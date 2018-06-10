@@ -613,14 +613,14 @@ class MemoryStorage(DummyBaseTool):
         return length
 
 
-class HistoryList(types.ListType):
+class HistoryList(list):
     """
     """
     def __getitem__(self, selector):
         if selector is None:
             selector = -1
         try:
-           return types.ListType.__getitem__(self, selector)
+           return list.__getitem__(self, selector)
         except IndexError:
             raise StorageRetrieveError("Retrieving non existing version %s" % selector)
 

@@ -28,16 +28,14 @@ from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 from zope.interface.verify import verifyObject
 from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
 
-from DummyTools import PurgePolicyTestDummyStorage
-from DummyTools import DummyData, RemovedData
+from .DummyTools import PurgePolicyTestDummyStorage
+from .DummyTools import DummyData, RemovedData
 
 
 class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
-        # we need to have the Manager role to be able to add things
-        # to the portal root
-        self.setRoles(['Manager',])
+    def setUp(self):
+        super(TestKeepLastNVersionsTool, self).setUp()
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')

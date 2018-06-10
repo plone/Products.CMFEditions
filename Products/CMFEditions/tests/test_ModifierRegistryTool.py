@@ -148,10 +148,8 @@ loggingModifiers = (
 
 class TestModifierRegistryTool(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
-        # we need to have the Manager role to be able to add things
-        # to the portal root
-        self.setRoles(['Manager',])
+    def setUp(self):
+        super(TestModifierRegistryTool, self).setUp()
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
