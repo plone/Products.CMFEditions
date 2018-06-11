@@ -54,7 +54,7 @@ file object is smaller no error will be raised::
     >>> modifier.getOnCloneModifiers(content)
     Traceback (most recent call last):
     ...
-    FileTooLargeToVersionError
+    Products.CMFEditions.interfaces.IModifier.FileTooLargeToVersionError
     >>> content.__annotations__[annotation_name].size = 999
     >>> modifier.getOnCloneModifiers(content)
 
@@ -65,7 +65,7 @@ The same goes for files stored in attributes:
     >>> modifier.getOnCloneModifiers(content)
     Traceback (most recent call last):
     ...
-    FileTooLargeToVersionError
+    Products.CMFEditions.interfaces.IModifier.FileTooLargeToVersionError
     >>> content.my_image.size = 999
     >>> modifier.getOnCloneModifiers(content)
 
