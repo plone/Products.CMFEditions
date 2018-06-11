@@ -3,6 +3,7 @@ from Products.CMFEditions.testing import PRODUCTS_CMFEDITIONS_FUNCTIONAL_TESTING
 from plone.testing import layered
 
 import doctest
+import six
 import unittest
 
 
@@ -26,12 +27,12 @@ class DummyContent(object):
 OPTIONFLAGS = (doctest.ELLIPSIS |
                doctest.NORMALIZE_WHITESPACE |
                doctest.REPORT_ONLY_FIRST_FAILURE)
-
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(layered(doctest.DocFileSuite('webdav_history.txt',
-                                optionflags=OPTIONFLAGS,
-                                package='Products.CMFEditions.tests',),
-                          layer=PRODUCTS_CMFEDITIONS_FUNCTIONAL_TESTING))
+    if six.PY2:
+        suite.addTest(layered(doctest.DocFileSuite('webdav_history.txt',
+                                    optionflags=OPTIONFLAGS,
+                                    package='Products.CMFEditions.tests',),
+                              layer=PRODUCTS_CMFEDITIONS_FUNCTIONAL_TESTING))
     suite.addTest(doctest.DocFileSuite('large_file_modifiers.txt'))
     return suite
