@@ -1,15 +1,13 @@
 Changelog
 =========
 
-3.2.1 (unreleased)
+3.2.1 (2018-06-18)
 ------------------
 
 Bug fixes:
 
 - Test against plone.app.contenttypes instead of ATContentTypes.
   [davisagli]
-
-- *add item here*
 
 
 3.2.0 (2018-04-03)
