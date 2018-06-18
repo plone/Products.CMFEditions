@@ -4,14 +4,6 @@ Changelog
 3.2.1 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Test against plone.app.contenttypes instead of ATContentTypes.
