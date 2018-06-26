@@ -25,7 +25,7 @@
 __version__ = "$Revision: 1.18 $"
 
 from AccessControl import ClassSecurityInfo
-from App.class_init import InitializeClass
+from AccessControl.class_init import InitializeClass
 from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem

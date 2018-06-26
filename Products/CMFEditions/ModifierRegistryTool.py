@@ -25,7 +25,7 @@
 
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_base
-from App.class_init import InitializeClass
+from AccessControl.class_init import InitializeClass
 from Missing import MV
 from OFS.OrderedFolder import OrderedFolder
 from Products.CMFCore.permissions import ManagePortal
