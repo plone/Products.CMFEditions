@@ -232,7 +232,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         self._policy_defs[policy_id] = policy_class(policy_id, policy_title)
         self._callPolicyHook("add", policy_id, **kw)
 
-    @security.protected(ManageVersioningPolicies, "removePolicy")
+    @security.protected(ManageVersioningPolicies)
     def removePolicy(self, policy_id, **kw):
         for p_type in self._version_policy_mapping.keys():
             self.removePolicyFromContentType(p_type, policy_id, **kw)
