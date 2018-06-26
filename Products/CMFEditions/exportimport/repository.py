@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from Products.CMFCore.utils import getToolByName
-from Products.GenericSetup.utils import XMLAdapterBase
+from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.GenericSetup.utils import exportObjects
 from Products.GenericSetup.utils import importObjects
+from Products.GenericSetup.utils import XMLAdapterBase
 from zope.dottedname.resolve import resolve
 
-from Products.CMFEditions.VersionPolicies import VersionPolicy
 
 class RepositoryToolXMLAdapter(XMLAdapterBase):
     """Mode in- and exporter for RepositoryTool.

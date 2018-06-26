@@ -23,20 +23,20 @@
 
 """
 
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from App.class_init import InitializeClass
-from Acquisition import aq_base, aq_parent, aq_inner
+from OFS.SimpleItem import SimpleItem
+from Products.CMFCore.Expression import Expression
+from Products.CMFCore.utils import getToolByName
+from Products.CMFEditions.interfaces.IModifier import IConditionalModifier
+from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
+from Products.PageTemplates.Expressions import getEngine
+from Products.PageTemplates.Expressions import SecureModuleImporter
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from zope.interface import implementer
 
-from OFS.SimpleItem import SimpleItem
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from Products.PageTemplates.Expressions import SecureModuleImporter
-from Products.PageTemplates.Expressions import getEngine
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.Expression import Expression
-
-from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
-from Products.CMFEditions.interfaces.IModifier import IConditionalModifier
 
 manage_addModifierForm = PageTemplateFile('www/modifierAddForm.pt',
                                           globals(),

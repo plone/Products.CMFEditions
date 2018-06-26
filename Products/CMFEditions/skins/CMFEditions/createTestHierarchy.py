@@ -8,6 +8,8 @@
 ##title=Create a test hierarchy for migration tests
 ##
 from Products.CMFCore.utils import getToolByName
+
+
 repo = getToolByName(context, "portal_repository", None)
 
 if repo is not None:

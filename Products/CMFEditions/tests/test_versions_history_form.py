@@ -22,13 +22,13 @@
 #########################################################################
 """Test the versions_history_form template."""
 
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
-
 from plone.app.textfield.value import RichTextValue
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from Products.Five.browser import BrowserView
 from zope.component import provideAdapter
 from zope.interface import Interface
 from zope.publisher.interfaces.browser import IBrowserView
-from Products.Five.browser import BrowserView
+
 
 _TEXT_INITIAL = u'Initial text.'
 _TEXT_NEW = u'New text.'

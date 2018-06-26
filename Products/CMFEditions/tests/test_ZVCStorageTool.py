@@ -23,26 +23,22 @@
 """Test the standard archivist
 
 """
-from DateTime.DateTime import DateTime
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
-
-from zope.interface.verify import verifyObject
-from OFS.ObjectManager import ObjectManager
-from Acquisition import aq_base
-
-from Products.CMFEditions.ArchivistTool import ObjectData
-from Products.CMFEditions.ZVCStorageTool import Removed
-from Products.CMFEditions.interfaces.IStorage import IStorage
-from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
-from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
-from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
-
-from Products.CMFCore.indexing import processQueue
-
 from .DummyTools import Dummy as Dummy
 from .DummyTools import DummyPurgePolicy
 from .DummyTools import MemoryStorage
 from .DummyTools import notifyModified
+from Acquisition import aq_base
+from DateTime.DateTime import DateTime
+from OFS.ObjectManager import ObjectManager
+from Products.CMFCore.indexing import processQueue
+from Products.CMFEditions.ArchivistTool import ObjectData
+from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
+from Products.CMFEditions.interfaces.IStorage import IStorage
+from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
+from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from Products.CMFEditions.ZVCStorageTool import Removed
+from zope.interface.verify import verifyObject
 
 
 class DummyOM(ObjectManager):

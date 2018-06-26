@@ -23,19 +23,16 @@
 
 """
 
-from zope.interface import implementer
-
-from App.class_init import InitializeClass
 from AccessControl import ClassSecurityInfo
-
+from App.class_init import InitializeClass
 from OFS.PropertyManager import PropertyManager
 from OFS.SimpleItem import SimpleItem
-
-from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.utils import getToolByName
-
+from Products.CMFCore.utils import UniqueObject
 from Products.CMFEditions.interfaces import IPurgePolicyTool
 from Products.CMFEditions.interfaces.IPurgePolicy import IPurgePolicy
+from zope.interface import implementer
+
 
 @implementer(IPurgePolicyTool, IPurgePolicy)
 class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):

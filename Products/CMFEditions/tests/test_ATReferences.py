@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import six
 
+
 if six.PY2:
     from plone.app.testing.bbb import PloneTestCase
 

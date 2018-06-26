@@ -6,6 +6,7 @@ from plone.namedfile.file import NamedBlobImage
 from Products.CMFEditions import PACKAGE_HOME
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 from Products.CMFPlone.utils import _createObjectByType
+
 import os
 
 

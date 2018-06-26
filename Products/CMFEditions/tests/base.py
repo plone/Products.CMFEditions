@@ -5,7 +5,6 @@ from Products.CMFEditions.testing import PRODUCTS_CMFEDITIONS_INTEGRATION_TESTIN
 import unittest
 
 
-
 class CMFEditionsBaseTestCase(unittest.TestCase):
     """ A base class for Products.CMFEditions testing """
 

@@ -23,19 +23,17 @@
 
 """
 
-from App.class_init import InitializeClass
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from App.class_init import InitializeClass
+from OFS.OrderedFolder import OrderedFolder
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.utils import UniqueObject
+from Products.CMFEditions.interfaces.IReferenceFactories import IReferenceFactories
+from Products.CMFEditions.utilities import generateId
 from zope.interface import implementer
 
-from Acquisition import aq_parent, aq_inner
-from OFS.OrderedFolder import OrderedFolder
-
-from Products.CMFCore.utils import UniqueObject, getToolByName
-
-from Products.CMFEditions.utilities import generateId
-
-from Products.CMFEditions.interfaces.IReferenceFactories \
-    import IReferenceFactories
 
 @implementer(
         IReferenceFactories,)

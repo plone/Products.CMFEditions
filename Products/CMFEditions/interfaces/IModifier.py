@@ -28,6 +28,7 @@
 
 from zope.interface import Interface
 
+
 class IAttributeModifier(Interface):
     """The simplest possible modifier, it indicates, which attributes
        shouldn't be copied by the archivist, but be passed to the the storage

@@ -21,17 +21,17 @@
 #########################################################################
 """Event Subscribers
 """
-from zope.i18nmessageid import MessageFactory
 from Acquisition import aq_get
-
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.utils import getToolByName
-from Products.CMFEditions.utilities import\
-    isObjectChanged, maybeSaveVersion, dereference
-from Products.CMFEditions.interfaces.IModifier import\
-    FileTooLargeToVersionError
-from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions import CMFEditionsMessageFactory as _
+from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
+from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
+from Products.CMFEditions.utilities import dereference
+from Products.CMFEditions.utilities import isObjectChanged
+from Products.CMFEditions.utilities import maybeSaveVersion
+from zope.i18nmessageid import MessageFactory
+
 
 PMF = MessageFactory('plone')
 

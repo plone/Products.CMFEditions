@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from Products.CMFEditions.testing import PRODUCTS_CMFEDITIONS_FUNCTIONAL_TESTING
 from plone.testing import layered
+from Products.CMFEditions.testing import PRODUCTS_CMFEDITIONS_FUNCTIONAL_TESTING
 
 import doctest
 import six

@@ -25,6 +25,7 @@
 
 from Products.CMFCore.permissions import setDefaultRoles
 
+
 ApplyVersionControl = 'CMFEditions: Apply version control'
 setDefaultRoles(ApplyVersionControl, ('Manager', 'Site Administrator'))
 
@@ -45,4 +46,3 @@ setDefaultRoles(CheckoutToLocation, ('Manager', 'Site Administrator'))
 
 ManageVersioningPolicies = 'CMFEditions: Manage versioning policies'
 setDefaultRoles(ManageVersioningPolicies, ('Manager', 'Site Administrator'))
-

@@ -8,6 +8,8 @@
 ##title=Check if Up To Date
 ##
 from Products.CMFCore.utils import getToolByName
+
+
 repo = getToolByName(context, "portal_repository", None)
 
 isModified = None

@@ -31,10 +31,11 @@ from ZODB import broken
 from zope.component.persistentregistry import PersistentComponents
 from zope.interface.interface import InterfaceClass
 
-import ZODB.interfaces
 import imp
 import sys
 import transaction
+import ZODB.interfaces
+
 
 try:
     from AccessControl.rolemanager import _string_hash

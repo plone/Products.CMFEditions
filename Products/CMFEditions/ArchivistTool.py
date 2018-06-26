@@ -31,7 +31,6 @@ from Acquisition import aq_parent
 from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
 from Persistence import Persistent
-
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFEditions.interfaces import IArchivistTool
@@ -52,7 +51,6 @@ from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.utilities import KwAsAttributes
-
 from six import BytesIO
 from six.moves.cPickle import Pickler
 from six.moves.cPickle import Unpickler

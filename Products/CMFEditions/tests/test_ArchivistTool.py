@@ -24,18 +24,15 @@
 
 """
 
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
-
-from zope.interface.verify import verifyObject
-
-from Products.CMFEditions.interfaces.IArchivist import IArchivist
-from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
-
-from .DummyTools import DummyModifier
 from .DummyTools import DummyHistoryIdHandler
+from .DummyTools import DummyModifier
+from .DummyTools import FolderishContentObjectModifier
 from .DummyTools import MemoryStorage
 from .DummyTools import notifyModified
-from .DummyTools import FolderishContentObjectModifier
+from Products.CMFEditions.interfaces.IArchivist import IArchivist
+from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from zope.interface.verify import verifyObject
 
 
 class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):

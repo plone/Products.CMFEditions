@@ -23,6 +23,7 @@
 
 import six
 
+
 if six.PY2:
     from Products.CMFEditions import PACKAGE_HOME
     from plone.app.testing.bbb import PloneTestCase
