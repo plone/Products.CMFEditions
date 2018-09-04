@@ -14,7 +14,9 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fix Unauthorized error due to importing six inside Restricted Python
+  `Plone issue 2463 <https://github.com/plone/Products.CMFPlone/issues/2463>`_
+  [davilima6]
 
 
 3.2.1 (2018-06-18)

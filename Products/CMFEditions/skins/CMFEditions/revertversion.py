@@ -9,8 +9,7 @@
 ##
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
-
-import six
+from Products.CMFPlone.utils import safe_unicode
 
 
 RESPONSE = context.REQUEST.RESPONSE
@@ -20,16 +19,11 @@ pr.revert(context, version_id)
 
 obj_type_view_url = context.getTypeInfo().getActionInfo('object/view')['url']
 if obj_type_view_url != '/':
-    view_url = '%s/%s' % (context.absolute_url(),
-                          obj_type_view_url
-                         )
+    view_url = '%s/%s' % (context.absolute_url(), obj_type_view_url)
 else:
     view_url = context.absolute_url()
 
-title = context.title_or_id()
-if not isinstance(title, six.text_type):
-    title = six.text_type(title, 'utf-8', 'ignore')
-
+title = safe_unicode(context.title_or_id())
 msg = _(u'${title} has been reverted to revision ${version}.',
         mapping={'title': title,
                  'version': version_id})
@@ -47,4 +41,5 @@ if pr.supportsPolicy(context, 'version_on_revert'):
        )
 
 context.plone_utils.addPortalMessage(msg)
+
 return RESPONSE.redirect(view_url)
