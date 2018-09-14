@@ -15,9 +15,9 @@ new object via the Plone UI:
   >>> from plone.app.testing import setRoles
   >>> portal = layer['portal']
   >>> setRoles(portal, TEST_USER_ID, ['Manager'])
-  >>> folder = portal.portal_membership.getHomeFolder(TEST_USER_ID)
+  >>> folder_id = portal.invokeFactory('Folder', 'folder')
+  >>> folder = portal[folder_id]
   >>> folder_path = '/'.join(folder.getPhysicalPath())
-
   >>> 'some-document' in folder.objectIds()
   False
 
