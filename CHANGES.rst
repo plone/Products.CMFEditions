@@ -17,6 +17,21 @@ Bug fixes:
 - Fix Unauthorized error due to importing six inside Restricted Python
   `Plone issue 2463 <https://github.com/plone/Products.CMFPlone/issues/2463>`_
   [davilima6]
+- Migrate Tests away fro  PloneTestCase
+  [pbauer]
+
+- Do not run webdav_history.txt in py3 since it breaks tests (no webdav support in py3).
+  [pbauer]
+
+- cleanup: isort/formatting/security decorators
+  [jensens]
+
+- InitializeClass was moved to AccessControl.class_init - use it.
+  [jensens]
+
+- setDefaultRoles is deprecated. 
+  addPermission from AccessControl.Permission is instead used.
+  [jensens]
 
 
 3.2.1 (2018-06-18)
