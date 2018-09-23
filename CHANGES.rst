@@ -4,14 +4,6 @@ Changelog
 3.2.2 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Fix Unauthorized error due to importing six inside Restricted Python
