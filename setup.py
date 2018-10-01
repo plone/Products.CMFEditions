@@ -22,7 +22,7 @@ setup(
     keywords='Versioning Plone',
     author='CMFEditions contributers',
     author_email='collective-versioning@lists.sourceforge.net',
-    url='https://pypi.python.org/pypi/Products.CMFEditions',
+    url='https://pypi.org/project/Products.CMFEditions',
     license='GPL',
     packages=find_packages(exclude=['ez_setup']),
     namespace_packages=['Products'],
