@@ -25,7 +25,7 @@ setup(
     author_email='collective-versioning@lists.sourceforge.net',
     url='https://pypi.org/project/Products.CMFEditions',
     license='GPL',
-    packages=find_packages(exclude=['ez_setup']),
+    packages=find_packages(),
     namespace_packages=['Products'],
     include_package_data=True,
     zip_safe=False,
