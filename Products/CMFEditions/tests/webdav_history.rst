@@ -89,3 +89,8 @@ not configured for folders:
 
   >>> len(portal_repo.getHistory(folder['some-folder']))
   0
+
+Note: If you use Appzapper you also need to use clear as teardown to prevent
+spilling to other testlayers:
+
+  >>> AppZapper().clear()
