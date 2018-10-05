@@ -6,6 +6,7 @@ from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.utilities import isObjectChanged
 from Products.CMFEditions.utilities import isObjectVersioned
 from Products.CMFEditions.utilities import maybeSaveVersion
+from Products.CMFPlone.utils import human_readable_size
 from Products.statusmessages.interfaces import IStatusMessage
 
 class UpdateVersionOnEditView(BrowserView):
@@ -86,3 +87,9 @@ class VersionImageTagView(BrowserView):
         tag = '<img src="%s/file_download_version?version_id=%s" %s' % \
               (here_url, version_id, working_copy_tag[altPos:])
         return tag
+
+
+class VersionView(BrowserView):
+
+    def human_readable_size(self):
+        return human_readable_size
