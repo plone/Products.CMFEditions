@@ -4,3 +4,6 @@ include *.rst
 include *.txt
 recursive-include Products *
 recursive-include doc *
+include pyproject.toml
+recursive-exclude news *
+exclude news

@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '3.2.2.dev0'
+version = '3.2.3.dev0'
 
 setup(
     name='Products.CMFEditions',
@@ -28,7 +28,7 @@ setup(
     author_email='collective-versioning@lists.sourceforge.net',
     url='https://pypi.org/project/Products.CMFEditions',
     license='GPL',
-    packages=find_packages(exclude=['ez_setup']),
+    packages=find_packages(),
     namespace_packages=['Products'],
     include_package_data=True,
     zip_safe=False,

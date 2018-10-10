@@ -8,7 +8,7 @@
 <metal:main fill-slot="main">
     <tal:main-macro metal:define-macro="main"
            tal:define="size_value context/get_size;
-                       size_label python:size_value and context.getObjSize(context) or None;
+                       size_label python:size_value and view.human_readable_size(size_value) or None;
                        content_type context/get_content_type|context/Format;
                       ">
 
