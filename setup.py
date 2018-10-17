@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '3.2.3.dev0'
+version = '3.3.0.dev0'
 
 setup(
     name='Products.CMFEditions',
@@ -19,7 +19,6 @@ setup(
         'Programming Language :: Python :: 3.7',
         "License :: OSI Approved :: GNU General Public License (GPL)",
         'Framework :: Plone',
-        'Framework :: Plone :: 5.1',
         'Framework :: Plone :: 5.2',
         'Framework :: Zope2',
     ],
