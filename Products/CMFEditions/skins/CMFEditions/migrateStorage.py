@@ -8,6 +8,8 @@
 ##title=Migrate the Storage
 ##
 from Products.CMFCore.utils import getToolByName
+
+
 storage = getToolByName(context, "portal_historiesstorage")
 result = storage.migrateStorage()
 if result is None:

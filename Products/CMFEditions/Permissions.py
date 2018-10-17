@@ -23,26 +23,26 @@
 
 """
 
-from Products.CMFCore.permissions import setDefaultRoles
+from AccessControl.Permission import addPermission
+
 
 ApplyVersionControl = 'CMFEditions: Apply version control'
-setDefaultRoles(ApplyVersionControl, ('Manager', 'Site Administrator'))
+addPermission(ApplyVersionControl, ('Manager', 'Site Administrator'))
 
 SaveNewVersion = 'CMFEditions: Save new version'
-setDefaultRoles(SaveNewVersion, ('Manager', 'Site Administrator'))
+addPermission(SaveNewVersion, ('Manager', 'Site Administrator'))
 
 PurgeVersion = 'CMFEditions: Purge version'
-setDefaultRoles(PurgeVersion, ('Manager', 'Site Administrator'))
+addPermission(PurgeVersion, ('Manager', 'Site Administrator'))
 
 AccessPreviousVersions = 'CMFEditions: Access previous versions'
-setDefaultRoles(AccessPreviousVersions, ('Manager', 'Site Administrator'))
+addPermission(AccessPreviousVersions, ('Manager', 'Site Administrator'))
 
 RevertToPreviousVersions = 'CMFEditions: Revert to previous versions'
-setDefaultRoles(RevertToPreviousVersions, ('Manager', 'Site Administrator'))
+addPermission(RevertToPreviousVersions, ('Manager', 'Site Administrator'))
 
 CheckoutToLocation = 'CMFEditions: Checkout to location'
-setDefaultRoles(CheckoutToLocation, ('Manager', 'Site Administrator'))
+addPermission(CheckoutToLocation, ('Manager', 'Site Administrator'))
 
 ManageVersioningPolicies = 'CMFEditions: Manage versioning policies'
-setDefaultRoles(ManageVersioningPolicies, ('Manager', 'Site Administrator'))
-
+addPermission(ManageVersioningPolicies, ('Manager', 'Site Administrator'))

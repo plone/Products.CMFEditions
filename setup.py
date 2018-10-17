@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from setuptools import find_packages
+from setuptools import setup
 
-from setuptools import setup, find_packages
 
 version = '3.2.3.dev0'
 
@@ -14,6 +15,8 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         "License :: OSI Approved :: GNU General Public License (GPL)",
         'Framework :: Plone',
         'Framework :: Plone :: 5.1',

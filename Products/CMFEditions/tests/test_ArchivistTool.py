@@ -24,24 +24,22 @@
 
 """
 
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
-
-from zope.interface.verify import verifyObject
-
+from .DummyTools import DummyHistoryIdHandler
+from .DummyTools import DummyModifier
+from .DummyTools import FolderishContentObjectModifier
+from .DummyTools import MemoryStorage
+from .DummyTools import notifyModified
 from Products.CMFEditions.interfaces.IArchivist import IArchivist
 from Products.CMFEditions.interfaces.IArchivist import IPurgeSupport
-
-from DummyTools import DummyModifier
-from DummyTools import DummyHistoryIdHandler
-from DummyTools import MemoryStorage
-from DummyTools import notifyModified
-from DummyTools import FolderishContentObjectModifier
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from zope.interface.verify import verifyObject
 
 
 class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
-        self.setRoles(['Manager',])
+    def setUp(self):
+        super(TestArchivistToolMemoryStorage, self).setUp()
+
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
                                                 ['Manager'], '')
         self.portal.invokeFactory('Document', 'doc')

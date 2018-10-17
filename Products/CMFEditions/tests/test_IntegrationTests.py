@@ -31,10 +31,11 @@ from ZODB import broken
 from zope.component.persistentregistry import PersistentComponents
 from zope.interface.interface import InterfaceClass
 
-import ZODB.interfaces
 import imp
 import sys
 import transaction
+import ZODB.interfaces
+
 
 try:
     from AccessControl.rolemanager import _string_hash
@@ -45,10 +46,8 @@ except ImportError:
 
 class TestIntegration(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
-        # we need to have the Manager role to be able to add things
-        # to the portal root
-        self.setRoles(['Manager', ])
+    def setUp(self):
+        super(TestIntegration, self).setUp()
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',

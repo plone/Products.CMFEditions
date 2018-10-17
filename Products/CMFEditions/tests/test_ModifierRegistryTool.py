@@ -23,25 +23,23 @@
 """
 """
 
-from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
-
-from pickle import dumps, loads, HIGHEST_PROTOCOL
-
-from zope.interface.verify import verifyObject
 from Acquisition import aq_base
-from zope.interface import implementer
-
+# provoke the warning messages before the first test
+from OFS.SimpleItem import SimpleItem
+from pickle import dumps
+from pickle import HIGHEST_PROTOCOL
+from pickle import loads
 from Products.CMFCore.utils import getToolByName
-
-from Products.CMFEditions.interfaces.IModifier import IModifierRegistrySet
-from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
 from Products.CMFEditions.interfaces.IModifier import IModifierRegistryQuery
+from Products.CMFEditions.interfaces.IModifier import IModifierRegistrySet
+from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
+from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
+from zope.interface import implementer
+from zope.interface.verify import verifyObject
 
 
-# provoke the warning messages before the first test
-from OFS.SimpleItem import SimpleItem
 class Dummy(SimpleItem):
     pass
 def deepcopy(obj):
@@ -148,10 +146,8 @@ loggingModifiers = (
 
 class TestModifierRegistryTool(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
-        # we need to have the Manager role to be able to add things
-        # to the portal root
-        self.setRoles(['Manager',])
+    def setUp(self):
+        super(TestModifierRegistryTool, self).setUp()
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',

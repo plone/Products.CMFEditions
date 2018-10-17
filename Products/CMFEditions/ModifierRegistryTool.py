@@ -23,33 +23,27 @@
 
 """
 
-from zope.interface import implementer
-
-from App.class_init import InitializeClass
-from Missing import MV
-
-from Acquisition import aq_base
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_base
+from AccessControl.class_init import InitializeClass
+from Missing import MV
 from OFS.OrderedFolder import OrderedFolder
-
-from Products.CMFCore.utils import UniqueObject, getToolByName
-
 from Products.CMFCore.permissions import ManagePortal
-
-from Products.CMFEditions.utilities import KwAsAttributes
-
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.utils import UniqueObject
+from Products.CMFEditions import StandardModifiers
 from Products.CMFEditions.interfaces import IPortalModifierTool
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
-from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
-from Products.CMFEditions.interfaces.IModifier import IModifierRegistrySet
-from Products.CMFEditions.interfaces.IModifier import IModifierRegistryQuery
 from Products.CMFEditions.interfaces.IModifier import IConditionalModifier
 from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
-
-from Products.CMFEditions import StandardModifiers
+from Products.CMFEditions.interfaces.IModifier import IModifierRegistryQuery
+from Products.CMFEditions.interfaces.IModifier import IModifierRegistrySet
+from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
+from Products.CMFEditions.utilities import KwAsAttributes
+from zope.interface import implementer
 
 
 @implementer(

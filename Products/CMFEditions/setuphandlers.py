@@ -6,6 +6,7 @@ CMFEditions setup handlers.
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import StandardModifiers
 
+
 def importVarious(context):
     """
     Import various settings.

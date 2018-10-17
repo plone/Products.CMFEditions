@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from Products.CMFCore.utils import getToolByName
-from Products.GenericSetup.utils import XMLAdapterBase
+from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.GenericSetup.utils import exportObjects
 from Products.GenericSetup.utils import importObjects
+from Products.GenericSetup.utils import XMLAdapterBase
 from zope.dottedname.resolve import resolve
 
-from Products.CMFEditions.VersionPolicies import VersionPolicy
 
 class RepositoryToolXMLAdapter(XMLAdapterBase):
     """Mode in- and exporter for RepositoryTool.
@@ -67,7 +67,7 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
     def _extractPolicies(self):
         node = self._doc.createElement('policies')
         policies = self.context.listPolicies()
-        policies.sort(lambda x, y: cmp(x.getId(), y.getId()))
+        policies.sort(key=lambda x: x.getId())
         for policy in policies:
             p = self._doc.createElement('policy')
             p.setAttribute('name', policy.getId())
@@ -116,8 +116,7 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
 
     def _extractTypePolicies(self):
         node = self._doc.createElement('policymap')
-        mapping = self.context.getPolicyMap().items()
-        mapping.sort()
+        mapping = sorted(self.context.getPolicyMap().items())
         for portal_type, policies in mapping:
             t = self._doc.createElement('type')
             t.setAttribute('name', portal_type)

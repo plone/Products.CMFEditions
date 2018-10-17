@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
-import doctest
-import unittest
-from plone.app.testing.bbb import PTC_FUNCTIONAL_TESTING
 from plone.testing import layered
+from Products.CMFEditions.testing import PRODUCTS_CMFEDITIONS_FUNCTIONAL_TESTING  # noqa
+
+import doctest
+import six
+import unittest
+
 
 # These two classes are needed in the doctest. Don't remove it
 class DummyFile(object):
@@ -21,15 +24,26 @@ class DummyContent(object):
         self.id = obid
         self.__annotations__ = {}
 
-OPTIONFLAGS = (doctest.ELLIPSIS |
-               doctest.NORMALIZE_WHITESPACE |
-               doctest.REPORT_ONLY_FIRST_FAILURE)
+
+OPTIONFLAGS = (
+    doctest.ELLIPSIS |
+    doctest.NORMALIZE_WHITESPACE |
+    doctest.REPORT_ONLY_FIRST_FAILURE
+)
+
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(layered(doctest.DocFileSuite('webdav_history.txt',
-                                optionflags=OPTIONFLAGS,
-                                package='Products.CMFEditions.tests',),
-                          layer=PTC_FUNCTIONAL_TESTING))
-    suite.addTest(doctest.DocFileSuite('large_file_modifiers.txt'))
+    if six.PY2:
+        suite.addTest(
+            layered(
+                doctest.DocFileSuite(
+                    'webdav_history.rst',
+                    optionflags=OPTIONFLAGS,
+                    package='Products.CMFEditions.tests',
+                ),
+                layer=PRODUCTS_CMFEDITIONS_FUNCTIONAL_TESTING,
+            )
+        )
+    suite.addTest(doctest.DocFileSuite('large_file_modifiers.rst'))
     return suite

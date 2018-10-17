@@ -6,12 +6,14 @@ from plone.namedfile.file import NamedBlobImage
 from Products.CMFEditions import PACKAGE_HOME
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 from Products.CMFPlone.utils import _createObjectByType
+
 import os
 
 
 class TestPloneContents(CMFEditionsBaseTestCase):
 
-    def afterSetUp(self):
+    def setUp(self):
+        super(TestPloneContents, self).setUp()
         self.membership = self.portal.portal_membership
         self.catalog = self.portal.portal_catalog
         self.workflow = self.portal.portal_workflow

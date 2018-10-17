@@ -24,11 +24,13 @@
 Creating a test hierarchy for migration tests.
 
 """
+from Products.CMFCore.utils import getToolByName
+from Products.CMFEditions import PACKAGE_HOME
+
 import logging
 import os.path
 import time
-from Products.CMFCore.utils import getToolByName
-from Products.CMFEditions import PACKAGE_HOME
+
 
 logger = logging.getLogger('CMFEditions')
 

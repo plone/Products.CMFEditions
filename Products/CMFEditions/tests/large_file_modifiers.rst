@@ -51,10 +51,13 @@ file object is smaller no error will be raised::
 
     >>> annotation_name = ANNOTATION_PREFIX + 'my_file'
     >>> content.__annotations__[annotation_name] = DummyFile(1000)
-    >>> modifier.getOnCloneModifiers(content)
-    Traceback (most recent call last):
-    ...
-    FileTooLargeToVersionError
+    >>> from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
+    >>> try:
+    ...     modifier.getOnCloneModifiers(content)
+    ... except FileTooLargeToVersionError:
+    ...     print('exception')
+    exception
+
     >>> content.__annotations__[annotation_name].size = 999
     >>> modifier.getOnCloneModifiers(content)
 
@@ -62,10 +65,12 @@ The same goes for files stored in attributes:
 
     >>> modifier.getOnCloneModifiers(content)
     >>> content.my_image = DummyFile(1000)
-    >>> modifier.getOnCloneModifiers(content)
-    Traceback (most recent call last):
-    ...
-    FileTooLargeToVersionError
+    >>> try:
+    ...     modifier.getOnCloneModifiers(content)
+    ... except FileTooLargeToVersionError:
+    ...     print('exception')
+    exception
+
     >>> content.my_image.size = 999
     >>> modifier.getOnCloneModifiers(content)
 

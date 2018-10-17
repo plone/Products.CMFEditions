@@ -23,20 +23,20 @@
 """
 
 
-from App.Common import package_home
 from AccessControl import ModuleSecurityInfo
-
+from App.Common import package_home
 from Products.CMFCore import utils
-
-from Products.CMFEditions import historyidhandlertool
-from Products.CMFEditions import ModifierRegistryTool
 from Products.CMFEditions import ArchivistTool
-from Products.CMFEditions import ZVCStorageTool
 from Products.CMFEditions import CopyModifyMergeRepositoryTool
-from Products.CMFEditions import ReferenceFactoriesTool
+from Products.CMFEditions import historyidhandlertool
 from Products.CMFEditions import KeepLastNVersionsTool
-
+from Products.CMFEditions import ModifierRegistryTool
+from Products.CMFEditions import ReferenceFactoriesTool
 from Products.CMFEditions import StandardModifiers
+from Products.CMFEditions import ZVCStorageTool
+# Set up a MessageFactory for the cmfeditions domain
+from zope.i18nmessageid import MessageFactory
+
 
 GLOBALS = globals()
 PACKAGE_HOME = package_home(GLOBALS)
@@ -52,8 +52,6 @@ tools = (
     )
 
 
-# Set up a MessageFactory for the cmfeditions domain
-from zope.i18nmessageid import MessageFactory
 CMFEditionsMessageFactory = MessageFactory('cmfeditions')
 
 ModuleSecurityInfo('Products.CMFEditions').declarePublic('CMFEditionsMessageFactory')

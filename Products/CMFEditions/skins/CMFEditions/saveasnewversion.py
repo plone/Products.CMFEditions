@@ -10,6 +10,7 @@
 
 from Products.CMFCore.utils import getToolByName
 
+
 pr = getToolByName(context, 'portal_repository', None)
 if pr is not None:
     pr.save(obj=context, comment=versioncomment)

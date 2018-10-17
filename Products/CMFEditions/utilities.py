@@ -22,12 +22,13 @@
 """Utilities
 """
 
-import random
-
-from Persistence import Persistent
 from Acquisition import aq_base
+from Persistence import Persistent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredError
+
+import random
+
 
 STUB_OBJECT_PREFIX = '_CMFEditionsTempId'
 

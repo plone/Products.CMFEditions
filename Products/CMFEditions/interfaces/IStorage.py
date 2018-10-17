@@ -28,7 +28,9 @@ returned by storage methods.
 
 """
 
-from zope.interface import Interface, Attribute
+from zope.interface import Attribute
+from zope.interface import Interface
+
 
 class IStorage(Interface):
     """Manages Storing and Retrieving Version to and from the Storage

@@ -26,11 +26,9 @@
 """
 
 from Acquisition import aq_base
-from App.class_init import InitializeClass
+from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
-from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-
 from Products.CMFCore.Expression import Expression
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.utils import getToolByName
@@ -43,11 +41,11 @@ from Products.CMFEditions.interfaces.IModifier import IReferenceAdapter
 from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
-
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from ZODB.blob import Blob
-from zope.copy import copy
 from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IPossibleSite
+from zope.copy import copy
 from zope.interface import implementer
 from zope.interface import Interface
 
@@ -1044,7 +1042,9 @@ class LargeFilePlaceHolder(object):
     """PlaceHolder for a large object"""
     @staticmethod
     def getSize():
-        return sys.maxint
+        if six.PY2:
+            return sys.maxint
+        return sys.maxsize
 
 @implementer(IConditionalTalesModifier, ICloneModifier,
                       ISaveRetrieveModifier)

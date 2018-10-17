@@ -25,16 +25,14 @@
 __version__ = "$Revision: 1.18 $"
 
 from AccessControl import ClassSecurityInfo
-from App.class_init import InitializeClass
+from AccessControl.class_init import InitializeClass
 from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem
 from Persistence import Persistent
-
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import UniqueObject
-
 from Products.CMFEditions.interfaces import IStorageTool
 from Products.CMFEditions.interfaces.IStorage import IHistory
 from Products.CMFEditions.interfaces.IStorage import IPurgeSupport
@@ -48,12 +46,10 @@ from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageSaveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.Permissions import AccessPreviousVersions
-
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.ZopeVersionControl.EventLog import LogEntry
 from Products.ZopeVersionControl.Utility import VersionControlError
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
-
 from six import BytesIO
 from six.moves.cPickle import dumps
 from six.moves.cPickle import HIGHEST_PROTOCOL
