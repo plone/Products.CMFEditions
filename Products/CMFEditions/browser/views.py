@@ -13,7 +13,7 @@ from Products.statusmessages.interfaces import IStatusMessage
 class UpdateVersionOnEditView(BrowserView):
 
     def success(self):
-        return self.context.restrictedTraverse('content_edit')
+        self.request.response.redirect('view')
 
     def __call__(self):
         context = aq_inner(self.context)
@@ -39,7 +39,7 @@ class UpdateVersionOnEditView(BrowserView):
 class UpdateVersionBeforeEditView(BrowserView):
 
     def success(self):
-        self.request.response.redirect('view')
+        return self.context.restrictedTraverse('content_edit')
 
     def __call__(self):
         context = aq_inner(self.context)
