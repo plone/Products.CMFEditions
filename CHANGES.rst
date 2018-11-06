@@ -8,6 +8,21 @@ Changelog
 
 .. towncrier release notes start
 
+3.3.0 (2018-11-06)
+------------------
+
+New features:
+
+
+- Replaced usages of getObjSize with human_readable_size. (#60)
+
+
+Bug fixes:
+
+
+- Fix success() responses in controller actions browser views for AT types
+  (#62)
+
 
 3.2.2 (2018-09-23)
 ------------------
