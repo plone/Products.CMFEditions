@@ -102,14 +102,14 @@ def editImage(context, version=0):
         name = name[:-4]
     filename = "%s_v%s.gif" % (name, version)
     path = os.path.join(PACKAGE_HOME, "tests", "images", filename)
+    with open(path) as image_handle:
+        image = image_handle.read()
     if not title:
         title = "0: %s image title" % name
         desc = "0: %s image description" % name
-        image = open(path).read()
     else:
         title = "%s%s" % (version, title[1:])
         desc = "%s%s" % (version, desc[1:])
-        image = open(path).read()
     context.update(title=title, description=desc, image=image)
 
 def editLink(context, version=0):

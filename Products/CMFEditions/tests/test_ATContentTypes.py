@@ -24,6 +24,12 @@
 import six
 
 
+def read_image(file_path):
+    with open(os.path.join(PACKAGE_HOME, file_path), 'rb') as image:
+        data = image.read()
+    return data
+
+
 if six.PY2:
     from Products.CMFEditions import PACKAGE_HOME
     from plone.app.testing.bbb_at import PloneTestCase
@@ -100,14 +106,8 @@ if six.PY2:
 
         def testImage(self):
             self.folder.invokeFactory('Image', id='image')
-            img1 = open(
-                os.path.join(PACKAGE_HOME, 'tests/images/img1.png'),
-                'rb'
-            ).read()
-            img2 = open(
-                os.path.join(PACKAGE_HOME, 'tests/images/img2.png'),
-                'rb'
-            ).read()
+            img1 = read_image('tests/images/img1.png')
+            img2 = read_image('tests/images/img2.png')
             portal_repository = self.portal_repository
             content = self.folder.image
             content.edit(image=img1)
@@ -125,14 +125,8 @@ if six.PY2:
 
         def testFile(self):
             self.folder.invokeFactory('File', id='file')
-            file1 = open(
-                os.path.join(PACKAGE_HOME, 'tests/file1.dat'),
-                'rb'
-            ).read()
-            file2 = open(
-                os.path.join(PACKAGE_HOME, 'tests/file2.dat'),
-                'rb'
-            ).read()
+            file1 = read_image('tests/file1.dat')
+            file2 = read_image('tests/file2.dat')
             portal_repository = self.portal_repository
             content = self.folder.file
             content.edit(file=file1)
@@ -169,14 +163,8 @@ if six.PY2:
 
         def testBlobsNotResavedUnlessChanged(self):
             self.folder.invokeFactory('File', id='file')
-            file1 = open(
-                os.path.join(PACKAGE_HOME, 'tests/images/img1.png'),
-                'rb'
-            ).read()
-            file2 = open(
-                os.path.join(PACKAGE_HOME, 'tests/images/img2.png'),
-                'rb'
-            ).read()
+            file1 = read_image('tests/images/img1.png')
+            file2 = read_image('tests/images/img2.png')
             portal_repository = self.portal_repository
             content = self.folder.file
             content.edit(file=file1)
@@ -215,7 +203,8 @@ if six.PY2:
             self.assertEqual(content.getFile().getBlob(), blob1)
 
         def testBlobsNotStringConverted(self):
-            file1 = open(os.path.join(PACKAGE_HOME, 'tests/file1.dat')).read()
+            with open(os.path.join(PACKAGE_HOME, 'tests/file1.dat')) as handle:
+                file1 = handle.read()
             content = self.folder[
                 self.folder.invokeFactory('File', id='file', file=file1)]
 
