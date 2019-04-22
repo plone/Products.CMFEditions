@@ -10,6 +10,12 @@ from Products.CMFPlone.utils import _createObjectByType
 import os
 
 
+def read_image(file_path):
+    with open(os.path.join(PACKAGE_HOME, file_path), 'rb') as image:
+        data = image.read()
+    return data
+
+
 class TestPloneContents(CMFEditionsBaseTestCase):
 
     def setUp(self):
@@ -105,8 +111,8 @@ class TestPloneContents(CMFEditionsBaseTestCase):
     def testImage(self):
         self.folder.invokeFactory('Image', id='image')
         portal_repository = self.portal_repository
-        img1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
-        img2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
+        img1 = read_image('tests/images/img1.png')
+        img2 = read_image('tests/images/img2.png')
         content = self.folder.image
         content.image = NamedBlobImage(img1, u'img1.png', u'image/png')
         content.title = u'content'
@@ -136,8 +142,8 @@ class TestPloneContents(CMFEditionsBaseTestCase):
 
     def testFile(self):
         self.folder.invokeFactory('File', id='file')
-        file1 = open(os.path.join(PACKAGE_HOME, 'tests/images/img1.png'), 'rb').read()
-        file2 = open(os.path.join(PACKAGE_HOME, 'tests/images/img2.png'), 'rb').read()
+        file1 = read_image('tests/images/img1.png')
+        file2 = read_image('tests/images/img2.png')
         portal_repository = self.portal_repository
         content = self.folder.file
         content.file = NamedBlobFile(file1, u'img1.png', u'image/png')
