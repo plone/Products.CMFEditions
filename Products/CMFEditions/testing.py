@@ -22,11 +22,23 @@ class ProductsCmfeditionsLayer(PloneSandboxLayer):
 
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'Products.CMFEditions:CMFEditions')
+        # with named AND dotted behaviors we need to take care of both
+        versioning_behavior = set(
+            [
+                'plone.app.versioningbehavior.behaviors.IVersionable',
+                'plone.versioning',
+            ],
+        )
         for name in ('Document', 'Event', 'Link', 'News Item'):
             fti = portal.portal_types[name]
-            behaviors = list(fti.behaviors)
-            behaviors.remove('plone.app.versioningbehavior.behaviors.IVersionable')
-            fti.behaviors = tuple(behaviors)
+            # write back the behaviors without the versioning behaviors
+            # using a Set to keep it simple
+            # a = set((1,2,3))
+            # b = set([2,4])
+            # res = tuple(a.difference(b)) >> (1,3)
+            fti.behaviors = tuple(
+                set(fti.behaviors).difference(versioning_behavior),
+            )
 
 
 PRODUCTS_CMFEDITIONS_FIXTURE = ProductsCmfeditionsLayer()
