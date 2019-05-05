@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+3.3.2 (2019-05-04)
+------------------
+
+Bug fixes:
+
+
+- Fix release issue in 3.3.1
+  [esteele] (#69)
+
+
 3.3.1 (2019-05-04)
 ------------------
 
