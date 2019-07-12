@@ -43,11 +43,11 @@ from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from ZODB.blob import Blob
-from zope.component.interfaces import ComponentLookupError
 from zope.component.interfaces import IPossibleSite
 from zope.copy import copy
 from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface.interfaces import ComponentLookupError
 
 import os
 import six
