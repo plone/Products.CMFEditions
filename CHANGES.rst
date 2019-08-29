@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+3.3.3 (2019-08-29)
+------------------
+
+Bug fixes:
+
+
+- Fix DeprecationWarning [jensens] (#71)
+
+
 3.3.2 (2019-05-04)
 ------------------
 
