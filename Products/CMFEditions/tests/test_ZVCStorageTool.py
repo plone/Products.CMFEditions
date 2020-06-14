@@ -77,7 +77,7 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
         # delete purge policy if there is one installed
         try:
-            del self.portal.portal_purgepolicy
+            self.portal._delOb('portal_purgepolicy')
         except AttributeError:
             pass
 
