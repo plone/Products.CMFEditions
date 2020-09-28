@@ -66,7 +66,8 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         self._setDummyTool(MemoryStorage())
 
     def _setDummyTool(self, tool):
-        setattr(self.portal, tool.getId(), tool)
+        del self.portal[tool.getId()]
+        self.portal[tool.getId()] = tool
 
     def test00_interface(self):
         portal_archivist = self.portal.portal_archivist

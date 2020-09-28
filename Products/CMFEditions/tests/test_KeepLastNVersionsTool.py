@@ -43,7 +43,8 @@ class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
         self._setDummyTool(PurgePolicyTestDummyStorage())
 
     def _setDummyTool(self, tool):
-        setattr(self.portal, tool.getId(), tool)
+        del self.portal[tool.getId()]
+        self.portal[tool.getId()] = tool
 
     def test00_interface(self):
         portal_purgepolicy = self.portal.portal_purgepolicy

@@ -89,7 +89,8 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         self._setDummyTool(DummyPurgePolicy())
 
     def _setDummyTool(self, tool):
-        setattr(self.portal, tool.getId(), tool)
+        del self.portal[tool.getId()]
+        self.portal[tool.getId()] = tool
 
     def buildMetadata(self, comment):
         return {'sys_metadata': {'comment': comment}}
