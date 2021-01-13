@@ -861,8 +861,6 @@ class LargeFilePlaceHolder(object):
     """PlaceHolder for a large object"""
     @staticmethod
     def getSize():
-        if six.PY2:
-            return sys.maxint
         return sys.maxsize
 
 @implementer(IConditionalTalesModifier, ICloneModifier,
