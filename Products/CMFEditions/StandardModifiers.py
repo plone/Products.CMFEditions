@@ -134,36 +134,6 @@ def manage_addRetainUIDs(self, id, title=None, REQUEST=None):
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
 
-manage_RetainATRefsModifierAddForm =  \
-               PageTemplateFile('www/RetainATRefsModifierAddForm.pt',
-                                globals(),
-                                __name__='manage_RetainUIDsModifierAddForm')
-
-def manage_addRetainATRefs(self, id, title=None, REQUEST=None):
-    """Add a modifier retaining AT References upon retrieve.
-    """
-    modifier = RetainATRefs()
-    self._setObject(id, ConditionalTalesModifier(id, modifier, title))
-
-    if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
-
-manage_NotRetainATRefsModifierAddForm =  \
-               PageTemplateFile('www/NotRetainATRefsModifierAddForm.pt',
-                                globals(),
-                                __name__='manage_NotRetainUIDsModifierAddForm')
-
-def manage_addNotRetainATRefs(self, id, title=None, REQUEST=None):
-    """Add a modifier that removes Archetypes references of the working
-       copy when reverting to a previous version without those references.
-    """
-    modifier = NotRetainATRefs()
-    self._setObject(id, ConditionalTalesModifier(id, modifier, title))
-
-    if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
-
-
 manage_RetainWorkflowStateAndHistoryModifierAddForm =  \
                          PageTemplateFile('www/RetainWorkflowStateAndHistoryModifierAddForm.pt',
                                           globals(),
@@ -281,34 +251,6 @@ def manage_addSkipRegistryBasesPointers(self, id, title=None, REQUEST=None):
     """Add a skip component registry bases modifier
     """
     modifier = SkipRegistryBasesPointers(id, title)
-    self._setObject(id, modifier)
-
-    if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
-
-manage_SkipBlobsAddForm =  \
-    PageTemplateFile('www/SkipBlobs.pt',
-                   globals(),
-                   __name__='manage_SkipBlobsAddForm')
-
-def manage_addSkipBlobs(self, id, title=None, REQUEST=None):
-    """Add a skip parent pointers modifier
-    """
-    modifier = SkipBlobs(id, title)
-    self._setObject(id, modifier)
-
-    if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
-
-manage_CloneBlobsAddForm =  \
-    PageTemplateFile('www/CloneBlobs.pt',
-                   globals(),
-                   __name__='manage_CloneBlobsAddForm')
-
-def manage_addCloneBlobs(self, id, title=None, REQUEST=None):
-    """Add a skip parent pointers modifier
-    """
-    modifier = CloneBlobs(id, title)
     self._setObject(id, modifier)
 
     if REQUEST is not None:
@@ -689,42 +631,6 @@ class RetainUIDs:
 
 InitializeClass(RetainUIDs)
 
-@implementer(ISaveRetrieveModifier)
-class RetainATRefs:
-    """Modifier which ensures the Archetypes references of the working
-       copy are preserved when reverting to a previous version
-
-    TODO remove this, as it is only for Archetypes.
-    Or is this persisted and do we need to keep an empty copy?
-    """
-
-    def beforeSaveModifier(self, obj, clone):
-        return {}, [], []
-
-    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        return [], [], {}
-
-
-InitializeClass(RetainATRefs)
-
-@implementer(ISaveRetrieveModifier)
-class NotRetainATRefs:
-    """Modifier which removes Archetypes references of the working
-       copy when reverting to a previous version without those references.
-       We need to remove them explicitly by calling deleteReference() to
-       keep the reference_catalog in sync, and to call the delHook().
-
-    TODO remove this, as it is only for Archetypes.
-    Or is this persisted and do we need to keep an empty copy?
-    """
-
-    def beforeSaveModifier(self, obj, clone):
-        return {}, [], []
-
-    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        return [], [], {}
-
-InitializeClass(NotRetainATRefs)
 
 @implementer(IAttributeModifier)
 class SaveFileDataInFileTypeByReference:
@@ -1006,54 +912,6 @@ class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
 
 InitializeClass(SkipVersioningOfLargeFilesAndImages)
 
-class BlobProxy(object):
-    pass
-
-@implementer(ICloneModifier, ISaveRetrieveModifier)
-class SkipBlobs:
-    """Standard avoid storing blob data, may be useful for extremely
-    large files where versioing the non-file metadata is important but
-    the cost of versioning the file data is too high.
-
-    TODO: this is only for Archetypes.
-    """
-
-    def getOnCloneModifiers(self, obj):
-        """Removes blob objects and stores a marker
-        """
-        return
-
-    def beforeSaveModifier(self, obj, clone):
-        return {}, [], []
-
-    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        """If we find any BlobProxies, replace them with the values
-        from the current working copy."""
-        return [], [], {}
-
-InitializeClass(SkipBlobs)
-
-@implementer(IAttributeModifier, ICloneModifier)
-class CloneBlobs:
-    """Standard modifier to save an un-cloned reference to the blob to avoid it
-    being packed away.
-
-    This modifier should only be used for ATCT, so is not necessary in Plone 6.
-    TODO: is this class still needed, maybe because it is persisted?
-    """
-
-    def getReferencedAttributes(self, obj):
-        return {}
-
-    def reattachReferencedAttributes(self, obj, attrs_dict):
-        return
-
-    def getOnCloneModifiers(self, obj):
-        """Removes references to blobs.
-        """
-        return
-
-InitializeClass(CloneBlobs)
 
 @implementer(ICloneModifier, ISaveRetrieveModifier)
 class Skip_z3c_blobfile:
@@ -1157,28 +1015,6 @@ modifiers = (
         'icon': 'www/modifier.gif',
     },
     {
-        'id': 'RetainATRefs',
-        'title': "Retains AT refs",
-        'enabled': False,
-        'condition': 'python: False',
-        'wrapper': ConditionalTalesModifier,
-        'modifier': RetainATRefs,
-        'form': manage_RetainATRefsModifierAddForm,
-        'factory': manage_addRetainATRefs,
-        'icon': 'www/modifier.gif',
-    },
-    {
-        'id': 'NotRetainATRefs',
-        'title': "Handles removal of AT refs that no longer exists when reverting",
-        'enabled': True,
-        'condition': 'python: True',
-        'wrapper': ConditionalTalesModifier,
-        'modifier': NotRetainATRefs,
-        'form': manage_NotRetainATRefsModifierAddForm,
-        'factory': manage_addNotRetainATRefs,
-        'icon': 'www/modifier.gif',
-    },
-    {
         'id': 'RetainWorkflowStateAndHistory',
         'title': "Retains the working copies workflow state upon retrieval/revertion.",
         'enabled': True,
@@ -1262,28 +1098,6 @@ modifiers = (
         'modifier': SkipVersioningOfLargeFilesAndImages,
         'form': manage_SkipVersioningOfLargeFilesAndImagesAddForm,
         'factory': manage_addSkipVersioningOfLargeFilesAndImages,
-        'icon': 'www/modifier.gif',
-    },
-    {
-        'id': 'SkipBlobs',
-        'title': "Skip storing blob fields on objects",
-        'enabled': False,
-        'condition': "python: portal_type in ('Image', 'File')",
-        'wrapper': ConditionalTalesModifier,
-        'modifier': SkipBlobs,
-        'form': manage_SkipBlobsAddForm,
-        'factory': manage_addSkipBlobs,
-        'icon': 'www/modifier.gif',
-    },
-    {
-        'id': 'CloneBlobs',
-        'title': "Store blobs and files by reference on AT content",
-        'enabled': True,
-        'condition': "python: portal_type in ('Image', 'File')",
-        'wrapper': ConditionalTalesModifier,
-        'modifier': CloneBlobs,
-        'form': manage_CloneBlobsAddForm,
-        'factory': manage_addCloneBlobs,
         'icon': 'www/modifier.gif',
     },
     {
