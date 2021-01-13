@@ -58,15 +58,18 @@ from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
 from Products.CMFEditions.utilities import wrap
 from Products.CMFEditions.VersionPolicies import VersionPolicy
+from ZODB.broken import Broken
 from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectModifiedEvent
 
+import logging
 import six
 import time
 import transaction
 
 
+logger = logging.getLogger(__name__)
 VERSIONABLE_CONTENT_TYPES = []
 VERSION_POLICY_MAPPING = {}
 VERSION_POLICY_DEFS = {}
@@ -197,7 +200,12 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
     def listPolicies(self):
         # convert the internal dict into a sequence of tuples
         # sort on title
-        policy_list = [(p.Title(), p) for p in self._policy_defs.values()]
+        policy_list = []
+        for id_, policy in self._policy_defs.items():
+            if isinstance(policy, Broken):
+                logger.info("Ignoring broken policy %s: %s", id_, policy)
+                continue
+            policy_list.append((policy.Title(), policy))
         policy_list.sort()
         policy_list = [p for (title, p) in policy_list]
         return policy_list
