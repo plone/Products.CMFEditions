@@ -7,14 +7,6 @@
   <policy name="version_on_revert" title="Create version on version revert"/>
  </policies>
  <policymap purge="true">
-  <type name="ATDocument">
-   <policy name="at_edit_autoversion"/>
-   <policy name="version_on_revert"/>
-  </type>
-  <type name="ATNewsItem">
-   <policy name="at_edit_autoversion"/>
-   <policy name="version_on_revert"/>
-  </type>
   <type name="Document">
    <policy name="at_edit_autoversion"/>
    <policy name="version_on_revert"/>
