@@ -35,8 +35,8 @@ from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
 from Products.PageTemplates.Expressions import getEngine
 from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
+from ZODB.broken import Broken
 from zope.interface import implementer
-
 
 manage_addModifierForm = PageTemplateFile('www/modifierAddForm.pt',
                                           globals(),
@@ -78,11 +78,18 @@ class ConditionalModifier(SimpleItem):
             REQUEST.set("manage_tabs_message", "Changed")
             return self.modifierEditForm(self, REQUEST)
 
+    def isBroken(self):
+        """Is the modifier broken?
+
+        This happens if the underlying class no longer exists.
+        """
+        return isinstance(self.getModifier(), Broken)
+
     def isApplicable(self, obj, portal=None):
         """See IConditionalModifier.
         """
-        # check if disabled or an empty condition
-        if self._enabled:
+        # check if disabled or an empty condition and not broken
+        if self._enabled and not self.isBroken():
             return True
 
     def isEnabled(self):
@@ -133,8 +140,8 @@ class ConditionalTalesModifier(ConditionalModifier):
     def isApplicable(self, obj, portal=None):
         """See IConditionalTalesModifier.
         """
-        # check if disabled or an empty condition
-        if not self._enabled or not self.getTalesCondition():
+        # check if disabled or an empty condition or broken
+        if not self._enabled or not self.getTalesCondition() or self.isBroken():
             return False
 
         # create the expression context and return result
