@@ -1,7 +1,7 @@
 WebDAV and Versioning
 =====================
 
-This doctest makes sure that WebDAV changes to Archetypes-based
+This doctest makes sure that WebDAV changes to Dexterity-based
 objects trigger versioning correctly:
 
   >>> from plone.app.testing import TEST_USER_ID

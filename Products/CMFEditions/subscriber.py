@@ -21,54 +21,10 @@
 #########################################################################
 """Event Subscribers
 """
-from Acquisition import aq_get
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.utils import getToolByName
-from Products.CMFEditions import CMFEditionsMessageFactory as _
-from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.utilities import dereference
-from Products.CMFEditions.utilities import isObjectChanged
-from Products.CMFEditions.utilities import maybeSaveVersion
-from zope.i18nmessageid import MessageFactory
-
-
-PMF = MessageFactory('plone')
-
-
-def webdavObjectEventHandler(obj, event, comment):
-    obj = event.object
-
-    if not isObjectChanged(obj):
-        return
-
-    try:
-        maybeSaveVersion(obj, comment=comment, force=False)
-    except FileTooLargeToVersionError:
-        pass  # There's no way to emit a warning here. Or is there?
-
-
-def webdavObjectInitialized(obj, event):
-    return webdavObjectEventHandler(obj, event, comment=_('Initial revision (WebDAV)'))
-
-
-def webdavObjectEdited(obj, event):
-    return webdavObjectEventHandler(obj, event, comment=_('Edited (WebDAV)'))
-
-
-def _getVersionComment(object):
-    request = aq_get(object, 'REQUEST', None)
-    return request and request.get('cmfeditions_version_comment', '')
-
-
-def objectInitialized(obj, event):
-    comment = _getVersionComment(event.object) or _('Initial revision')
-    return webdavObjectEventHandler(obj, event, comment=comment)
-
-
-def objectEdited(obj, event):
-    comment = _getVersionComment(event.object) or PMF('Edited')
-    return webdavObjectEventHandler(obj, event, comment=comment)
 
 
 def object_removed(obj, event):

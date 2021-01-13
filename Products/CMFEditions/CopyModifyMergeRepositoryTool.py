@@ -60,34 +60,11 @@ from Products.CMFEditions.utilities import wrap
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from zope.event import notify
 from zope.interface import implementer
-from zope.interface import Interface
 from zope.lifecycleevent import ObjectModifiedEvent
 
 import six
 import time
 import transaction
-
-
-try:
-    from Products.Archetypes.event import ObjectEditedEvent
-    from Products.Archetypes.interfaces import IBaseObject
-except ImportError:
-
-    class IBaseObject(Interface):
-        pass
-
-
-try:
-    from Products.Archetypes.interfaces.referenceable import IReferenceable
-    from Products.Archetypes.config import (
-        REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
-    )
-    from Products.Archetypes.exceptions import ReferenceException
-
-    WRONG_AT = False
-    HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
-except ImportError:
-    WRONG_AT = True
 
 
 VERSIONABLE_CONTENT_TYPES = []
@@ -713,8 +690,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         each retrieved object."""
         for obj in queue:
             if inplace:
-                if not WRONG_AT:
-                    self._fixupATReferences(obj)
                 self._fixIds(obj)
                 self._fixupCatalogData(obj)
 
@@ -724,8 +699,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         portal_catalog = getToolByName(self, "portal_catalog")
         portal_catalog.indexObject(obj)
         notify(ObjectModifiedEvent(obj))
-        if IBaseObject.providedBy(obj):
-            notify(ObjectEditedEvent(obj))
         # XXX: In theory we should probably be emitting IObjectMoved event
         # here as it is a possible consequence of a revert.
         # Perhaps in our current meager z2 existence we should do
@@ -734,51 +707,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         # want to handle their cataloging in special ways (this has the
         # side-effect of changing the modification date of the reverted
         # object).
-
-    def _fixupATReferences(self, obj):
-        """Reindex AT reference data, and delete reference
-        implementations when the target
-        doesn't exist anymore.
-
-        Deletion of references is done at the end of the
-        recursiveRetrieve operation to avoid deleting refs to targets
-        that will be retrieved later in the recursiveRetrive. It
-        doesn't call refcatalog.deleteReference as that method uses
-        brains to retrieve reference implementations. If the
-        target doesn't exist, brains for references pointing to it
-        do not exist either.
-
-        This manually calls reference.delHook to let it finalize
-        correctly but traps ReferenceException eventually emitted in
-        the process and forces the deletion, because leaving the
-        reference impl. there will leave refcatalog in an
-        incosistent state.
-        """
-
-        if (
-            HAVE_Z3_IFACE and
-            IReferenceable.providedBy(obj) or
-            not HAVE_Z3_IFACE and
-            IReferenceable.isImplementedBy(obj)
-        ) and hasattr(obj, REFERENCES_CONTAINER_NAME):
-            # Delete refs if their target doesn't exists anymore
-            ref_folder = getattr(obj, REFERENCES_CONTAINER_NAME)
-            uid_catalog = getToolByName(self, "uid_catalog")
-            ref_catalog = getToolByName(self, "reference_catalog")
-            ref_objs = ref_folder.objectValues()
-            for ref in ref_objs:
-                if not uid_catalog(UID=ref.targetUID):
-                    try:
-                        # at's _deleteReference passes the catalog
-                        # itself, the source and target obj... i'm
-                        # going to emulate it as much as i can
-                        ref.delHook(ref_catalog, obj, None)
-                    except ReferenceException:
-                        pass
-                    ref_folder.manage_delObjects(ref.getId())
-            # then reindex references
-            container = aq_parent(aq_inner(obj))
-            obj._updateCatalog(container)
 
     def _fixIds(self, obj):
         items = getattr(obj, "objectItems", None)
