@@ -26,7 +26,6 @@
 
 from .DummyTools import DummyArchivist
 from .DummyTools import notifyModified
-from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IRepository import (
     IContentTypeVersionPolicySupport
 )
@@ -430,18 +429,6 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         TestCopyModifyMergeRepositoryToolBase.setUp(self)
         self.np = len(self.portal.portal_repository.listPolicies())
 
-    def isFCActionInPlace(self, object_id, status, button, context):
-        fc = getToolByName(self.portal, "portal_form_controller")
-        for action in fc.listFormActions(1):
-            if (
-                object_id == action.getObjectId() and
-                status == action.getStatus() and
-                button == action.getButton() and
-                context == action.getContextType()
-            ):
-                return True
-        return False
-
     def test00_interface(self):
         portal_repository = self.portal.portal_repository
         # test the tools interface conformance
@@ -746,17 +733,6 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                 "disabled Document",
                 "enabled Event",
             ],
-        )
-
-    def test13_at_auto_version_hooks(self):
-        portal_repository = self.portal.portal_repository
-        # Remove policy and check if hook is removed
-        portal_repository.removePolicy("at_edit_autoversion")
-        self.assertFalse(
-            self.isFCActionInPlace("validate_integrity", "success", None, None)
-        )
-        self.assertFalse(
-            self.isFCActionInPlace("atct_edit", "success", None, None)
         )
 
     def test14_has_policy(self):
