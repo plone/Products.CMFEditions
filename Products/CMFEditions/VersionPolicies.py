@@ -25,7 +25,6 @@
 
 from AccessControl import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
-from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IVersionPolicy import IVersionPolicy
 from zope.interface import implementer
 
@@ -46,62 +45,20 @@ class VersionPolicy(SimpleItem):
 
 
 class ATVersionOnEditPolicy(VersionPolicy):
-    """A policy that implements version creation on edit for AT types,
-       requires a custom edit_macros.pt and a controller script called
-       update_version_on_edit.  This policy automatically adds and removes
-       the controller script from the AT edit controller chain on install."""
-    FC_ACTION_LIST = ({'template': 'atct_edit',
-                       'status': 'success',
-                       'action': 'traverse_to',
-                       'expression': 'string:update_version_before_edit',
-                       'context':None,
-                       'button':None},
-                      {'template': 'atct_edit',
-                       'status': 'success',
-                       'action': 'traverse_to',
-                       'expression': 'string:add_reference',
-                       'context':None,
-                       'button':'form_add'},
-                      {'template': 'atct_edit',
-                       'status': 'success',
-                       'action': 'traverse_to',
-                       'expression': 'string:go_back',
-                       'context':None,
-                       'button':'cancel'},
-                      {'template': 'validate_integrity',
-                       'status': 'success',
-                       'action': 'traverse_to',
-                       'expression': 'string:update_version_on_edit',
-                       'context':None,
-                       'button':None},)
+    """A policy that implements version creation on edit.
 
-    def setupPolicyHook(self, portal, **kw):
-        pass
+    The 'AT' is the name points to Archetypes, but it works for Dexterity as well.
+    For Archetypes we used to need portal_form_controller overrides,
+    which we installed in a setupPolicyHook method and removed in removePolicyHook.
+    In Plone 5.2 this is no longer needed, and in Plone 6 we no longer support Archetypes.
 
-    def removePolicyHook(self, portal, **kw):
-        remove_form_controller_overrides(portal, self.FC_ACTION_LIST)
+    But the policy class still needs to exist, because this is stored persistently.
+    And an instance of it with id 'at_edit_autoversion' needs to be registered,
+    as is done in our profiles/default/repositorytool.xml.
 
-
-def remove_form_controller_overrides(portal, actions):
-    fc = getToolByName(portal, 'portal_form_controller', None)
-    # Fake a request because form controller needs one to delete actions
-    fake_req = DummyRequest()
-    for i, fc_act in enumerate(fc.listFormActions(1)):
-        for action in actions:
-            if (action['template'] == fc_act.getObjectId() and
-                    action['status'] == fc_act.getStatus() and
-                    action['context'] == fc_act.getContextType() and
-                    action['button'] == fc_act.getButton() and
-                    action['action'] == fc_act.getActionType() and
-                    action['expression'] == fc_act.getActionArg()):
-                fake_req.form['del_id_%s'%i]=True
-                fake_req.form['old_object_id_%s'%i]=action['template'] or ''
-                fake_req.form['old_context_type_%s'%i]=action['context'] or ''
-                fake_req.form['old_button_%s'%i]=action['button'] or ''
-                fake_req.form['old_status_%s'%i]=action['status'] or ''
-    # Use the private method because the public one does a redirect
-    fc._delFormActions(fc.actions,fake_req)
-
-# Fake request class to satisfy formcontroller removal policy
-class DummyRequest(dict):
-    form = {}
+    The controlpanel (with code in CMFPlone) expects this id.
+    So does plone.app.versioningbehavior.
+    Most importantly: if a policy with this id is enabled for a portal_type,
+    no matter which class is behind it, a new version is stored on edit.
+    """
+    pass
