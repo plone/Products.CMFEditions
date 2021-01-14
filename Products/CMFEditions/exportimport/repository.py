@@ -54,7 +54,11 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
                 for policy in child.childNodes:
                     if policy.nodeName == '#text':
                         continue
-                    assert policy.nodeName == 'policy'
+                    if policy.nodeName != 'policy':
+                        raise AssertionError(
+                            "<policies> must only contain <policy> tags, not <%s>.",
+                            policy.nodeName
+                        )
                     policy_id = policy.getAttribute('name')
                     policy_title = policy.getAttribute('title')
                     class_id = policy.getAttribute('class')
@@ -91,7 +95,11 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
                 for p_type in child.childNodes:
                     if p_type.nodeName == '#text':
                         continue
-                    assert p_type.nodeName == 'type'
+                    if p_type.nodeName != 'type':
+                        raise AssertionError(
+                            "<policymap> must only contain <type> tags, not <%s>.",
+                            p_type.nodeName
+                        )
                     portal_type = p_type.getAttribute('name')
                     existing_policies = tool.getPolicyMap().get(portal_type, [])
                     for policy_id in existing_policies:
@@ -100,7 +108,11 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
                     for policy in p_type.childNodes:
                         if policy.nodeName == '#text':
                             continue
-                        assert policy.nodeName == 'policy'
+                        if policy.nodeName != 'policy':
+                            raise AssertionError(
+                                "<policymap><type> must only contain <policy> tags, not <%s>.",
+                                policy.nodeName
+                            )
                         policies.append(policy.getAttribute('name'))
                     versionable_types = tool.getVersionableContentTypes()
                     if policies:

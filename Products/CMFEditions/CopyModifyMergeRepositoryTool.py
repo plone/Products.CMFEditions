@@ -147,7 +147,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.protected(ManageVersioningPolicies)
     def addPolicyForContentType(self, content_type, policy_id, **kw):
-        assert policy_id in self._policy_defs, "Unknown policy %s" % policy_id
+        if policy_id not in self._policy_defs:
+            raise AssertionError("Unknown policy %s" % policy_id)
         policies = self._version_policy_mapping.copy()
         cur_policy = policies.setdefault(content_type, [])
         if policy_id not in cur_policy:
@@ -182,18 +183,17 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.protected(ManageVersioningPolicies)
     def manage_setTypePolicies(self, policy_map, **kw):
-        assert isinstance(policy_map, dict)
+        if not isinstance(policy_map, dict):
+            raise AssertionError("policy_map is no dict")
         for p_type, policies in self._version_policy_mapping.items():
             for policy_id in list(policies):
                 self.removePolicyFromContentType(p_type, policy_id, **kw)
         for p_type, policies in policy_map.items():
-            assert isinstance(
-                policies, list
-            ), "Policy list for %s must be a list" % str(p_type)
+            if not isinstance(policies, list):
+                raise AssertionError("Policy list for %s must be a list" % str(p_type))
             for policy_id in policies:
-                assert policy_id in self._policy_defs, (
-                    "Policy %s is unknown" % policy_id
-                )
+                if policy_id not in self._policy_defs:
+                    raise AssertionError("Policy %s is unknown" % policy_id)
                 self.addPolicyForContentType(p_type, policy_id, **kw)
 
     @security.public
@@ -232,31 +232,29 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         for policy_id in list(p_defs.keys()):
             self.removePolicy(policy_id, **kwargs)
         # Verify proper input formatting
-        assert isinstance(policy_list, list) or isinstance(policy_list, tuple)
+        if not (isinstance(policy_list, list) or isinstance(policy_list, tuple)):
+            raise AssertionError("policy_list must be list or tuple")
         for item in policy_list:
-            assert isinstance(
-                item, tuple
-            ), "List items must be tuples: %s" % str(item)
-            assert len(item) in (2, 3, 4), (
-                "Each policy definition must contain a title and id: %s"
-                % str(item)
-            )
-            assert isinstance(
-                item[0], six.string_types
-            ), "Policy id must be a string: %s" % str(item[0])
-            assert isinstance(
-                item[1], six.string_types
-            ), "Policy title must be a string: %s" % str(item[1])
+            if not isinstance(item, tuple):
+                raise AssertionError("List items must be tuples: %s" % str(item))
+            if len(item) not in (2, 3, 4):
+                raise AssertionError(
+                    "Each policy definition must contain a title and id: %s"
+                    % str(item)
+                )
+            if not isinstance(item[0], six.string_types):
+                raise AssertionError("Policy id must be a string: %s" % str(item[0]))
+            if not isinstance(item[1], six.string_types):
+                raise AssertionError("Policy title must be a string: %s" % str(item[1]))
             # Get optional Policy class and kwargs.
             if len(item) >= 3:
                 policy_class = item[2]
             else:
                 policy_class = VersionPolicy
             if len(item) == 4:
-                assert isinstance(item[3], dict), (
-                    "Extra args for %s must be a dict" % item[0]
-                )
                 kw = item[3]
+                if not isinstance(kw, dict):
+                    raise AssertionError("Extra args for %s must be a dict" % item[0])
             else:
                 kw = kwargs
             # Add new policy
