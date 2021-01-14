@@ -451,6 +451,10 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
                 self.portal.doc, "at_edit_autoversion"
             )
         )
+        # Calling it twice should not fail.
+        portal_repository.removePolicyFromContentType(
+            "Document", "at_edit_autoversion"
+        )
 
     def test02_set_policy_on_type(self):
         # test that policies can be set and retrieved
@@ -746,3 +750,9 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
             "Document", "version_on_revert"
         )
         self.assertFalse(portal_repository.hasPolicy(self.portal.doc))
+
+    def test15_remove_policy_twice(self):
+        portal_repository = self.portal.portal_repository
+        # Remove policy twice to see if his gives a failure.
+        portal_repository.removePolicy("at_edit_autoversion")
+        portal_repository.removePolicy("at_edit_autoversion")

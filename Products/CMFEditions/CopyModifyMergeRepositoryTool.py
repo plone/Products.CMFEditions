@@ -222,7 +222,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         for p_type in self._version_policy_mapping.keys():
             self.removePolicyFromContentType(p_type, policy_id, **kw)
         self._callPolicyHook("remove", policy_id, **kw)
-        del self._policy_defs[policy_id]
+        if policy_id in self._policy_defs:
+            del self._policy_defs[policy_id]
 
     @security.protected(ManageVersioningPolicies)
     def manage_changePolicyDefs(self, policy_list, **kwargs):
@@ -274,6 +275,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
                 self._policy_defs["version_on_revert"] = value
                 del self._policy_defs["version_on_rollback"]
 
+        if policy_id not in self._policy_defs:
+            return
         hook = getattr(self._policy_defs[policy_id], HOOKS[action], None)
         if hook is not None and callable(hook):
             portal = getToolByName(self, "portal_url").getPortalObject()
