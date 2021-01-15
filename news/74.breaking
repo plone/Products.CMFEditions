@@ -1,0 +1,4 @@
+Removed support for Archetypes, Zope 2 and Python 2.
+Removed Archetypes-only modifiers: ``RetainATRefs``, ``NotRetainATRefs``, ``SkipBlobs``, ``CloneBlobs``.
+This is for Plone 6 only.
+[maurits]

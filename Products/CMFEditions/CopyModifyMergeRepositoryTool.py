@@ -58,38 +58,18 @@ from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
 from Products.CMFEditions.utilities import wrap
 from Products.CMFEditions.VersionPolicies import VersionPolicy
+from ZODB.broken import Broken
 from zope.event import notify
 from zope.interface import implementer
-from zope.interface import Interface
 from zope.lifecycleevent import ObjectModifiedEvent
 
+import logging
 import six
 import time
 import transaction
 
 
-try:
-    from Products.Archetypes.event import ObjectEditedEvent
-    from Products.Archetypes.interfaces import IBaseObject
-except ImportError:
-
-    class IBaseObject(Interface):
-        pass
-
-
-try:
-    from Products.Archetypes.interfaces.referenceable import IReferenceable
-    from Products.Archetypes.config import (
-        REFERENCE_ANNOTATION as REFERENCES_CONTAINER_NAME
-    )
-    from Products.Archetypes.exceptions import ReferenceException
-
-    WRONG_AT = False
-    HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
-except ImportError:
-    WRONG_AT = True
-
-
+logger = logging.getLogger(__name__)
 VERSIONABLE_CONTENT_TYPES = []
 VERSION_POLICY_MAPPING = {}
 VERSION_POLICY_DEFS = {}
@@ -167,7 +147,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.protected(ManageVersioningPolicies)
     def addPolicyForContentType(self, content_type, policy_id, **kw):
-        assert policy_id in self._policy_defs, "Unknown policy %s" % policy_id
+        if policy_id not in self._policy_defs:
+            raise AssertionError("Unknown policy %s" % policy_id)
         policies = self._version_policy_mapping.copy()
         cur_policy = policies.setdefault(content_type, [])
         if policy_id not in cur_policy:
@@ -202,25 +183,29 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.protected(ManageVersioningPolicies)
     def manage_setTypePolicies(self, policy_map, **kw):
-        assert isinstance(policy_map, dict)
+        if not isinstance(policy_map, dict):
+            raise AssertionError("policy_map is no dict")
         for p_type, policies in self._version_policy_mapping.items():
             for policy_id in list(policies):
                 self.removePolicyFromContentType(p_type, policy_id, **kw)
         for p_type, policies in policy_map.items():
-            assert isinstance(
-                policies, list
-            ), "Policy list for %s must be a list" % str(p_type)
+            if not isinstance(policies, list):
+                raise AssertionError("Policy list for %s must be a list" % str(p_type))
             for policy_id in policies:
-                assert policy_id in self._policy_defs, (
-                    "Policy %s is unknown" % policy_id
-                )
+                if policy_id not in self._policy_defs:
+                    raise AssertionError("Policy %s is unknown" % policy_id)
                 self.addPolicyForContentType(p_type, policy_id, **kw)
 
     @security.public
     def listPolicies(self):
         # convert the internal dict into a sequence of tuples
         # sort on title
-        policy_list = [(p.Title(), p) for p in self._policy_defs.values()]
+        policy_list = []
+        for id_, policy in self._policy_defs.items():
+            if isinstance(policy, Broken):
+                logger.info("Ignoring broken policy %s: %s", id_, policy)
+                continue
+            policy_list.append((policy.Title(), policy))
         policy_list.sort()
         policy_list = [p for (title, p) in policy_list]
         return policy_list
@@ -237,7 +222,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         for p_type in self._version_policy_mapping.keys():
             self.removePolicyFromContentType(p_type, policy_id, **kw)
         self._callPolicyHook("remove", policy_id, **kw)
-        del self._policy_defs[policy_id]
+        if policy_id in self._policy_defs:
+            del self._policy_defs[policy_id]
 
     @security.protected(ManageVersioningPolicies)
     def manage_changePolicyDefs(self, policy_list, **kwargs):
@@ -246,31 +232,29 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         for policy_id in list(p_defs.keys()):
             self.removePolicy(policy_id, **kwargs)
         # Verify proper input formatting
-        assert isinstance(policy_list, list) or isinstance(policy_list, tuple)
+        if not (isinstance(policy_list, list) or isinstance(policy_list, tuple)):
+            raise AssertionError("policy_list must be list or tuple")
         for item in policy_list:
-            assert isinstance(
-                item, tuple
-            ), "List items must be tuples: %s" % str(item)
-            assert len(item) in (2, 3, 4), (
-                "Each policy definition must contain a title and id: %s"
-                % str(item)
-            )
-            assert isinstance(
-                item[0], six.string_types
-            ), "Policy id must be a string: %s" % str(item[0])
-            assert isinstance(
-                item[1], six.string_types
-            ), "Policy title must be a string: %s" % str(item[1])
+            if not isinstance(item, tuple):
+                raise AssertionError("List items must be tuples: %s" % str(item))
+            if len(item) not in (2, 3, 4):
+                raise AssertionError(
+                    "Each policy definition must contain a title and id: %s"
+                    % str(item)
+                )
+            if not isinstance(item[0], six.string_types):
+                raise AssertionError("Policy id must be a string: %s" % str(item[0]))
+            if not isinstance(item[1], six.string_types):
+                raise AssertionError("Policy title must be a string: %s" % str(item[1]))
             # Get optional Policy class and kwargs.
             if len(item) >= 3:
                 policy_class = item[2]
             else:
                 policy_class = VersionPolicy
             if len(item) == 4:
-                assert isinstance(item[3], dict), (
-                    "Extra args for %s must be a dict" % item[0]
-                )
                 kw = item[3]
+                if not isinstance(kw, dict):
+                    raise AssertionError("Extra args for %s must be a dict" % item[0])
             else:
                 kw = kwargs
             # Add new policy
@@ -289,6 +273,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
                 self._policy_defs["version_on_revert"] = value
                 del self._policy_defs["version_on_rollback"]
 
+        if policy_id not in self._policy_defs:
+            return
         hook = getattr(self._policy_defs[policy_id], HOOKS[action], None)
         if hook is not None and callable(hook):
             portal = getToolByName(self, "portal_url").getPortalObject()
@@ -713,8 +699,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         each retrieved object."""
         for obj in queue:
             if inplace:
-                if not WRONG_AT:
-                    self._fixupATReferences(obj)
                 self._fixIds(obj)
                 self._fixupCatalogData(obj)
 
@@ -724,8 +708,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         portal_catalog = getToolByName(self, "portal_catalog")
         portal_catalog.indexObject(obj)
         notify(ObjectModifiedEvent(obj))
-        if IBaseObject.providedBy(obj):
-            notify(ObjectEditedEvent(obj))
         # XXX: In theory we should probably be emitting IObjectMoved event
         # here as it is a possible consequence of a revert.
         # Perhaps in our current meager z2 existence we should do
@@ -734,51 +716,6 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         # want to handle their cataloging in special ways (this has the
         # side-effect of changing the modification date of the reverted
         # object).
-
-    def _fixupATReferences(self, obj):
-        """Reindex AT reference data, and delete reference
-        implementations when the target
-        doesn't exist anymore.
-
-        Deletion of references is done at the end of the
-        recursiveRetrieve operation to avoid deleting refs to targets
-        that will be retrieved later in the recursiveRetrive. It
-        doesn't call refcatalog.deleteReference as that method uses
-        brains to retrieve reference implementations. If the
-        target doesn't exist, brains for references pointing to it
-        do not exist either.
-
-        This manually calls reference.delHook to let it finalize
-        correctly but traps ReferenceException eventually emitted in
-        the process and forces the deletion, because leaving the
-        reference impl. there will leave refcatalog in an
-        incosistent state.
-        """
-
-        if (
-            HAVE_Z3_IFACE and
-            IReferenceable.providedBy(obj) or
-            not HAVE_Z3_IFACE and
-            IReferenceable.isImplementedBy(obj)
-        ) and hasattr(obj, REFERENCES_CONTAINER_NAME):
-            # Delete refs if their target doesn't exists anymore
-            ref_folder = getattr(obj, REFERENCES_CONTAINER_NAME)
-            uid_catalog = getToolByName(self, "uid_catalog")
-            ref_catalog = getToolByName(self, "reference_catalog")
-            ref_objs = ref_folder.objectValues()
-            for ref in ref_objs:
-                if not uid_catalog(UID=ref.targetUID):
-                    try:
-                        # at's _deleteReference passes the catalog
-                        # itself, the source and target obj... i'm
-                        # going to emulate it as much as i can
-                        ref.delHook(ref_catalog, obj, None)
-                    except ReferenceException:
-                        pass
-                    ref_folder.manage_delObjects(ref.getId())
-            # then reindex references
-            container = aq_parent(aq_inner(obj))
-            obj._updateCatalog(container)
 
     def _fixIds(self, obj):
         items = getattr(obj, "objectItems", None)

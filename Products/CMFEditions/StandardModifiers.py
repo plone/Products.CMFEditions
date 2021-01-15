@@ -28,11 +28,11 @@
 from Acquisition import aq_base
 from AccessControl.class_init import InitializeClass
 from OFS.ObjectManager import ObjectManager
+from plone.folder.default import DefaultOrdering
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from Products.CMFCore.Expression import Expression
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.utils import getToolByName
-from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
 from Products.CMFEditions.interfaces.IModifier import ICloneModifier
@@ -42,48 +42,15 @@ from Products.CMFEditions.interfaces.IModifier import ISaveRetrieveModifier
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-from ZODB.blob import Blob
 from zope.component.interfaces import IPossibleSite
 from zope.copy import copy
 from zope.interface import implementer
-from zope.interface import Interface
 from zope.interface.interfaces import ComponentLookupError
 
-import os
 import six
 import sys
 
 
-try:
-    from Products.Archetypes.interfaces.base import IBaseContent
-except ImportError:
-    class IBaseContent(Interface):
-        pass
-try:
-    from Products.Archetypes.interfaces.referenceable import IReferenceable
-    from Products.Archetypes.config import UUID_ATTR, REFERENCE_ANNOTATION
-except ImportError:
-    class IReferenceable(Interface):
-        pass
-    UUID_ATTR = REFERENCE_ANNOTATION = None
-try:
-    from plone.app.blob.interfaces import IBlobField
-except ImportError:
-    class IBlobField(Interface):
-        pass
-
-try:
-    from plone.folder.default import DefaultOrdering
-    from plone.folder.default import IOrderableFolder
-except ImportError:
-    class DefaultOrdering(object):
-        ORDER_KEY = "plone.folder.ordered.order"
-        POS_KEY = "plone.folder.ordered.pos"
-    class IOrderableFolder(Interface):
-        pass
-
-
-HAVE_Z3_IFACE = issubclass(IReferenceable, Interface)
 _marker = []
 
 
@@ -162,36 +129,6 @@ def manage_addRetainUIDs(self, id, title=None, REQUEST=None):
     """
     modifier = RetainUIDs()
     self._setObject(id, ConditionalModifier(id, modifier, title))
-
-    if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
-
-
-manage_RetainATRefsModifierAddForm =  \
-               PageTemplateFile('www/RetainATRefsModifierAddForm.pt',
-                                globals(),
-                                __name__='manage_RetainUIDsModifierAddForm')
-
-def manage_addRetainATRefs(self, id, title=None, REQUEST=None):
-    """Add a modifier retaining AT References upon retrieve.
-    """
-    modifier = RetainATRefs()
-    self._setObject(id, ConditionalTalesModifier(id, modifier, title))
-
-    if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
-
-manage_NotRetainATRefsModifierAddForm =  \
-               PageTemplateFile('www/NotRetainATRefsModifierAddForm.pt',
-                                globals(),
-                                __name__='manage_NotRetainUIDsModifierAddForm')
-
-def manage_addNotRetainATRefs(self, id, title=None, REQUEST=None):
-    """Add a modifier that removes Archetypes references of the working
-       copy when reverting to a previous version without those references.
-    """
-    modifier = NotRetainATRefs()
-    self._setObject(id, ConditionalTalesModifier(id, modifier, title))
 
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
@@ -314,34 +251,6 @@ def manage_addSkipRegistryBasesPointers(self, id, title=None, REQUEST=None):
     """Add a skip component registry bases modifier
     """
     modifier = SkipRegistryBasesPointers(id, title)
-    self._setObject(id, modifier)
-
-    if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
-
-manage_SkipBlobsAddForm =  \
-    PageTemplateFile('www/SkipBlobs.pt',
-                   globals(),
-                   __name__='manage_SkipBlobsAddForm')
-
-def manage_addSkipBlobs(self, id, title=None, REQUEST=None):
-    """Add a skip parent pointers modifier
-    """
-    modifier = SkipBlobs(id, title)
-    self._setObject(id, modifier)
-
-    if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
-
-manage_CloneBlobsAddForm =  \
-    PageTemplateFile('www/CloneBlobs.pt',
-                   globals(),
-                   __name__='manage_CloneBlobsAddForm')
-
-def manage_addCloneBlobs(self, id, title=None, REQUEST=None):
-    """Add a skip parent pointers modifier
-    """
-    modifier = CloneBlobs(id, title)
     self._setObject(id, modifier)
 
     if REQUEST is not None:
@@ -714,91 +623,14 @@ class RetainUIDs:
         uid_tool = getToolByName(obj, 'portal_historyidhandler', None)
         if uid_tool is not None:
             working_uid = uid_tool.queryUid(obj)
-            copy_uid = uid_tool.queryUid(repo_clone)
             anno_tool = getToolByName(obj, 'portal_uidannotation')
             annotation = anno_tool(repo_clone, uid_tool.UID_ATTRIBUTE_NAME)
             annotation.setUid(working_uid)
-
-        #Preserve ATUID
-        uid = getattr(aq_base(obj), 'UID', None)
-        get_clone_annos = getattr(
-            aq_base(repo_clone), '_getReferenceAnnotations', None)
-        if (UUID_ATTR is not None and uid is not None and callable(obj.UID)
-            and get_clone_annos is not None):
-            working_atuid = obj.UID()
-            repo_uid = repo_clone.UID()
-            setattr(repo_clone, UUID_ATTR, working_atuid)
-            if working_atuid != repo_uid:
-                # XXX: We need to do something with forward references
-                annotations = get_clone_annos()
-                for ref in annotations.objectValues():
-                    ref.sourceUID = working_atuid
 
         return [], [], {}
 
 InitializeClass(RetainUIDs)
 
-@implementer(ISaveRetrieveModifier)
-class RetainATRefs:
-    """Modifier which ensures the Archetypes references of the working
-       copy are preserved when reverting to a previous version
-    """
-
-    def beforeSaveModifier(self, obj, clone):
-        return {}, [], []
-
-    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        # check if the modifier is called with a valid working copy
-        if obj is None:
-            return [], [], {}
-
-        if (HAVE_Z3_IFACE and IReferenceable.providedBy(obj)
-            or not HAVE_Z3_IFACE and IReferenceable.isImplementedBy(obj)) \
-        and hasattr(aq_base(obj), REFERENCE_ANNOTATION):
-            #Preserve AT references
-            orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
-            setattr(repo_clone, REFERENCE_ANNOTATION, orig_refs_container)
-
-        return [], [], {}
-
-InitializeClass(RetainATRefs)
-
-@implementer(ISaveRetrieveModifier)
-class NotRetainATRefs:
-    """Modifier which removes Archetypes references of the working
-       copy when reverting to a previous version without those references.
-       We need to remove them explicitly by calling deleteReference() to
-       keep the reference_catalog in sync, and to call the delHook().
-    """
-
-    def beforeSaveModifier(self, obj, clone):
-        return {}, [], []
-
-    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        # check if the modifier is called with a valid working copy
-        if obj is None:
-            return [], [], {}
-
-        if (HAVE_Z3_IFACE and IReferenceable.providedBy(obj)
-            or not HAVE_Z3_IFACE and IReferenceable.isImplementedBy(obj)) \
-        and hasattr(aq_base(obj), REFERENCE_ANNOTATION) \
-        and hasattr(aq_base(repo_clone), REFERENCE_ANNOTATION):
-            #Remove AT references that no longer exists in the retrived version
-            orig_refs_container = getattr(aq_base(obj), REFERENCE_ANNOTATION)
-            repo_clone_refs_container = getattr(aq_base(repo_clone), REFERENCE_ANNOTATION)
-            ref_objs = orig_refs_container.objectValues()
-            repo_clone_ref_ids = repo_clone_refs_container.objectIds()
-
-            reference_catalog = getToolByName(obj, 'reference_catalog')
-            if reference_catalog:
-                for ref in ref_objs:
-                    if ref.getId() not in repo_clone_ref_ids:
-                        reference_catalog.deleteReference(ref.sourceUID, ref.targetUID,
-                                                          ref.relationship)
-
-        return [], [], {}
-
-InitializeClass(NotRetainATRefs)
 
 @implementer(IAttributeModifier)
 class SaveFileDataInFileTypeByReference:
@@ -828,7 +660,6 @@ class SkipParentPointers:
     def getOnCloneModifiers(self, obj):
         """Removes parent pointers and stores a marker
         """
-        refs = {}
         parent = getattr(obj, '__parent__', _marker)
         if parent is _marker:
             return None
@@ -953,7 +784,6 @@ class SillyDemoRetrieveModifier:
 InitializeClass(SillyDemoRetrieveModifier)
 
 
-ANNOTATION_PREFIX = 'Archetypes.storage.AnnotationStorage-'
 @implementer(IConditionalTalesModifier, ICloneModifier)
 class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
     """Raises an error if a file or image attribute stored on the
@@ -999,24 +829,13 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
         """Finds the specified field values and returns them if
         they contain file objects which are too large.  Specifically,
         it returns an iterator of tuples containing the type of storage,
-        the field name, and the value stored"""
-        max_size  = self.max_size
+        the field name, and the value stored.
 
-        # Search for fields stored via AnnotationStorage
-        annotations = getattr(obj, '__annotations__', None)
-        if annotations is not None:
-            annotation_names = (ANNOTATION_PREFIX + name for name in
-                                                              self.field_names)
-            for name in annotation_names:
-                val = annotations.get(name, None)
-                # Skip linked Pdata chains too long for the pickler
-                if hasattr(aq_base(val), 'getSize') and callable(val.getSize):
-                    try:
-                        size = val.getSize()
-                    except (TypeError,AttributeError):
-                        size = None
-                    if isinstance(size, six.integer_types) and size >= max_size:
-                        yield 'annotation', name, val
+        The type of storage is currently always 'attribute'.
+        We used to also have 'annotation', but that was only for
+        fields stored via Archetypes AnnotationStorage.
+        """
+        max_size  = self.max_size
 
         # Search for fields stored via AttributeStorage
         for name in self.field_names:
@@ -1042,8 +861,6 @@ class LargeFilePlaceHolder(object):
     """PlaceHolder for a large object"""
     @staticmethod
     def getSize():
-        if six.PY2:
-            return sys.maxint
         return sys.maxsize
 
 @implementer(IConditionalTalesModifier, ICloneModifier,
@@ -1081,164 +898,18 @@ class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
         """If we find any LargeFilePlaceHolders, replace them with the
         values from the current working copy.  If the values are missing
         from the working copy, remove them from the retrieved object."""
-        # Search for fields stored via AnnotationStorage
-        annotations = getattr(obj, '__annotations__', None)
-        orig_annotations = getattr(repo_clone, '__annotations__', None)
         for storage, name, orig_val in self._getFieldValues(repo_clone):
             if isinstance(orig_val, LargeFilePlaceHolder):
-                if storage == 'annotation':
-                    val = _empty_marker
-                    if annotations is not None:
-                        val = annotations.get(name, _empty_marker)
-                    if val is not _empty_marker:
-                        orig_annotations[name] = val
-                    else:
-                        # remove the annotation if not present on the
-                        # working copy, or if annotations are missing
-                        # entirely
-                        del orig_annotations[name]
-                else: # attribute storage
-                    val = getattr(obj, name, _empty_marker)
-                    if val is not _empty_marker:
-                        setattr(repo_clone, name, val)
-                    else:
-                        delattr(repo_clone, name)
+                # attribute storage
+                val = getattr(obj, name, _empty_marker)
+                if val is not _empty_marker:
+                    setattr(repo_clone, name, val)
+                else:
+                    delattr(repo_clone, name)
         return [], [], {}
 
 InitializeClass(SkipVersioningOfLargeFilesAndImages)
 
-class BlobProxy(object):
-    pass
-
-@implementer(ICloneModifier, ISaveRetrieveModifier)
-class SkipBlobs:
-    """Standard avoid storing blob data, may be useful for extremely
-    large files where versioing the non-file metadata is important but
-    the cost of versioning the file data is too high.
-    """
-
-    def getOnCloneModifiers(self, obj):
-        """Removes blob objects and stores a marker
-        """
-
-        blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
-                         for f in obj.Schema().fields()
-                         if IBlobField.providedBy(f))
-
-        def persistent_id(obj):
-            if id(aq_base(obj)) in blob_refs:
-                return True
-            return None
-
-        def persistent_load(ignored):
-            return BlobProxy()
-
-        return persistent_id, persistent_load, [], []
-
-    def beforeSaveModifier(self, obj, clone):
-        return {}, [], []
-
-    def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        """If we find any BlobProxies, replace them with the values
-        from the current working copy."""
-        blob_fields = (f for f in obj.Schema().fields()
-                       if IBlobField.providedBy(f))
-        for f in blob_fields:
-            blob = f.getUnwrapped(obj, raw=True).getBlob()
-            clone_ref = f.getUnwrapped(repo_clone, raw=True)
-            if isinstance(clone_ref.blob, BlobProxy):
-                clone_ref.setBlob(blob)
-        return [], [], {}
-
-InitializeClass(SkipBlobs)
-
-@implementer(IAttributeModifier, ICloneModifier)
-class CloneBlobs:
-    """Standard modifier to save an un-cloned reference to the blob to avoid it
-    being packed away.
-    """
-
-    def getReferencedAttributes(self, obj):
-
-        file_data = {}
-
-        # This modifier should only be used for ATCT
-        # so return the empty file_data if not an ATCT
-        if not IBaseContent.providedBy(obj):
-            return file_data
-
-        blob_fields = (f for f in obj.Schema().fields()
-                       if IBlobField.providedBy(f))
-        # try to get last revision, only store a new blob if the
-        # contents differ from the prior one, otherwise store a
-        # reference to the prior one
-        # XXX: According to CopyModifyMergeRepository, retrieve and getHistory
-        #      should not be used as a part of more complex transactions
-        #      due to some resource managers not supporting savepoints.
-        repo = getToolByName(obj, 'portal_repository')
-        try:
-            prior_rev = repo.retrieve(obj)
-        except ArchivistRetrieveError:
-            prior_rev = None
-        for f in blob_fields:
-            # XXX: should only do this if data has changed since last
-            # version somehow Resave the blob line by line
-            blob_file = f.get(obj, raw=True).getBlob().open('r')
-            save_new = True
-            if prior_rev is not None:
-                prior_obj = prior_rev.object
-                prior_blob = f.get(prior_obj, raw=True).getBlob()
-                prior_file = prior_blob.open('r')
-                # Check for file size differences
-                if (os.fstat(prior_file.fileno()).st_size ==
-                    os.fstat(blob_file.fileno()).st_size):
-                    # Files are the same size, compare line by line
-                    for line, prior_line in six.moves.zip(blob_file, prior_file):
-                        if line != prior_line:
-                            break
-                    else:
-                        # The files are the same, save a reference
-                        # to the prior versions blob on this version
-                        file_data[f.getName()] = prior_blob
-                        save_new = False
-            if save_new:
-                new_blob = file_data[f.getName()] = Blob()
-                new_blob_file = new_blob.open('w')
-                try:
-                    blob_file.seek(0)
-                    new_blob_file.writelines(blob_file)
-                finally:
-                    blob_file.close()
-                    new_blob_file.close()
-        return file_data
-
-    def reattachReferencedAttributes(self, obj, attrs_dict):
-        obj = aq_base(obj)
-        for name, blob in six.iteritems(attrs_dict):
-            obj.getField(name).get(obj).setBlob(blob)
-
-    def getOnCloneModifiers(self, obj):
-        """Removes references to blobs.
-        """
-        # Fix for Dexterity Types
-        if not IBaseContent.providedBy(obj):
-            return None
-
-        blob_refs = dict((id(f.getUnwrapped(obj, raw=True).getBlob()), True)
-                         for f in obj.Schema().fields()
-                         if IBlobField.providedBy(f))
-
-        def persistent_id(obj):
-            if id(aq_base(obj)) in blob_refs:
-                return True
-            return None
-
-        def persistent_load(obj):
-            return None
-
-        return persistent_id, persistent_load, [], []
-
-InitializeClass(CloneBlobs)
 
 @implementer(ICloneModifier, ISaveRetrieveModifier)
 class Skip_z3c_blobfile:
@@ -1333,34 +1004,12 @@ modifiers = (
     },
     {
         'id': 'RetainUIDs',
-        'title': "Retains the CMF and AT UIDs from the working copy",
+        'title': "Retains the CMF UIDs from the working copy",
         'enabled': True,
         'wrapper': ConditionalModifier,
         'modifier': RetainUIDs,
         'form': manage_RetainUIDsModifierAddForm,
         'factory': manage_addRetainUIDs,
-        'icon': 'www/modifier.gif',
-    },
-    {
-        'id': 'RetainATRefs',
-        'title': "Retains AT refs",
-        'enabled': False,
-        'condition': 'python: False',
-        'wrapper': ConditionalTalesModifier,
-        'modifier': RetainATRefs,
-        'form': manage_RetainATRefsModifierAddForm,
-        'factory': manage_addRetainATRefs,
-        'icon': 'www/modifier.gif',
-    },
-    {
-        'id': 'NotRetainATRefs',
-        'title': "Handles removal of AT refs that no longer exists when reverting",
-        'enabled': True,
-        'condition': 'python: True',
-        'wrapper': ConditionalTalesModifier,
-        'modifier': NotRetainATRefs,
-        'form': manage_NotRetainATRefsModifierAddForm,
-        'factory': manage_addNotRetainATRefs,
         'icon': 'www/modifier.gif',
     },
     {
@@ -1447,28 +1096,6 @@ modifiers = (
         'modifier': SkipVersioningOfLargeFilesAndImages,
         'form': manage_SkipVersioningOfLargeFilesAndImagesAddForm,
         'factory': manage_addSkipVersioningOfLargeFilesAndImages,
-        'icon': 'www/modifier.gif',
-    },
-    {
-        'id': 'SkipBlobs',
-        'title': "Skip storing blob fields on objects",
-        'enabled': False,
-        'condition': "python: portal_type in ('Image', 'File')",
-        'wrapper': ConditionalTalesModifier,
-        'modifier': SkipBlobs,
-        'form': manage_SkipBlobsAddForm,
-        'factory': manage_addSkipBlobs,
-        'icon': 'www/modifier.gif',
-    },
-    {
-        'id': 'CloneBlobs',
-        'title': "Store blobs and files by reference on AT content",
-        'enabled': True,
-        'condition': "python: portal_type in ('Image', 'File')",
-        'wrapper': ConditionalTalesModifier,
-        'modifier': CloneBlobs,
-        'form': manage_CloneBlobsAddForm,
-        'factory': manage_addCloneBlobs,
         'icon': 'www/modifier.gif',
     },
     {
