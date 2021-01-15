@@ -1,4 +1,5 @@
 Removed support for Archetypes, Zope 2 and Python 2.
 Removed Archetypes-only modifiers: ``RetainATRefs``, ``NotRetainATRefs``, ``SkipBlobs``, ``CloneBlobs``.
+Added upgrade step to remove these modifiers from the ``portal_modifier`` tool.
 This is for Plone 6 only.
 [maurits]
