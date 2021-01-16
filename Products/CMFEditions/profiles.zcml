@@ -32,4 +32,13 @@
            handler=".setuphandlers.installSkipRegistryBasesPointersModifier" />
     </genericsetup:upgradeSteps>
 
+    <genericsetup:upgradeSteps
+        source="4"
+        destination="10"
+        profile="Products.CMFEditions:CMFEditions">
+        <genericsetup:upgradeStep
+           title="Remove old broken Archetypes modifiers."
+           handler=".setuphandlers.removeBrokenModifiers" />
+    </genericsetup:upgradeSteps>
+
 </configure>
