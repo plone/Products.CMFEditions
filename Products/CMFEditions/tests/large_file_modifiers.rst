@@ -5,14 +5,15 @@ Let's import our mock objects and the modifiers we'd like to test::
     >>> from Products.CMFEditions.StandardModifiers import AbortVersioningOfLargeFilesAndImages
     >>> from Products.CMFEditions.StandardModifiers import SkipVersioningOfLargeFilesAndImages
     >>> from Products.CMFEditions.StandardModifiers import LargeFilePlaceHolder
-    >>> from Products.CMFEditions.StandardModifiers import ANNOTATION_PREFIX
     >>> from Products.CMFEditions.Modifiers import ConditionalTalesModifier
+    >>> from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
+
 
 Abort when Versioning Big Files
 ===============================
 
 We'll start with the simple AbortVersioningOfLargeFilesAndImages
-modifier.  It should detect files stored in attributes or annotations
+modifier.  It should detect files stored in attributes
 which exceed a certain threshold size and raise an exception.  It should
 be configurable using a tal expression.
 
@@ -44,24 +45,9 @@ performs no actions on the object by default during object cloning::
     >>> modifier.getOnCloneModifiers(content) is None
     True
 
-When we set an expected annotation on the object (based on the keys
-used by Archetypes' AnnotationStorage), which has a size greater than
-or equal to than the specified size, we will get an error.  If the
+When we store a file in an attribute which has a size greater than
+or equal to the specified size, we will get an error.  If the
 file object is smaller no error will be raised::
-
-    >>> annotation_name = ANNOTATION_PREFIX + 'my_file'
-    >>> content.__annotations__[annotation_name] = DummyFile(1000)
-    >>> from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
-    >>> try:
-    ...     modifier.getOnCloneModifiers(content)
-    ... except FileTooLargeToVersionError:
-    ...     print('exception')
-    exception
-
-    >>> content.__annotations__[annotation_name].size = 999
-    >>> modifier.getOnCloneModifiers(content)
-
-The same goes for files stored in attributes:
 
     >>> modifier.getOnCloneModifiers(content)
     >>> content.my_image = DummyFile(1000)
@@ -75,13 +61,13 @@ The same goes for files stored in attributes:
     >>> modifier.getOnCloneModifiers(content)
 
 
-Skip Versioning of Large File Attributes and Annotations
-========================================================
+Skip Versioning of Large File Attributes
+========================================
 
 Now let's test the alternate modifier, which tells the pickler to
 replace large file attributes with a marker to avoid pickling them.
 We'll make our modifer and set some defaults as above, and then add to
-it file and image attributes and annotations::
+it file and image attributes::
 
     >>> modifier = SkipVersioningOfLargeFilesAndImages()
     >>> isinstance(modifier, AbortVersioningOfLargeFilesAndImages)
@@ -91,8 +77,6 @@ it file and image attributes and annotations::
     >>> content = DummyContent('dummy')
     >>> modifier.getOnCloneModifiers(content) is None
     True
-    >>> annotation_name = ANNOTATION_PREFIX + 'file'
-    >>> my_file = content.__annotations__[annotation_name] = DummyFile(1000)
     >>> content.image = image = DummyFile(1000)
     >>> content.image2 = image2 = DummyFile(999)
 
@@ -117,8 +101,6 @@ persistent loader just returns a placeholder object::
     True
     >>> pers_id(image)
     True
-    >>> pers_id(my_file)
-    True
     >>> isinstance(pers_load(True), LargeFilePlaceHolder)
     True
 
@@ -133,7 +115,6 @@ working copy.
 Let's mockup a cloned object with LargeFilePlaceHolders in place::
 
     >>> clone = DummyContent('dummy')
-    >>> clone.__annotations__[annotation_name] = LargeFilePlaceHolder()
     >>> clone.image = LargeFilePlaceHolder()
     >>> clone.image2 = DummyFile(300)
     >>> clone.image is not content.image
@@ -143,9 +124,6 @@ Now if we use the afterRetrievedModifier to manipulate the clone we should
 have our placeholders replaced by instances from the working copy::
 
     >>> empty = modifier.afterRetrieveModifier(content, clone)
-    >>> my_file = clone.__annotations__[annotation_name]
-    >>> my_file is content.__annotations__[annotation_name]
-    True
     >>> clone.image is content.image
     True
     >>> clone.image2 is content.image2
@@ -154,22 +132,13 @@ have our placeholders replaced by instances from the working copy::
     300
 
 If the attribute has been removed from the working copy, it will be removed
-from the clone.  If the annotations are missing entirely from the
-working copy the specific annotations will be removed as well::
+from the clone::
 
-    >>> clone.__annotations__[annotation_name] = LargeFilePlaceHolder()
     >>> clone.image = LargeFilePlaceHolder()
-    >>> del content.__annotations__[annotation_name]
     >>> del content.image
     >>> empty = modifier.afterRetrieveModifier(content, clone)
-    >>> clone.__annotations__.get(annotation_name, 'missing')
-    'missing'
     >>> hasattr(clone, 'image')
     False
 
-    >>> clone.__annotations__[annotation_name] = LargeFilePlaceHolder()
     >>> clone.image = LargeFilePlaceHolder()
-    >>> del content.__annotations__
     >>> empty = modifier.afterRetrieveModifier(content, clone)
-    >>> clone.__annotations__.get(annotation_name, 'missing')
-    'missing'

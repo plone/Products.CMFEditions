@@ -1,6 +1,5 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:zcml="http://namespaces.zope.org/zcml"
     xmlns:browser="http://namespaces.zope.org/browser">
 
     <browser:page
@@ -9,15 +8,6 @@
         class=".diff.DiffView"
         permission="CMFEditions.AccessPreviousVersions"
         />
-
-    <configure zcml:condition="installed Products.Archetypes">
-      <browser:viewlet
-          name="cmfeditions.versioningfields"
-          manager="Products.Archetypes.interfaces.IEditAfterFieldsets"
-          template="edit.pt"
-          permission="cmf.ModifyPortalContent"
-          />
-    </configure>
 
     <browser:page
         for="*"

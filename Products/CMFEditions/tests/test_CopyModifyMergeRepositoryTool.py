@@ -26,7 +26,6 @@
 
 from .DummyTools import DummyArchivist
 from .DummyTools import notifyModified
-from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IRepository import (
     IContentTypeVersionPolicySupport
 )
@@ -430,18 +429,6 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
         TestCopyModifyMergeRepositoryToolBase.setUp(self)
         self.np = len(self.portal.portal_repository.listPolicies())
 
-    def isFCActionInPlace(self, object_id, status, button, context):
-        fc = getToolByName(self.portal, "portal_form_controller")
-        for action in fc.listFormActions(1):
-            if (
-                object_id == action.getObjectId() and
-                status == action.getStatus() and
-                button == action.getButton() and
-                context == action.getContextType()
-            ):
-                return True
-        return False
-
     def test00_interface(self):
         portal_repository = self.portal.portal_repository
         # test the tools interface conformance
@@ -463,6 +450,10 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
             portal_repository.supportsPolicy(
                 self.portal.doc, "at_edit_autoversion"
             )
+        )
+        # Calling it twice should not fail.
+        portal_repository.removePolicyFromContentType(
+            "Document", "at_edit_autoversion"
         )
 
     def test02_set_policy_on_type(self):
@@ -748,17 +739,6 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
             ],
         )
 
-    def test13_at_auto_version_hooks(self):
-        portal_repository = self.portal.portal_repository
-        # Remove policy and check if hook is removed
-        portal_repository.removePolicy("at_edit_autoversion")
-        self.assertFalse(
-            self.isFCActionInPlace("validate_integrity", "success", None, None)
-        )
-        self.assertFalse(
-            self.isFCActionInPlace("atct_edit", "success", None, None)
-        )
-
     def test14_has_policy(self):
         portal_repository = self.portal.portal_repository
         # We already have two policies by default
@@ -770,3 +750,9 @@ class TestPolicyVersioning(TestCopyModifyMergeRepositoryToolBase):
             "Document", "version_on_revert"
         )
         self.assertFalse(portal_repository.hasPolicy(self.portal.doc))
+
+    def test15_remove_policy_twice(self):
+        portal_repository = self.portal.portal_repository
+        # Remove policy twice to see if his gives a failure.
+        portal_repository.removePolicy("at_edit_autoversion")
+        portal_repository.removePolicy("at_edit_autoversion")

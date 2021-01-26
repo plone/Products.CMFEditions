@@ -23,6 +23,7 @@
 """Top level integration tests (without UI)
 
 """
+from AccessControl.rolemanager import _string_hash
 from Acquisition import aq_base
 from plone.app.textfield.value import RichTextValue
 from Products.CMFCore.indexing import processQueue
@@ -35,13 +36,6 @@ import imp
 import sys
 import transaction
 import ZODB.interfaces
-
-
-try:
-    from AccessControl.rolemanager import _string_hash
-    has_zope4 = True
-except ImportError:
-    has_zope4 = False
 
 
 class TestIntegration(CMFEditionsBaseTestCase):
@@ -345,14 +339,10 @@ class TestIntegration(CMFEditionsBaseTestCase):
         portal_repo = self.portal.portal_repository
         doc = self.portal.doc
         perm = 'Access contents information'
-        if has_zope4:
-            member_role = 'permission_{0}role_{1}'.format(
-                _string_hash(perm),
-                _string_hash('Member')
-            )
-        else:
-            roles = list(doc.valid_roles())
-            member_role = 'p0r{0}'.format(roles.index('Member'))
+        member_role = 'permission_{0}role_{1}'.format(
+            _string_hash(perm),
+            _string_hash('Member')
+        )
 
         doc.manage_permission(perm, ('Manager',), 0)
 

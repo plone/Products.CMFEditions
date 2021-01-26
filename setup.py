@@ -14,15 +14,13 @@ setup(
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         "License :: OSI Approved :: GNU General Public License (GPL)",
         'Framework :: Plone',
-        'Framework :: Plone :: 5.2',
+        'Framework :: Plone :: 6.0',
         'Framework :: Plone :: Core',
-        'Framework :: Zope2',
         'Framework :: Zope :: 4',
     ],
     keywords='Versioning Plone',
@@ -41,9 +39,6 @@ setup(
             'Products.CMFPlone',
             'Products.CMFDynamicViewFTI',
             'zope.testing',
-        ],
-        archetypes=[
-            'Products.Archetypes',
         ]
     ),
     install_requires=[
