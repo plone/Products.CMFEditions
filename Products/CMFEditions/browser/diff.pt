@@ -37,7 +37,6 @@
 
           $("#versionSelector select").change(function() { this.form.submit(); });
           $("#diffTypeSelector input").click(update_display);
-          $("#diffTypeSelector input").each(update_display);
       });
     })(jQuery);
 
@@ -98,7 +97,7 @@
             </p>
 
             <tal:changes condition="view/changes">
-              <form method="post" action="" class="mt-3">
+              <form id="diffTypeSelector" method="post" action="" class="mt-3">
                 <label for="diffstyle" class="jsOnly" style="display: none" i18n:translate="">Show differences</label>
                 <div class="form-check">
                   <input class="form-check-input" id="diffstylevisual" type="radio" name="diffstyle" value="visual" checked="checked" />
