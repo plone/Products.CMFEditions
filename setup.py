@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '3.3.5.dev0'
+version = '4.0.0a1'
 
 setup(
     name='Products.CMFEditions',

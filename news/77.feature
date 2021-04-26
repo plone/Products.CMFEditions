@@ -1,2 +1,0 @@
-Barceloneta LTS support
-[petschki]

@@ -8,6 +8,34 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.0a1 (2021-04-26)
+--------------------
+
+Breaking changes:
+
+
+- Removed support for Archetypes, Zope 2 and Python 2.
+  Removed Archetypes-only modifiers: ``RetainATRefs``, ``NotRetainATRefs``, ``SkipBlobs``, ``CloneBlobs``.
+  Added upgrade step to remove these modifiers from the ``portal_modifier`` tool.
+  This is for Plone 6 only.
+  [maurits] (#74)
+- Update for Plone 6 with Bootstrap markup
+  [petschki] (#79)
+
+
+New features:
+
+
+- Handle broken VersionPolicies and modifiers in a nicer way.
+
+  - ``ConditionalModifier.isApplicable``: return False when modifier is broken.
+  - ``portal_repository.listPolicies``: log and ignore Broken VersionPolicies.
+
+  [maurits] (#74)
+- Barceloneta LTS support
+  [petschki] (#77)
+
+
 3.3.4 (2020-04-23)
 ------------------
 
