@@ -3,14 +3,17 @@ from setuptools import find_packages
 from setuptools import setup
 
 
+with open("README.rst") as myfile:
+    long_description = myfile.read() + '\n'
+with open("CHANGES.rst") as myfile:
+    long_description += myfile.read()
 version = '4.0.0a2.dev0'
 
 setup(
     name='Products.CMFEditions',
     version=version,
     description="Versioning for Plone",
-    long_description=(open("README.rst").read() + '\n' +
-                      open("CHANGES.rst").read()),
+    long_description=long_description,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
