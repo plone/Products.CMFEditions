@@ -724,16 +724,13 @@ class SkipRegistryBasesPointers:
             return
 
         component_bases = dict(
-            registry={
-                id(aq_base(base)): aq_base(base) for base in registry.__bases__
-            },
+            registry={id(aq_base(base)): aq_base(base) for base in registry.__bases__},
             utilities={
                 id(aq_base(base)): aq_base(base)
                 for base in registry.utilities.__bases__
             },
             adapters={
-                id(aq_base(base)): aq_base(base)
-                for base in registry.adapters.__bases__
+                id(aq_base(base)): aq_base(base) for base in registry.adapters.__bases__
             },
         )
 
@@ -972,9 +969,7 @@ class Skip_z3c_blobfile:
             return
 
         blob_refs = {
-            id(v)
-            for v in obj.__dict__.values()
-            if isinstance(v, blob_file_classes)
+            id(v) for v in obj.__dict__.values() if isinstance(v, blob_file_classes)
         }
 
         def persistent_id(obj):
@@ -999,9 +994,7 @@ class Skip_z3c_blobfile:
             return [], [], {}
 
         blob_fields = (
-            (k, v)
-            for k, v in obj.__dict__.items()
-            if isinstance(v, blob_file_classes)
+            (k, v) for k, v in obj.__dict__.items() if isinstance(v, blob_file_classes)
         )
 
         for k, v in blob_fields:

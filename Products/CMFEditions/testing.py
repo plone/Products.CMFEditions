@@ -23,8 +23,8 @@ class ProductsCmfeditionsLayer(PloneSandboxLayer):
         applyProfile(portal, "Products.CMFEditions:CMFEditions")
         # with named AND dotted behaviors we need to take care of both
         versioning_behavior = {
-                "plone.app.versioningbehavior.behaviors.IVersionable",
-                "plone.versioning",
+            "plone.app.versioningbehavior.behaviors.IVersionable",
+            "plone.versioning",
         }
         for name in ("Document", "Event", "Link", "News Item"):
             fti = portal.portal_types[name]

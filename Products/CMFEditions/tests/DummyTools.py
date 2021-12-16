@@ -152,9 +152,7 @@ class DummyArchivist(SimpleItem):
                 )
             )
         else:
-            self.log(
-                f"{self.alog_indent}prepare {obj.getId()}: hid={history_id}"
-            )
+            self.log(f"{self.alog_indent}prepare {obj.getId()}: hid={history_id}")
         self.alog_indent += "  "
 
         # prepare object structure
