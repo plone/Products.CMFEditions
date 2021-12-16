@@ -63,7 +63,7 @@ class ICopyModifyMergeRepository(Interface):
         The default value is True.
         """
 
-    def applyVersionControl(obj, comment='', metadata={}):
+    def applyVersionControl(obj, comment="", metadata={}):
         """Register the content to the repository.
 
         Must be called prior any of the other repository related methods.
@@ -74,7 +74,7 @@ class ICopyModifyMergeRepository(Interface):
         first version to the repository.
         """
 
-    def save(obj, comment='', metadata={}):
+    def save(obj, comment="", metadata={}):
         """Saves the current version of the content.
 
         'comment' preferably is a human readable string comment.

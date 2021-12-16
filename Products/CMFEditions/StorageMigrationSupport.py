@@ -32,7 +32,7 @@ import os.path
 import time
 
 
-logger = logging.getLogger('CMFEditions')
+logger = logging.getLogger("CMFEditions")
 
 
 def create(context, type, name):

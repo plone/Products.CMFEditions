@@ -198,7 +198,7 @@ class IConditionalModifier(Interface):
     existing implicit condition evaluates to a true value.
     """
 
-    def __init__(id, modifier, title=''):
+    def __init__(id, modifier, title=""):
         """Initialize with a modifier.
 
         The conditional modifier is disabled by default.

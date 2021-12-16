@@ -39,7 +39,7 @@ class VersionPolicy(SimpleItem):
         self.id = obj_id
         self.title = title
 
-    security.declarePublic('Title')
+    security.declarePublic("Title")
 
     def Title(self):
         return self.title

@@ -58,10 +58,10 @@ from zope.interface import implementer
 class ModifierRegistryTool(UniqueObject, OrderedFolder):
     __doc__ = __doc__  # copy from module
 
-    id = 'portal_modifier'
-    alternative_id = 'portal_modifierregistry'
+    id = "portal_modifier"
+    alternative_id = "portal_modifierregistry"
 
-    meta_type = 'Version Data Modifier Registry'
+    meta_type = "Version Data Modifier Registry"
 
     # make interfaces, exceptions and classes available through the tool
     interfaces = KwAsAttributes(
@@ -103,7 +103,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
     def _collectModifiers(self, obj, interface, reversed=False):
         """Returns a list of valid modifiers"""
         modifier_list = []
-        portal = getToolByName(self, 'portal_url').getPortalObject()
+        portal = getToolByName(self, "portal_url").getPortalObject()
         for id, o in self.objectItems():
             # collect objects modifier only when appropriate
             if IConditionalModifier.providedBy(o) and o.isApplicable(obj, portal):
@@ -123,7 +123,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
     #    an IModifier.
     # -------------------------------------------------------------------
 
-    security.declarePrivate('getReferencedAttributes')
+    security.declarePrivate("getReferencedAttributes")
 
     def getReferencedAttributes(self, obj):
         """See IModifier"""
@@ -131,7 +131,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         referenced_data = {}
         for id, mod in self._collectModifiers(obj, IAttributeModifier):
             # prepend the modifiers id to the attributes name
-            template = '%s/%%s' % id
+            template = "%s/%%s" % id
             for name, attrs in mod.getReferencedAttributes(obj).items():
                 referenced_data[template % name] = attrs
 
@@ -139,7 +139,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         #     {'<modifier_id>/<name>': <refrenced_data>, ...}
         return referenced_data
 
-    security.declarePrivate('reattachReferencedAttributes')
+    security.declarePrivate("reattachReferencedAttributes")
 
     def reattachReferencedAttributes(self, obj, referenced_data):
         """ """
@@ -150,7 +150,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         data_by_modid = {}
 
         for id_name, data in referenced_data.items():
-            id, name = id_name.split('/', 1)
+            id, name = id_name.split("/", 1)
             if not id in data_by_modid:
                 data_by_modid[id] = {}
             data_by_modid[id][name] = data
@@ -163,7 +163,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
                 if id in data_by_modid:
                     mod.reattachReferencedAttributes(obj, data_by_modid[id])
 
-    security.declarePrivate('getOnCloneModifiers')
+    security.declarePrivate("getOnCloneModifiers")
 
     def getOnCloneModifiers(self, obj):
         """See IModifier"""
@@ -200,12 +200,12 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
 
         def persistent_load(named_pid):
             # call the right modifiers persistent_load callback
-            name, pid = named_pid.split('/', 1)
+            name, pid = named_pid.split("/", 1)
             return pers_load_byname[name](pid)
 
-        return persistent_id, persistent_load, inside_orefs, outside_orefs, ''
+        return persistent_id, persistent_load, inside_orefs, outside_orefs, ""
 
-    security.declarePrivate('beforeSaveModifier')
+    security.declarePrivate("beforeSaveModifier")
 
     def beforeSaveModifier(self, obj, obj_clone):
         """See IModifier"""
@@ -222,7 +222,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
 
         return metadata, inside_crefs, outside_crefs
 
-    security.declarePrivate('afterRetrieveModifier')
+    security.declarePrivate("afterRetrieveModifier")
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=None):
         """See IModifier"""
@@ -259,7 +259,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
     #    The ModifierRegistryTool is also a registry of IModifier objects.
     # -------------------------------------------------------------------
 
-    security.declareProtected(ManagePortal, 'register')
+    security.declareProtected(ManagePortal, "register")
 
     def register(self, id, modifier, pos=-1):
         """See IModifierRegistrySet"""
@@ -273,13 +273,13 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
             pos += max(0, len(self.objectIds()) + 1)
         self.moveObjectToPosition(id, pos)
 
-    security.declareProtected(ManagePortal, 'unregister')
+    security.declareProtected(ManagePortal, "unregister")
 
     def unregister(self, id):
         """See IModifierRegistrySet"""
         self.manage_delObjects(ids=[id])
 
-    security.declareProtected(ManagePortal, 'edit')
+    security.declareProtected(ManagePortal, "edit")
 
     def edit(self, id, enabled=None, condition=None):
         """See IModifierRegistrySet"""
@@ -289,11 +289,11 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         else:
             if condition:
                 raise NotImplementedError(
-                    '%s does not implement conditions.' % modifier
+                    "%s does not implement conditions." % modifier
                 )
             modifier.edit(enabled)
 
-    security.declareProtected(ManagePortal, 'get')
+    security.declareProtected(ManagePortal, "get")
 
     def get(self, id):
         """See IModifierRegistryQuery"""
@@ -301,7 +301,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
         getattr(aq_base(self), id)
         return getattr(self, id)
 
-    security.declareProtected(ManagePortal, 'query')
+    security.declareProtected(ManagePortal, "query")
 
     def query(self, id, default=None):
         """See IModifierRegistryQuery"""

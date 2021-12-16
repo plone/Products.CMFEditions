@@ -39,7 +39,7 @@ from ZODB.broken import Broken
 from zope.interface import implementer
 
 manage_addModifierForm = PageTemplateFile(
-    'www/modifierAddForm.pt', globals(), __name__='manage_addModifierForm'
+    "www/modifierAddForm.pt", globals(), __name__="manage_addModifierForm"
 )
 
 
@@ -50,27 +50,27 @@ class ConditionalModifier(SimpleItem):
     """This is a wrapper for a modifier."""
 
     modifierEditForm = PageTemplateFile(
-        'www/modifierEditForm.pt', globals(), __name__='modifierEditForm'
+        "www/modifierEditForm.pt", globals(), __name__="modifierEditForm"
     )
     modifierEditForm._owner = None
     manage = manage_main = modifierEditForm
     manage_options = (
-        {'label': 'Edit', 'action': 'modifierEditForm'},
+        {"label": "Edit", "action": "modifierEditForm"},
     ) + SimpleItem.manage_options[:]
 
-    def __init__(self, id, modifier, title=''):
+    def __init__(self, id, modifier, title=""):
         """See IConditionalModifier."""
         self.id = str(id)
         self.title = str(title)
-        self.meta_type = 'edmod_%s' % id
+        self.meta_type = "edmod_%s" % id
         self._modifier = modifier
         self._enabled = False
 
-    def edit(self, enabled=None, title='', REQUEST=None):
+    def edit(self, enabled=None, title="", REQUEST=None):
         """See IConditionalModifier."""
         self.title = title
 
-        if enabled is not None and (enabled == 'True' or enabled == True):
+        if enabled is not None and (enabled == "True" or enabled == True):
             self._enabled = enabled
         else:
             self._enabled = False
@@ -105,7 +105,7 @@ InitializeClass(ConditionalModifier)
 
 
 manage_addTalesModifierForm = PageTemplateFile(
-    'www/talesModifierAddForm.pt', globals(), __name__='manage_addTalesModifierForm'
+    "www/talesModifierAddForm.pt", globals(), __name__="manage_addTalesModifierForm"
 )
 
 
@@ -116,18 +116,18 @@ class ConditionalTalesModifier(ConditionalModifier):
     """This is a wrapper with a tales condition for a modifier."""
 
     modifierEditForm = PageTemplateFile(
-        'www/talesModifierEditForm.pt', globals(), __name__='modifierEditForm'
+        "www/talesModifierEditForm.pt", globals(), __name__="modifierEditForm"
     )
     manage_options = (
-        {'label': 'Edit', 'action': 'modifierEditForm'},
+        {"label": "Edit", "action": "modifierEditForm"},
     ) + ConditionalModifier.manage_options[:]
 
-    def __init__(self, id, modifier, title=''):
+    def __init__(self, id, modifier, title=""):
         """See IConditionalTalesModifier."""
         ConditionalModifier.__init__(self, id, modifier, title)
         self._condition = None
 
-    def edit(self, enabled=None, condition=None, title='', REQUEST=None):
+    def edit(self, enabled=None, condition=None, title="", REQUEST=None):
         """See IConditionalTalesModifier."""
         ConditionalModifier.edit(self, enabled, title)
         if condition is not None and condition != self.getTalesCondition():
@@ -149,7 +149,7 @@ class ConditionalTalesModifier(ConditionalModifier):
 
     def getTalesCondition(self):
         """See IConditionalTalesModifier."""
-        return getattr(self._condition, 'text', '')
+        return getattr(self._condition, "text", "")
 
 
 InitializeClass(ConditionalTalesModifier)
@@ -180,14 +180,14 @@ def createExpressionContext(obj, portal=None, **more_symbols):
         """
         # XXX propose this check (should be the same):
         #    if aq_base(obj) is obj:
-        if obj is None or not hasattr(obj, 'aq_base'):
+        if obj is None or not hasattr(obj, "aq_base"):
             folder = None
         else:
             folder = obj
             # Search up the containment hierarchy until we find an
             # obj that claims it's a folder.
             while folder is not None:
-                if getattr(aq_base(folder), 'isPrincipiaFolderish', 0):
+                if getattr(aq_base(folder), "isPrincipiaFolderish", 0):
                     # found it.
                     break
                 else:
@@ -197,12 +197,12 @@ def createExpressionContext(obj, portal=None, **more_symbols):
     try:
         obj_url = obj.absolute_url()
     except AttributeError:
-        obj_url = ''
+        obj_url = ""
 
     # use the portal if folder lookup fails due to an unwrapped obj
     folder = findNextFolderishParent(obj) or portal
 
-    pm = getToolByName(portal, 'portal_membership', None)
+    pm = getToolByName(portal, "portal_membership", None)
     if pm is None or pm.isAnonymousUser():
         member = None
     else:
@@ -219,18 +219,18 @@ def createExpressionContext(obj, portal=None, **more_symbols):
         portal_type = None
 
     data = {
-        'object_url': obj_url,
-        'folder_url': folder is not None and folder.absolute_url() or '',
-        'portal_url': portal is not None and portal.absolute_url() or '',
-        'object': obj,
-        'folder': folder,
-        'portal': portal,
-        'nothing': None,
-        'request': getattr(obj, 'REQUEST', None),
-        'modules': SecureModuleImporter,
-        'member': member,
-        'meta_type': meta_type,
-        'portal_type': portal_type,
+        "object_url": obj_url,
+        "folder_url": folder is not None and folder.absolute_url() or "",
+        "portal_url": portal is not None and portal.absolute_url() or "",
+        "object": obj,
+        "folder": folder,
+        "portal": portal,
+        "nothing": None,
+        "request": getattr(obj, "REQUEST", None),
+        "modules": SecureModuleImporter,
+        "member": member,
+        "meta_type": meta_type,
+        "portal_type": portal_type,
     }
     data.update(more_symbols)
     return getEngine().getContext(data)

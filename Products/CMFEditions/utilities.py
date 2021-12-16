@@ -30,7 +30,7 @@ from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredErro
 import random
 
 
-STUB_OBJECT_PREFIX = '_CMFEditionsTempId'
+STUB_OBJECT_PREFIX = "_CMFEditionsTempId"
 
 
 class KwAsAttributes(Persistent):
@@ -63,7 +63,7 @@ def dereference(obj=None, history_id=None, zodb_hook=None):
         # try to use the reference as zodb hook
         zodb_hook = obj
 
-    portal_uidhandler = getToolByName(zodb_hook, 'portal_historyidhandler')
+    portal_uidhandler = getToolByName(zodb_hook, "portal_historyidhandler")
 
     if history_id is None:
         if obj is None:
@@ -80,10 +80,10 @@ def dereference(obj=None, history_id=None, zodb_hook=None):
     return obj, history_id
 
 
-def generateId(parent, prefix='', volatile=False):
+def generateId(parent, prefix="", volatile=False):
     """Generate an unused id (optionaly a volatile one)."""
     existingIds = parent.objectIds()
-    idTemplate = '%s%s_%%s' % (volatile * '__v_', prefix + STUB_OBJECT_PREFIX)
+    idTemplate = "%s%s_%%s" % (volatile * "__v_", prefix + STUB_OBJECT_PREFIX)
     while 1:
         id = idTemplate % random.randrange(1000000)
         if id not in existingIds:
@@ -92,16 +92,16 @@ def generateId(parent, prefix='', volatile=False):
 
 def isObjectVersioned(obj):
     """Return true iff object has a version_id."""
-    return getattr(aq_base(obj), 'version_id', None) is not None
+    return getattr(aq_base(obj), "version_id", None) is not None
 
 
 def isObjectChanged(obj):
-    pr = getToolByName(obj, 'portal_repository', None)
+    pr = getToolByName(obj, "portal_repository", None)
     if pr is None:
         return False
 
     changed = False
-    if getattr(aq_base(obj), 'version_id', None) is None:
+    if getattr(aq_base(obj), "version_id", None) is None:
         changed = True
     else:
         try:
@@ -114,8 +114,8 @@ def isObjectChanged(obj):
     return changed
 
 
-def maybeSaveVersion(obj, policy='at_edit_autoversion', comment='', force=False):
-    pr = getToolByName(obj, 'portal_repository', None)
+def maybeSaveVersion(obj, policy="at_edit_autoversion", comment="", force=False):
+    pr = getToolByName(obj, "portal_repository", None)
     if pr is not None:
         isVersionable = pr.isVersionable(obj)
 

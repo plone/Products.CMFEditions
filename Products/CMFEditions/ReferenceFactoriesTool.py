@@ -41,10 +41,10 @@ from zope.interface import implementer
 class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
     __doc__ = __doc__  # copy from module
 
-    id = 'portal_referencefactories'
-    alternative_id = 'portal_referencefactoryregistry'
+    id = "portal_referencefactories"
+    alternative_id = "portal_referencefactoryregistry"
 
-    meta_type = 'Reference Factory Registry'
+    meta_type = "Reference Factory Registry"
 
     security = ClassSecurityInfo()
 
@@ -54,12 +54,12 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
     # methods implementing IFactories
     # -------------------------------------------------------------------
 
-    security.declarePrivate('invokeFactory')
+    security.declarePrivate("invokeFactory")
 
     def invokeFactory(self, repo_clone, source, selector=None):
         """See IReferenceFactories"""
         # Just assuming ObjectManager behaviour for now
-        portal_hidhandler = getToolByName(self, 'portal_historyidhandler')
+        portal_hidhandler = getToolByName(self, "portal_historyidhandler")
         try:
             portal_type = repo_clone.getPortalTypeName()
         except AttributeError:
@@ -80,7 +80,7 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
 
         return obj
 
-    security.declarePrivate('hasBeenMoved')
+    security.declarePrivate("hasBeenMoved")
 
     def hasBeenMoved(self, obj, source):
         """See IReferenceFactories"""

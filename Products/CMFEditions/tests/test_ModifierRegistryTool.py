@@ -74,18 +74,18 @@ class SimpleModifierBase:
 
 
 class SimpleModifier1(SimpleModifierBase):
-    beforeSaveModifierAttribute = 'beforeSave1'
-    afterRetrieveModifierAttribute = 'afterRetrieve1'
+    beforeSaveModifierAttribute = "beforeSave1"
+    afterRetrieveModifierAttribute = "afterRetrieve1"
 
 
 class SimpleModifier2(SimpleModifierBase):
-    beforeSaveModifierAttribute = 'beforeSave2'
-    afterRetrieveModifierAttribute = 'afterRetrieve2'
+    beforeSaveModifierAttribute = "beforeSave2"
+    afterRetrieveModifierAttribute = "afterRetrieve2"
 
 
 class SimpleModifier3(SimpleModifierBase):
-    beforeSaveModifierAttribute = 'beforeSave3'
-    afterRetrieveModifierAttribute = 'afterRetrieve3'
+    beforeSaveModifierAttribute = "beforeSave3"
+    afterRetrieveModifierAttribute = "afterRetrieve3"
 
 
 class NonModifier(SimpleItem):
@@ -101,15 +101,15 @@ def dictToString(dict):
     keys.sort()
     for k in keys:
         dict_list.append("%s = %s" % (k, dict[k]))
-    return ', '.join(dict_list)
+    return ", ".join(dict_list)
 
 
 @implementer(IAttributeModifier, ICloneModifier, ISaveRetrieveModifier)
 class LoggingModifierBase:
     def getReferencedAttributes(self, obj):
         referenced_data = {
-            'k1': 'v1:' + str(self.__class__.__name__),
-            'k2': 'v2:' + str(self.__class__.__name__),
+            "k1": "v1:" + str(self.__class__.__name__),
+            "k2": "v2:" + str(self.__class__.__name__),
         }
         mlog.append(
             "%s.getReferencedAttributes: %s"
@@ -127,7 +127,7 @@ class LoggingModifierBase:
             # should never reach this!
             assert False
 
-        return persistent_id, persistent_load, [], [], ''
+        return persistent_id, persistent_load, [], [], ""
 
     def beforeSaveModifier(self, obj, obj_clone):
         mlog.append("%s.beforeSaveModifier" % (self.__class__.__name__))
@@ -167,15 +167,15 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         super(TestModifierRegistryTool, self).setUp()
 
         # add an additional user
-        self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer', ['Manager'], '')
+        self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")
         # add a document
-        self.portal.invokeFactory('Document', 'doc')
+        self.portal.invokeFactory("Document", "doc")
 
         # just unregister the standard modifiers for the unit tests
-        portal_modifier = getToolByName(self.portal, 'portal_modifier')
+        portal_modifier = getToolByName(self.portal, "portal_modifier")
         modifiers = portal_modifier.modules.StandardModifiers.modifiers
         for m in modifiers:
-            portal_modifier.unregister(m['id'])
+            portal_modifier.unregister(m["id"])
 
     def test00_interface(self):
         portal_modifier = self.portal.portal_modifier
@@ -192,20 +192,20 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
 
-        portal_modifier.register('1', SimpleModifier1())
-        portal_modifier.edit('1', condition='python:True')
+        portal_modifier.register("1", SimpleModifier1())
+        portal_modifier.edit("1", condition="python:True")
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
-        self.assertRaises(AttributeError, getattr, doc_copy, 'beforeSave1')
-        self.assertRaises(AttributeError, getattr, doc_copy, 'afterRetrieve1')
+        self.assertRaises(AttributeError, getattr, doc_copy, "beforeSave1")
+        self.assertRaises(AttributeError, getattr, doc_copy, "afterRetrieve1")
 
     def test02_enabledModifierCalled(self):
         portal_modifier = self.portal.portal_modifier
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
 
-        portal_modifier.register('1', SimpleModifier1())
-        portal_modifier.edit('1', enabled=True, condition='python:True')
+        portal_modifier.register("1", SimpleModifier1())
+        portal_modifier.edit("1", enabled=True, condition="python:True")
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
 
@@ -218,38 +218,38 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
 
-        portal_modifier.register('1', SimpleModifier1())
-        portal_modifier.edit('1', enabled=True, condition='python:True')
+        portal_modifier.register("1", SimpleModifier1())
+        portal_modifier.edit("1", enabled=True, condition="python:True")
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         self.assertEqual(doc_copy.beforeSave1, 1)
-        self.assertRaises(AttributeError, getattr, doc_copy, 'afterRetrieve1')
-        portal_modifier.unregister('1')
+        self.assertRaises(AttributeError, getattr, doc_copy, "afterRetrieve1")
+        portal_modifier.unregister("1")
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         self.assertEqual(doc_copy.beforeSave1, 1)
-        self.assertRaises(AttributeError, getattr, doc_copy, 'afterRetrieve1')
+        self.assertRaises(AttributeError, getattr, doc_copy, "afterRetrieve1")
 
     def test04_conditionEvaluated(self):
         portal_modifier = self.portal.portal_modifier
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
 
-        portal_modifier.register('1', SimpleModifier1())
-        portal_modifier.edit('1', enabled=True, condition='python:False')
+        portal_modifier.register("1", SimpleModifier1())
+        portal_modifier.edit("1", enabled=True, condition="python:False")
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
-        self.assertRaises(AttributeError, getattr, doc_copy, 'beforeSave1')
-        self.assertRaises(AttributeError, getattr, doc_copy, 'afterRetrieve1')
+        self.assertRaises(AttributeError, getattr, doc_copy, "beforeSave1")
+        self.assertRaises(AttributeError, getattr, doc_copy, "afterRetrieve1")
 
     def test05_registerANonModifier(self):
         portal_modifier = self.portal.portal_modifier
         doc = self.portal.doc
         doc_copy = deepcopy(aq_base(doc))
 
-        portal_modifier._setObject('doc', NonModifier())
+        portal_modifier._setObject("doc", NonModifier())
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
-        self.assertRaises(AttributeError, getattr, doc_copy, 'beforeSave1')
-        self.assertRaises(AttributeError, getattr, doc_copy, 'afterRetrieve1')
+        self.assertRaises(AttributeError, getattr, doc_copy, "beforeSave1")
+        self.assertRaises(AttributeError, getattr, doc_copy, "afterRetrieve1")
 
     def test06_modifierAddedToTheCorrectPosition(self):
         portal_modifier = self.portal.portal_modifier
@@ -260,9 +260,9 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         m2 = SimpleModifier2()
         m3 = SimpleModifier3()
 
-        portal_modifier.register('1', m1)
-        portal_modifier.register('2', m2)
-        portal_modifier.register('3', m3, pos=0)
+        portal_modifier.register("1", m1)
+        portal_modifier.register("2", m2)
+        portal_modifier.register("3", m3, pos=0)
 
         modifiers = [m.getModifier() for m in portal_modifier.objectValues()]
         self.assertEqual(modifiers, [m3, m1, m2])
@@ -276,11 +276,11 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         m2 = SimpleModifier2()
         m3 = SimpleModifier3()
 
-        portal_modifier.register('1', m1)
-        portal_modifier.register('2', m2)
-        portal_modifier.register('3', m3, pos=0)
+        portal_modifier.register("1", m1)
+        portal_modifier.register("2", m2)
+        portal_modifier.register("3", m3, pos=0)
 
-        portal_modifier.unregister('1')
+        portal_modifier.unregister("1")
 
         modifiers = [m.getModifier() for m in portal_modifier.objectValues()]
         self.assertEqual(modifiers, [m3, m2])
@@ -292,16 +292,16 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         m2 = SimpleModifier2()
         m3 = SimpleModifier3()
 
-        portal_modifier.register('1', m1)
-        portal_modifier.register('2', m2)
-        portal_modifier.register('3', m3, pos=0)
+        portal_modifier.register("1", m1)
+        portal_modifier.register("2", m2)
+        portal_modifier.register("3", m3, pos=0)
 
-        portal_modifier.unregister('1')
+        portal_modifier.unregister("1")
 
-        self.assertEqual(portal_modifier.get('2').getModifier(), m2)
-        self.assertEqual(portal_modifier.query('2').getModifier(), m2)
-        self.assertRaises(AttributeError, portal_modifier.get, '1')
-        self.assertEqual(portal_modifier.query('1', None), None)
+        self.assertEqual(portal_modifier.get("2").getModifier(), m2)
+        self.assertEqual(portal_modifier.query("2").getModifier(), m2)
+        self.assertRaises(AttributeError, portal_modifier.get, "1")
+        self.assertEqual(portal_modifier.query("1", None), None)
 
     def test09_conditionContextSetUpCorretcly(self):
         portal_modifier = self.portal.portal_modifier
@@ -311,20 +311,20 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         # just check if variables got defined
         condition = (
             'python:"%s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s" % ('
-            'object_url, '
-            'folder_url, '
-            'portal_url, '
-            'object, '
-            'folder, '
-            'portal, '
-            'nothing, '
-            'request, '
-            'modules, '
-            'member,'
-            ')'
+            "object_url, "
+            "folder_url, "
+            "portal_url, "
+            "object, "
+            "folder, "
+            "portal, "
+            "nothing, "
+            "request, "
+            "modules, "
+            "member,"
+            ")"
         )
-        portal_modifier.register('1', SimpleModifier1())
-        portal_modifier.edit('1', enabled=True, condition=condition)
+        portal_modifier.register("1", SimpleModifier1())
+        portal_modifier.edit("1", enabled=True, condition=condition)
 
         portal_modifier.beforeSaveModifier(doc, doc_copy)
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
@@ -344,19 +344,19 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         for m in loggingModifiers:
             counter += 1
             portal_modifier.register(str(counter), m)
-            portal_modifier.edit(str(counter), enabled=True, condition='python:True')
+            portal_modifier.edit(str(counter), enabled=True, condition="python:True")
 
-        mlog.append('<save>')
+        mlog.append("<save>")
         portal_modifier.getReferencedAttributes(doc)
         portal_modifier.getOnCloneModifiers(doc)
         portal_modifier.beforeSaveModifier(doc, doc_copy)
-        mlog.append('<retrieve>')
+        mlog.append("<retrieve>")
 
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
-        mlog.append('<end>')
+        mlog.append("<end>")
 
-        mlog_str = '\n'.join(mlog).replace(
-            '__main__', 'CMFEditions.tests.test_ModifierRegistryTool'
+        mlog_str = "\n".join(mlog).replace(
+            "__main__", "CMFEditions.tests.test_ModifierRegistryTool"
         )
         expected_result = """<save>
 %(class)s_A.getReferencedAttributes: k1 = v1:%(class)s_A, k2 = v2:%(class)s_A
@@ -377,6 +377,6 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
 %(class)s_B.afterRetrieveModifier
 %(class)s_A.afterRetrieveModifier
 <end>""" % {
-            'class': 'LoggingModifier'
+            "class": "LoggingModifier"
         }
         self.assertEqual(mlog_str, expected_result)

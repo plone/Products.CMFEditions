@@ -30,8 +30,8 @@ from zope.interface import Interface
 from zope.publisher.interfaces.browser import IBrowserView
 
 
-_TEXT_INITIAL = u'Initial text.'
-_TEXT_NEW = u'New text.'
+_TEXT_INITIAL = u"Initial text."
+_TEXT_NEW = u"New text."
 
 
 class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
@@ -39,24 +39,24 @@ class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
         super(TestVersionsHistoryForm, self).setUp()
         self.portal_repository = self.portal.portal_repository
         self.portal.invokeFactory(
-            'Document',
-            'doc',
-            title='Document 1',
-            text=RichTextValue(_TEXT_INITIAL, 'text/plain', 'text/plain'),
+            "Document",
+            "doc",
+            title="Document 1",
+            text=RichTextValue(_TEXT_INITIAL, "text/plain", "text/plain"),
         )
         self.doc = self.portal.doc
-        self.portal_repository.applyVersionControl(self.doc, comment='save version 0')
+        self.portal_repository.applyVersionControl(self.doc, comment="save version 0")
         self.request = self.portal.REQUEST
 
     def test_versions_history_form(self):
-        self.doc.text = RichTextValue(_TEXT_NEW, 'text/plain', 'text/plain')
-        self.portal_repository.save(self.doc, comment='save version 1')
+        self.doc.text = RichTextValue(_TEXT_NEW, "text/plain", "text/plain")
+        self.portal_repository.save(self.doc, comment="save version 1")
 
-        html = self._render_versions_history_form(item=self.doc, version_id='0')
+        html = self._render_versions_history_form(item=self.doc, version_id="0")
         self.assertTrue(_TEXT_INITIAL in html)
         self.assertFalse(_TEXT_NEW in html)
 
-        html = self._render_versions_history_form(item=self.doc, version_id='1')
+        html = self._render_versions_history_form(item=self.doc, version_id="1")
         self.assertFalse(_TEXT_INITIAL in html)
         self.assertTrue(_TEXT_NEW in html)
 
@@ -64,7 +64,7 @@ class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
         """Assert that if we define an @@version-view then it will be used to
         display the versions.
         """
-        dummy_str = 'Blah'
+        dummy_str = "Blah"
 
         class DummyVersionView(BrowserView):
             def __call__(self):
@@ -74,13 +74,13 @@ class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
             factory=DummyVersionView,
             adapts=(Interface, Interface),
             provides=IBrowserView,
-            name='version-view',
+            name="version-view",
         )
 
-        html = self._render_versions_history_form(item=self.doc, version_id='0')
+        html = self._render_versions_history_form(item=self.doc, version_id="0")
         self.assertTrue(dummy_str in html)
         self.assertFalse(_TEXT_INITIAL in html)
 
     def _render_versions_history_form(self, item, version_id):
-        self.request['version_id'] = version_id
-        return item.unrestrictedTraverse('versions_history_form')()
+        self.request["version_id"] = version_id
+        return item.unrestrictedTraverse("versions_history_form")()

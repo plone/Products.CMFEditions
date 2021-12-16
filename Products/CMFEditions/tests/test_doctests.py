@@ -24,5 +24,5 @@ class DummyContent(object):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(doctest.DocFileSuite('large_file_modifiers.rst'))
+    suite.addTest(doctest.DocFileSuite("large_file_modifiers.rst"))
     return suite

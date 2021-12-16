@@ -53,23 +53,23 @@ tools = (
 )
 
 
-CMFEditionsMessageFactory = MessageFactory('cmfeditions')
+CMFEditionsMessageFactory = MessageFactory("cmfeditions")
 
-ModuleSecurityInfo('Products.CMFEditions').declarePublic('CMFEditionsMessageFactory')
-ModuleSecurityInfo('Products.CMFEditions.interfaces.IArchivist').declarePublic(
-    'ArchivistUnregisteredError'
+ModuleSecurityInfo("Products.CMFEditions").declarePublic("CMFEditionsMessageFactory")
+ModuleSecurityInfo("Products.CMFEditions.interfaces.IArchivist").declarePublic(
+    "ArchivistUnregisteredError"
 )
-ModuleSecurityInfo('Products.CMFEditions.interfaces.IModifier').declarePublic(
-    'FileTooLargeToVersionError'
+ModuleSecurityInfo("Products.CMFEditions.interfaces.IModifier").declarePublic(
+    "FileTooLargeToVersionError"
 )
-ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('isObjectChanged')
-ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('isObjectVersioned')
-ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('maybeSaveVersion')
+ModuleSecurityInfo("Products.CMFEditions.utilities").declarePublic("isObjectChanged")
+ModuleSecurityInfo("Products.CMFEditions.utilities").declarePublic("isObjectVersioned")
+ModuleSecurityInfo("Products.CMFEditions.utilities").declarePublic("maybeSaveVersion")
 
 
 def initialize(context):
     utils.ToolInit(
-        meta_type='CMF Editions Tool', tools=tools, icon='tool.gif'
+        meta_type="CMF Editions Tool", tools=tools, icon="tool.gif"
     ).initialize(context)
 
     # initialize standard modifiers to make them addable through the ZMI

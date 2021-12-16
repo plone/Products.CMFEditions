@@ -39,12 +39,12 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
     def setUp(self):
         super(TestArchivistToolMemoryStorage, self).setUp()
 
-        self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer', ['Manager'], '')
-        self.portal.invokeFactory('Document', 'doc')
-        self.portal.invokeFactory('Folder', 'fol')
-        self.portal.fol.invokeFactory('Document', 'doc1_inside')
-        self.portal.fol.invokeFactory('Document', 'doc2_inside')
-        self.portal.fol.invokeFactory('Document', 'doc3_outside')
+        self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")
+        self.portal.invokeFactory("Document", "doc")
+        self.portal.invokeFactory("Folder", "fol")
+        self.portal.fol.invokeFactory("Document", "doc1_inside")
+        self.portal.fol.invokeFactory("Document", "doc2_inside")
+        self.portal.fol.invokeFactory("Document", "doc3_outside")
         tools = (
             DummyModifier(),
             DummyHistoryIdHandler(),
@@ -75,7 +75,7 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
         doc = self.portal.doc
-        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        prep = portal_archivist.prepare(doc, app_metadata="save number 1")
         portal_archivist.register(prep)
         history_id = portal_historyidhandler.queryUid(doc)
         self.assertTrue(history_id)
@@ -84,14 +84,14 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
         doc = self.portal.doc
-        doc.text = 'text v1'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        doc.text = "text v1"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 1")
         portal_archivist.register(prep)
-        doc.text = 'text v2'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        doc.text = "text v2"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 2")
         portal_archivist.save(prep)
         vdata = portal_archivist.retrieve(
-            obj=doc, selector=0, preserve=('gaga', 'gugus')
+            obj=doc, selector=0, preserve=("gaga", "gugus")
         )
         retr_doc = vdata.data.object
         retr_meta = vdata.app_metadata
@@ -99,95 +99,95 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         retr_histid = portal_historyidhandler.queryUid(retr_doc)
         self.assertEqual(doc_histid, retr_histid)
         # check if correct version retrieved and working object unchanged
-        self.assertEqual(retr_doc.text, 'text v1')
-        self.assertEqual(retr_meta, 'save number 1')
-        self.assertEqual(doc.text, 'text v2')
+        self.assertEqual(retr_doc.text, "text v1")
+        self.assertEqual(retr_meta, "save number 1")
+        self.assertEqual(doc.text, "text v2")
         self.assertEqual(len(vdata.preserved_data), 2)
-        self.assertEqual(vdata.preserved_data['gaga'], 'gaga')
-        self.assertEqual(vdata.preserved_data['gugus'], 'gugus')
+        self.assertEqual(vdata.preserved_data["gaga"], "gaga")
+        self.assertEqual(vdata.preserved_data["gugus"], "gugus")
 
     def test03_retrieveById(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
         doc = self.portal.doc
-        doc.text = 'text v1'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        doc.text = "text v1"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 1")
         portal_archivist.register(prep)
-        doc.text = 'text v2'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        doc.text = "text v2"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 2")
         portal_archivist.save(prep)
         doc_histid = portal_historyidhandler.queryUid(doc)
         vdata = portal_archivist.retrieve(
-            history_id=doc_histid, selector=0, preserve=('gaga', 'gugus')
+            history_id=doc_histid, selector=0, preserve=("gaga", "gugus")
         )
         retr_doc = vdata.data.object
         retr_meta = vdata.app_metadata
         # check if correct version retrieved and working object unchanged
-        self.assertEqual(retr_doc.text, 'text v1')
-        self.assertEqual(retr_meta, 'save number 1')
-        self.assertEqual(doc.text, 'text v2')
+        self.assertEqual(retr_doc.text, "text v1")
+        self.assertEqual(retr_meta, "save number 1")
+        self.assertEqual(doc.text, "text v2")
         self.assertEqual(len(vdata.preserved_data), 2)
-        self.assertEqual(vdata.preserved_data['gaga'], 'gaga')
-        self.assertEqual(vdata.preserved_data['gugus'], 'gugus')
+        self.assertEqual(vdata.preserved_data["gaga"], "gaga")
+        self.assertEqual(vdata.preserved_data["gugus"], "gugus")
 
     def test04_getHistory(self):
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
 
-        doc.text = 'text v1'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        doc.text = "text v1"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 1")
         portal_archivist.register(prep)
 
-        doc.text = 'text v2'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        doc.text = "text v2"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 2")
         portal_archivist.save(prep)
 
         history = portal_archivist.getHistory(doc)
 
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
-        self.assertTrue(history[0].sys_metadata['timestamp'])
-        self.assertTrue(history[0].sys_metadata['principal'])
+        self.assertTrue(history[0].sys_metadata["timestamp"])
+        self.assertTrue(history[0].sys_metadata["principal"])
         # check if correct data and metadata retrieved
-        self.assertEqual(history[0].data.object.text, 'text v1')
-        self.assertEqual(history[0].app_metadata, 'save number 1')
-        self.assertEqual(history[1].data.object.text, 'text v2')
-        self.assertEqual(history[1].app_metadata, 'save number 2')
+        self.assertEqual(history[0].data.object.text, "text v1")
+        self.assertEqual(history[0].app_metadata, "save number 1")
+        self.assertEqual(history[1].data.object.text, "text v2")
+        self.assertEqual(history[1].app_metadata, "save number 2")
 
     def test05_iterateOverHistory(self):
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
 
-        doc.text = 'text v1'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        doc.text = "text v1"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 1")
         portal_archivist.register(prep)
 
-        doc.text = 'text v2'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        doc.text = "text v2"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 2")
         portal_archivist.save(prep)
 
-        doc.text = 'text v3'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 3')
+        doc.text = "text v3"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 3")
         portal_archivist.save(prep)
 
         counter = 0
 
         for vdata in portal_archivist.getHistory(doc):
             counter += 1
-            self.assertEqual(vdata.data.object.text, 'text v%s' % counter)
-            self.assertEqual(vdata.app_metadata, 'save number %s' % counter)
+            self.assertEqual(vdata.data.object.text, "text v%s" % counter)
+            self.assertEqual(vdata.app_metadata, "save number %s" % counter)
 
     def test06_getHistoryById(self):
         portal_archivist = self.portal.portal_archivist
         portal_historyidhandler = self.portal.portal_historyidhandler
         doc = self.portal.doc
 
-        doc.text = 'text v1'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        doc.text = "text v1"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 1")
         portal_archivist.register(prep)
 
-        doc.text = 'text v2'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        doc.text = "text v2"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 2")
         portal_archivist.save(prep)
 
         doc_histid = portal_historyidhandler.queryUid(doc)
@@ -195,13 +195,13 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
-        self.assertTrue(history[0].sys_metadata['timestamp'])
-        self.assertTrue(history[0].sys_metadata['principal'])
+        self.assertTrue(history[0].sys_metadata["timestamp"])
+        self.assertTrue(history[0].sys_metadata["principal"])
         # check if correct data and metadata retrieved
-        self.assertEqual(history[0].data.object.text, 'text v1')
-        self.assertEqual(history[0].app_metadata, 'save number 1')
-        self.assertEqual(history[1].data.object.text, 'text v2')
-        self.assertEqual(history[1].app_metadata, 'save number 2')
+        self.assertEqual(history[0].data.object.text, "text v1")
+        self.assertEqual(history[0].app_metadata, "save number 1")
+        self.assertEqual(history[1].data.object.text, "text v2")
+        self.assertEqual(history[1].app_metadata, "save number 2")
 
     def test07_prepareObjectWithReferences(self):
         # test with a different modifier
@@ -215,11 +215,11 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         doc2_inside = fol.doc2_inside
         doc3_outside = fol.doc3_outside
 
-        doc1_inside.text = 'doc1_inside: inside reference'
-        doc2_inside.text = 'doc2_inside: inside reference'
-        doc3_outside.text = 'doc3_outside: outside reference'
+        doc1_inside.text = "doc1_inside: inside reference"
+        doc2_inside.text = "doc2_inside: inside reference"
+        doc3_outside.text = "doc3_outside: outside reference"
 
-        prep = portal_archivist.prepare(fol, app_metadata='save number 1')
+        prep = portal_archivist.prepare(fol, app_metadata="save number 1")
 
         self.assertEqual(fol, prep.original.object)
 
@@ -256,11 +256,11 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         )
 
         self.assertEqual(len(prep.referenced_data), 1)
-        self.assertTrue(prep.referenced_data['title'] is fol.title)
+        self.assertTrue(prep.referenced_data["title"] is fol.title)
 
-        self.assertEqual(prep.metadata['app_metadata'], 'save number 1')
-        self.assertTrue('timestamp' in prep.metadata['sys_metadata'])
-        self.assertTrue('principal' in prep.metadata['sys_metadata'])
+        self.assertEqual(prep.metadata["app_metadata"], "save number 1")
+        self.assertTrue("timestamp" in prep.metadata["sys_metadata"])
+        self.assertTrue("principal" in prep.metadata["sys_metadata"])
 
         self._setDummyTool(DummyModifier())
 
@@ -276,11 +276,11 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         doc2_inside = fol.doc2_inside
         doc3_outside = fol.doc3_outside
 
-        doc1_inside.text = 'doc1_inside: inside reference'
-        doc2_inside.text = 'doc2_inside: inside reference'
-        doc3_outside.text = 'doc3_outside: outside reference'
+        doc1_inside.text = "doc1_inside: inside reference"
+        doc2_inside.text = "doc2_inside: inside reference"
+        doc3_outside.text = "doc3_outside: outside reference"
 
-        prep = portal_archivist.prepare(fol, app_metadata='save number 1')
+        prep = portal_archivist.prepare(fol, app_metadata="save number 1")
 
         # just set the info to some value before save to test if the
         # reference stuff is saved and retrieved correctly
@@ -295,9 +295,9 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         retr = portal_archivist.retrieve(fol)
 
         # check metadata
-        self.assertEqual(retr.app_metadata, 'save number 1')
-        self.assertTrue('timestamp' in retr.sys_metadata)
-        self.assertTrue('principal' in retr.sys_metadata)
+        self.assertEqual(retr.app_metadata, "save number 1")
+        self.assertTrue("timestamp" in retr.sys_metadata)
+        self.assertTrue("principal" in retr.sys_metadata)
 
         # check the references
         inside_refs = retr.data.inside_refs
@@ -313,18 +313,18 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
     def test09_isUpToDate(self):
         doc = self.portal.doc
         portal_archivist = self.portal.portal_archivist
-        doc.text = 'text v1'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        doc.text = "text v1"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 1")
         v1 = portal_archivist.register(prep)
 
         self.assertTrue(portal_archivist.isUpToDate(obj=doc))
         self.assertTrue(portal_archivist.isUpToDate(obj=doc, selector=v1))
 
-        doc.text = 'text v2'
+        doc.text = "text v2"
         notifyModified(doc)
         self.assertFalse(portal_archivist.isUpToDate(obj=doc))
 
-        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        prep = portal_archivist.prepare(doc, app_metadata="save number 2")
         v2 = portal_archivist.save(prep)
 
         self.assertTrue(portal_archivist.isUpToDate(obj=doc))
@@ -335,38 +335,38 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
 
-        doc.text = 'text v1'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        doc.text = "text v1"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 1")
         portal_archivist.register(prep)
 
-        doc.text = 'text v2'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        doc.text = "text v2"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 2")
         portal_archivist.save(prep)
 
         history = portal_archivist.getHistoryMetadata(doc)
 
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
-        self.assertTrue(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
-        self.assertTrue(history.retrieve(0)['metadata']['sys_metadata']['principal'])
+        self.assertTrue(history.retrieve(1)["metadata"]["sys_metadata"]["timestamp"])
+        self.assertTrue(history.retrieve(0)["metadata"]["sys_metadata"]["principal"])
         # check if correct data and metadata retrieved
         self.assertEqual(
-            history.retrieve(0)['metadata']['app_metadata'], 'save number 1'
+            history.retrieve(0)["metadata"]["app_metadata"], "save number 1"
         )
         self.assertEqual(
-            history.retrieve(1)['metadata']['app_metadata'], 'save number 2'
+            history.retrieve(1)["metadata"]["app_metadata"], "save number 2"
         )
 
     def test09_getHistoryMetadata_byId(self):
         portal_archivist = self.portal.portal_archivist
         doc = self.portal.doc
 
-        doc.text = 'text v1'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 1')
+        doc.text = "text v1"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 1")
         portal_archivist.register(prep)
 
-        doc.text = 'text v2'
-        prep = portal_archivist.prepare(doc, app_metadata='save number 2')
+        doc.text = "text v2"
+        prep = portal_archivist.prepare(doc, app_metadata="save number 2")
         portal_archivist.save(prep)
 
         # retrieve the history by history id
@@ -374,14 +374,14 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
         self.assertEqual(len(history), 2)
         # check if timestamp and principal available
-        self.assertTrue(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
-        self.assertTrue(history.retrieve(0)['metadata']['sys_metadata']['principal'])
+        self.assertTrue(history.retrieve(1)["metadata"]["sys_metadata"]["timestamp"])
+        self.assertTrue(history.retrieve(0)["metadata"]["sys_metadata"]["principal"])
         # check if correct data and metadata retrieved
         self.assertEqual(
-            history.retrieve(0)['metadata']['app_metadata'], 'save number 1'
+            history.retrieve(0)["metadata"]["app_metadata"], "save number 1"
         )
         self.assertEqual(
-            history.retrieve(1)['metadata']['app_metadata'], 'save number 2'
+            history.retrieve(1)["metadata"]["app_metadata"], "save number 2"
         )
 
 

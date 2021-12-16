@@ -63,7 +63,7 @@ import time
 import types
 
 
-logger = logging.getLogger('CMFEditions')
+logger = logging.getLogger("CMFEditions")
 
 
 def deepCopy(obj):
@@ -153,16 +153,16 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
       objects.
     """
 
-    id = 'portal_historiesstorage'
-    alternative_id = 'portal_zvcstorage'
+    id = "portal_historiesstorage"
+    alternative_id = "portal_zvcstorage"
 
-    meta_type = 'CMFEditions Portal ZVC based Histories Storage Tool'
+    meta_type = "CMFEditions Portal ZVC based Histories Storage Tool"
 
     storageStatistics = PageTemplateFile(
-        'www/storageStatistics.pt', globals(), __name__='modifierEditForm'
+        "www/storageStatistics.pt", globals(), __name__="modifierEditForm"
     )
     manage_options = (
-        {'label': 'Statistics (may take time)', 'action': 'storageStatistics'},
+        {"label": "Statistics (may take time)", "action": "storageStatistics"},
     ) + SimpleItem.manage_options[:]
 
     # make exceptions available trough the tool
@@ -182,7 +182,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
     # methods implementing IStorage
     # -------------------------------------------------------------------
 
-    security.declarePrivate('isRegistered')
+    security.declarePrivate("isRegistered")
 
     def isRegistered(self, history_id):
         """See IStorage."""
@@ -193,7 +193,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             return False
         return shadow_storage.isRegistered(history_id)
 
-    security.declarePrivate('register')
+    security.declarePrivate("register")
 
     def register(self, history_id, object, referenced_data={}, metadata=None):
         """See IStorage."""
@@ -214,7 +214,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
                 "The underlying storage implementation reported an error." % history_id
             )
 
-    security.declarePrivate('save')
+    security.declarePrivate("save")
 
     def save(self, history_id, object, referenced_data={}, metadata=None):
         """See IStorage."""
@@ -241,7 +241,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
                 "The underlying storage implementation reported an error." % history_id
             )
 
-    security.declarePrivate('retrieve')
+    security.declarePrivate("retrieve")
 
     def retrieve(self, history_id, selector=None, countPurged=True, substitute=True):
         """See ``IStorage`` and Comments in ``IPurgePolicy``"""
@@ -282,7 +282,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         object = zvc_obj.getWrappedObject()
         # Get referenced data from shadow history
         history = self._getShadowHistory(history_id)
-        referenced_data = history.retrieve(selector).get('referenced_data', {})
+        referenced_data = history.retrieve(selector).get("referenced_data", {})
         data = VersionData(object, referenced_data, metadata)
 
         # check if retrieved a replacement for a removed object and
@@ -291,18 +291,18 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             # delegate retrieving to purge policy if one is available
             # if none is available just return the replacement for the
             # removed object
-            policy = getToolByName(self, 'portal_purgepolicy', None)
+            policy = getToolByName(self, "portal_purgepolicy", None)
             if policy is not None:
                 data = policy.retrieveSubstitute(history_id, selector, default=data)
         return data
 
-    security.declarePrivate('getHistory')
+    security.declarePrivate("getHistory")
 
     def getHistory(self, history_id, countPurged=True, substitute=True):
         """See IStorage."""
         return LazyHistory(self, history_id, countPurged, substitute)
 
-    security.declarePrivate('getModificationDate')
+    security.declarePrivate("getModificationDate")
 
     def getModificationDate(
         self, history_id, selector=None, countPurged=True, substitute=True
@@ -315,7 +315,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
     # methods implementing IPurgeSupport
     # -------------------------------------------------------------------
 
-    security.declarePrivate('purge')
+    security.declarePrivate("purge")
 
     def purge(self, history_id, selector, metadata={}, countPurged=True):
         """See ``IPurgeSupport``"""
@@ -376,7 +376,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         # delegate the decision if and what to purge to the purge policy
         # tool if one exists. If the call returns ``False`` do not save
         # or register the current version.
-        policy = getToolByName(self, 'portal_purgepolicy', None)
+        policy = getToolByName(self, "portal_purgepolicy", None)
         if policy is not None:
             if not policy.beforeSaveHook(history_id, object, metadata):
                 # returning None signalizes that the version wasn't saved
@@ -421,7 +421,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
             self._shadowStorage = ShadowStorage()
         return self._shadowStorage
 
-    security.declarePrivate('getHistoryMetadata')
+    security.declarePrivate("getHistoryMetadata")
 
     def getHistoryMetadata(self, history_id):
         """Return the metadata blob from ShadowHistory for presenting
@@ -444,7 +444,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         Instantiates one with the first call.
         """
         if self.zvc_repo is None:
-            self.zvc_repo = ZopeRepository('repo', 'ZVC Storage')
+            self.zvc_repo = ZopeRepository("repo", "ZVC Storage")
         return self.zvc_repo
 
     def _getZVCAccessInfo(self, history_id, selector, countPurged):
@@ -523,15 +523,15 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         #    - first line with trailing \x00: comment or empty comment
         #    - then: pickled metadata (incl. comment)
         try:
-            comment = metadata['sys_metadata']['comment']
+            comment = metadata["sys_metadata"]["comment"]
             comment = dumps(comment)
         except KeyError:
-            comment = ''
-        return b'\x00\n'.join((comment, dumps(metadata, HIGHEST_PROTOCOL)))
+            comment = ""
+        return b"\x00\n".join((comment, dumps(metadata, HIGHEST_PROTOCOL)))
 
     def _retrieveMetadataFromZVC(self, zvc_histid, zvc_selector):
         logEntry = self._retrieveZVCLogEntry(zvc_histid, zvc_selector)
-        metadata = loads(logEntry.message.split(b'\x00\n', 1)[1])
+        metadata = loads(logEntry.message.split(b"\x00\n", 1)[1])
         return metadata
 
     # -------------------------------------------------------------------
@@ -673,7 +673,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
     # ZMI methods
     # -------------------------------------------------------------------
 
-    security.declareProtected(ManagePortal, 'zmi_getStorageStatistics')
+    security.declareProtected(ManagePortal, "zmi_getStorageStatistics")
 
     def zmi_getStorageStatistics(self):
         """ """
@@ -708,7 +708,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
                 url = None
                 object_ = self.retrieve(hid).object
                 if isinstance(object_, Removed):
-                    portal_type = 'Removed'
+                    portal_type = "Removed"
                 else:
                     portal_type = object_.object.getPortalTypeName()
             histData = {
@@ -849,11 +849,11 @@ class ShadowHistory(Persistent):
         version_id = self.nextVersionId
         referenced = {}
         # Store referenced data as is
-        if 'referenced_data' in data:
-            referenced = data['referenced_data']
-            del data['referenced_data']
+        if "referenced_data" in data:
+            referenced = data["referenced_data"]
+            del data["referenced_data"]
         self._full[version_id] = deepCopy(data)
-        self._full[version_id]['referenced_data'] = referenced
+        self._full[version_id]["referenced_data"] = referenced
         self._available.append(version_id)
         # Provokes a write conflict if two saves happen the same
         # time. That's exactly what's desired.
@@ -868,7 +868,7 @@ class ShadowHistory(Persistent):
 
         return version_id
 
-    security.declareProtected(AccessPreviousVersions, 'retrieve')
+    security.declareProtected(AccessPreviousVersions, "retrieve")
 
     def retrieve(self, selector, countPurged=True):
         """Retrieves the Selected Data From the History
@@ -910,7 +910,7 @@ class ShadowHistory(Persistent):
         except KeyError:
             pass
 
-    security.declareProtected(AccessPreviousVersions, 'getLength')
+    security.declareProtected(AccessPreviousVersions, "getLength")
 
     def getLength(self, countPurged):
         """Length of the History Either Counting Purged Versions or Not"""
@@ -998,7 +998,7 @@ class ZVCAwareWrapper(Persistent):
 
     def __init__(self, object, metadata, vc_info=None):
         self._object = object
-        self._physicalPath = metadata['sys_metadata'].get('physicalPath', ())[:]  # copy
+        self._physicalPath = metadata["sys_metadata"].get("physicalPath", ())[:]  # copy
         if vc_info is not None:
             self.__vc_info__ = vc_info
 

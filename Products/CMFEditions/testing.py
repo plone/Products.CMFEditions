@@ -21,15 +21,15 @@ class ProductsCmfeditionsLayer(PloneSandboxLayer):
         self.loadZCML(package=Products.CMFEditions)
 
     def setUpPloneSite(self, portal):
-        applyProfile(portal, 'Products.CMFEditions:CMFEditions')
+        applyProfile(portal, "Products.CMFEditions:CMFEditions")
         # with named AND dotted behaviors we need to take care of both
         versioning_behavior = set(
             [
-                'plone.app.versioningbehavior.behaviors.IVersionable',
-                'plone.versioning',
+                "plone.app.versioningbehavior.behaviors.IVersionable",
+                "plone.versioning",
             ],
         )
-        for name in ('Document', 'Event', 'Link', 'News Item'):
+        for name in ("Document", "Event", "Link", "News Item"):
             fti = portal.portal_types[name]
             # write back the behaviors without the versioning behaviors
             # using a Set to keep it simple
@@ -46,13 +46,13 @@ PRODUCTS_CMFEDITIONS_FIXTURE = ProductsCmfeditionsLayer()
 
 PRODUCTS_CMFEDITIONS_INTEGRATION_TESTING = IntegrationTesting(
     bases=(PRODUCTS_CMFEDITIONS_FIXTURE,),
-    name='ProductsCmfeditionsLayer:IntegrationTesting',
+    name="ProductsCmfeditionsLayer:IntegrationTesting",
 )
 
 
 PRODUCTS_CMFEDITIONS_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(PRODUCTS_CMFEDITIONS_FIXTURE,),
-    name='ProductsCmfeditionsLayer:FunctionalTesting',
+    name="ProductsCmfeditionsLayer:FunctionalTesting",
 )
 
 
@@ -62,5 +62,5 @@ PRODUCTS_CMFEDITIONS_ACCEPTANCE_TESTING = FunctionalTesting(
         REMOTE_LIBRARY_BUNDLE_FIXTURE,
         z2.ZSERVER_FIXTURE,
     ),
-    name='ProductsCmfeditionsLayer:AcceptanceTesting',
+    name="ProductsCmfeditionsLayer:AcceptanceTesting",
 )

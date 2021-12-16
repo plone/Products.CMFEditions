@@ -35,7 +35,7 @@ class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
     def setUp(self):
         super(TestKeepLastNVersionsTool, self).setUp()
         # add an additional user
-        self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer', ['Manager'], '')
+        self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")
 
         # install test storage
         self._setDummyTool(PurgePolicyTestDummyStorage())
