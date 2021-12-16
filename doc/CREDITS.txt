@@ -47,9 +47,9 @@ Translations
 Sponsors
 ========
 
-The following sponsors helped the project either by donating money to a 
-developer to work on the project or a particular feature or by donating 
-money for the organization of sprints and paying travel expenses or donated 
+The following sponsors helped the project either by donating money to a
+developer to work on the project or a particular feature or by donating
+money for the organization of sprints and paying travel expenses or donated
 time to a developer of the organization to work on the project:
 
 - Oxfam GB: http://www.oxfam.org.uk

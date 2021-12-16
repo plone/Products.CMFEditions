@@ -112,7 +112,7 @@ Bug fixes:
 - InitializeClass was moved to AccessControl.class_init - use it.
   [jensens]
 
-- setDefaultRoles is deprecated. 
+- setDefaultRoles is deprecated.
   addPermission from AccessControl.Permission is instead used.
   [jensens]
 
