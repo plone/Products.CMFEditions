@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from Products.CMFEditions.interfaces._tools import IArchivistTool  # noqa: F401
-from Products.CMFEditions.interfaces._tools import (
-    IPortalModifierTool,
-)  # noqa: F401,E501
+from Products.CMFEditions.interfaces._tools import (  # noqa: F401,E501; noqa: F401
+    IArchivistTool,
+)
+from Products.CMFEditions.interfaces._tools import IPortalModifierTool
 from Products.CMFEditions.interfaces._tools import IPurgePolicyTool  # noqa: F401,E501
 from Products.CMFEditions.interfaces._tools import IStorageTool  # noqa: F401
 from zope import interface

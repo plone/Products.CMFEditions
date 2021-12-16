@@ -25,11 +25,11 @@
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
+from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import ImplicitAcquisitionWrapper
-from AccessControl.class_init import InitializeClass
 from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem
 from Products.CMFCore.utils import _checkPermission

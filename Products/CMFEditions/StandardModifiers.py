@@ -25,8 +25,8 @@
 """Standard modifiers
 """
 
-from Acquisition import aq_base
 from AccessControl.class_init import InitializeClass
+from Acquisition import aq_base
 from OFS.ObjectManager import ObjectManager
 from plone.folder.default import DefaultOrdering
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base

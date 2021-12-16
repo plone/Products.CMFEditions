@@ -24,9 +24,9 @@
 """
 
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from AccessControl.class_init import InitializeClass
 from OFS.OrderedFolder import OrderedFolder
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import UniqueObject

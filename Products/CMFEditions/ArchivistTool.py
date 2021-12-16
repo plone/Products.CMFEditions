@@ -25,10 +25,10 @@
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
+from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from AccessControl.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
 from Persistence import Persistent
 from Products.CMFCore.utils import getToolByName

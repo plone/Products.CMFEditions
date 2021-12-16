@@ -23,10 +23,10 @@
 
 """
 
+from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from AccessControl.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
 from Products.CMFCore.Expression import Expression
 from Products.CMFCore.utils import getToolByName
@@ -37,6 +37,7 @@ from Products.PageTemplates.Expressions import SecureModuleImporter
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from ZODB.broken import Broken
 from zope.interface import implementer
+
 
 manage_addModifierForm = PageTemplateFile(
     "www/modifierAddForm.pt", globals(), __name__="manage_addModifierForm"
