@@ -84,7 +84,7 @@ def getSize(obj):
         # check if to return zero (length is zero)
         if len(obj) == 0:
             return 0
-    except:
+    except:  # noqa E722
         pass
 
     try:
@@ -93,14 +93,14 @@ def getSize(obj):
             size = obj.getSize()
             if size is not None:
                 return size
-    except:
+    except:  # noqa E722
         pass
 
     try:
         # string
         if isinstance(obj, types.StringTypes):
             return len(obj)
-    except:
+    except:  # noqa E722
         pass
 
     try:
@@ -112,7 +112,7 @@ def getSize(obj):
             size = obj.tell()
             obj.seek(currentPos)
             return size
-    except:
+    except:  # noqa E722
         pass
 
     try:
@@ -121,7 +121,7 @@ def getSize(obj):
         p = Pickler(stream, 1)
         p.dump(obj)
         size = stream.tell()
-    except:
+    except:  # noqa E722
         size = None
 
     return size
@@ -941,7 +941,7 @@ class ShadowHistory(Persistent):
         if selector is not None:
             selector = int(selector)
 
-        ##### looking at special selectors first (None, negative)
+        # looking at special selectors first (None, negative)
         length = self.getLength(countPurged)
         # checking for ``None`` selector (youngest version)
         if selector is None:
@@ -955,7 +955,7 @@ class ShadowHistory(Persistent):
             if selector < 0:
                 return None
 
-        #### normal cases (0 <= selectors < length)
+        # normal cases (0 <= selectors < length)
         if countPurged:
             # selector is a normal selector
             return selector

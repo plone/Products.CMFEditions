@@ -43,7 +43,6 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
 
     def _initPolicies(self, node):
         tool = self.context
-        policynames = [p.getId() for p in tool.listPolicies()]
         for child in node.childNodes:
             if child.nodeName == "policies":
                 if self._shouldPurge(child):

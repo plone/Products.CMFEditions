@@ -22,8 +22,6 @@ from six.moves.cPickle import Pickler
 from six.moves.cPickle import Unpickler
 from zope.interface import implementer
 
-import types
-
 
 # Make alog module level so that it survives transaction rollbacks
 alog = []
@@ -106,11 +104,10 @@ class DummyArchivist(SimpleItem):
             # known default value)
             portal_hidhandler = getToolByName(obj, "portal_historyidhandler")
             history_id = portal_hidhandler.register(obj)
-            version_id = obj.version_id = 0
+            obj.version_id = 0
             obj.location_id = 0
             is_registered = False
         else:
-            version_id = len(self.queryHistory(obj))
             is_registered = True
 
         base_obj = aq_base(obj)
@@ -520,7 +517,7 @@ class MemoryStorage(DummyBaseTool):
             if not policy.beforeSaveHook(history_id, metadata):
                 return len(self._histories[history_id]) - 1
 
-        if not history_id in self._histories:
+        if history_id not in self._histories:
             raise StorageUnregisteredError(
                 "Saving or retrieving an unregistered object is not "
                 "possible. Register the object with history id '%s' first. "
@@ -632,11 +629,8 @@ class MemoryStorage(DummyBaseTool):
             )
         return history
 
-    #        return HistoryList(history)
-
     def _getLength(self, history_id, countPurged=True):
         """Returns the length of the history"""
-        histories = self._histories
         history = self._getHistory(history_id)
         if countPurged:
             return len(history)

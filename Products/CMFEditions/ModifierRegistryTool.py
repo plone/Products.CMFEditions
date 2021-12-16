@@ -151,7 +151,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
 
         for id_name, data in referenced_data.items():
             id, name = id_name.split("/", 1)
-            if not id in data_by_modid:
+            if id not in data_by_modid:
                 data_by_modid[id] = {}
             data_by_modid[id][name] = data
 
