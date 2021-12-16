@@ -8,20 +8,17 @@ from zope.dottedname.resolve import resolve
 
 
 class RepositoryToolXMLAdapter(XMLAdapterBase):
-    """Mode in- and exporter for RepositoryTool.
-    """
+    """Mode in- and exporter for RepositoryTool."""
 
     name = 'repositorytool'
 
     def _exportNode(self):
-        """Export the object as a DOM node.
-        """
-        node=self._doc.createElement('repositorytool')
+        """Export the object as a DOM node."""
+        node = self._doc.createElement('repositorytool')
         node.appendChild(self._extractPolicies())
         node.appendChild(self._extractTypePolicies())
         self._logger.info('RepositoryTool settings exported.')
         return node
-
 
     def _importNode(self, node):
         if self.environ.shouldPurge():
@@ -57,7 +54,7 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
                     if policy.nodeName != 'policy':
                         raise AssertionError(
                             "<policies> must only contain <policy> tags, not <%s>.",
-                            policy.nodeName
+                            policy.nodeName,
                         )
                     policy_id = policy.getAttribute('name')
                     policy_title = policy.getAttribute('title')
@@ -98,7 +95,7 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
                     if p_type.nodeName != 'type':
                         raise AssertionError(
                             "<policymap> must only contain <type> tags, not <%s>.",
-                            p_type.nodeName
+                            p_type.nodeName,
                         )
                     portal_type = p_type.getAttribute('name')
                     existing_policies = tool.getPolicyMap().get(portal_type, [])
@@ -111,7 +108,7 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
                         if policy.nodeName != 'policy':
                             raise AssertionError(
                                 "<policymap><type> must only contain <policy> tags, not <%s>.",
-                                policy.nodeName
+                                policy.nodeName,
                             )
                         policies.append(policy.getAttribute('name'))
                     versionable_types = tool.getVersionableContentTypes()
@@ -124,7 +121,6 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
                         if portal_type in versionable_types:
                             versionable_types.remove(portal_type)
                     tool.setVersionableContentTypes(versionable_types)
-
 
     def _extractTypePolicies(self):
         node = self._doc.createElement('policymap')
@@ -141,8 +137,7 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
 
 
 def importRepositoryTool(context):
-    """Import Repository Tool configuration.
-    """
+    """Import Repository Tool configuration."""
     site = context.getSite()
     tool = getToolByName(site, 'portal_repository', None)
     if tool is None:
@@ -152,9 +147,9 @@ def importRepositoryTool(context):
 
     importObjects(tool, '', context)
 
+
 def exportRepositoryTool(context):
-    """Export Repository Tool configuration.
-    """
+    """Export Repository Tool configuration."""
     site = context.getSite()
     tool = getToolByName(site, 'portal_repository', None)
     if tool is None:

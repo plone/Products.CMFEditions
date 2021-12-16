@@ -37,12 +37,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFEditions.interfaces.IArchivist import ArchivistRetrieveError
 from Products.CMFEditions.interfaces.IModifier import ModifierException
-from Products.CMFEditions.interfaces.IRepository import (
-    IContentTypeVersionPolicySupport
-)
-from Products.CMFEditions.interfaces.IRepository import (
-    ICopyModifyMergeRepository
-)
+from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
+from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
 from Products.CMFEditions.interfaces.IRepository import IHistory
 from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
 from Products.CMFEditions.interfaces.IRepository import IRepositoryTool
@@ -89,8 +85,7 @@ HOOKS = {
 )
 class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
-    """See ICopyModifyMergeRepository
-    """
+    """See ICopyModifyMergeRepository"""
 
     id = "portal_repository"
     alternative_id = "portal_copymergerepository"
@@ -122,8 +117,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.public
     def isVersionable(self, obj):
-        """See interface.
-        """
+        """See interface."""
         if hasattr(aq_base(obj), "versioning_enabled") and not getattr(
             obj, "versioning_enabled"
         ):
@@ -140,9 +134,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     # XXX: There was a typo which mismatched the interface def, preserve it
     # for backwards compatibility
-    security.declareProtected(
-        ManageVersioningPolicies, "setVersionableContentType"
-    )
+    security.declareProtected(ManageVersioningPolicies, "setVersionableContentType")
     setVersionableContentType = setVersionableContentTypes
 
     @security.protected(ManageVersioningPolicies)
@@ -211,9 +203,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         return policy_list
 
     @security.protected(ManageVersioningPolicies)
-    def addPolicy(
-        self, policy_id, policy_title, policy_class=VersionPolicy, **kw
-    ):
+    def addPolicy(self, policy_id, policy_title, policy_class=VersionPolicy, **kw):
         self._policy_defs[policy_id] = policy_class(policy_id, policy_title)
         self._callPolicyHook("add", policy_id, **kw)
 
@@ -239,8 +229,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
                 raise AssertionError("List items must be tuples: %s" % str(item))
             if len(item) not in (2, 3, 4):
                 raise AssertionError(
-                    "Each policy definition must contain a title and id: %s"
-                    % str(item)
+                    "Each policy definition must contain a title and id: %s" % str(item)
                 )
             if not isinstance(item[0], six.string_types):
                 raise AssertionError("Policy id must be a string: %s" % str(item[0]))
@@ -286,14 +275,12 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.protected(ApplyVersionControl)
     def setAutoApplyMode(self, autoapply):
-        """See ICopyModifyMergeRepository.
-        """
+        """See ICopyModifyMergeRepository."""
         self.autoapply = autoapply
 
     @security.public
     def applyVersionControl(self, obj, comment="", metadata={}):
-        """See ICopyModifyMergeRepository.
-        """
+        """See ICopyModifyMergeRepository."""
         self._assertAuthorized(obj, ApplyVersionControl, "applyVersionControl")
         sp = transaction.savepoint(optimistic=True)
         try:
@@ -310,8 +297,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.public
     def save(self, obj, comment="", metadata={}):
-        """See ICopyModifyMergeRepository.
-        """
+        """See ICopyModifyMergeRepository."""
         self._assertAuthorized(obj, SaveNewVersion, "save")
         sp = transaction.savepoint(optimistic=True)
         try:
@@ -332,8 +318,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.public
     def purge(self, obj, selector, comment="", metadata={}, countPurged=True):
-        """See IPurgeSupport.
-        """
+        """See IPurgeSupport."""
         self._assertAuthorized(obj, PurgeVersion, "purge")
 
         # Trying to avoid mess with purged versions which we don't offer
@@ -363,8 +348,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.public
     def revert(self, obj, selector=None, countPurged=True):
-        """See IPurgeSupport.
-        """
+        """See IPurgeSupport."""
         # XXX this should go away if _recursiveRetrieve is correctly
         # implemented
         original_id = obj.getId()
@@ -390,17 +374,13 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.public
     def retrieve(self, obj, selector=None, preserve=(), countPurged=True):
-        """See IPurgeSupport.
-        """
+        """See IPurgeSupport."""
         self._assertAuthorized(obj, AccessPreviousVersions, "retrieve")
         return self._retrieve(obj, selector, preserve, countPurged)
 
     @security.public
-    def restore(
-        self, history_id, selector, container, new_id=None, countPurged=True
-    ):
-        """See IPurgeSupport.
-        """
+    def restore(self, history_id, selector, container, new_id=None, countPurged=True):
+        """See IPurgeSupport."""
 
         self._assertAuthorized(container, RevertToPreviousVersions, "revert")
         fixup_queue = []
@@ -426,21 +406,15 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         self._doInplaceFixups(fixup_queue, True)
 
     @security.public
-    def getHistory(
-        self, obj, oldestFirst=False, preserve=(), countPurged=True
-    ):
-        """See IPurgeSupport.
-        """
+    def getHistory(self, obj, oldestFirst=False, preserve=(), countPurged=True):
+        """See IPurgeSupport."""
         self._assertAuthorized(obj, AccessPreviousVersions, "getHistory")
         return LazyHistory(self, obj, oldestFirst, preserve, countPurged)
 
     @security.public
     def getHistoryMetadata(self, obj):
-        """Returns the versioning metadata history.
-        """
-        self._assertAuthorized(
-            obj, AccessPreviousVersions, "getHistoryMetadata"
-        )
+        """Returns the versioning metadata history."""
+        self._assertAuthorized(obj, AccessPreviousVersions, "getHistoryMetadata")
         portal_archivist = getToolByName(self, "portal_archivist")
         hist = portal_archivist.getHistoryMetadata(obj)
         if hist:
@@ -449,8 +423,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     @security.public
     def isUpToDate(self, obj, selector=None, countPurged=True):
-        """See IPurgeSupport.
-        """
+        """See IPurgeSupport."""
         portal_archivist = getToolByName(self, "portal_archivist")
         return portal_archivist.isUpToDate(
             obj=obj, selector=selector, countPurged=countPurged
@@ -510,9 +483,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
             prep.clone.inside_refs,
         )
         for orig_ref, clone_ref in inside_refs:
-            self._recursiveSave(
-                orig_ref, app_metadata, sys_metadata, autoapply
-            )
+            self._recursiveSave(orig_ref, app_metadata, sys_metadata, autoapply)
             clone_ref.setReference(orig_ref, remove_info=True)
 
         outside_refs = map(
@@ -550,9 +521,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         )
         saved.rollback()
         wrapped = wrap(vd.data.object, aq_parent(aq_inner(obj)))
-        return VersionData(
-            wrapped, vd.preserved_data, vd.sys_metadata, vd.app_metadata
-        )
+        return VersionData(wrapped, vd.preserved_data, vd.sys_metadata, vd.app_metadata)
 
     def _recursiveRetrieve(
         self,
@@ -566,8 +535,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         ignore_existing=False,
         countPurged=True,
     ):
-        """This is the real workhorse pulling objects out recursively.
-        """
+        """This is the real workhorse pulling objects out recursively."""
         portal_archivist = getToolByName(self, "portal_archivist")
         portal_reffactories = getToolByName(self, "portal_referencefactories")
         if ignore_existing:
@@ -675,9 +643,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
             if va_ref is None:
                 continue
             try:
-                ref = dereference(
-                    history_id=va_ref.history_id, zodb_hook=self
-                )[0]
+                ref = dereference(history_id=va_ref.history_id, zodb_hook=self)[0]
             except (TypeError, AttributeError):
                 # get the attribute from the working copy
                 ref = cur_value
@@ -694,7 +660,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         return vdata
 
     def _doInplaceFixups(self, queue, inplace):
-        """ Perform fixups to deal with implementation details
+        """Perform fixups to deal with implementation details
         (especially zodb and cmf details) which need to be done in
         each retrieved object."""
         for obj in queue:
@@ -703,7 +669,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
                 self._fixupCatalogData(obj)
 
     def _fixupCatalogData(self, obj):
-        """ Reindex the object, otherwise the catalog will certainly
+        """Reindex the object, otherwise the catalog will certainly
         be out of sync."""
         portal_catalog = getToolByName(self, "portal_catalog")
         portal_catalog.indexObject(obj)
@@ -757,8 +723,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
     # -------------------------------------------------------------------
 
     def createTestHierarchy(self, context):
-        """Create a Content Test Hierarchy
-        """
+        """Create a Content Test Hierarchy"""
         # XXX to be allowed in test mode only
         from StorageMigrationSupport import createTestHierarchy
 
@@ -767,8 +732,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
 @implementer(IVersionData)
 class VersionData:
-    """
-    """
+    """ """
 
     security = ClassSecurityInfo()
     security.declareObjectPublic()
@@ -789,8 +753,7 @@ class VersionData:
 
 @implementer(IHistory)
 class LazyHistory:
-    """Lazy history.
-    """
+    """Lazy history."""
 
     __allow_access_to_unprotected_subobjects__ = 1
 
@@ -803,20 +766,16 @@ class LazyHistory:
         self._countPurged = countPurged
         self._retrieve = repository._retrieve
         self._length = len(
-            archivist.queryHistory(
-                obj=obj, preserve=preserve, countPurged=countPurged
-            )
+            archivist.queryHistory(obj=obj, preserve=preserve, countPurged=countPurged)
         )
         self._cache = {}
 
     def __len__(self):
-        """See IHistory
-        """
+        """See IHistory"""
         return self._length
 
     def __getitem__(self, selector):
-        """See IHistory
-        """
+        """See IHistory"""
         if not self._oldestFirst and selector < self._length:
             if selector >= 0:
                 selector = self._length - 1 - selector
@@ -831,24 +790,20 @@ class LazyHistory:
         return result
 
     def __iter__(self):
-        """See IHistory.
-        """
+        """See IHistory."""
         return GetItemIterator(
             self.__getitem__, stopExceptions=(ArchivistRetrieveError,)
         )
 
 
 class GetItemIterator:
-    """Iterator object using a getitem implementation to iterate over.
-    """
+    """Iterator object using a getitem implementation to iterate over."""
 
     def __init__(self, getItem, stopExceptions):
         self._getItem = getItem
         self._stopExceptions = stopExceptions
         self._pos = -1
-        self.next = (
-            self.__next__
-        )  # In order to keep compatibility with Python 2
+        self.next = self.__next__  # In order to keep compatibility with Python 2
 
     def __iter__(self):
         return self

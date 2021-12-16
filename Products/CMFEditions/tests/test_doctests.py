@@ -6,6 +6,7 @@ import unittest
 # These two classes are needed in the doctest. Don't remove it
 class DummyFile(object):
     """A sized object"""
+
     def __init__(self, size):
         self.size = size
 

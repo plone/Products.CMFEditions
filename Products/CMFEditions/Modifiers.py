@@ -38,26 +38,28 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from ZODB.broken import Broken
 from zope.interface import implementer
 
-manage_addModifierForm = PageTemplateFile('www/modifierAddForm.pt',
-                                          globals(),
-                                          __name__='manage_addModifierForm')
+manage_addModifierForm = PageTemplateFile(
+    'www/modifierAddForm.pt', globals(), __name__='manage_addModifierForm'
+)
+
 
 @implementer(
-        IConditionalModifier,)
+    IConditionalModifier,
+)
 class ConditionalModifier(SimpleItem):
-    """This is a wrapper for a modifier.
-    """
+    """This is a wrapper for a modifier."""
 
-    modifierEditForm = PageTemplateFile('www/modifierEditForm.pt',
-                                        globals(),
-                                        __name__='modifierEditForm')
+    modifierEditForm = PageTemplateFile(
+        'www/modifierEditForm.pt', globals(), __name__='modifierEditForm'
+    )
     modifierEditForm._owner = None
     manage = manage_main = modifierEditForm
-    manage_options = ({'label' : 'Edit', 'action' : 'modifierEditForm'},) + SimpleItem.manage_options[:]
+    manage_options = (
+        {'label': 'Edit', 'action': 'modifierEditForm'},
+    ) + SimpleItem.manage_options[:]
 
     def __init__(self, id, modifier, title=''):
-        """See IConditionalModifier.
-        """
+        """See IConditionalModifier."""
         self.id = str(id)
         self.title = str(title)
         self.meta_type = 'edmod_%s' % id
@@ -65,11 +67,10 @@ class ConditionalModifier(SimpleItem):
         self._enabled = False
 
     def edit(self, enabled=None, title='', REQUEST=None):
-        """See IConditionalModifier.
-        """
+        """See IConditionalModifier."""
         self.title = title
 
-        if enabled is not None and (enabled=='True' or enabled==True):
+        if enabled is not None and (enabled == 'True' or enabled == True):
             self._enabled = enabled
         else:
             self._enabled = False
@@ -86,49 +87,48 @@ class ConditionalModifier(SimpleItem):
         return isinstance(self.getModifier(), Broken)
 
     def isApplicable(self, obj, portal=None):
-        """See IConditionalModifier.
-        """
+        """See IConditionalModifier."""
         # check if disabled or an empty condition and not broken
         if self._enabled and not self.isBroken():
             return True
 
     def isEnabled(self):
-        """See IConditionalModifier.
-        """
+        """See IConditionalModifier."""
         return self._enabled
 
     def getModifier(self):
-        """See IConditionalModifier.
-        """
+        """See IConditionalModifier."""
         return self._modifier
+
 
 InitializeClass(ConditionalModifier)
 
 
-manage_addTalesModifierForm = PageTemplateFile('www/talesModifierAddForm.pt',
-                                               globals(),
-                                               __name__='manage_addTalesModifierForm')
+manage_addTalesModifierForm = PageTemplateFile(
+    'www/talesModifierAddForm.pt', globals(), __name__='manage_addTalesModifierForm'
+)
+
 
 @implementer(
-        IConditionalTalesModifier,)
+    IConditionalTalesModifier,
+)
 class ConditionalTalesModifier(ConditionalModifier):
-    """This is a wrapper with a tales condition for a modifier.
-    """
+    """This is a wrapper with a tales condition for a modifier."""
 
-    modifierEditForm = PageTemplateFile('www/talesModifierEditForm.pt',
-                                        globals(),
-                                        __name__='modifierEditForm')
-    manage_options = ({'label' : 'Edit', 'action' : 'modifierEditForm'},) + ConditionalModifier.manage_options[:]
+    modifierEditForm = PageTemplateFile(
+        'www/talesModifierEditForm.pt', globals(), __name__='modifierEditForm'
+    )
+    manage_options = (
+        {'label': 'Edit', 'action': 'modifierEditForm'},
+    ) + ConditionalModifier.manage_options[:]
 
     def __init__(self, id, modifier, title=''):
-        """See IConditionalTalesModifier.
-        """
+        """See IConditionalTalesModifier."""
         ConditionalModifier.__init__(self, id, modifier, title)
         self._condition = None
 
     def edit(self, enabled=None, condition=None, title='', REQUEST=None):
-        """See IConditionalTalesModifier.
-        """
+        """See IConditionalTalesModifier."""
         ConditionalModifier.edit(self, enabled, title)
         if condition is not None and condition != self.getTalesCondition():
             self._condition = Expression(condition)
@@ -138,8 +138,7 @@ class ConditionalTalesModifier(ConditionalModifier):
             return self.modifierEditForm(self, REQUEST)
 
     def isApplicable(self, obj, portal=None):
-        """See IConditionalTalesModifier.
-        """
+        """See IConditionalTalesModifier."""
         # check if disabled or an empty condition or broken
         if not self._enabled or not self.getTalesCondition() or self.isBroken():
             return False
@@ -149,9 +148,9 @@ class ConditionalTalesModifier(ConditionalModifier):
         return self._condition(context)
 
     def getTalesCondition(self):
-        """See IConditionalTalesModifier.
-        """
+        """See IConditionalTalesModifier."""
         return getattr(self._condition, 'text', '')
+
 
 InitializeClass(ConditionalTalesModifier)
 
@@ -217,21 +216,21 @@ def createExpressionContext(obj, portal=None, **more_symbols):
     try:
         portal_type = obj.getPortalTypeName()
     except AttributeError:
-        portal_type  = None
+        portal_type = None
 
     data = {
-        'object_url':   obj_url,
-        'folder_url':   folder is not None and folder.absolute_url() or '',
-        'portal_url':   portal is not None and portal.absolute_url() or '',
-        'object':       obj,
-        'folder':       folder,
-        'portal':       portal,
-        'nothing':      None,
-        'request':      getattr(obj, 'REQUEST', None),
-        'modules':      SecureModuleImporter,
-        'member':       member,
-        'meta_type':    meta_type,
-        'portal_type':  portal_type,
-        }
+        'object_url': obj_url,
+        'folder_url': folder is not None and folder.absolute_url() or '',
+        'portal_url': portal is not None and portal.absolute_url() or '',
+        'object': obj,
+        'folder': folder,
+        'portal': portal,
+        'nothing': None,
+        'request': getattr(obj, 'REQUEST', None),
+        'modules': SecureModuleImporter,
+        'member': member,
+        'meta_type': meta_type,
+        'portal_type': portal_type,
+    }
     data.update(more_symbols)
     return getEngine().getContext(data)

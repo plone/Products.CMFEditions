@@ -6,7 +6,7 @@ import unittest
 
 
 class CMFEditionsBaseTestCase(unittest.TestCase):
-    """ A base class for Products.CMFEditions testing """
+    """A base class for Products.CMFEditions testing"""
 
     layer = PRODUCTS_CMFEDITIONS_INTEGRATION_TESTING
 

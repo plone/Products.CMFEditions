@@ -30,7 +30,6 @@ alog = []
 
 
 class Dummy(SimpleItem):
-
     def __init__(self):
         now = DateTime()
         self.modification_date = now
@@ -45,9 +44,11 @@ class Dummy(SimpleItem):
 class UniqueIdError(Exception):
     pass
 
+
 class DummyBaseTool(SimpleItem):
     def getId(self):
         return self.id
+
 
 def deepCopy(obj):
     stream = BytesIO()
@@ -57,6 +58,7 @@ def deepCopy(obj):
     u = Unpickler(stream)
     return u.load()
 
+
 def notifyModified(obj):
     """Notify the object as modified.
 
@@ -64,13 +66,14 @@ def notifyModified(obj):
     notifies the object as modified (faster than time.sleep(2)).
     """
     t = obj.modified()
-    while t == DateTime(): pass
+    while t == DateTime():
+        pass
     obj.notifyModified()
 
 
 class DummyArchivist(SimpleItem):
-    """Archivist simulating modifiers and history storage.
-    """
+    """Archivist simulating modifiers and history storage."""
+
     id = 'portal_archivist'
 
     def getId(self):
@@ -144,14 +147,19 @@ class DummyArchivist(SimpleItem):
         if sys_metadata['originator'] is None:
             self.log("")
         if orefs:
-            self.log("%sprepare %s: hid=%s, refs=(%s)"
-                        % (self.alog_indent,
-                           obj.getId(),
-                           history_id,
-                           ', '.join([ref.getId() for ref in orefs])))
+            self.log(
+                "%sprepare %s: hid=%s, refs=(%s)"
+                % (
+                    self.alog_indent,
+                    obj.getId(),
+                    history_id,
+                    ', '.join([ref.getId() for ref in orefs]),
+                )
+            )
         else:
-            self.log("%sprepare %s: hid=%s"
-                        % (self.alog_indent, obj.getId(), history_id))
+            self.log(
+                "%sprepare %s: hid=%s" % (self.alog_indent, obj.getId(), history_id)
+            )
         self.alog_indent += '  '
 
         # prepare object structure
@@ -160,16 +168,28 @@ class DummyArchivist(SimpleItem):
 
         approxSize = None
 
-        return PreparedObject(history_id, original_info, clone_info, (),
-                              app_metadata, sys_metadata, is_registered, approxSize)
+        return PreparedObject(
+            history_id,
+            original_info,
+            clone_info,
+            (),
+            app_metadata,
+            sys_metadata,
+            is_registered,
+            approxSize,
+        )
 
     def register(self, prepared_obj):
         # log
-        self.log("%sregister %s: hid=%s, is_registered=%s"
-                    % (self.alog_indent,
-                       prepared_obj.original.object.getId(),
-                       prepared_obj.history_id,
-                       prepared_obj.is_registered))
+        self.log(
+            "%sregister %s: hid=%s, is_registered=%s"
+            % (
+                self.alog_indent,
+                prepared_obj.original.object.getId(),
+                prepared_obj.history_id,
+                prepared_obj.is_registered,
+            )
+        )
 
         if not prepared_obj.is_registered:
             # new empty history
@@ -179,7 +199,9 @@ class DummyArchivist(SimpleItem):
     def save(self, prepared_obj, autoregister=False):
         if not prepared_obj.is_registered:
             if not autoregister:
-                raise ArchivistError("not registered: %s " % prepared_obj.original.object)
+                raise ArchivistError(
+                    "not registered: %s " % prepared_obj.original.object
+                )
             self._archive[prepared_obj.history_id] = []
 
         # log
@@ -187,10 +209,8 @@ class DummyArchivist(SimpleItem):
 
         irefs = [ref.getAttribute() for ref in prepared_obj.clone.inside_refs]
         orefs = [ref.getAttribute() for ref in prepared_obj.clone.outside_refs]
-        irefs_prep = ['{hid:%s, vid:%s}' % (r.history_id, r.version_id)
-                      for r in irefs]
-        orefs_prep = ['{hid:%s, vid:%s}' % (r.history_id, r.version_id)
-                      for r in orefs]
+        irefs_prep = ['{hid:%s, vid:%s}' % (r.history_id, r.version_id) for r in irefs]
+        orefs_prep = ['{hid:%s, vid:%s}' % (r.history_id, r.version_id) for r in orefs]
         irefs = ', '.join(irefs_prep)
         orefs = ', '.join(orefs_prep)
         if irefs:
@@ -198,13 +218,17 @@ class DummyArchivist(SimpleItem):
         if orefs:
             orefs = "orefs=(%s), " % orefs
         refs = irefs + orefs
-        self.log("%ssave    %s: hid=%s, %sisreg=%s, auto=%s"
-                    % (self.alog_indent,
-                       prepared_obj.original.object.getId(),
-                       prepared_obj.history_id,
-                       refs,
-                       prepared_obj.is_registered,
-                       autoregister))
+        self.log(
+            "%ssave    %s: hid=%s, %sisreg=%s, auto=%s"
+            % (
+                self.alog_indent,
+                prepared_obj.original.object.getId(),
+                prepared_obj.history_id,
+                refs,
+                prepared_obj.is_registered,
+                autoregister,
+            )
+        )
 
         # save in the format the data needs to be retrieved
         svdata = {
@@ -215,24 +239,35 @@ class DummyArchivist(SimpleItem):
         # storage simulation
         self._archive[prepared_obj.history_id].append(svdata)
 
-    def retrieve(self, obj=None, history_id=None, selector=None, preserve=(),
-                 countPurged=True):
+    def retrieve(
+        self, obj=None, history_id=None, selector=None, preserve=(), countPurged=True
+    ):
         obj, history_id = dereference(obj, history_id, self)
         if selector is None:
-            selector = len(self._archive[history_id]) - 1  #HEAD
+            selector = len(self._archive[history_id]) - 1  # HEAD
 
-        self.log("%sretrieve %s: hid=%s, selector=%s"
-                    % (self.alog_indent, obj.getId(), history_id, selector))
+        self.log(
+            "%sretrieve %s: hid=%s, selector=%s"
+            % (self.alog_indent, obj.getId(), history_id, selector)
+        )
 
         data = self._archive[history_id][selector]
-        attr_handling_references = ['_objects','_tree','_count','_mt_index', '__annotations__']
+        attr_handling_references = [
+            '_objects',
+            '_tree',
+            '_count',
+            '_mt_index',
+            '__annotations__',
+        ]
         attr_handling_references.extend(data['clone'].object.objectIds())
         attr_handling_references.extend(obj.objectIds())
-        vdata = VersionData(data['clone'],
-                    [],
-                    attr_handling_references,
-                    data['referenced_data'],
-                    data['metadata'])
+        vdata = VersionData(
+            data['clone'],
+            [],
+            attr_handling_references,
+            data['referenced_data'],
+            data['metadata'],
+        )
 
         return deepCopy(vdata)
 
@@ -244,8 +279,7 @@ class DummyArchivist(SimpleItem):
         obj, history_id = dereference(obj, history_id, self)
         return [item['metadata'] for item in self._archive[history_id]]
 
-    def queryHistory(self, obj=None, history_id=None,
-                     preserve=(), default=None):
+    def queryHistory(self, obj=None, history_id=None, preserve=(), default=None):
         if default is None:
             default = []
         try:
@@ -272,8 +306,8 @@ class VersionAwareReference:
         portal_hidhandler = getToolByName(target_obj, 'portal_historyidhandler')
         portal_archivist = getToolByName(target_obj, 'portal_archivist')
         self.history_id = portal_hidhandler.queryUid(target_obj)
-        self.version_id = len(portal_archivist.queryHistory(target_obj))-1
-        self.location_id = 1 # only one location possible currently
+        self.version_id = len(portal_archivist.queryHistory(target_obj)) - 1
+        self.location_id = 1  # only one location possible currently
         if remove_info and hasattr(self, 'info'):
             self.info = None
 
@@ -285,7 +319,7 @@ class DummyModifier(DummyBaseTool):
     id = 'portal_modifier'
 
     def beforeSaveModifier(self, obj, clone):
-        return {}, [], [] # XXX 2nd and 3rd shall be lists
+        return {}, [], []  # XXX 2nd and 3rd shall be lists
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         preserved = {}
@@ -304,9 +338,9 @@ class DummyModifier(DummyBaseTool):
     def getOnCloneModifiers(self, obj):
         return None
 
+
 class FolderishContentObjectModifier(DummyBaseTool):
-    """This is a full fledged modifier.
-    """
+    """This is a full fledged modifier."""
 
     id = 'portal_modifier'
 
@@ -401,7 +435,9 @@ class FolderishContentObjectModifier(DummyBaseTool):
             setattr(object, key, value)
 
     def _getAttributeNamesHandlingSubObjects(self, obj):
-        return ['_objects', '_tree', '_count', '_mt_index', '__annotations__'].extend(obj.objectIds())
+        return ['_objects', '_tree', '_count', '_mt_index', '__annotations__'].extend(
+            obj.objectIds()
+        )
 
 
 class DummyHistoryIdHandler(DummyBaseTool):
@@ -439,31 +475,33 @@ class DummyHistoryIdHandler(DummyBaseTool):
         except KeyError:
             return default
 
+
 #    def setUid(self, obj, uid, check_uniqueness=True):
 #        setattr(obj, self.UID_ATTRIBUTE_NAME, uid)
+
 
 class StorageVersionData:
     def __init__(self, object, referenced_data, metadata):
         self.object = object
         self.referenced_data = referenced_data
         self.metadata = metadata
+
     def isValid(self):
         return not isinstance(self.object, Removed)
 
+
 class Removed:
-    """Indicates that removement of data
-    """
+    """Indicates that removement of data"""
 
     def __init__(self, reason, metadata):
-        """Store Removed Info
-        """
+        """Store Removed Info"""
         self.reason = reason
         self.metadata = metadata
+
 
 @implementer(IStorage, IPurgeSupport)
 class MemoryStorage(DummyBaseTool):
     id = 'portal_historiesstorage'
-
 
     def __init__(self):
         self._histories = {}
@@ -471,7 +509,7 @@ class MemoryStorage(DummyBaseTool):
     def register(self, history_id, object, referenced_data={}, metadata=None):
         histories = self._histories
         if history_id not in histories.keys():
-           return self._save(history_id, object, referenced_data, metadata)
+            return self._save(history_id, object, referenced_data, metadata)
 
     def save(self, history_id, object, referenced_data={}, metadata=None):
         # delegate the decission what to purge to the purge policy tool
@@ -486,10 +524,10 @@ class MemoryStorage(DummyBaseTool):
             raise StorageUnregisteredError(
                 "Saving or retrieving an unregistered object is not "
                 "possible. Register the object with history id '%s' first. "
-                % history_id)
+                % history_id
+            )
 
         return self._save(history_id, object, referenced_data, metadata)
-
 
     def _save(self, history_id, object, referenced_data={}, metadata=None):
         histories = self._histories
@@ -501,9 +539,11 @@ class MemoryStorage(DummyBaseTool):
                 cloned_referenced_data[key] = deepCopy(ref.getObject())
             else:
                 cloned_referenced_data[key] = deepCopy(ref)
-        vdata = StorageVersionData(object=deepCopy(object),
-                                   referenced_data=cloned_referenced_data,
-                                   metadata=metadata)
+        vdata = StorageVersionData(
+            object=deepCopy(object),
+            referenced_data=cloned_referenced_data,
+            metadata=metadata,
+        )
         if history_id in histories.keys():
             histories[history_id].append(vdata)
         else:
@@ -511,8 +551,7 @@ class MemoryStorage(DummyBaseTool):
 
         return len(histories[history_id]) - 1
 
-    def retrieve(self, history_id, selector=None,
-                 countPurged=True, substitute=True):
+    def retrieve(self, history_id, selector=None, countPurged=True, substitute=True):
         if selector is None:
             selector = len(self._getHistory(history_id)) - 1
 
@@ -520,8 +559,9 @@ class MemoryStorage(DummyBaseTool):
             try:
                 vdata = self._getHistory(history_id)[selector]
             except IndexError:
-                raise StorageRetrieveError("Retrieving non existing version %s"
-                                           % selector)
+                raise StorageRetrieveError(
+                    "Retrieving non existing version %s" % selector
+                )
 
             vdata.referenced_data = deepcopy(vdata.referenced_data)
             if substitute and isinstance(vdata.object, Removed):
@@ -540,11 +580,9 @@ class MemoryStorage(DummyBaseTool):
                 if valid == selector:
                     return vdata
                 valid += 1
-            raise StorageRetrieveError("Retrieving non existing version %s"
-                                       % selector)
+            raise StorageRetrieveError("Retrieving non existing version %s" % selector)
 
-    def getHistory(self, history_id, preserve=(), countPurged=True,
-                   substitute=True):
+    def getHistory(self, history_id, preserve=(), countPurged=True, substitute=True):
         history = []
         sel = 0
 
@@ -564,18 +602,17 @@ class MemoryStorage(DummyBaseTool):
     def isRegistered(self, history_id):
         return history_id in self._histories
 
-    def getModificationDate(self, history_id, selector=None,
-                            countPurged=True, substitute=True):
+    def getModificationDate(
+        self, history_id, selector=None, countPurged=True, substitute=True
+    ):
         vdata = self.retrieve(history_id, selector, countPurged, substitute)
         return vdata.object.object.modified()
 
     def purge(self, history_id, selector, metadata={}, countPurged=True):
-        """See ``IPurgeSupport``
-        """
+        """See ``IPurgeSupport``"""
         histories = self._histories
         history = histories[history_id]
-        vdata = self.retrieve(history_id, selector, countPurged,
-                              substitute=False)
+        vdata = self.retrieve(history_id, selector, countPurged, substitute=False)
         selector = history.index(vdata)
         if not isinstance(vdata.object, Removed):
             # prepare replacement for the deleted object and metadata
@@ -591,13 +628,14 @@ class MemoryStorage(DummyBaseTool):
             raise StorageUnregisteredError(
                 "Saving or retrieving an unregistered object is not "
                 "possible. Register the object with history id '%s' first. "
-                % history_id)
+                % history_id
+            )
         return history
-#        return HistoryList(history)
+
+    #        return HistoryList(history)
 
     def _getLength(self, history_id, countPurged=True):
-        """Returns the length of the history
-        """
+        """Returns the length of the history"""
         histories = self._histories
         history = self._getHistory(history_id)
         if countPurged:
@@ -612,25 +650,26 @@ class MemoryStorage(DummyBaseTool):
 
 
 class HistoryList(list):
-    """
-    """
+    """ """
+
     def __getitem__(self, selector):
         if selector is None:
             selector = -1
         try:
-           return list.__getitem__(self, selector)
+            return list.__getitem__(self, selector)
         except IndexError:
             raise StorageRetrieveError("Retrieving non existing version %s" % selector)
 
     def retrieve(self, selector, ignored=True):
-       """Faux metadata only retrieval"""
-       item = self[selector]
-       return {'metadata': item.metadata}
+        """Faux metadata only retrieval"""
+        item = self[selector]
+        return {'metadata': item.metadata}
+
 
 @implementer(IPurgePolicy)
 class DummyPurgePolicy(DummyBaseTool):
-    """Dummy Purge Policy
-    """
+    """Dummy Purge Policy"""
+
     id = 'portal_purgepolicy'
 
     def beforeSaveHook(self, history_id, obj, metadata={}):
@@ -652,8 +691,7 @@ class DummyPurgePolicy(DummyBaseTool):
         return True
 
     def retrieveSubstitute(self, history_id, selector, default=None):
-        """Retrives the next older version
-        """
+        """Retrives the next older version"""
         storage = getToolByName(self, 'portal_historiesstorage')
         while selector:
             selector -= 1
@@ -665,8 +703,8 @@ class DummyPurgePolicy(DummyBaseTool):
 
 @implementer(IStorage, IPurgeSupport)
 class PurgePolicyTestDummyStorage(DummyBaseTool):
-    """Partial Storage used for PurgePolicy Tetss
-    """
+    """Partial Storage used for PurgePolicy Tetss"""
+
     id = 'portal_historiesstorage'
 
     def __init__(self):
@@ -675,16 +713,13 @@ class PurgePolicyTestDummyStorage(DummyBaseTool):
     def save(self, history_id, obj):
         self.history.append(obj)
 
-    def getHistory(self, history_id, preserve=(), countPurged=True,
-                   substitute=True):
+    def getHistory(self, history_id, preserve=(), countPurged=True, substitute=True):
         return self.history
 
-    def purge(self, history_id, selector, metadata={},
-              countPurged=True):
+    def purge(self, history_id, selector, metadata={}, countPurged=True):
         del self.history[selector]
 
-    def retrieve(self, history_id, selector=None,
-                 countPurged=True, substitute=True):
+    def retrieve(self, history_id, selector=None, countPurged=True, substitute=True):
         if selector >= len(self.history):
             raise StorageRetrieveError()
         return self.history[selector]

@@ -17,7 +17,6 @@ def read_image(file_path):
 
 
 class TestPloneContents(CMFEditionsBaseTestCase):
-
     def setUp(self):
         super(TestPloneContents, self).setUp()
         self.membership = self.portal.portal_membership

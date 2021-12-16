@@ -51,8 +51,7 @@ class ICopyModifyMergeRepository(Interface):
     """
 
     def isVersionable(obj):
-        """Return True if the content type is versionable.
-        """
+        """Return True if the content type is versionable."""
 
     def setAutoApplyMode(autoapply):
         """Sets the autoapply mode.
@@ -124,8 +123,7 @@ class ICopyModifyMergeRepository(Interface):
         """
 
     def getHistoryMetadata(obj):
-        """Returns the versioning metadata history.
-        """
+        """Returns the versioning metadata history."""
 
 
 class IPurgeSupport(Interface):
@@ -209,8 +207,7 @@ class IPurgeSupport(Interface):
         (see interface documentation for details).
         """
 
-    def restore(history_id, selector, container, new_id=None,
-                countPurged=True):
+    def restore(history_id, selector, container, new_id=None, countPurged=True):
         """Restore a Specific version of an Object into a Container
 
         Usage Hint:
@@ -246,29 +243,25 @@ class IPurgeSupport(Interface):
 
 
 class IVersionSupport(Interface):
-    """Check if versioning is supported for a specific content.
-    """
+    """Check if versioning is supported for a specific content."""
 
     def isVersionable(obj):
-        """Returns True if the object is versionable
-        """
+        """Returns True if the object is versionable"""
 
 
 class IContentTypeVersionSupport(IVersionSupport):
-    """Registry for versionable content types
-    """
+    """Registry for versionable content types"""
 
     def getVersionableContentTypes():
-        """Returns a list of Versionable content types
-        """
+        """Returns a list of Versionable content types"""
 
     def setVersionableContentTypes(new_content_types):
-        """Set the list of Versionable content types
-        """
+        """Set the list of Versionable content types"""
+
 
 class IContentTypeVersionPolicySupport(IContentTypeVersionSupport):
     """Determine if a type supports a particular versioning method, the policy
-       parameter is simply a string representing the policy"""
+    parameter is simply a string representing the policy"""
 
     def addPolicyForContentType(content_type, policy):
         """Sets a content type to use a specific policy"""
@@ -277,8 +270,7 @@ class IContentTypeVersionPolicySupport(IContentTypeVersionSupport):
         """Sets a content type to use a specific policy"""
 
     def supportsPolicy(obj, policy):
-        """Determine if an object is set to use a specific versioning policy
-        """
+        """Determine if an object is set to use a specific versioning policy"""
 
     def hasPolicy(obj):
         """Determine if an object has any assigned versioning policies"""
@@ -293,31 +285,31 @@ class IContentTypeVersionPolicySupport(IContentTypeVersionSupport):
 
     def addPolicy(policy_id, policy_title, policy_class):
         """Add a new versioning policy, can optionally use an alternate
-           policy class."""
+        policy class."""
 
     def removePolicy(policy_id):
         """Removes a versioning policy from the tool and all types which
-           support it"""
+        support it"""
 
     def manage_changePolicyDefs(policy_list):
         """Update the policy structure with a list of tuples [(id, title),...]
-           The tuples may optionally contain a policy class and a dict of
-           kwargs to pass to the policy add hook. e.g.:
-          [(id, title, klass, {'arg1': val1}), ...]
+         The tuples may optionally contain a policy class and a dict of
+         kwargs to pass to the policy add hook. e.g.:
+        [(id, title, klass, {'arg1': val1}), ...]
         """
 
     def getPolicyMap():
         """Return a mapping of types to the lists of policies they support,
-           for use in config screen."""
+        for use in config screen."""
 
 
 class IVersionData(Interface):
-    """ Used to store the versioned content plus additional data.
-    """
+    """Used to store the versioned content plus additional data."""
 
     object = Attribute(
         """The retrieved version of the content.
-        """)
+        """
+    )
 
     preserved_data = Attribute(
         """It is the data preserved from overwriting during the
@@ -326,15 +318,18 @@ class IVersionData(Interface):
         The preserved data is a flat dictionary.
         With the example from above:
                 nick_name = vdata.preserved_data['nick_name']
-        """)
+        """
+    )
 
     comment = Attribute(
         """The comment stored when the working copies version was saved.
-        """)
+        """
+    )
 
     metadata = Attribute(
         """Metadata stored when the working copies version was saved.
-        """)
+        """
+    )
 
     sys_metadata = Attribute(
         """System related metadata.
@@ -342,20 +337,20 @@ class IVersionData(Interface):
         A Dictionary with the following keys:
         - timestamp: save time
         - principal: the actor that did the save
-        """)
+        """
+    )
 
     version_id = Attribute(
         """The version_id of the object.
-        """)
+        """
+    )
 
 
 class IHistory(Interface):
-    """Iterable version history.
-    """
+    """Iterable version history."""
 
     def __len__():
-        """Returns the length of the history.
-        """
+        """Returns the length of the history."""
 
     def __getitem__(selector):
         """Returns the selected version of a content.
@@ -364,21 +359,18 @@ class IHistory(Interface):
         """
 
     def __iter__():
-        """ Returns an iterator returning 'IVersionData' object.
-        """
+        """Returns an iterator returning 'IVersionData' object."""
 
 
 class IRepositoryTool(Interface):
     """Marker interface for the repository tool used in GenericSetup
-       exportimport handlers.
+    exportimport handlers.
     """
 
 
 class RepositoryError(Exception):
-    """Repository exception.
-    """
+    """Repository exception."""
 
 
 class RepositoryPurgeError(RepositoryError):
-    """Purge is only possible with a purge policy installed.
-    """
+    """Purge is only possible with a purge policy installed."""

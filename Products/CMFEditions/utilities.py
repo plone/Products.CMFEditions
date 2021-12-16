@@ -32,9 +32,9 @@ import random
 
 STUB_OBJECT_PREFIX = '_CMFEditionsTempId'
 
+
 class KwAsAttributes(Persistent):
-    """Class attaching to itself passed keyword attributes.
-    """
+    """Class attaching to itself passed keyword attributes."""
 
     # Not web accessable
     __roles__ = ()
@@ -81,19 +81,19 @@ def dereference(obj=None, history_id=None, zodb_hook=None):
 
 
 def generateId(parent, prefix='', volatile=False):
-    """Generate an unused id (optionaly a volatile one).
-    """
+    """Generate an unused id (optionaly a volatile one)."""
     existingIds = parent.objectIds()
     idTemplate = '%s%s_%%s' % (volatile * '__v_', prefix + STUB_OBJECT_PREFIX)
     while 1:
-        id =  idTemplate % random.randrange(1000000)
+        id = idTemplate % random.randrange(1000000)
         if id not in existingIds:
             return id
 
+
 def isObjectVersioned(obj):
-    """Return true iff object has a version_id.
-    """
+    """Return true iff object has a version_id."""
     return getattr(aq_base(obj), 'version_id', None) is not None
+
 
 def isObjectChanged(obj):
     pr = getToolByName(obj, 'portal_repository', None)

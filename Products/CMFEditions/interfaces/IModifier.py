@@ -31,8 +31,8 @@ from zope.interface import Interface
 
 class IAttributeModifier(Interface):
     """The simplest possible modifier, it indicates, which attributes
-       shouldn't be copied by the archivist, but be passed to the the storage
-       by reference.
+    shouldn't be copied by the archivist, but be passed to the the storage
+    by reference.
 
     """
 
@@ -44,8 +44,9 @@ class IAttributeModifier(Interface):
 
     def reattachReferencedAttributes(obj, attrs_dict):
         """Giving an obj and and an attribute dict composed by
-           attribute names and values, reattach them to the obj.
+        attribute names and values, reattach them to the obj.
         """
+
 
 class ICloneModifier(Interface):
     """Modifies an object on save to or retrieval from a repository storage.
@@ -70,7 +71,6 @@ class ICloneModifier(Interface):
 
         XXX Argh, this description is shit!
         """
-
 
 
 class ISaveRetrieveModifier(Interface):
@@ -134,6 +134,7 @@ class ISaveRetrieveModifier(Interface):
           overwritten.
         """
 
+
 class IReferenceAdapter(Interface):
     """Adapts to a references.
 
@@ -142,13 +143,11 @@ class IReferenceAdapter(Interface):
     """
 
     def remove():
-        """Removes the refrence adapted to.
-        """
+        """Removes the refrence adapted to."""
 
 
 class IModifierRegistrySet(Interface):
-    """Registring and editing a modifier registry.
-    """
+    """Registring and editing a modifier registry."""
 
     def register(id, modifier, pos=-1):
         """Registers a before save and after retrieve modifier.
@@ -175,8 +174,7 @@ class IModifierRegistrySet(Interface):
 
 
 class IModifierRegistryQuery(Interface):
-    """Querying a modifier registry.
-    """
+    """Querying a modifier registry."""
 
     def get(id):
         """Returns the conditional modifier with the given id.
@@ -220,12 +218,10 @@ class IConditionalModifier(Interface):
         """
 
     def isEnabled():
-        """Returns the enable status.
-        """
+        """Returns the enable status."""
 
     def getModifier():
-        """Returns the modifier.
-        """
+        """Returns the modifier."""
 
 
 class IConditionalTalesModifier(IConditionalModifier):
@@ -244,8 +240,7 @@ class IConditionalTalesModifier(IConditionalModifier):
         """
 
     def getTalesCondition():
-        """Returns the TALES expression.
-        """
+        """Returns the TALES expression."""
 
 
 # not yet implemented stuff, subject to change
@@ -278,13 +273,17 @@ class IBulkEditableModifierRegistry(Interface):
         Use this to set all subscribers at once from a form.
         """
 
+
 class ModifierException(Exception):
     """A base class for exceptions thrown by modifiers which wish to abort
     a save operation"""
+
     pass
+
 
 class FileTooLargeToVersionError(ModifierException):
     """A simple exception indicating that an object contained a file
     object that was too large to support versioning, and that versioning
     will be aborted as a result"""
+
     pass

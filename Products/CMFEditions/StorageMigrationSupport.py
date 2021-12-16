@@ -34,15 +34,18 @@ import time
 
 logger = logging.getLogger('CMFEditions')
 
+
 def create(context, type, name):
     context.invokeFactory(type, name)
     obj = getattr(context, name)
     editMethods[type](obj, version=0)
     return obj
 
+
 def edit(obj, version):
     type = obj.getPortalTypeName()
     editMethods[type](obj, version)
+
 
 def editEvent(context, version=0):
     title = context.Title()
@@ -63,9 +66,14 @@ def editEvent(context, version=0):
         location = "%s%s" % (version, location[1:])
         contact = "%s%s" % (version, contact[1:])
 
-    context.update(title=title, description=desc,
-                   eventType=eventType, location=location,
-                   contactName=contact)
+    context.update(
+        title=title,
+        description=desc,
+        eventType=eventType,
+        location=location,
+        contactName=contact,
+    )
+
 
 def editFile(context, version=0):
     title = context.Title()
@@ -82,6 +90,7 @@ def editFile(context, version=0):
         file = 100 * ("%s%s" % (version, ": %s file body\n" % name))
     context.update(title=title, description=desc, file=file)
 
+
 def editFolder(context, version=0):
     title = context.Title()
     desc = context.Description()
@@ -92,6 +101,7 @@ def editFolder(context, version=0):
     title = "%s%s" % (version, title[1:])
     desc = "%s%s" % (version, desc[1:])
     context.folder_edit(title=title, description=desc)
+
 
 def editImage(context, version=0):
     title = context.Title()
@@ -112,6 +122,7 @@ def editImage(context, version=0):
         desc = "%s%s" % (version, desc[1:])
     context.update(title=title, description=desc, image=image)
 
+
 def editLink(context, version=0):
     title = context.Title()
     desc = context.Description()
@@ -127,6 +138,7 @@ def editLink(context, version=0):
         remoteUrl = "%s%s" % (remoteUrl[:-1], version)
     context.update(title=title, description=desc, remoteUrl=remoteUrl)
 
+
 def editNewsItem(context, version=0):
     title = context.Title()
     desc = context.Description()
@@ -141,6 +153,7 @@ def editNewsItem(context, version=0):
         desc = "%s%s" % (version, desc[1:])
         text = "%s%s" % (version, text[1:])
     context.update(title=title, description=desc, text=text)
+
 
 def editDocument(context, version=0):
     title = context.Title()
@@ -160,6 +173,7 @@ def editDocument(context, version=0):
 
 def editTopic(context, version=0):
     pass
+
 
 editMethods = {
     "Event": editEvent,
@@ -183,16 +197,19 @@ hierarchy = {
     "topics": ("Folder", "Topic", 0, 0),
 }
 
+
 def createTestHierarchy(context):
     startTime = time.time()
     repo = getToolByName(context, "portal_repository")
-    testRoot = create(context,  "Folder", "CMFEditionsTestHierarchy")
+    testRoot = create(context, "Folder", "CMFEditionsTestHierarchy")
     nbrOfObjects = 0
     nbrOfEdits = 0
     nbrOfSaves = 0
     for name, type in hierarchy.items():
-        logger.log(logging.INFO, "createTestHierarchy: creating container %s(%s)" \
-            % (name, type[0]))
+        logger.log(
+            logging.INFO,
+            "createTestHierarchy: creating container %s(%s)" % (name, type[0]),
+        )
         folder = create(testRoot, type[0], name)
         nbrOfObjects += 1
         logger.log(logging.INFO, "createTestHierarchy: save #0")
@@ -205,9 +222,11 @@ def createTestHierarchy(context):
                 ext = ""
 
             # create and save
-            objName = name[:-1]+str(i+1)+ext
-            logger.log(logging.INFO, "createTestHierarchy: creating %s(%s)" \
-                % (objName, type[1]))
+            objName = name[:-1] + str(i + 1) + ext
+            logger.log(
+                logging.INFO,
+                "createTestHierarchy: creating %s(%s)" % (objName, type[1]),
+            )
             obj = create(folder, type[1], objName)
             nbrOfObjects += 1
             logger.log(logging.INFO, "createTestHierarchy: save #0")
@@ -223,7 +242,7 @@ def createTestHierarchy(context):
                 repo.save(obj, comment="save #%s" % j)
                 nbrOfSaves += 1
 
-                vers = j + i*(type[3]-1)
+                vers = j + i * (type[3] - 1)
                 logger.log(logging.INFO, "createTestHierarchy: editing parent")
                 edit(folder, vers)
                 nbrOfEdits += 1
@@ -232,8 +251,10 @@ def createTestHierarchy(context):
                 nbrOfSaves += 1
 
     totalTime = time.time() - startTime
-    logger.log(logging.INFO,
-        "createTestHierarchy: created %s objects, edited them %s times and saved %s versions in total in %.1f seconds" \
-        % (nbrOfObjects, nbrOfEdits, nbrOfSaves, round(totalTime, 1)))
+    logger.log(
+        logging.INFO,
+        "createTestHierarchy: created %s objects, edited them %s times and saved %s versions in total in %.1f seconds"
+        % (nbrOfObjects, nbrOfEdits, nbrOfSaves, round(totalTime, 1)),
+    )
 
     return testRoot

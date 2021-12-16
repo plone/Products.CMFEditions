@@ -36,12 +36,10 @@ from zope.interface.verify import verifyObject
 
 
 class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
-
     def setUp(self):
         super(TestArchivistToolMemoryStorage, self).setUp()
 
-        self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
-                                                ['Manager'], '')
+        self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer', ['Manager'], '')
         self.portal.invokeFactory('Document', 'doc')
         self.portal.invokeFactory('Folder', 'fol')
         self.portal.fol.invokeFactory('Document', 'doc1_inside')
@@ -50,7 +48,7 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         tools = (
             DummyModifier(),
             DummyHistoryIdHandler(),
-            )
+        )
         for tool in tools:
             self._setDummyTool(tool)
 
@@ -92,16 +90,18 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         doc.text = 'text v2'
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
-        vdata = portal_archivist.retrieve(obj=doc, selector=0, preserve=('gaga', 'gugus'))
+        vdata = portal_archivist.retrieve(
+            obj=doc, selector=0, preserve=('gaga', 'gugus')
+        )
         retr_doc = vdata.data.object
         retr_meta = vdata.app_metadata
         doc_histid = portal_historyidhandler.queryUid(doc)
         retr_histid = portal_historyidhandler.queryUid(retr_doc)
         self.assertEqual(doc_histid, retr_histid)
         # check if correct version retrieved and working object unchanged
-        self.assertEqual(retr_doc.text , 'text v1')
-        self.assertEqual(retr_meta , 'save number 1')
-        self.assertEqual(doc.text , 'text v2')
+        self.assertEqual(retr_doc.text, 'text v1')
+        self.assertEqual(retr_meta, 'save number 1')
+        self.assertEqual(doc.text, 'text v2')
         self.assertEqual(len(vdata.preserved_data), 2)
         self.assertEqual(vdata.preserved_data['gaga'], 'gaga')
         self.assertEqual(vdata.preserved_data['gugus'], 'gugus')
@@ -117,14 +117,15 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         prep = portal_archivist.prepare(doc, app_metadata='save number 2')
         portal_archivist.save(prep)
         doc_histid = portal_historyidhandler.queryUid(doc)
-        vdata = portal_archivist.retrieve(history_id=doc_histid, selector=0,
-                                          preserve=('gaga', 'gugus'))
+        vdata = portal_archivist.retrieve(
+            history_id=doc_histid, selector=0, preserve=('gaga', 'gugus')
+        )
         retr_doc = vdata.data.object
         retr_meta = vdata.app_metadata
         # check if correct version retrieved and working object unchanged
-        self.assertEqual(retr_doc.text , 'text v1')
-        self.assertEqual(retr_meta , 'save number 1')
-        self.assertEqual(doc.text , 'text v2')
+        self.assertEqual(retr_doc.text, 'text v1')
+        self.assertEqual(retr_meta, 'save number 1')
+        self.assertEqual(doc.text, 'text v2')
         self.assertEqual(len(vdata.preserved_data), 2)
         self.assertEqual(vdata.preserved_data['gaga'], 'gaga')
         self.assertEqual(vdata.preserved_data['gugus'], 'gugus')
@@ -229,7 +230,7 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         outside_refs = prep.clone.outside_refs
         self.assertEqual(len(inside_refs), 2)
         self.assertEqual(len(outside_refs), 1)
-        refs = [ref.getAttribute() for ref in inside_refs+outside_refs]
+        refs = [ref.getAttribute() for ref in inside_refs + outside_refs]
         for ref in refs:
             self.assertTrue(IVersionAwareReference.providedBy(ref))
         cloneValues = prep.clone.object.objectValues()
@@ -242,7 +243,7 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         outside_orefs = prep.original.outside_refs
         self.assertEqual(len(inside_orefs), 2)
         self.assertEqual(len(outside_orefs), 1)
-        refs = inside_orefs+outside_orefs
+        refs = inside_orefs + outside_orefs
         originalValues = prep.original.object.objectValues()
 
         for sub in originalValues:
@@ -250,8 +251,9 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
 
         # the clones and the originals refs must also reference the
         # "same" object
-        self.assertEqual(prep.clone.object.objectIds(),
-                         prep.original.object.objectIds())
+        self.assertEqual(
+            prep.clone.object.objectIds(), prep.original.object.objectIds()
+        )
 
         self.assertEqual(len(prep.referenced_data), 1)
         self.assertTrue(prep.referenced_data['title'] is fol.title)
@@ -284,7 +286,7 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         # reference stuff is saved and retrieved correctly
         inside_refs = prep.clone.inside_refs
         outside_refs = prep.clone.outside_refs
-        refs = [ref.getAttribute() for ref in inside_refs+outside_refs]
+        refs = [ref.getAttribute() for ref in inside_refs + outside_refs]
         for ref in refs:
             ref.info = refs.index(ref)
 
@@ -302,7 +304,7 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         outside_refs = retr.data.outside_refs
         self.assertEqual(len(inside_refs), 2)
         self.assertEqual(len(outside_refs), 1)
-        refs = [ref.getAttribute() for ref in inside_refs+outside_refs]
+        refs = [ref.getAttribute() for ref in inside_refs + outside_refs]
         for ref in refs:
             self.assertTrue(IVersionAwareReference.providedBy(ref))
             # check info value (see note above)
@@ -348,8 +350,12 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         self.assertTrue(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
         self.assertTrue(history.retrieve(0)['metadata']['sys_metadata']['principal'])
         # check if correct data and metadata retrieved
-        self.assertEqual(history.retrieve(0)['metadata']['app_metadata'], 'save number 1')
-        self.assertEqual(history.retrieve(1)['metadata']['app_metadata'], 'save number 2')
+        self.assertEqual(
+            history.retrieve(0)['metadata']['app_metadata'], 'save number 1'
+        )
+        self.assertEqual(
+            history.retrieve(1)['metadata']['app_metadata'], 'save number 2'
+        )
 
     def test09_getHistoryMetadata_byId(self):
         portal_archivist = self.portal.portal_archivist
@@ -371,15 +377,19 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         self.assertTrue(history.retrieve(1)['metadata']['sys_metadata']['timestamp'])
         self.assertTrue(history.retrieve(0)['metadata']['sys_metadata']['principal'])
         # check if correct data and metadata retrieved
-        self.assertEqual(history.retrieve(0)['metadata']['app_metadata'], 'save number 1')
-        self.assertEqual(history.retrieve(1)['metadata']['app_metadata'], 'save number 2')
+        self.assertEqual(
+            history.retrieve(0)['metadata']['app_metadata'], 'save number 1'
+        )
+        self.assertEqual(
+            history.retrieve(1)['metadata']['app_metadata'], 'save number 2'
+        )
+
 
 class TestArchivistToolZStorage(TestArchivistToolMemoryStorage):
-
-   def installStorageTool(self):
-       """Test with a real ZODB storage overriding the storage installation
-          in the super class.
-       """
-       # reset the shadow storage to avoid the effect of any versions created
-       # during portal setup
-       self.portal.portal_historiesstorage._shadowStorage = None
+    def installStorageTool(self):
+        """Test with a real ZODB storage overriding the storage installation
+        in the super class.
+        """
+        # reset the shadow storage to avoid the effect of any versions created
+        # during portal setup
+        self.portal.portal_historiesstorage._shadowStorage = None

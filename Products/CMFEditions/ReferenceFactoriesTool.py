@@ -36,9 +36,10 @@ from zope.interface import implementer
 
 
 @implementer(
-        IReferenceFactories,)
+    IReferenceFactories,
+)
 class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
-    __doc__ = __doc__ # copy from module
+    __doc__ = __doc__  # copy from module
 
     id = 'portal_referencefactories'
     alternative_id = 'portal_referencefactoryregistry'
@@ -54,9 +55,9 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
     # -------------------------------------------------------------------
 
     security.declarePrivate('invokeFactory')
+
     def invokeFactory(self, repo_clone, source, selector=None):
-        """See IReferenceFactories
-        """
+        """See IReferenceFactories"""
         # Just assuming ObjectManager behaviour for now
         portal_hidhandler = getToolByName(self, 'portal_historyidhandler')
         try:
@@ -80,10 +81,11 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
         return obj
 
     security.declarePrivate('hasBeenMoved')
+
     def hasBeenMoved(self, obj, source):
-        """See IReferenceFactories
-        """
+        """See IReferenceFactories"""
         # Check that the path of the object's parent (by path) is the same as the source
         return aq_parent(aq_inner(obj)).getPhysicalPath() != source.getPhysicalPath()
+
 
 InitializeClass(ReferenceFactoriesTool)

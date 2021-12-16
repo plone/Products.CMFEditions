@@ -27,18 +27,16 @@ class GetMacros(BrowserView):
             # Should use IBrowserDefault.getLayout ?
             def_method_name = type_info.getViewMethod(context)
         else:
-            def_method_name = type_info.getActionInfo(
-                'object/view')['url'].split('/')[-1] or \
-                getattr(type_info, 'default_view', 'view')
+            def_method_name = type_info.getActionInfo('object/view')['url'].split('/')[
+                -1
+            ] or getattr(type_info, 'default_view', 'view')
         versionPreviewMethodName = 'version_%s' % def_method_name
-        versionPreviewTemplate = getattr(
-            context, versionPreviewMethodName, None)
+        versionPreviewTemplate = getattr(context, versionPreviewMethodName, None)
 
         # check if a special version view exists
         if getattr(versionPreviewTemplate, 'macros', None) is None:
             # Use the Plone's default view template
-            versionPreviewTemplate = context.restrictedTraverse(
-                def_method_name)
+            versionPreviewTemplate = context.restrictedTraverse(def_method_name)
 
         if getattr(versionPreviewTemplate, 'macros', None) is None:
             return None
@@ -53,8 +51,7 @@ class GetMacros(BrowserView):
             return versionPreviewTemplate.macros['main']
         except KeyError:
             logger.warn(
-                'Missing TAL macros {0} in template "{1}".' .format(
-                    ', '.join(macro_names),
-                    versionPreviewMethodName
+                'Missing TAL macros {0} in template "{1}".'.format(
+                    ', '.join(macro_names), versionPreviewMethodName
                 )
             )

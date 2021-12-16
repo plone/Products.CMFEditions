@@ -34,9 +34,8 @@ class DiffView(BrowserView):
         version_name = self.versionName(version)
 
         return translate(
-            _(u"version ${version}",
-              mapping=dict(version=version_name)),
-            context=self.request
+            _(u"version ${version}", mapping=dict(version=version_name)),
+            context=self.request,
         )
 
     def __call__(self):
@@ -57,19 +56,21 @@ class DiffView(BrowserView):
             self.getVersion(version2),
             self.getVersion(version1),
             id1=self.versionTitle(version2),
-            id2=self.versionTitle(version1))
-        self.changes = [change for change in self.changeset.getDiffs()
-                        if not change.same]
+            id2=self.versionTitle(version1),
+        )
+        self.changes = [
+            change for change in self.changeset.getDiffs() if not change.same
+        ]
 
         return self.template()
 
 
 class CanDiff(BrowserView):
-
     def can_diff(self):
-        """Return True if content is diffable
-        """
+        """Return True if content is diffable"""
         context = self.context
         portal_diff = getToolByName(context, 'portal_diff', None)
-        return portal_diff \
+        return (
+            portal_diff
             and len(portal_diff.getDiffForPortalType(context.portal_type)) > 0
+        )

@@ -44,5 +44,4 @@ class IReferenceFactories(Interface):
         """
 
     def hasBeenMoved(obj, source):
-        """Returns True if the object has been moved away from ``source``.
-        """
+        """Returns True if the object has been moved away from ``source``."""

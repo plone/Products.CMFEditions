@@ -26,7 +26,7 @@ from zope.interface import Interface
 
 class IVersionPolicy(Interface):
     """A version policy object, which describes and sets up a versioning
-       policy
+    policy
     """
 
     def Title():

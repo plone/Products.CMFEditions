@@ -24,6 +24,7 @@
 """
 
 from Acquisition import aq_base
+
 # provoke the warning messages before the first test
 from OFS.SimpleItem import SimpleItem
 from pickle import dumps
@@ -42,14 +43,17 @@ from zope.interface.verify import verifyObject
 
 class Dummy(SimpleItem):
     pass
+
+
 def deepcopy(obj):
     return loads(dumps(obj, HIGHEST_PROTOCOL))
+
+
 deepcopy(Dummy())
 
 
 @implementer(ISaveRetrieveModifier)
 class SimpleModifierBase:
-
     def beforeSaveModifier(self, obj, copy_obj):
         try:
             bsm = getattr(copy_obj, self.beforeSaveModifierAttribute)
@@ -68,22 +72,28 @@ class SimpleModifierBase:
         setattr(repo_obj, self.afterRetrieveModifierAttribute, arm)
         return [], [], {}
 
+
 class SimpleModifier1(SimpleModifierBase):
     beforeSaveModifierAttribute = 'beforeSave1'
     afterRetrieveModifierAttribute = 'afterRetrieve1'
+
 
 class SimpleModifier2(SimpleModifierBase):
     beforeSaveModifierAttribute = 'beforeSave2'
     afterRetrieveModifierAttribute = 'afterRetrieve2'
 
+
 class SimpleModifier3(SimpleModifierBase):
     beforeSaveModifierAttribute = 'beforeSave3'
     afterRetrieveModifierAttribute = 'afterRetrieve3'
 
+
 class NonModifier(SimpleItem):
     pass
 
+
 mlog = []
+
 
 def dictToString(dict):
     dict_list = []
@@ -93,16 +103,18 @@ def dictToString(dict):
         dict_list.append("%s = %s" % (k, dict[k]))
     return ', '.join(dict_list)
 
+
 @implementer(IAttributeModifier, ICloneModifier, ISaveRetrieveModifier)
 class LoggingModifierBase:
-
     def getReferencedAttributes(self, obj):
         referenced_data = {
-            'k1': 'v1:'+str(self.__class__.__name__),
-            'k2': 'v2:'+str(self.__class__.__name__),
+            'k1': 'v1:' + str(self.__class__.__name__),
+            'k2': 'v2:' + str(self.__class__.__name__),
         }
-        mlog.append("%s.getReferencedAttributes: %s" %
-                    (self.__class__.__name__, dictToString(referenced_data)))
+        mlog.append(
+            "%s.getReferencedAttributes: %s"
+            % (self.__class__.__name__, dictToString(referenced_data))
+        )
         return referenced_data
 
     def getOnCloneModifiers(self, obj):
@@ -125,17 +137,22 @@ class LoggingModifierBase:
         mlog.append("%s.afterRetrieveModifier" % (self.__class__.__name__))
         return [], [], {}
 
+
 class LoggingModifier_A(LoggingModifierBase):
     pass
+
 
 class LoggingModifier_B(LoggingModifierBase):
     pass
 
+
 class LoggingModifier_C(LoggingModifierBase):
     pass
 
+
 class LoggingModifier_D(LoggingModifierBase):
     pass
+
 
 loggingModifiers = (
     LoggingModifier_A(),
@@ -144,14 +161,13 @@ loggingModifiers = (
     LoggingModifier_D(),
 )
 
-class TestModifierRegistryTool(CMFEditionsBaseTestCase):
 
+class TestModifierRegistryTool(CMFEditionsBaseTestCase):
     def setUp(self):
         super(TestModifierRegistryTool, self).setUp()
 
         # add an additional user
-        self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
-                                                ['Manager'], '')
+        self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer', ['Manager'], '')
         # add a document
         self.portal.invokeFactory('Document', 'doc')
 
@@ -165,10 +181,11 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         portal_modifier = self.portal.portal_modifier
 
         # test interface conformance
-        #verifyObject(IModifier, portal_modifier)
+        # verifyObject(IModifier, portal_modifier)
         verifyObject(IModifierRegistrySet, portal_modifier)
         verifyObject(IModifierRegistryQuery, portal_modifier)
-#        verifyObject(IBulkEditableSubscriberRegistry, portal_modifier)
+
+    #        verifyObject(IBulkEditableSubscriberRegistry, portal_modifier)
 
     def test01_modifiersNotCalled(self):
         portal_modifier = self.portal.portal_modifier
@@ -292,18 +309,20 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         doc_copy = deepcopy(aq_base(doc))
 
         # just check if variables got defined
-        condition = 'python:"%s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s" % (' \
-                    'object_url, ' \
-                    'folder_url, ' \
-                    'portal_url, ' \
-                    'object, ' \
-                    'folder, ' \
-                    'portal, ' \
-                    'nothing, ' \
-                    'request, ' \
-                    'modules, ' \
-                    'member,' \
-                    ')'
+        condition = (
+            'python:"%s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s\n %s" % ('
+            'object_url, '
+            'folder_url, '
+            'portal_url, '
+            'object, '
+            'folder, '
+            'portal, '
+            'nothing, '
+            'request, '
+            'modules, '
+            'member,'
+            ')'
+        )
         portal_modifier.register('1', SimpleModifier1())
         portal_modifier.edit('1', enabled=True, condition=condition)
 
@@ -325,9 +344,7 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         for m in loggingModifiers:
             counter += 1
             portal_modifier.register(str(counter), m)
-            portal_modifier.edit(str(counter),
-                                 enabled=True,
-                                 condition='python:True')
+            portal_modifier.edit(str(counter), enabled=True, condition='python:True')
 
         mlog.append('<save>')
         portal_modifier.getReferencedAttributes(doc)
@@ -338,9 +355,10 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
         portal_modifier.afterRetrieveModifier(doc, doc_copy)
         mlog.append('<end>')
 
-        mlog_str = '\n'.join(mlog).replace('__main__', 'CMFEditions.tests.test_ModifierRegistryTool')
-        expected_result = \
-"""<save>
+        mlog_str = '\n'.join(mlog).replace(
+            '__main__', 'CMFEditions.tests.test_ModifierRegistryTool'
+        )
+        expected_result = """<save>
 %(class)s_A.getReferencedAttributes: k1 = v1:%(class)s_A, k2 = v2:%(class)s_A
 %(class)s_B.getReferencedAttributes: k1 = v1:%(class)s_B, k2 = v2:%(class)s_B
 %(class)s_C.getReferencedAttributes: k1 = v1:%(class)s_C, k2 = v2:%(class)s_C
@@ -358,5 +376,7 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
 %(class)s_C.afterRetrieveModifier
 %(class)s_B.afterRetrieveModifier
 %(class)s_A.afterRetrieveModifier
-<end>"""%{'class':'LoggingModifier'}
+<end>""" % {
+            'class': 'LoggingModifier'
+        }
         self.assertEqual(mlog_str, expected_result)

@@ -46,13 +46,11 @@ class DummyOM(ObjectManager):
 
 
 class CMFDummy(Dummy):
-
     def __init__(self, id, cmfuid, effective=None, expires=None):
         super(CMFDummy, self).__init__()
         self.id = id
         self.cmf_uid = cmfuid
-        self.effective = \
-            effective if effective is not None else self.modification_date
+        self.effective = effective if effective is not None else self.modification_date
         self.expires = expires
 
     def getPortalTypeName(self):
@@ -60,13 +58,11 @@ class CMFDummy(Dummy):
 
 
 class TestZVCStorageTool(CMFEditionsBaseTestCase):
-
     def setUp(self):
         super(TestZVCStorageTool, self).setUp()
 
         # add an additional user
-        self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
-                                                ['Manager'], '')
+        self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer', ['Manager'], '')
 
         # eventually install another storage
         self.installStorageTool()
@@ -108,31 +104,41 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         portal_storage = self.portal.portal_historiesstorage
         obj = Dummy()
 
-        sel = portal_storage.register(1, ObjectData(obj),
-                                      metadata=self.buildMetadata('saved'))
+        sel = portal_storage.register(
+            1, ObjectData(obj), metadata=self.buildMetadata('saved')
+        )
         self.assertEqual(sel, 0)
-        sel = portal_storage.save(1, ObjectData(obj),
-                                  metadata=self.buildMetadata('saved'))
+        sel = portal_storage.save(
+            1, ObjectData(obj), metadata=self.buildMetadata('saved')
+        )
         self.assertEqual(sel, 1)
 
     def test02_saveUnregisteredObjectRaisesException(self):
         portal_storage = self.portal.portal_historiesstorage
         obj = Dummy()
 
-        self.assertRaises(StorageUnregisteredError,
-                          portal_storage.save,
-                          1, ObjectData(obj), metadata=self.buildMetadata('saved'))
+        self.assertRaises(
+            StorageUnregisteredError,
+            portal_storage.save,
+            1,
+            ObjectData(obj),
+            metadata=self.buildMetadata('saved'),
+        )
 
     def test03_saveAndRetrieve(self):
         portal_storage = self.portal.portal_historiesstorage
 
         obj1 = Dummy()
         obj1.text = 'v1 of text'
-        portal_storage.register(1, ObjectData(obj1), metadata=self.buildMetadata('saved v1'))
+        portal_storage.register(
+            1, ObjectData(obj1), metadata=self.buildMetadata('saved v1')
+        )
 
         obj2 = Dummy()
         obj2.text = 'v2 of text'
-        portal_storage.save(1, ObjectData(obj2), metadata=self.buildMetadata('saved v2'))
+        portal_storage.save(
+            1, ObjectData(obj2), metadata=self.buildMetadata('saved v2')
+        )
 
         # retrieve the state at registration time
         retrieved_obj = portal_storage.retrieve(history_id=1, selector=0)
@@ -149,18 +155,21 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
         obj1 = Dummy()
         obj1.text = 'v1 of text'
-        portal_storage.register(1, ObjectData(obj1),
-                                metadata=self.buildMetadata('saved v1'))
+        portal_storage.register(
+            1, ObjectData(obj1), metadata=self.buildMetadata('saved v1')
+        )
 
         obj2 = Dummy()
         obj2.text = 'v2 of text'
-        portal_storage.save(1, ObjectData(obj2),
-                            metadata=self.buildMetadata('saved v2'))
+        portal_storage.save(
+            1, ObjectData(obj2), metadata=self.buildMetadata('saved v2')
+        )
 
         obj3 = Dummy()
         obj3.text = 'v3 of text'
-        portal_storage.save(1, ObjectData(obj3),
-                            metadata=self.buildMetadata('saved v3'))
+        portal_storage.save(
+            1, ObjectData(obj3), metadata=self.buildMetadata('saved v3')
+        )
 
         history = portal_storage.getHistory(history_id=1)
         length = len(history)
@@ -170,11 +179,11 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
         # iterating over the history
         for i, vdata in enumerate(history):
-            expected_test = 'v%s of text' % (i+1)
+            expected_test = 'v%s of text' % (i + 1)
             self.assertEquals(vdata.object.object.text, expected_test)
             self.assertEquals(history[i].object.object.text, expected_test)
 
-            expected_comment = 'saved v%s' % (i+1)
+            expected_comment = 'saved v%s' % (i + 1)
             self.assertEqual(self.getComment(vdata), expected_comment)
             self.assertEqual(self.getComment(history[i]), expected_comment)
 
@@ -195,7 +204,9 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         om._setObject('sub1', sub1)
         om._setObject('sub2', sub2)
         self.assertEqual(len(om.objectIds()), 2)
-        portal_storage.register(1, ObjectData(om), metadata=self.buildMetadata('saved v1'))
+        portal_storage.register(
+            1, ObjectData(om), metadata=self.buildMetadata('saved v1')
+        )
         vdata = portal_storage.retrieve(history_id=1, selector=0)
         retrieved_om = vdata.object
         self.assertEqual(len(retrieved_om.object.objectIds()), 2)
@@ -204,42 +215,64 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         portal_storage = self.portal.portal_historiesstorage
         obj = Dummy()
         v1_modified = obj.modified()
-        v1 = portal_storage.register(history_id=1, object=ObjectData(obj), metadata=self.buildMetadata('saved v1'))
+        v1 = portal_storage.register(
+            history_id=1,
+            object=ObjectData(obj),
+            metadata=self.buildMetadata('saved v1'),
+        )
 
         self.assertEqual(v1_modified, portal_storage.getModificationDate(history_id=1))
-        self.assertEqual(v1_modified, portal_storage.getModificationDate(history_id=1, selector=v1))
+        self.assertEqual(
+            v1_modified, portal_storage.getModificationDate(history_id=1, selector=v1)
+        )
 
-        #storage never gets the same object twice, because the archivist always generates another copy on save,
-        #which then have a diffrent python id.
+        # storage never gets the same object twice, because the archivist always generates another copy on save,
+        # which then have a diffrent python id.
 
-        #simulate object copy
+        # simulate object copy
         notifyModified(obj)
         obj = Dummy()
         v2_modified = obj.modified()
-        v2 = portal_storage.save(history_id=1, object=ObjectData(obj), metadata=self.buildMetadata('saved v2'))
+        v2 = portal_storage.save(
+            history_id=1,
+            object=ObjectData(obj),
+            metadata=self.buildMetadata('saved v2'),
+        )
         self.assertNotEquals(v1, v2)
         self.assertEqual(v2_modified, portal_storage.getModificationDate(history_id=1))
-        self.assertEqual(v2_modified, portal_storage.getModificationDate(history_id=1, selector=v2))
-        self.assertEqual(v1_modified, portal_storage.getModificationDate(history_id=1, selector=v1))
+        self.assertEqual(
+            v2_modified, portal_storage.getModificationDate(history_id=1, selector=v2)
+        )
+        self.assertEqual(
+            v1_modified, portal_storage.getModificationDate(history_id=1, selector=v1)
+        )
 
     def _setupMinimalHistory(self):
         portal_storage = self.portal.portal_historiesstorage
 
         obj1 = Dummy()
         obj1.text = 'v1 of text'
-        portal_storage.register(1, ObjectData(obj1), metadata=self.buildMetadata('saved v1'))
+        portal_storage.register(
+            1, ObjectData(obj1), metadata=self.buildMetadata('saved v1')
+        )
 
         obj2 = Dummy()
         obj2.text = 'v2 of text'
-        portal_storage.save(1, ObjectData(obj2), metadata=self.buildMetadata('saved v2'))
+        portal_storage.save(
+            1, ObjectData(obj2), metadata=self.buildMetadata('saved v2')
+        )
 
         obj3 = Dummy()
         obj3.text = 'v3 of text'
-        portal_storage.save(1, ObjectData(obj3), metadata=self.buildMetadata('saved v3'))
+        portal_storage.save(
+            1, ObjectData(obj3), metadata=self.buildMetadata('saved v3')
+        )
 
         obj4 = Dummy()
         obj4.text = 'v4 of text'
-        portal_storage.save(1, ObjectData(obj4), metadata=self.buildMetadata('saved v4'))
+        portal_storage.save(
+            1, ObjectData(obj4), metadata=self.buildMetadata('saved v4')
+        )
 
     def test08_lengthAfterHavingPurgedAVersion(self):
         self._setupMinimalHistory()
@@ -277,14 +310,16 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         self.assertEqual(retrieved_obj.object.reason, "purged")
         self.assertEqual(self.getComment(retrieved_obj), "purged v3")
 
-        retrieved_obj = portal_storage.retrieve(history_id=1, selector=2,
-                                                substitute=False)
+        retrieved_obj = portal_storage.retrieve(
+            history_id=1, selector=2, substitute=False
+        )
         self.assertFalse(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.reason, "purged")
         self.assertEqual(self.getComment(retrieved_obj), "purged v3")
 
-        retrieved_obj = portal_storage.retrieve(history_id=1, selector=2,
-                                                countPurged=False)
+        retrieved_obj = portal_storage.retrieve(
+            history_id=1, selector=2, countPurged=False
+        )
         self.assertTrue(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.object.text, 'v4 of text')
         self.assertEqual(self.getComment(retrieved_obj), 'saved v4')
@@ -328,13 +363,15 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         self.assertEqual(self.getComment(retrieved_obj), 'saved v4')
 
         # check with substitute=False: should return the removed info
-        retrieved_obj = portal_storage.retrieve(history_id=1, selector=1,
-                                                substitute=False)
+        retrieved_obj = portal_storage.retrieve(
+            history_id=1, selector=1, substitute=False
+        )
         self.assertFalse(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.reason, "purged")
         self.assertEqual(self.getComment(retrieved_obj), "purged v2")
-        retrieved_obj = portal_storage.retrieve(history_id=1, selector=2,
-                                                substitute=False)
+        retrieved_obj = portal_storage.retrieve(
+            history_id=1, selector=2, substitute=False
+        )
         self.assertFalse(retrieved_obj.isValid())
         self.assertEqual(retrieved_obj.object.reason, "purged")
         self.assertEqual(self.getComment(retrieved_obj), "purged v3")
@@ -349,8 +386,9 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         obj1 = Dummy()
         obj1.text = 'v1 of text'
 
-        sel = portal_storage.register(1, ObjectData(obj1),
-                                      metadata=self.buildMetadata('saved v1'))
+        sel = portal_storage.register(
+            1, ObjectData(obj1), metadata=self.buildMetadata('saved v1')
+        )
         history = portal_storage.getHistory(1, countPurged=False)
 
         self.assertEquals(sel, 0)
@@ -361,8 +399,9 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         # save no 2
         obj2 = Dummy()
         obj2.text = 'v2 of text'
-        sel = portal_storage.save(1, ObjectData(obj2),
-                                  metadata=self.buildMetadata('saved v2'))
+        sel = portal_storage.save(
+            1, ObjectData(obj2), metadata=self.buildMetadata('saved v2')
+        )
         history = portal_storage.getHistory(1, countPurged=False)
 
         self.assertEquals(sel, 1)
@@ -375,17 +414,16 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         # save no 3: purged oldest version
         obj3 = Dummy()
         obj3.text = 'v3 of text'
-        sel = portal_storage.save(1, ObjectData(obj3),
-                                  metadata=self.buildMetadata('saved v3'))
+        sel = portal_storage.save(
+            1, ObjectData(obj3), metadata=self.buildMetadata('saved v3')
+        )
         history = portal_storage.getHistory(1, countPurged=False)
         length = len(history)
 
         # iterating over the history
         for i, vdata in enumerate(history):
-            self.assertEquals(vdata.object.object.text,
-                              'v%s of text' % (i+2))
-            self.assertEqual(self.getComment(vdata),
-                             'saved v%s' % (i+2))
+            self.assertEquals(vdata.object.object.text, 'v%s of text' % (i + 2))
+            self.assertEqual(self.getComment(vdata), 'saved v%s' % (i + 2))
 
         self.assertEquals(sel, 2)
         self.assertEquals(length, 2)
@@ -397,17 +435,16 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         # save no 4: purged oldest version
         obj4 = Dummy()
         obj4.text = 'v4 of text'
-        sel = portal_storage.save(1, ObjectData(obj4),
-                                  metadata=self.buildMetadata('saved v4'))
+        sel = portal_storage.save(
+            1, ObjectData(obj4), metadata=self.buildMetadata('saved v4')
+        )
         history = portal_storage.getHistory(1, countPurged=False)
         length = len(history)
 
         # iterating over the history
         for i, vdata in enumerate(history):
-            self.assertEquals(vdata.object.object.text,
-                              'v%s of text' % (i+3))
-            self.assertEqual(self.getComment(vdata),
-                             'saved v%s' % (i+3))
+            self.assertEquals(vdata.object.object.text, 'v%s of text' % (i + 3))
+            self.assertEqual(self.getComment(vdata), 'saved v%s' % (i + 3))
 
         self.assertEquals(sel, 3)
         self.assertEquals(length, 2)
@@ -421,32 +458,47 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
         obj1 = Dummy()
         obj1.text = 'v1 of text'
-        portal_storage.register(1, ObjectData(obj1), metadata=self.buildMetadata('saved v1'))
+        portal_storage.register(
+            1, ObjectData(obj1), metadata=self.buildMetadata('saved v1')
+        )
 
         obj2 = Dummy()
         obj2.text = 'v2 of text'
-        portal_storage.save(1, ObjectData(obj2), metadata=self.buildMetadata('saved v2'))
+        portal_storage.save(
+            1, ObjectData(obj2), metadata=self.buildMetadata('saved v2')
+        )
 
         # purge
         portal_storage.purge(1, 0, metadata=self.buildMetadata("purged v1"))
 
         # retrieve non existing version
-        self.assertRaises(StorageRetrieveError,
-                          portal_storage.retrieve, history_id=1, selector=2,
-                          countPurged=True, substitute=True)
+        self.assertRaises(
+            StorageRetrieveError,
+            portal_storage.retrieve,
+            history_id=1,
+            selector=2,
+            countPurged=True,
+            substitute=True,
+        )
 
-        self.assertRaises(StorageRetrieveError,
-                          portal_storage.retrieve, history_id=1, selector=1,
-                          countPurged=False)
+        self.assertRaises(
+            StorageRetrieveError,
+            portal_storage.retrieve,
+            history_id=1,
+            selector=1,
+            countPurged=False,
+        )
 
     def test13_saveWithUnicodeComment(self):
         portal_storage = self.portal.portal_historiesstorage
         obj1 = Dummy()
         obj1.text = 'v1 of text'
-        portal_storage.register(1, ObjectData(obj1),
-                                metadata=self.buildMetadata('saved v1'))
-        portal_storage.save(1, ObjectData(obj1),
-                            metadata=self.buildMetadata(u'saved v1\xc3\xa1'))
+        portal_storage.register(
+            1, ObjectData(obj1), metadata=self.buildMetadata('saved v1')
+        )
+        portal_storage.save(
+            1, ObjectData(obj1), metadata=self.buildMetadata(u'saved v1\xc3\xa1')
+        )
 
     def test14_getHistoryMetadata(self):
         portal_storage = self.portal.portal_historiesstorage
@@ -455,10 +507,18 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         self.assertEqual(len(history), 4)
 
         # accessing the versions
-        self.assertEqual(history.retrieve(0)['metadata']['sys_metadata']['comment'], "saved v1")
-        self.assertEqual(history.retrieve(1)['metadata']['sys_metadata']['comment'], "saved v2")
-        self.assertEqual(history.retrieve(2)['metadata']['sys_metadata']['comment'], "saved v3")
-        self.assertEqual(history.retrieve(3)['metadata']['sys_metadata']['comment'], "saved v4")
+        self.assertEqual(
+            history.retrieve(0)['metadata']['sys_metadata']['comment'], "saved v1"
+        )
+        self.assertEqual(
+            history.retrieve(1)['metadata']['sys_metadata']['comment'], "saved v2"
+        )
+        self.assertEqual(
+            history.retrieve(2)['metadata']['sys_metadata']['comment'], "saved v3"
+        )
+        self.assertEqual(
+            history.retrieve(3)['metadata']['sys_metadata']['comment'], "saved v4"
+        )
 
     def test15_storageStatistics(self):
         self.maxDiff = None
@@ -467,21 +527,29 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         cmf_uid = 1
         obj1 = CMFDummy('obj', cmf_uid)
         obj1.text = 'v1 of text'
-        portal_storage.register(cmf_uid, ObjectData(obj1), metadata=self.buildMetadata('saved v1'))
+        portal_storage.register(
+            cmf_uid, ObjectData(obj1), metadata=self.buildMetadata('saved v1')
+        )
 
         obj2 = CMFDummy('obj', cmf_uid)
         obj2.text = 'v2 of text'
-        portal_storage.save(cmf_uid, ObjectData(obj2), metadata=self.buildMetadata('saved v2'))
+        portal_storage.save(
+            cmf_uid, ObjectData(obj2), metadata=self.buildMetadata('saved v2')
+        )
 
         obj3 = CMFDummy('obj', cmf_uid)
         obj3.text = 'v3 of text'
-        portal_storage.save(cmf_uid, ObjectData(obj3), metadata=self.buildMetadata('saved v3'))
+        portal_storage.save(
+            cmf_uid, ObjectData(obj3), metadata=self.buildMetadata('saved v3')
+        )
 
         obj4 = CMFDummy('obj', cmf_uid)
         obj4.text = 'v4 of text'
         self.portal._setObject('obj', obj4)
         self.portal.portal_catalog.indexObject(self.portal.obj)
-        portal_storage.save(cmf_uid, ObjectData(obj4), metadata=self.buildMetadata('saved v4'))
+        portal_storage.save(
+            cmf_uid, ObjectData(obj4), metadata=self.buildMetadata('saved v4')
+        )
 
         cmf_uid = 2
         tomorrow = DateTime() + 1
@@ -489,7 +557,9 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         obj5.allowedRolesAndUsers = ['Anonymous']
         self.portal._setObject('tomorrow', obj5)
         self.portal.portal_catalog.indexObject(self.portal.tomorrow)
-        portal_storage.register(cmf_uid, ObjectData(obj5), metadata=self.buildMetadata('effective tomorrow'))
+        portal_storage.register(
+            cmf_uid, ObjectData(obj5), metadata=self.buildMetadata('effective tomorrow')
+        )
 
         cmf_uid = 3
         yesterday = DateTime() - 1
@@ -497,7 +567,9 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         obj6.allowedRolesAndUsers = ['Anonymous']
         self.portal._setObject('yesterday', obj6)
         self.portal.portal_catalog.indexObject(self.portal.yesterday)
-        portal_storage.register(cmf_uid, ObjectData(obj6), metadata=self.buildMetadata('expired yesterday'))
+        portal_storage.register(
+            cmf_uid, ObjectData(obj6), metadata=self.buildMetadata('expired yesterday')
+        )
 
         cmf_uid = 4
         obj7 = CMFDummy('public', cmf_uid)
@@ -505,53 +577,62 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         obj7.allowedRolesAndUsers = ['Anonymous']
         self.portal._setObject('public', obj7)
         self.portal.portal_catalog.indexObject(self.portal.public)
-        portal_storage.register(cmf_uid, ObjectData(obj7), metadata=self.buildMetadata('saved public'))
+        portal_storage.register(
+            cmf_uid, ObjectData(obj7), metadata=self.buildMetadata('saved public')
+        )
 
         processQueue()
         got = portal_storage.zmi_getStorageStatistics()
-        expected = {'deleted': [],
-                    'summaries': {
-                        'totalHistories': 4,
-                        'deletedVersions': 0,
-                        'existingVersions': 7,
-                        'deletedHistories': 0,
-                        # time may easily be different
-                        # 'time': '0.00',
-                        'totalVersions': 7,
-                        'existingAverage': '1.8',
-                        'existingHistories': 4,
-                        'deletedAverage': 'n/a',
-                        'totalAverage': '1.8'},
-                    'existing': [
-                        {
-                            'url': 'http://nohost/plone/obj',
-                            'history_id': 1,
-                            'length': 4,
-                            'path': '/obj',
-                            'sizeState': 'approximate',
-                            'portal_type': 'Dummy',
-                        }, {
-                            'url': 'http://nohost/plone/tomorrow',
-                            'history_id': 2,
-                            'length': 1,
-                            'path': '/tomorrow',
-                            'sizeState': 'approximate',
-                            'portal_type': 'Dummy',
-                        }, {
-                            'url': 'http://nohost/plone/yesterday',
-                            'history_id': 3,
-                            'length': 1,
-                            'path': '/yesterday',
-                            'sizeState': 'approximate',
-                            'portal_type': 'Dummy',
-                        }, {
-                            'url': 'http://nohost/plone/public',
-                            'history_id': 4,
-                            'length': 1,
-                            'path': '/public',
-                            'sizeState': 'approximate',
-                            'portal_type': 'Dummy',
-                        }]}
+        expected = {
+            'deleted': [],
+            'summaries': {
+                'totalHistories': 4,
+                'deletedVersions': 0,
+                'existingVersions': 7,
+                'deletedHistories': 0,
+                # time may easily be different
+                # 'time': '0.00',
+                'totalVersions': 7,
+                'existingAverage': '1.8',
+                'existingHistories': 4,
+                'deletedAverage': 'n/a',
+                'totalAverage': '1.8',
+            },
+            'existing': [
+                {
+                    'url': 'http://nohost/plone/obj',
+                    'history_id': 1,
+                    'length': 4,
+                    'path': '/obj',
+                    'sizeState': 'approximate',
+                    'portal_type': 'Dummy',
+                },
+                {
+                    'url': 'http://nohost/plone/tomorrow',
+                    'history_id': 2,
+                    'length': 1,
+                    'path': '/tomorrow',
+                    'sizeState': 'approximate',
+                    'portal_type': 'Dummy',
+                },
+                {
+                    'url': 'http://nohost/plone/yesterday',
+                    'history_id': 3,
+                    'length': 1,
+                    'path': '/yesterday',
+                    'sizeState': 'approximate',
+                    'portal_type': 'Dummy',
+                },
+                {
+                    'url': 'http://nohost/plone/public',
+                    'history_id': 4,
+                    'length': 1,
+                    'path': '/public',
+                    'sizeState': 'approximate',
+                    'portal_type': 'Dummy',
+                },
+            ],
+        }
         self.assertEqual(expected['deleted'], got['deleted'])
         self.assertTrue('summaries' in got)
         self.assertTrue('time' in got['summaries'])
@@ -568,7 +649,7 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
             self.assertTrue(actual['size'] > 0)
 
     def test16_delete_history_on_content_deletion(self):
-        """ If a content item gets deleted, delete it's history
+        """If a content item gets deleted, delete it's history
         as well
         """
         portal_hidhandler = self.portal.portal_historyidhandler
@@ -581,22 +662,25 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         doc = self.portal.doc
         doc_histid = portal_hidhandler.register(doc)
         portal_storage.register(
-            doc_histid, ObjectData(aq_base(doc)),
-            metadata=self.buildMetadata('initial'))
+            doc_histid, ObjectData(aq_base(doc)), metadata=self.buildMetadata('initial')
+        )
         portal_storage.save(
-            doc_histid,
-            ObjectData(aq_base(doc)),
-            metadata=self.buildMetadata('v2'))
+            doc_histid, ObjectData(aq_base(doc)), metadata=self.buildMetadata('v2')
+        )
         link = self.portal.link
         link_histid = portal_hidhandler.register(link)
         portal_storage.register(
-            link_histid, ObjectData(aq_base(link)),
-            metadata=self.buildMetadata('initial'))
+            link_histid,
+            ObjectData(aq_base(link)),
+            metadata=self.buildMetadata('initial'),
+        )
         folder = self.portal.folder
         folder_histid = portal_hidhandler.register(folder)
         portal_storage.register(
-            folder_histid, ObjectData(aq_base(folder)),
-            metadata=self.buildMetadata('first draft'))
+            folder_histid,
+            ObjectData(aq_base(folder)),
+            metadata=self.buildMetadata('first draft'),
+        )
         dochist = portal_storage.retrieve(doc_histid).object
         doctype = dochist.object.portal_type
         self.assertEqual('Document', doctype)
@@ -606,8 +690,7 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         folderhist = portal_storage.retrieve(folder_histid).object
         foldertype = folderhist.object.portal_type
         self.assertEqual('Folder', foldertype)
-        self.portal.manage_delObjects(
-            ids=['doc', 'link', 'folder', 'unversioned_doc'])
+        self.portal.manage_delObjects(ids=['doc', 'link', 'folder', 'unversioned_doc'])
         removed_doc = portal_storage.retrieve(history_id=doc_histid)
         self.assertTrue(type(removed_doc.object) == Removed)
         removed_link = portal_storage.retrieve(history_id=link_histid)
@@ -617,18 +700,15 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
 
 class TestMemoryStorage(TestZVCStorageTool):
-
     def installStorageTool(self):
         # install the memory storage
         tool = MemoryStorage()
         setattr(self.portal, tool.getId(), tool)
 
     def test15_storageStatistics(self):
-        """ MemoryStorage does not implement zmi_getStorageStatistics
-        """
+        """MemoryStorage does not implement zmi_getStorageStatistics"""
         pass
 
     def test16_delete_history_on_content_deletion(self):
-        """ MemoryStorage does not implement _getZVCRepo
-        """
+        """MemoryStorage does not implement _getZVCRepo"""
         pass

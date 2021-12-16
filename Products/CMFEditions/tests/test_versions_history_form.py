@@ -35,7 +35,6 @@ _TEXT_NEW = u'New text.'
 
 
 class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
-
     def setUp(self):
         super(TestVersionsHistoryForm, self).setUp()
         self.portal_repository = self.portal.portal_repository
@@ -46,10 +45,7 @@ class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
             text=RichTextValue(_TEXT_INITIAL, 'text/plain', 'text/plain'),
         )
         self.doc = self.portal.doc
-        self.portal_repository.applyVersionControl(
-            self.doc,
-            comment='save version 0'
-        )
+        self.portal_repository.applyVersionControl(self.doc, comment='save version 0')
         self.request = self.portal.REQUEST
 
     def test_versions_history_form(self):

@@ -28,7 +28,7 @@ from Products.CMFEditions.utilities import dereference
 
 
 def object_removed(obj, event):
-    """ an object is being deleted -
+    """an object is being deleted -
     also delete it's history
     """
     if not IContentish.providedBy(obj):
@@ -55,11 +55,9 @@ def object_removed(obj, event):
         return
     current = metadata.retrieve(num_versions - 1)
     sys_metadata = current['metadata']['sys_metadata']
-    if ('parent' in sys_metadata) and \
-            (sys_metadata['parent']['history_id'] != histid):
+    if ('parent' in sys_metadata) and (sys_metadata['parent']['history_id'] != histid):
         try:
-            histories_storage.retrieve(
-                history_id=sys_metadata['parent']['history_id'])
+            histories_storage.retrieve(history_id=sys_metadata['parent']['history_id'])
             return
         except StorageRetrieveError:
             pass
@@ -69,4 +67,5 @@ def object_removed(obj, event):
             histid,
             0,
             metadata={'sys_metadata': {'comment': 'purged'}},
-            countPurged=False)
+            countPurged=False,
+        )

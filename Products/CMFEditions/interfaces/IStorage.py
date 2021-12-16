@@ -101,11 +101,10 @@ class IStorage(Interface):
         """
 
     def getHistoryMetadata(history_id):
-        """Returns the versioning metadata history.
-        """
+        """Returns the versioning metadata history."""
 
     def getModificationDate(history_id, selector=None):
-        """ Returns the modification date of the selected version of object
+        """Returns the modification date of the selected version of object
             which has the given history id.
 
         If selected is None, the most recent version (HEAD) is taken.
@@ -185,9 +184,10 @@ class IPurgeSupport(Interface):
         Return a ``IHistory`` object.
         """
 
-    def getModificationDate(history_id, selector=None, countPurged=True,
-                            substitute=True):
-        """ Returns the modification date of the selected version of object
+    def getModificationDate(
+        history_id, selector=None, countPurged=True, substitute=True
+    ):
+        """Returns the modification date of the selected version of object
             which has the given history id.
 
         If ``countPurged`` is ``True`` purged versions are returned also.
@@ -201,12 +201,10 @@ class IPurgeSupport(Interface):
 
 
 class IHistory(Interface):
-    """Iterable version history.
-    """
+    """Iterable version history."""
 
     def __len__():
-        """Return the length of the history.
-        """
+        """Return the length of the history."""
 
     def __getattr__(version_id):
         """Return the version of an object corresponding to the version id.
@@ -222,28 +220,31 @@ class IHistory(Interface):
 
 
 class IVersionData(Interface):
-    """
-    """
+    """ """
+
     object = Attribute(
         """The objects state at save time.
 
         To avoid temporal problems (by changing the history) this
         object has to be cloned before any change.
-        """)
+        """
+    )
 
     referenced_data = Attribute(
         """Data beeing passed by reference at save time.
 
         Needs not be cloned before allowing write access. Cloning was
         already done by the storage layer.
-        """)
+        """
+    )
 
     metadata = Attribute(
         """Metadata stored alongside when the objects state was saved.
 
         Metadata has to be cloned before any write change to avoid
         temporal problems (by changing the history).
-        """)
+        """
+    )
 
 
 class IStreamableReference(Interface):
@@ -255,37 +256,34 @@ class IStreamableReference(Interface):
     """
 
     def __init__(self, obj):
-        """Wrap the object to be passed to the storage
-        """
+        """Wrap the object to be passed to the storage"""
 
     def getObject(self):
-        """Return the object
-        """
+        """Return the object"""
 
     def getSize(self):
-        """Return the size of the streamable object or None
-        """
+        """Return the size of the streamable object or None"""
+
 
 class StorageError(Exception):
-    """History storage exception.
-    """
+    """History storage exception."""
+
 
 class StorageRetrieveError(StorageError):
-    """Raised if tried to retrieve a non existent version of a resource.
-    """
+    """Raised if tried to retrieve a non existent version of a resource."""
+
 
 class StorageRegisterError(StorageError):
-    """Raised if registering the resource failed.
-    """
+    """Raised if registering the resource failed."""
+
 
 class StorageSaveError(StorageError):
-    """Raised if saving a new version of a resource failed.
-    """
+    """Raised if saving a new version of a resource failed."""
+
 
 class StorageUnregisteredError(StorageError):
-    """Raised if trying to save an unregistered resource.
-    """
+    """Raised if trying to save an unregistered resource."""
+
 
 class StoragePurgeError(StorageError):
-    """Raised if tried to purge a non existent version of a resource.
-    """
+    """Raised if tried to purge a non existent version of a resource."""
