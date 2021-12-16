@@ -175,24 +175,24 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         length = len(history)
 
         # check length
-        self.assertEquals(length, 3)
+        self.assertEqual(length, 3)
 
         # iterating over the history
         for i, vdata in enumerate(history):
             expected_test = "v%s of text" % (i + 1)
-            self.assertEquals(vdata.object.object.text, expected_test)
-            self.assertEquals(history[i].object.object.text, expected_test)
+            self.assertEqual(vdata.object.object.text, expected_test)
+            self.assertEqual(history[i].object.object.text, expected_test)
 
             expected_comment = "saved v%s" % (i + 1)
             self.assertEqual(self.getComment(vdata), expected_comment)
             self.assertEqual(self.getComment(history[i]), expected_comment)
 
         # accessing the versions
-        self.assertEquals(history[0].object.object.text, "v1 of text")
+        self.assertEqual(history[0].object.object.text, "v1 of text")
         self.assertEqual(self.getComment(history[0]), "saved v1")
-        self.assertEquals(history[1].object.object.text, "v2 of text")
+        self.assertEqual(history[1].object.object.text, "v2 of text")
         self.assertEqual(self.getComment(history[1]), "saved v2")
-        self.assertEquals(history[2].object.object.text, "v3 of text")
+        self.assertEqual(history[2].object.object.text, "v3 of text")
         self.assertEqual(self.getComment(history[2]), "saved v3")
 
     def test06_checkObjectManagerIntegrity(self):
@@ -238,7 +238,7 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
             object=ObjectData(obj),
             metadata=self.buildMetadata("saved v2"),
         )
-        self.assertNotEquals(v1, v2)
+        self.assertNotEqual(v1, v2)
         self.assertEqual(v2_modified, portal_storage.getModificationDate(history_id=1))
         self.assertEqual(
             v2_modified, portal_storage.getModificationDate(history_id=1, selector=v2)
@@ -391,8 +391,8 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         )
         history = portal_storage.getHistory(1, countPurged=False)
 
-        self.assertEquals(sel, 0)
-        self.assertEquals(len(history), 1)
+        self.assertEqual(sel, 0)
+        self.assertEqual(len(history), 1)
         self.assertEqual(history[0].object.object.text, "v1 of text")
         self.assertEqual(self.getComment(history[0]), "saved v1")
 
@@ -404,8 +404,8 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         )
         history = portal_storage.getHistory(1, countPurged=False)
 
-        self.assertEquals(sel, 1)
-        self.assertEquals(len(history), 2)
+        self.assertEqual(sel, 1)
+        self.assertEqual(len(history), 2)
         self.assertEqual(history[0].object.object.text, "v1 of text")
         self.assertEqual(self.getComment(history[0]), "saved v1")
         self.assertEqual(history[1].object.object.text, "v2 of text")
@@ -422,11 +422,11 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
         # iterating over the history
         for i, vdata in enumerate(history):
-            self.assertEquals(vdata.object.object.text, "v%s of text" % (i + 2))
+            self.assertEqual(vdata.object.object.text, "v%s of text" % (i + 2))
             self.assertEqual(self.getComment(vdata), "saved v%s" % (i + 2))
 
-        self.assertEquals(sel, 2)
-        self.assertEquals(length, 2)
+        self.assertEqual(sel, 2)
+        self.assertEqual(length, 2)
         self.assertEqual(history[0].object.object.text, "v2 of text")
         self.assertEqual(self.getComment(history[0]), "saved v2")
         self.assertEqual(history[1].object.object.text, "v3 of text")
@@ -443,11 +443,11 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
 
         # iterating over the history
         for i, vdata in enumerate(history):
-            self.assertEquals(vdata.object.object.text, "v%s of text" % (i + 3))
+            self.assertEqual(vdata.object.object.text, "v%s of text" % (i + 3))
             self.assertEqual(self.getComment(vdata), "saved v%s" % (i + 3))
 
-        self.assertEquals(sel, 3)
-        self.assertEquals(length, 2)
+        self.assertEqual(sel, 3)
+        self.assertEqual(length, 2)
         self.assertEqual(history[0].object.object.text, "v3 of text")
         self.assertEqual(self.getComment(history[0]), "saved v3")
         self.assertEqual(history[1].object.object.text, "v4 of text")

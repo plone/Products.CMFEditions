@@ -308,7 +308,7 @@ class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
         for ref in refs:
             self.assertTrue(IVersionAwareReference.providedBy(ref))
             # check info value (see note above)
-            self.assertEquals(ref.info, refs.index(ref))
+            self.assertEqual(ref.info, refs.index(ref))
 
     def test09_isUpToDate(self):
         doc = self.portal.doc

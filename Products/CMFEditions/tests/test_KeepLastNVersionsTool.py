@@ -99,10 +99,10 @@ class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
 
         # next newer
         data = purgepolicy.retrieveSubstitute(history_id=1, selector=0)
-        self.assertEquals(data.data, 1)
+        self.assertEqual(data.data, 1)
         # next older
         data = purgepolicy.retrieveSubstitute(history_id=1, selector=2)
-        self.assertEquals(data.data, 1)
+        self.assertEqual(data.data, 1)
         # next older
         data = purgepolicy.retrieveSubstitute(history_id=1, selector=3)
-        self.assertEquals(data.data, 1)
+        self.assertEqual(data.data, 1)

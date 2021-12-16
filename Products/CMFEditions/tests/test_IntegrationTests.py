@@ -199,7 +199,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
             counter += 1
 
         # check if history iterator returned just one element
-        self.assertEquals(counter, 1)
+        self.assertEqual(counter, 1)
 
     def test09_retrieveAndRevertRetainWorkingCopiesWorkflowInfo(self):
         portal_repo = self.portal.portal_repository
