@@ -49,12 +49,12 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.ZopeVersionControl.EventLog import LogEntry
 from Products.ZopeVersionControl.Utility import VersionControlError
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
-from six import BytesIO
-from six.moves.cPickle import dumps
-from six.moves.cPickle import HIGHEST_PROTOCOL
-from six.moves.cPickle import loads
-from six.moves.cPickle import Pickler
-from six.moves.cPickle import Unpickler
+from io import BytesIO
+from pickle import dumps
+from pickle import HIGHEST_PROTOCOL
+from pickle import loads
+from pickle import Pickler
+from pickle import Unpickler
 from zope.interface import implementer
 
 import logging

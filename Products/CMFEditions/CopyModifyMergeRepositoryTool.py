@@ -59,7 +59,6 @@ from zope.interface import implementer
 from zope.lifecycleevent import ObjectModifiedEvent
 
 import logging
-import six
 import time
 import transaction
 

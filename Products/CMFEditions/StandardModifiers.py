@@ -46,7 +46,6 @@ from zope.copy import copy
 from zope.interface import implementer
 from zope.interface.interfaces import ComponentLookupError
 
-import six
 import sys
 
 
