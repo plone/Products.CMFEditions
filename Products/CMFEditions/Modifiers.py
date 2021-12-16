@@ -71,7 +71,9 @@ class ConditionalModifier(SimpleItem):
         """See IConditionalModifier."""
         self.title = title
 
-        if enabled is not None and (enabled == "True" or (isinstance(enabled, bool) and enabled)):
+        if enabled is not None and (
+            enabled == "True" or (isinstance(enabled, bool) and enabled)
+        ):
             self._enabled = enabled
         else:
             self._enabled = False

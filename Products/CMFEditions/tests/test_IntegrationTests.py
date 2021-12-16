@@ -32,9 +32,9 @@ from ZODB import broken
 from zope.component.persistentregistry import PersistentComponents
 from zope.interface.interface import InterfaceClass
 
-import imp
 import sys
 import transaction
+import types
 import ZODB.interfaces
 
 
@@ -1178,7 +1178,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
             Broken=ZODB.interfaces.IBroken,
             type=InterfaceClass,
         )
-        sys.modules[broken_iface.__module__] = module = imp.new_module(
+        sys.modules[broken_iface.__module__] = module = types.ModuleType(
             broken_iface.__module__
         )
         module.IMissing = broken_iface
