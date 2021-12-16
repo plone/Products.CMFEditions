@@ -1,0 +1,2 @@
+QA: black, isort, flake8, fix deprecation warnings, remove use of six, upgrade to Python 3.7-only syntax.
+[maurits]
