@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
@@ -100,7 +99,7 @@ def dictToString(dict):
     keys = [key for key in dict.keys()]
     keys.sort()
     for k in keys:
-        dict_list.append("%s = %s" % (k, dict[k]))
+        dict_list.append(f"{k} = {dict[k]}")
     return ", ".join(dict_list)
 
 
@@ -164,7 +163,7 @@ loggingModifiers = (
 
 class TestModifierRegistryTool(CMFEditionsBaseTestCase):
     def setUp(self):
-        super(TestModifierRegistryTool, self).setUp()
+        super().setUp()
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")

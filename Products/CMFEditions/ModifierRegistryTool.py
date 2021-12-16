@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
@@ -196,7 +195,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
                 pid = pers_id(obj)
                 if pid is not None:
                     # found a modifier, add the modifiers name to its pid
-                    return "%s/%s" % (pers_id_nameByMeth[pers_id], pid)
+                    return f"{pers_id_nameByMeth[pers_id]}/{pid}"
 
         def persistent_load(named_pid):
             # call the right modifiers persistent_load callback

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
 from plone.app.robotframework.testing import REMOTE_LIBRARY_BUNDLE_FIXTURE
 from plone.app.testing import applyProfile
@@ -23,12 +22,10 @@ class ProductsCmfeditionsLayer(PloneSandboxLayer):
     def setUpPloneSite(self, portal):
         applyProfile(portal, "Products.CMFEditions:CMFEditions")
         # with named AND dotted behaviors we need to take care of both
-        versioning_behavior = set(
-            [
+        versioning_behavior = {
                 "plone.app.versioningbehavior.behaviors.IVersionable",
                 "plone.versioning",
-            ],
-        )
+        }
         for name in ("Document", "Event", "Link", "News Item"):
             fti = portal.portal_types[name]
             # write back the behaviors without the versioning behaviors

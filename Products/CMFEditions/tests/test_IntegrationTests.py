@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
@@ -40,7 +39,7 @@ import ZODB.interfaces
 
 class TestIntegration(CMFEditionsBaseTestCase):
     def setUp(self):
-        super(TestIntegration, self).setUp()
+        super().setUp()
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")
@@ -340,7 +339,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         portal_repo = self.portal.portal_repository
         doc = self.portal.doc
         perm = "Access contents information"
-        member_role = "permission_{0}role_{1}".format(
+        member_role = "permission_{}role_{}".format(
             _string_hash(perm), _string_hash("Member")
         )
 
@@ -392,9 +391,9 @@ class TestIntegration(CMFEditionsBaseTestCase):
         cat = self.portal.portal_catalog
         doc = self.portal.doc
 
-        doc.text = RichTextValue(u"Plain text", "text/plain", "text/plain")
+        doc.text = RichTextValue("Plain text", "text/plain", "text/plain")
         portal_repo.applyVersionControl(doc)
-        doc.text = RichTextValue(u"blahblah", "text/plain", "text/plain")
+        doc.text = RichTextValue("blahblah", "text/plain", "text/plain")
         portal_repo.save(doc)
         # Test that catalog has current value
         results = cat(SearchableText="Plain Text")

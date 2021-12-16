@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
@@ -83,7 +82,7 @@ def dereference(obj=None, history_id=None, zodb_hook=None):
 def generateId(parent, prefix="", volatile=False):
     """Generate an unused id (optionaly a volatile one)."""
     existingIds = parent.objectIds()
-    idTemplate = "%s%s_%%s" % (volatile * "__v_", prefix + STUB_OBJECT_PREFIX)
+    idTemplate = "{}{}_%s".format(volatile * "__v_", prefix + STUB_OBJECT_PREFIX)
     while 1:
         id = idTemplate % random.randrange(1000000)
         if id not in existingIds:

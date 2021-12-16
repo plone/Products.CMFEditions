@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from Products.GenericSetup.utils import exportObjects
@@ -74,7 +73,7 @@ class RepositoryToolXMLAdapter(XMLAdapterBase):
             p.setAttribute("title", policy.Title())
             klass = type(policy)
             if klass is not VersionPolicy:
-                p.setAttribute("class", "%s.%s" % (klass.__module__, klass.__name__))
+                p.setAttribute("class", f"{klass.__module__}.{klass.__name__}")
             node.appendChild(p)
         return node
 

@@ -51,7 +51,7 @@ class GetMacros(BrowserView):
             return versionPreviewTemplate.macros["main"]
         except KeyError:
             logger.warn(
-                'Missing TAL macros {0} in template "{1}".'.format(
+                'Missing TAL macros {} in template "{}".'.format(
                     ", ".join(macro_names), versionPreviewMethodName
                 )
             )

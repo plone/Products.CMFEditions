@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber,
 # Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
@@ -231,9 +230,9 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
                 raise AssertionError(
                     "Each policy definition must contain a title and id: %s" % str(item)
                 )
-            if not isinstance(item[0], six.string_types):
+            if not isinstance(item[0], str):
                 raise AssertionError("Policy id must be a string: %s" % str(item[0]))
-            if not isinstance(item[1], six.string_types):
+            if not isinstance(item[1], str):
                 raise AssertionError("Policy title must be a string: %s" % str(item[1]))
             # Get optional Policy class and kwargs.
             if len(item) >= 3:
@@ -462,7 +461,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         # objects
         if sys_metadata["originator"] is None:
             clone = prep.clone.object
-            sys_metadata["originator"] = "%s.%s.%s" % (
+            sys_metadata["originator"] = "{}.{}.{}".format(
                 prep.history_id,
                 clone.version_id,
                 clone.location_id,
@@ -698,7 +697,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
                     object_list = getattr(obj, "_objects", None)
                     if object_list is not None:
                         obj._objects = tuple(
-                            [o for o in object_list if o["id"] != orig_id]
+                            o for o in object_list if o["id"] != orig_id
                         )  # noqa
                     temp_ids.append((real_id, child))
             # Make a second pass to move the objects into place if possible

@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import doctest
 import unittest
 
 
 # These two classes are needed in the doctest. Don't remove it
-class DummyFile(object):
+class DummyFile:
     """A sized object"""
 
     def __init__(self, size):
@@ -14,7 +13,7 @@ class DummyFile(object):
         return self.size
 
 
-class DummyContent(object):
+class DummyContent:
     """An object with annotations"""
 
     def __init__(self, obid):

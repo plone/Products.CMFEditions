@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from Acquisition import aq_base
 from copy import deepcopy
 from DateTime import DateTime
@@ -155,7 +153,7 @@ class DummyArchivist(SimpleItem):
             )
         else:
             self.log(
-                "%sprepare %s: hid=%s" % (self.alog_indent, obj.getId(), history_id)
+                f"{self.alog_indent}prepare {obj.getId()}: hid={history_id}"
             )
         self.alog_indent += "  "
 
@@ -206,8 +204,8 @@ class DummyArchivist(SimpleItem):
 
         irefs = [ref.getAttribute() for ref in prepared_obj.clone.inside_refs]
         orefs = [ref.getAttribute() for ref in prepared_obj.clone.outside_refs]
-        irefs_prep = ["{hid:%s, vid:%s}" % (r.history_id, r.version_id) for r in irefs]
-        orefs_prep = ["{hid:%s, vid:%s}" % (r.history_id, r.version_id) for r in orefs]
+        irefs_prep = [f"{{hid:{r.history_id}, vid:{r.version_id}}}" for r in irefs]
+        orefs_prep = [f"{{hid:{r.history_id}, vid:{r.version_id}}}" for r in orefs]
         irefs = ", ".join(irefs_prep)
         orefs = ", ".join(orefs_prep)
         if irefs:
@@ -719,7 +717,7 @@ class PurgePolicyTestDummyStorage(DummyBaseTool):
         return self.history[selector]
 
 
-class DummyData(object):
+class DummyData:
     def __init__(self, data):
         self.data = data
 
@@ -727,6 +725,6 @@ class DummyData(object):
         return True
 
 
-class RemovedData(object):
+class RemovedData:
     def isValid(self):
         return False

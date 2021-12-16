@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
@@ -37,7 +36,7 @@ from zope.interface.verify import verifyObject
 
 class TestArchivistToolMemoryStorage(CMFEditionsBaseTestCase):
     def setUp(self):
-        super(TestArchivistToolMemoryStorage, self).setUp()
+        super().setUp()
 
         self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")
         self.portal.invokeFactory("Document", "doc")

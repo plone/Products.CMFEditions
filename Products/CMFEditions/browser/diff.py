@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from six.moves import range
 from zope.i18n import translate
 
 
@@ -13,7 +10,7 @@ class DiffView(BrowserView):
     template = ViewPageTemplateFile("diff.pt")
 
     def __init__(self, *args):
-        super(DiffView, self).__init__(*args)
+        super().__init__(*args)
         self.repo_tool = getToolByName(self.context, "portal_repository")
 
     def getVersion(self, version):
@@ -34,7 +31,7 @@ class DiffView(BrowserView):
         version_name = self.versionName(version)
 
         return translate(
-            _(u"version ${version}", mapping=dict(version=version_name)),
+            _("version ${version}", mapping=dict(version=version_name)),
             context=self.request,
         )
 

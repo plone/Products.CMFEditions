@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
@@ -30,13 +29,13 @@ from zope.interface import Interface
 from zope.publisher.interfaces.browser import IBrowserView
 
 
-_TEXT_INITIAL = u"Initial text."
-_TEXT_NEW = u"New text."
+_TEXT_INITIAL = "Initial text."
+_TEXT_NEW = "New text."
 
 
 class TestVersionsHistoryForm(CMFEditionsBaseTestCase):
     def setUp(self):
-        super(TestVersionsHistoryForm, self).setUp()
+        super().setUp()
         self.portal_repository = self.portal.portal_repository
         self.portal.invokeFactory(
             "Document",

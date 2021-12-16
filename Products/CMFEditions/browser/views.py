@@ -82,7 +82,7 @@ class VersionImageTagView(BrowserView):
         obj = portal_repository.retrieve(context, version_id).object
         working_copy_tag = obj.tag()
         altPos = working_copy_tag.find("alt=")
-        tag = '<img src="%s/file_download_version?version_id=%s" %s' % (
+        tag = '<img src="{}/file_download_version?version_id={}" {}'.format(
             here_url,
             version_id,
             working_copy_tag[altPos:],

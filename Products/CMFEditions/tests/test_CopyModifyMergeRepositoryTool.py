@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
@@ -56,7 +55,7 @@ class dummyPolicyWithHooks(VersionPolicy):
 
 class TestCopyModifyMergeRepositoryToolBase(CMFEditionsBaseTestCase):
     def setUp(self):
-        super(TestCopyModifyMergeRepositoryToolBase, self).setUp()
+        super().setUp()
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")
@@ -314,23 +313,23 @@ class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):
         # check if correctly recursing and setting reference data correctly
         alog_str = portal_archivist.get_log()
         expected = """
-prepare fol: hid=%(fol_id)s, refs=(doc1_inside, doc2_inside, doc3_outside)
-  prepare doc1_inside: hid=%(doc1_id)s
-  save    doc1_inside: hid=%(doc1_id)s, isreg=False, auto=True
-  prepare doc2_inside: hid=%(doc2_id)s
-  save    doc2_inside: hid=%(doc2_id)s, isreg=False, auto=True
-save    fol: hid=%(fol_id)s, irefs=({hid:%(doc1_id)s, vid:0}, {hid:%(doc2_id)s, vid:0}), orefs=({hid:None, vid:-1}), isreg=False, auto=True
+prepare fol: hid={fol_id}, refs=(doc1_inside, doc2_inside, doc3_outside)
+  prepare doc1_inside: hid={doc1_id}
+  save    doc1_inside: hid={doc1_id}, isreg=False, auto=True
+  prepare doc2_inside: hid={doc2_id}
+  save    doc2_inside: hid={doc2_id}, isreg=False, auto=True
+save    fol: hid={fol_id}, irefs=({{hid:{doc1_id}, vid:0}}, {{hid:{doc2_id}, vid:0}}), orefs=({{hid:None, vid:-1}}), isreg=False, auto=True
 
-prepare fol: hid=%(fol_id)s, refs=(doc1_inside, doc2_inside, doc3_outside)
-  prepare doc1_inside: hid=%(doc1_id)s
-  save    doc1_inside: hid=%(doc1_id)s, isreg=True, auto=False
-  prepare doc2_inside: hid=%(doc2_id)s
-  save    doc2_inside: hid=%(doc2_id)s, isreg=True, auto=False
-save    fol: hid=%(fol_id)s, irefs=({hid:%(doc1_id)s, vid:1}, {hid:%(doc2_id)s, vid:1}), orefs=({hid:None, vid:-1}), isreg=True, auto=False""" % {
-            "fol_id": fol.cmf_uid(),
-            "doc1_id": fol.doc1_inside.cmf_uid(),
-            "doc2_id": fol.doc2_inside.cmf_uid(),
-        }
+prepare fol: hid={fol_id}, refs=(doc1_inside, doc2_inside, doc3_outside)
+  prepare doc1_inside: hid={doc1_id}
+  save    doc1_inside: hid={doc1_id}, isreg=True, auto=False
+  prepare doc2_inside: hid={doc2_id}
+  save    doc2_inside: hid={doc2_id}, isreg=True, auto=False
+save    fol: hid={fol_id}, irefs=({{hid:{doc1_id}, vid:1}}, {{hid:{doc2_id}, vid:1}}), orefs=({{hid:None, vid:-1}}), isreg=True, auto=False""".format(
+            fol_id=fol.cmf_uid(),
+            doc1_id=fol.doc1_inside.cmf_uid(),
+            doc2_id=fol.doc2_inside.cmf_uid(),
+        )
 
         self.assertEqual(alog_str, expected)
 
@@ -358,13 +357,13 @@ save    fol: hid=%(fol_id)s, irefs=({hid:%(doc1_id)s, vid:1}, {hid:%(doc2_id)s, 
         # check recursive retrieve
         alog_str = portal_archivist.get_log()
 
-        expected = """retrieve fol: hid=%(fol_id)s, selector=0
-retrieve doc1_inside: hid=%(doc1_id)s, selector=0
-retrieve doc2_inside: hid=%(doc2_id)s, selector=0""" % {
-            "fol_id": fol.cmf_uid(),
-            "doc1_id": fol.doc1_inside.cmf_uid(),
-            "doc2_id": fol.doc2_inside.cmf_uid(),
-        }
+        expected = """retrieve fol: hid={fol_id}, selector=0
+retrieve doc1_inside: hid={doc1_id}, selector=0
+retrieve doc2_inside: hid={doc2_id}, selector=0""".format(
+            fol_id=fol.cmf_uid(),
+            doc1_id=fol.doc1_inside.cmf_uid(),
+            doc2_id=fol.doc2_inside.cmf_uid(),
+        )
         self.assertEqual(alog_str, expected)
 
         # check result
@@ -376,7 +375,7 @@ retrieve doc2_inside: hid=%(doc2_id)s, selector=0""" % {
 
 class TestRegressionTests(CMFEditionsBaseTestCase):
     def setUp(self):
-        super(TestRegressionTests, self).setUp()
+        super().setUp()
         self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")
 
         self.portal.invokeFactory("Document", "doc")

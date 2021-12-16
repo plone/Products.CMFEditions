@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from plone.app.textfield.value import RichTextValue
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
@@ -18,7 +16,7 @@ def read_image(file_path):
 
 class TestPloneContents(CMFEditionsBaseTestCase):
     def setUp(self):
-        super(TestPloneContents, self).setUp()
+        super().setUp()
         self.membership = self.portal.portal_membership
         self.catalog = self.portal.portal_catalog
         self.workflow = self.portal.portal_workflow
@@ -51,21 +49,21 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         self.folder.invokeFactory("Document", id="doc")
         portal_repository = self.portal_repository
         content = self.folder.doc
-        content.text = RichTextValue(u"text v1", "text/plain", "text/plain")
-        content.title = u"content"
-        content.subject = [u"content"]
-        content.description = u"content"
-        content.contributors = [u"content"]
+        content.text = RichTextValue("text v1", "text/plain", "text/plain")
+        content.title = "content"
+        content.subject = ["content"]
+        content.description = "content"
+        content.contributors = ["content"]
         content.language = "content"
-        content.rights = u"content"
+        content.rights = "content"
         portal_repository.applyVersionControl(content, comment="save no 1")
-        content.text = RichTextValue(u"text v2", "text/plain", "text/plain")
-        content.title = u"contentOK"
-        content.subject = [u"contentOK"]
-        content.description = u"contentOK"
-        content.contributors = [u"contentOK"]
+        content.text = RichTextValue("text v2", "text/plain", "text/plain")
+        content.title = "contentOK"
+        content.subject = ["contentOK"]
+        content.description = "contentOK"
+        content.contributors = ["contentOK"]
         content.language = "contentOK"
-        content.rights = u"contentOK"
+        content.rights = "contentOK"
         portal_repository.save(content, comment="save no 2")
         obj = portal_repository.retrieve(content, 0).object
         self.assertEqual(obj.text.raw, "text v1")
@@ -81,21 +79,21 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         self.folder.invokeFactory("News Item", id="news_one")
         portal_repository = self.portal_repository
         content = self.folder.news_one
-        content.text = RichTextValue(u"text v1", "text/plain", "text/plain")
-        content.title = u"content"
-        content.subject = [u"content"]
-        content.description = u"content"
-        content.contributors = [u"content"]
+        content.text = RichTextValue("text v1", "text/plain", "text/plain")
+        content.title = "content"
+        content.subject = ["content"]
+        content.description = "content"
+        content.contributors = ["content"]
         content.language = "content"
-        content.rights = u"content"
+        content.rights = "content"
         portal_repository.applyVersionControl(content, comment="save no 1")
-        content.text = RichTextValue(u"text v2", "text/plain", "text/plain")
-        content.title = u"contentOK"
-        content.subject = [u"contentOK"]
-        content.description = u"contentOK"
-        content.contributors = [u"contentOK"]
+        content.text = RichTextValue("text v2", "text/plain", "text/plain")
+        content.title = "contentOK"
+        content.subject = ["contentOK"]
+        content.description = "contentOK"
+        content.contributors = ["contentOK"]
         content.language = "contentOK"
-        content.rights = u"contentOK"
+        content.rights = "contentOK"
         portal_repository.save(content, comment="save no 2")
         obj = portal_repository.retrieve(content, 0).object
         self.assertEqual(obj.text.raw, "text v1")
@@ -113,21 +111,21 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         img1 = read_image("tests/images/img1.png")
         img2 = read_image("tests/images/img2.png")
         content = self.folder.image
-        content.image = NamedBlobImage(img1, u"img1.png", u"image/png")
-        content.title = u"content"
-        content.subject = [u"content"]
-        content.description = u"content"
-        content.contributors = [u"content"]
+        content.image = NamedBlobImage(img1, "img1.png", "image/png")
+        content.title = "content"
+        content.subject = ["content"]
+        content.description = "content"
+        content.contributors = ["content"]
         content.language = "content"
-        content.rights = u"content"
+        content.rights = "content"
         portal_repository.applyVersionControl(content, comment="save no 1")
-        content.image = NamedBlobImage(img2, u"img2.png", u"image/png")
-        content.title = u"contentOK"
-        content.subject = [u"contentOK"]
-        content.description = u"contentOK"
-        content.contributors = [u"contentOK"]
+        content.image = NamedBlobImage(img2, "img2.png", "image/png")
+        content.title = "contentOK"
+        content.subject = ["contentOK"]
+        content.description = "contentOK"
+        content.contributors = ["contentOK"]
         content.language = "contentOK"
-        content.rights = u"contentOK"
+        content.rights = "contentOK"
         portal_repository.save(content, comment="save no 2")
         obj = portal_repository.retrieve(content, 0).object
         self.assertEqual(obj.image.data, img1)
@@ -145,21 +143,21 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         file2 = read_image("tests/images/img2.png")
         portal_repository = self.portal_repository
         content = self.folder.file
-        content.file = NamedBlobFile(file1, u"img1.png", u"image/png")
-        content.title = u"content"
-        content.subject = [u"content"]
-        content.description = u"content"
-        content.contributors = [u"content"]
+        content.file = NamedBlobFile(file1, "img1.png", "image/png")
+        content.title = "content"
+        content.subject = ["content"]
+        content.description = "content"
+        content.contributors = ["content"]
         content.language = "content"
-        content.rights = u"content"
+        content.rights = "content"
         portal_repository.applyVersionControl(content, comment="save no 1")
-        content.file = NamedBlobImage(file2, u"img2.png", u"image/png")
-        content.title = u"contentOK"
-        content.subject = [u"contentOK"]
-        content.description = u"contentOK"
-        content.contributors = [u"contentOK"]
+        content.file = NamedBlobImage(file2, "img2.png", "image/png")
+        content.title = "contentOK"
+        content.subject = ["contentOK"]
+        content.description = "contentOK"
+        content.contributors = ["contentOK"]
         content.language = "contentOK"
-        content.rights = u"contentOK"
+        content.rights = "contentOK"
         portal_repository.save(content, comment="save no 2")
         obj = portal_repository.retrieve(content, 0).object
         self.assertEqual(obj.file.data, file1)
@@ -175,19 +173,19 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         self.folder.invokeFactory("Image", id="folder")
         portal_repository = self.portal_repository
         content = self.folder.folder
-        content.title = u"content"
-        content.subject = [u"content"]
-        content.description = u"content"
-        content.contributors = [u"content"]
+        content.title = "content"
+        content.subject = ["content"]
+        content.description = "content"
+        content.contributors = ["content"]
         content.language = "content"
-        content.rights = u"content"
+        content.rights = "content"
         portal_repository.applyVersionControl(content, comment="save no 1")
-        content.title = u"contentOK"
-        content.subject = [u"contentOK"]
-        content.description = u"contentOK"
-        content.contributors = [u"contentOK"]
+        content.title = "contentOK"
+        content.subject = ["contentOK"]
+        content.description = "contentOK"
+        content.contributors = ["contentOK"]
         content.language = "contentOK"
-        content.rights = u"contentOK"
+        content.rights = "contentOK"
         portal_repository.save(content, comment="save no 2")
         obj = portal_repository.retrieve(content, 0).object
         self.metadata_test_one(obj)

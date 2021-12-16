@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from Products.CMFEditions.interfaces._tools import IArchivistTool  # noqa: F401
 from Products.CMFEditions.interfaces._tools import IPortalModifierTool  # noqa: F401
 from Products.CMFEditions.interfaces._tools import IPurgePolicyTool  # noqa: F401

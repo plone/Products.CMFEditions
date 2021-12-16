@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2006 Gregoire Weber
 # All Rights Reserved.
@@ -33,7 +32,7 @@ from zope.interface.verify import verifyObject
 
 class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
     def setUp(self):
-        super(TestKeepLastNVersionsTool, self).setUp()
+        super().setUp()
         # add an additional user
         self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")
 

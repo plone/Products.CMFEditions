@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber,
 # Reflab (Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi)
@@ -47,7 +46,7 @@ class DummyOM(ObjectManager):
 
 class CMFDummy(Dummy):
     def __init__(self, id, cmfuid, effective=None, expires=None):
-        super(CMFDummy, self).__init__()
+        super().__init__()
         self.id = id
         self.cmf_uid = cmfuid
         self.effective = effective if effective is not None else self.modification_date
@@ -59,7 +58,7 @@ class CMFDummy(Dummy):
 
 class TestZVCStorageTool(CMFEditionsBaseTestCase):
     def setUp(self):
-        super(TestZVCStorageTool, self).setUp()
+        super().setUp()
 
         # add an additional user
         self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")
@@ -497,7 +496,7 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
             1, ObjectData(obj1), metadata=self.buildMetadata("saved v1")
         )
         portal_storage.save(
-            1, ObjectData(obj1), metadata=self.buildMetadata(u"saved v1\xc3\xa1")
+            1, ObjectData(obj1), metadata=self.buildMetadata("saved v1\xc3\xa1")
         )
 
     def test14_getHistoryMetadata(self):

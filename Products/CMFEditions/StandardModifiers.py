@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2005 Alberto Berti, Gregoire Weber,
 # Reflab(Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi),
@@ -725,24 +724,24 @@ class SkipRegistryBasesPointers:
             return
 
         component_bases = dict(
-            registry=dict(
-                (id(aq_base(base)), aq_base(base)) for base in registry.__bases__
-            ),
-            utilities=dict(
-                (id(aq_base(base)), aq_base(base))
+            registry={
+                id(aq_base(base)): aq_base(base) for base in registry.__bases__
+            },
+            utilities={
+                id(aq_base(base)): aq_base(base)
                 for base in registry.utilities.__bases__
-            ),
-            adapters=dict(
-                (id(aq_base(base)), aq_base(base))
+            },
+            adapters={
+                id(aq_base(base)): aq_base(base)
                 for base in registry.adapters.__bases__
-            ),
+            },
         )
 
         def persistent_id(obj):
             obj_id = id(aq_base(obj))
-            for key, bases in six.iteritems(component_bases):
+            for key, bases in component_bases.items():
                 if obj_id in bases:
-                    return "%s:%s" % (key, obj_id)
+                    return f"{key}:{obj_id}"
             return None
 
         def persistent_load(obj):
@@ -872,7 +871,7 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
             # Skip linked Pdata chains too long for the pickler
             if hasattr(aq_base(val), "getSize") and callable(val.getSize):
                 size = val.getSize()
-                if isinstance(size, six.integer_types) and size >= max_size:
+                if isinstance(size, int) and size >= max_size:
                     yield "attribute", name, val
 
     def getOnCloneModifiers(self, obj):
@@ -888,7 +887,7 @@ InitializeClass(AbortVersioningOfLargeFilesAndImages)
 _empty_marker = []
 
 
-class LargeFilePlaceHolder(object):
+class LargeFilePlaceHolder:
     """PlaceHolder for a large object"""
 
     @staticmethod
@@ -972,11 +971,11 @@ class Skip_z3c_blobfile:
         if not blob_file_classes:
             return
 
-        blob_refs = set(
+        blob_refs = {
             id(v)
-            for v in six.itervalues(obj.__dict__)
+            for v in obj.__dict__.values()
             if isinstance(v, blob_file_classes)
-        )
+        }
 
         def persistent_id(obj):
             if id(aq_base(obj)) in blob_refs:
@@ -1001,7 +1000,7 @@ class Skip_z3c_blobfile:
 
         blob_fields = (
             (k, v)
-            for k, v in six.iteritems(obj.__dict__)
+            for k, v in obj.__dict__.items()
             if isinstance(v, blob_file_classes)
         )
 
