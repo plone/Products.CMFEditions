@@ -27,8 +27,14 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
+from io import BytesIO
 from OFS.SimpleItem import SimpleItem
 from Persistence import Persistent
+from pickle import dumps
+from pickle import HIGHEST_PROTOCOL
+from pickle import loads
+from pickle import Pickler
+from pickle import Unpickler
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import UniqueObject
@@ -49,12 +55,6 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.ZopeVersionControl.EventLog import LogEntry
 from Products.ZopeVersionControl.Utility import VersionControlError
 from Products.ZopeVersionControl.ZopeRepository import ZopeRepository
-from io import BytesIO
-from pickle import dumps
-from pickle import HIGHEST_PROTOCOL
-from pickle import loads
-from pickle import Pickler
-from pickle import Unpickler
 from zope.interface import implementer
 
 import logging

@@ -28,8 +28,11 @@ from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from io import BytesIO
 from OFS.SimpleItem import SimpleItem
 from Persistence import Persistent
+from pickle import Pickler
+from pickle import Unpickler
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFEditions.interfaces import IArchivistTool
@@ -50,9 +53,6 @@ from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.utilities import dereference
 from Products.CMFEditions.utilities import KwAsAttributes
-from io import BytesIO
-from pickle import Pickler
-from pickle import Unpickler
 from zope.interface import alsoProvides
 from zope.interface import implementer
 

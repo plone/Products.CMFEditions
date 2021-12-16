@@ -1,7 +1,10 @@
 from Acquisition import aq_base
 from copy import deepcopy
 from DateTime import DateTime
+from io import BytesIO
 from OFS.SimpleItem import SimpleItem
+from pickle import Pickler
+from pickle import Unpickler
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.ArchivistTool import ObjectData
 from Products.CMFEditions.ArchivistTool import ObjectManagerStorageAdapter
@@ -15,9 +18,6 @@ from Products.CMFEditions.interfaces.IStorage import IStreamableReference
 from Products.CMFEditions.interfaces.IStorage import StorageRetrieveError
 from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.utilities import dereference
-from io import BytesIO
-from pickle import Pickler
-from pickle import Unpickler
 from zope.interface import implementer
 
 
