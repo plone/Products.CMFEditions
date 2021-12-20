@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
 from plone.app.robotframework.testing import REMOTE_LIBRARY_BUNDLE_FIXTURE
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneSandboxLayer
-from plone.testing import z2
+from plone.testing.zope import WSGI_SERVER_FIXTURE
 
 import Products.CMFEditions
 
@@ -21,15 +20,13 @@ class ProductsCmfeditionsLayer(PloneSandboxLayer):
         self.loadZCML(package=Products.CMFEditions)
 
     def setUpPloneSite(self, portal):
-        applyProfile(portal, 'Products.CMFEditions:CMFEditions')
+        applyProfile(portal, "Products.CMFEditions:CMFEditions")
         # with named AND dotted behaviors we need to take care of both
-        versioning_behavior = set(
-            [
-                'plone.app.versioningbehavior.behaviors.IVersionable',
-                'plone.versioning',
-            ],
-        )
-        for name in ('Document', 'Event', 'Link', 'News Item'):
+        versioning_behavior = {
+            "plone.app.versioningbehavior.behaviors.IVersionable",
+            "plone.versioning",
+        }
+        for name in ("Document", "Event", "Link", "News Item"):
             fti = portal.portal_types[name]
             # write back the behaviors without the versioning behaviors
             # using a Set to keep it simple
@@ -46,13 +43,13 @@ PRODUCTS_CMFEDITIONS_FIXTURE = ProductsCmfeditionsLayer()
 
 PRODUCTS_CMFEDITIONS_INTEGRATION_TESTING = IntegrationTesting(
     bases=(PRODUCTS_CMFEDITIONS_FIXTURE,),
-    name='ProductsCmfeditionsLayer:IntegrationTesting',
+    name="ProductsCmfeditionsLayer:IntegrationTesting",
 )
 
 
 PRODUCTS_CMFEDITIONS_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(PRODUCTS_CMFEDITIONS_FIXTURE,),
-    name='ProductsCmfeditionsLayer:FunctionalTesting',
+    name="ProductsCmfeditionsLayer:FunctionalTesting",
 )
 
 
@@ -60,7 +57,7 @@ PRODUCTS_CMFEDITIONS_ACCEPTANCE_TESTING = FunctionalTesting(
     bases=(
         PRODUCTS_CMFEDITIONS_FIXTURE,
         REMOTE_LIBRARY_BUNDLE_FIXTURE,
-        z2.ZSERVER_FIXTURE,
+        WSGI_SERVER_FIXTURE,
     ),
-    name='ProductsCmfeditionsLayer:AcceptanceTesting',
+    name="ProductsCmfeditionsLayer:AcceptanceTesting",
 )

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2003, 2004, 2005 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
@@ -34,6 +33,7 @@ from Products.CMFEditions import ModifierRegistryTool
 from Products.CMFEditions import ReferenceFactoriesTool
 from Products.CMFEditions import StandardModifiers
 from Products.CMFEditions import ZVCStorageTool
+
 # Set up a MessageFactory for the cmfeditions domain
 from zope.i18nmessageid import MessageFactory
 
@@ -49,21 +49,27 @@ tools = (
     CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool,
     ReferenceFactoriesTool.ReferenceFactoriesTool,
     KeepLastNVersionsTool.KeepLastNVersionsTool,
-    )
+)
 
 
-CMFEditionsMessageFactory = MessageFactory('cmfeditions')
+CMFEditionsMessageFactory = MessageFactory("cmfeditions")
 
-ModuleSecurityInfo('Products.CMFEditions').declarePublic('CMFEditionsMessageFactory')
-ModuleSecurityInfo('Products.CMFEditions.interfaces.IArchivist').declarePublic('ArchivistUnregisteredError')
-ModuleSecurityInfo('Products.CMFEditions.interfaces.IModifier').declarePublic('FileTooLargeToVersionError')
-ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('isObjectChanged')
-ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('isObjectVersioned')
-ModuleSecurityInfo('Products.CMFEditions.utilities').declarePublic('maybeSaveVersion')
+ModuleSecurityInfo("Products.CMFEditions").declarePublic("CMFEditionsMessageFactory")
+ModuleSecurityInfo("Products.CMFEditions.interfaces.IArchivist").declarePublic(
+    "ArchivistUnregisteredError"
+)
+ModuleSecurityInfo("Products.CMFEditions.interfaces.IModifier").declarePublic(
+    "FileTooLargeToVersionError"
+)
+ModuleSecurityInfo("Products.CMFEditions.utilities").declarePublic("isObjectChanged")
+ModuleSecurityInfo("Products.CMFEditions.utilities").declarePublic("isObjectVersioned")
+ModuleSecurityInfo("Products.CMFEditions.utilities").declarePublic("maybeSaveVersion")
+
 
 def initialize(context):
-    utils.ToolInit(meta_type='CMF Editions Tool', tools=tools,
-                   icon='tool.gif').initialize(context)
+    utils.ToolInit(
+        meta_type="CMF Editions Tool", tools=tools, icon="tool.gif"
+    ).initialize(context)
 
     # initialize standard modifiers to make them addable through the ZMI
     StandardModifiers.initialize(context)

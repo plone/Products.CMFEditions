@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
@@ -26,7 +25,7 @@ from zope.interface import Interface
 
 class IVersionPolicy(Interface):
     """A version policy object, which describes and sets up a versioning
-       policy
+    policy
     """
 
     def Title():

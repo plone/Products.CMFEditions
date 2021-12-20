@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2005 Gregoire Weber.
 # All Rights Reserved.
@@ -24,9 +23,9 @@
 """
 
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from AccessControl.class_init import InitializeClass
 from OFS.OrderedFolder import OrderedFolder
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import UniqueObject
@@ -36,14 +35,15 @@ from zope.interface import implementer
 
 
 @implementer(
-        IReferenceFactories,)
+    IReferenceFactories,
+)
 class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
-    __doc__ = __doc__ # copy from module
+    __doc__ = __doc__  # copy from module
 
-    id = 'portal_referencefactories'
-    alternative_id = 'portal_referencefactoryregistry'
+    id = "portal_referencefactories"
+    alternative_id = "portal_referencefactoryregistry"
 
-    meta_type = 'Reference Factory Registry'
+    meta_type = "Reference Factory Registry"
 
     security = ClassSecurityInfo()
 
@@ -53,12 +53,12 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
     # methods implementing IFactories
     # -------------------------------------------------------------------
 
-    security.declarePrivate('invokeFactory')
+    security.declarePrivate("invokeFactory")
+
     def invokeFactory(self, repo_clone, source, selector=None):
-        """See IReferenceFactories
-        """
+        """See IReferenceFactories"""
         # Just assuming ObjectManager behaviour for now
-        portal_hidhandler = getToolByName(self, 'portal_historyidhandler')
+        portal_hidhandler = getToolByName(self, "portal_historyidhandler")
         try:
             portal_type = repo_clone.getPortalTypeName()
         except AttributeError:
@@ -79,11 +79,12 @@ class ReferenceFactoriesTool(UniqueObject, OrderedFolder):
 
         return obj
 
-    security.declarePrivate('hasBeenMoved')
+    security.declarePrivate("hasBeenMoved")
+
     def hasBeenMoved(self, obj, source):
-        """See IReferenceFactories
-        """
+        """See IReferenceFactories"""
         # Check that the path of the object's parent (by path) is the same as the source
         return aq_parent(aq_inner(obj)).getPhysicalPath() != source.getPhysicalPath()
+
 
 InitializeClass(ReferenceFactoriesTool)

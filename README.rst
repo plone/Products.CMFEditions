@@ -33,7 +33,6 @@ A content panel allows configuring the versioning policy by content type:
 
 By default the contents of a folder is versioned independently of the folder.
 This may be changed through the ZMI and for specific cases on python level.
-Basic support for Archetypes references is built in.
 
 The current strategy is to save everything of the content item (incl. security
 information, workflow state, etc.). On retrieve some of these information are

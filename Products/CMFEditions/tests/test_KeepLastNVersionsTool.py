@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2006 Gregoire Weber
 # All Rights Reserved.
@@ -32,12 +31,10 @@ from zope.interface.verify import verifyObject
 
 
 class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
-
     def setUp(self):
-        super(TestKeepLastNVersionsTool, self).setUp()
+        super().setUp()
         # add an additional user
-        self.portal.acl_users.userFolderAddUser('reviewer', 'reviewer',
-                                                ['Manager'], '')
+        self.portal.acl_users.userFolderAddUser("reviewer", "reviewer", ["Manager"], "")
 
         # install test storage
         self._setDummyTool(PurgePolicyTestDummyStorage())
@@ -101,10 +98,10 @@ class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
 
         # next newer
         data = purgepolicy.retrieveSubstitute(history_id=1, selector=0)
-        self.assertEquals(data.data, 1)
+        self.assertEqual(data.data, 1)
         # next older
         data = purgepolicy.retrieveSubstitute(history_id=1, selector=2)
-        self.assertEquals(data.data, 1)
+        self.assertEqual(data.data, 1)
         # next older
         data = purgepolicy.retrieveSubstitute(history_id=1, selector=3)
-        self.assertEquals(data.data, 1)
+        self.assertEqual(data.data, 1)

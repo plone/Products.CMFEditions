@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
@@ -26,23 +25,23 @@
 from AccessControl.Permission import addPermission
 
 
-ApplyVersionControl = 'CMFEditions: Apply version control'
-addPermission(ApplyVersionControl, ('Manager', 'Site Administrator'))
+ApplyVersionControl = "CMFEditions: Apply version control"
+addPermission(ApplyVersionControl, ("Manager", "Site Administrator"))
 
-SaveNewVersion = 'CMFEditions: Save new version'
-addPermission(SaveNewVersion, ('Manager', 'Site Administrator'))
+SaveNewVersion = "CMFEditions: Save new version"
+addPermission(SaveNewVersion, ("Manager", "Site Administrator"))
 
-PurgeVersion = 'CMFEditions: Purge version'
-addPermission(PurgeVersion, ('Manager', 'Site Administrator'))
+PurgeVersion = "CMFEditions: Purge version"
+addPermission(PurgeVersion, ("Manager", "Site Administrator"))
 
-AccessPreviousVersions = 'CMFEditions: Access previous versions'
-addPermission(AccessPreviousVersions, ('Manager', 'Site Administrator'))
+AccessPreviousVersions = "CMFEditions: Access previous versions"
+addPermission(AccessPreviousVersions, ("Manager", "Site Administrator"))
 
-RevertToPreviousVersions = 'CMFEditions: Revert to previous versions'
-addPermission(RevertToPreviousVersions, ('Manager', 'Site Administrator'))
+RevertToPreviousVersions = "CMFEditions: Revert to previous versions"
+addPermission(RevertToPreviousVersions, ("Manager", "Site Administrator"))
 
-CheckoutToLocation = 'CMFEditions: Checkout to location'
-addPermission(CheckoutToLocation, ('Manager', 'Site Administrator'))
+CheckoutToLocation = "CMFEditions: Checkout to location"
+addPermission(CheckoutToLocation, ("Manager", "Site Administrator"))
 
-ManageVersioningPolicies = 'CMFEditions: Manage versioning policies'
-addPermission(ManageVersioningPolicies, ('Manager', 'Site Administrator'))
+ManageVersioningPolicies = "CMFEditions: Manage versioning policies"
+addPermission(ManageVersioningPolicies, ("Manager", "Site Administrator"))

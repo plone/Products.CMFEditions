@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 CMFEditions setup handlers.
 """
@@ -20,22 +19,22 @@ def importVarious(context):
     care of by other handlers.
     """
     # Only run step if a flag file is present
-    if context.readDataFile('cmfeditions_various.txt') is None:
+    if context.readDataFile("cmfeditions_various.txt") is None:
         return
     site = context.getSite()
-    portal_modifier = getToolByName(site, 'portal_modifier', None)
+    portal_modifier = getToolByName(site, "portal_modifier", None)
     if portal_modifier is None:
         return
     StandardModifiers.install(portal_modifier)
-    portal_repository = getToolByName(site, 'portal_repository')
+    portal_repository = getToolByName(site, "portal_repository")
     portal_repository.setAutoApplyMode(True)
     portal_repository._migrateVersionPolicies()
 
 
 def installSkipRegistryBasesPointersModifier(context):
     """Upgrade step to install the component registry bases modifier."""
-    portal_modifier = getToolByName(context, 'portal_modifier', None)
-    StandardModifiers.install(portal_modifier, ['SkipRegistryBasesPointers'])
+    portal_modifier = getToolByName(context, "portal_modifier", None)
+    StandardModifiers.install(portal_modifier, ["SkipRegistryBasesPointers"])
 
 
 def removeBrokenModifiers(context):
@@ -48,7 +47,7 @@ def removeBrokenModifiers(context):
     """
     from Products.CMFEditions.interfaces.IModifier import IConditionalModifier
 
-    tool = getToolByName(context, 'portal_modifier', None)
+    tool = getToolByName(context, "portal_modifier", None)
     for modifier_id, modifier in tool.objectItems():
         if not IConditionalModifier.providedBy(modifier):
             continue

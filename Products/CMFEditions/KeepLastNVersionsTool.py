@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
@@ -36,22 +35,24 @@ from zope.interface import implementer
 
 @implementer(IPurgePolicyTool, IPurgePolicy)
 class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
-    """
-    """
+    """ """
 
-    id = 'portal_purgepolicy'
-    alternative_id = 'portal_keeplastnversions'
+    id = "portal_purgepolicy"
+    alternative_id = "portal_keeplastnversions"
 
     meta_type = "CMFEditions Purge Policy Keeping Only the n last Versions"
 
-    manage_options = PropertyManager.manage_options \
-      + SimpleItem.manage_options
+    manage_options = PropertyManager.manage_options + SimpleItem.manage_options
 
-    maxNumberOfVersionsToKeep = -1 # disabled
+    maxNumberOfVersionsToKeep = -1  # disabled
 
     _properties = (
-        {'id': 'maxNumberOfVersionsToKeep', 'type': 'int', 'mode': 'w',
-         'label': "maximum number of versions to keep in the storage (set to -1 for infinite)"},
+        {
+            "id": "maxNumberOfVersionsToKeep",
+            "type": "int",
+            "mode": "w",
+            "label": "maximum number of versions to keep in the storage (set to -1 for infinite)",
+        },
     )
     security = ClassSecurityInfo()
 
@@ -70,17 +71,19 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
             # infinite: do nothing
             return True
 
-        storage = getToolByName(self, 'portal_historiesstorage')
+        storage = getToolByName(self, "portal_historiesstorage")
         currentVersion = len(storage.getHistory(history_id))
         while True:
             length = len(storage.getHistory(history_id, countPurged=False))
             if length < self.maxNumberOfVersionsToKeep:
                 break
             comment = "purged on save of version %s" % currentVersion
-            storage.purge(history_id, 0, metadata={'sys_metadata': {
-                                                           'comment': comment}
-                                                   },
-                          countPurged=False)
+            storage.purge(
+                history_id,
+                0,
+                metadata={"sys_metadata": {"comment": comment}},
+                countPurged=False,
+            )
 
         # save current version
         return True
@@ -94,7 +97,7 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
             selector = 0
         else:
             selector = int(selector)
-        storage = getToolByName(self, 'portal_historiesstorage')
+        storage = getToolByName(self, "portal_historiesstorage")
         savedSelector = selector
         while selector:
             selector -= 1
@@ -114,5 +117,6 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
                 return data
 
         return default
+
 
 InitializeClass(KeepLastNVersionsTool)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
@@ -23,4 +22,4 @@ from Products.CMFUid.UniqueIdHandlerTool import UniqueIdHandlerTool
 
 
 class HistoryIdHandlerTool(UniqueIdHandlerTool):
-    id = 'portal_historyidhandler'
+    id = "portal_historyidhandler"

@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from six.moves import range
 from zope.i18n import translate
 
 
@@ -13,7 +10,7 @@ class DiffView(BrowserView):
     template = ViewPageTemplateFile("diff.pt")
 
     def __init__(self, *args):
-        super(DiffView, self).__init__(*args)
+        super().__init__(*args)
         self.repo_tool = getToolByName(self.context, "portal_repository")
 
     def getVersion(self, version):
@@ -34,9 +31,8 @@ class DiffView(BrowserView):
         version_name = self.versionName(version)
 
         return translate(
-            _(u"version ${version}",
-              mapping=dict(version=version_name)),
-            context=self.request
+            _("version ${version}", mapping=dict(version=version_name)),
+            context=self.request,
         )
 
     def __call__(self):
@@ -49,27 +45,29 @@ class DiffView(BrowserView):
         history = self.history = []
         # Count backwards from most recent to least recent
         for i in range(history_metadata.getLength(countPurged=False) - 1, -1, -1):
-            version = retrieve(i, countPurged=False)['metadata'].copy()
-            version['version_id'] = getId(i, countPurged=False)
+            version = retrieve(i, countPurged=False)["metadata"].copy()
+            version["version_id"] = getId(i, countPurged=False)
             history.append(version)
         dt = getToolByName(self.context, "portal_diff")
         self.changeset = dt.createChangeSet(
             self.getVersion(version2),
             self.getVersion(version1),
             id1=self.versionTitle(version2),
-            id2=self.versionTitle(version1))
-        self.changes = [change for change in self.changeset.getDiffs()
-                        if not change.same]
+            id2=self.versionTitle(version1),
+        )
+        self.changes = [
+            change for change in self.changeset.getDiffs() if not change.same
+        ]
 
         return self.template()
 
 
 class CanDiff(BrowserView):
-
     def can_diff(self):
-        """Return True if content is diffable
-        """
+        """Return True if content is diffable"""
         context = self.context
-        portal_diff = getToolByName(context, 'portal_diff', None)
-        return portal_diff \
+        portal_diff = getToolByName(context, "portal_diff", None)
+        return (
+            portal_diff
             and len(portal_diff.getDiffForPortalType(context.portal_type)) > 0
+        )

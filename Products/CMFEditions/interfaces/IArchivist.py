@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
@@ -127,8 +126,7 @@ class IArchivist(Interface):
         """
 
     def getHistoryMetadata(obj=None, history_id=None):
-        """Returns the versioning metadata history.
-        """
+        """Returns the versioning metadata history."""
 
 
 class IPurgeSupport(Interface):
@@ -168,8 +166,7 @@ class IPurgeSupport(Interface):
         version retrieved: 0, 1, 2, 5, 6, 7, 8, 9, e, e
     """
 
-    def purge(obj=None, history_id=None, selector=None, metadata={},
-              countPurged=True):
+    def purge(obj=None, history_id=None, selector=None, metadata={}, countPurged=True):
         """Purge a version of a content object.
 
         Requires either an object which is the working copy, or a history_id
@@ -183,8 +180,7 @@ class IPurgeSupport(Interface):
         (see interface documentation for details).
         """
 
-    def isUpToDate(obj=None, history_id=None, selector=None,
-                   countPurged=True):
+    def isUpToDate(obj=None, history_id=None, selector=None, countPurged=True):
         """Check if the corking copy is up to date.
 
         Returns True if the working copy has changed since the last save
@@ -198,8 +194,9 @@ class IPurgeSupport(Interface):
         (see interface documentation for details).
         """
 
-    def retrieve(obj=None, history_id=None, selector=None, preserve=(),
-                 countPurged=True):
+    def retrieve(
+        obj=None, history_id=None, selector=None, preserve=(), countPurged=True
+    ):
         """Retrieve a former state of an object.
 
         Requires either an object which is the working copy, or a history_id
@@ -245,8 +242,9 @@ class IPurgeSupport(Interface):
         (see interface documentation for details).
         """
 
-    def queryHistory(obj=None, history_id=None, preserve=(), default=None,
-                     countPurged=True):
+    def queryHistory(
+        obj=None, history_id=None, preserve=(), default=None, countPurged=True
+    ):
         """Return the history of an object.
 
         Does the same as ``getHistory`` with the difference of returning
@@ -258,12 +256,12 @@ class IPurgeSupport(Interface):
 
 
 class IPreparedObject(Interface):
-    """Contains data prepared for save or register.
-    """
+    """Contains data prepared for save or register."""
 
     history_id = Attribute(
         """The id of the objects history.
-        """)
+        """
+    )
 
     original = Attribute(
         """The unaltered original object before the modifiers were applied.
@@ -271,13 +269,15 @@ class IPreparedObject(Interface):
         This is a 'IObjectData' object.
 
         The original object shall not be modified!
-        """)
+        """
+    )
 
     clone = Attribute(
         """The cloned object and version aware reference info.
 
         This is a 'IObjectData' object.
-        """)
+        """
+    )
 
     referenced_data = Attribute(
         """Data that is passed to the storage by reference.
@@ -289,44 +289,50 @@ class IPreparedObject(Interface):
         Returns a dictionary of the following format:
 
             {'name': pyref_to_object, ...}
-        """)
+        """
+    )
 
     metadata = Attribute(
         """Metadata to be passed to history storage.
-        """)
+        """
+    )
 
     is_registered = Attribute(
         """True if already registered by the Archivist.
-        """)
+        """
+    )
 
 
 class IVersionData(Interface):
-    """
-    """
+    """ """
 
     data = Attribute(
         """The previously saved object.
 
         This is a 'IObjectData' object.
-        """)
+        """
+    )
 
     refs_to_be_deleted = Attribute(
         """List of references to be deleted on revert.
 
         The items (containing the reference informations) are of
         ``IReferenceAdapter``.
-        """)
+        """
+    )
 
     attr_handling_references = Attribute(
         """List of names of attributes handling references.
-        """)
+        """
+    )
 
     preserved_data = Attribute(
         """Returns data beeing preserved from beeing overwritten by modifiers.
 
         The preserved data is a flat dictionary. With the example from above:
         nick_name = obj.preserved_data['nick_name']
-        """)
+        """
+    )
 
     sys_metadata = Attribute(
         """System related metadata.
@@ -337,16 +343,17 @@ class IVersionData(Interface):
         - principal: the actor that did the save
         - parent: Dictionary with ``history_id``, ``version_id`` and
           ``location_id``
-        """)
+        """
+    )
 
     app_metadata = Attribute(
         """Metadata stored alongside when the objects state was saved.
-        """)
+        """
+    )
 
 
 class IHistory(Interface):
-    """Iterable version history.
-    """
+    """Iterable version history."""
 
     def __init__(archivist, obj):
         """Instantiates a lazy iterable history.
@@ -356,8 +363,7 @@ class IHistory(Interface):
         """
 
     def __len__():
-        """Returns the length of the history.
-        """
+        """Returns the length of the history."""
 
     def __getattr__(version_id):
         """Returns the version of an object corresponding to the version id.
@@ -373,23 +379,25 @@ class IHistory(Interface):
 
 
 class IObjectData(Interface):
-    """The object including informations about outgoing references.
-    """
+    """The object including informations about outgoing references."""
 
     object = Attribute(
         """The object with some of the python references replaced by
            version aware references.
-        """)
+        """
+    )
 
     inside_refs = Attribute(
         """List of 'IAttributeAdapter' objects adapting "object inside"
            'IVersionAwareReference'.
-        """)
+        """
+    )
 
     outside_refs = Attribute(
         """List of 'IAttributeAdapter' objects adapting "object outside"
            'IVersionAwareReference'.
-        """)
+        """
+    )
 
 
 class IAttributeAdapter(Interface):
@@ -400,24 +408,19 @@ class IAttributeAdapter(Interface):
     """
 
     def __init__(parent, attr_name, type=None):
-        """Store the attributes "coordinates".
-        """
+        """Store the attributes "coordinates"."""
 
     def setAttribute(obj):
-        """Sets the given object as attribute.
-        """
+        """Sets the given object as attribute."""
 
     def getAttribute(alternate=None):
-        """Returns the current attribute.
-        """
+        """Returns the current attribute."""
 
     def getAttributeName():
-        """Returns the attributes name.
-        """
+        """Returns the attributes name."""
 
     def getType():
-        """Returns the attributes type.
-        """
+        """Returns the attributes type."""
 
 
 class IVersionAwareReference(Interface):
@@ -452,8 +455,7 @@ class IVersionAwareReference(Interface):
         """
 
     def setReference(target_obj, remove_info=True):
-        """Set a reference to the given target object.
-        """
+        """Set a reference to the given target object."""
 
     history_id = Attribute(
         """The history id of the referenced resource.
@@ -462,48 +464,56 @@ class IVersionAwareReference(Interface):
 
         May be None. In this case the reference isn't set yet or the
         target object isn't referenceable.
-        """)
+        """
+    )
 
     version_id = Attribute(
         """The version id of the referenced resource.
 
         May be None. For the interpretation see above.
-        """)
+        """
+    )
 
     location_id = Attribute(
         """The location id of the working copy of the referenced resource.
 
         May be None. For the interpretation see above.
-        """)
+        """
+    )
 
     info = Attribute(
         """The info stored alongside on instantiation time.
 
         May not exist.
-        """)
+        """
+    )
 
 
 class ArchivistError(Exception):
-    """Archivist exception
-    """
+    """Archivist exception"""
+
     pass
+
 
 class ArchivistRetrieveError(ArchivistError):
-    """Raised if tried to retrieve a non existent version of a resource.
-    """
+    """Raised if tried to retrieve a non existent version of a resource."""
+
     pass
+
 
 class ArchivistRegisterError(ArchivistError):
-    """Raised if registering the resource failed.
-    """
+    """Raised if registering the resource failed."""
+
     pass
+
 
 class ArchivistSaveError(ArchivistError):
-    """Raised if saving a new version of a resource failed.
-    """
+    """Raised if saving a new version of a resource failed."""
+
     pass
 
+
 class ArchivistUnregisteredError(ArchivistError):
-    """Raised if trying to save an unregistered resource.
-    """
+    """Raised if trying to save an unregistered resource."""
+
     pass

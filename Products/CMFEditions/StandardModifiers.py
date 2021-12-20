@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2005 Alberto Berti, Gregoire Weber,
 # Reflab(Vincenzo Di Somma, Francesco Ciriaci, Riccardo Lemmi),
@@ -25,8 +24,8 @@
 """Standard modifiers
 """
 
-from Acquisition import aq_base
 from AccessControl.class_init import InitializeClass
+from Acquisition import aq_base
 from OFS.ObjectManager import ObjectManager
 from plone.folder.default import DefaultOrdering
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
@@ -47,233 +46,244 @@ from zope.copy import copy
 from zope.interface import implementer
 from zope.interface.interfaces import ComponentLookupError
 
-import six
 import sys
 
 
 _marker = []
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Product initialziation, installation and factory stuff
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 def initialize(context):
-    """Registers modifiers with zope (on zope startup).
-    """
+    """Registers modifiers with zope (on zope startup)."""
     for m in modifiers:
         context.registerClass(
-            m['wrapper'], m['id'],
-            permission = ManagePortal,
-            constructors = (m['form'], m['factory']),
-            icon = m['icon'],
+            m["wrapper"],
+            m["id"],
+            permission=ManagePortal,
+            constructors=(m["form"], m["factory"]),
+            icon=m["icon"],
         )
 
+
 def install(portal_modifier, ids=None):
-    """Registers modifiers in the modifier registry (at tool install time).
-    """
+    """Registers modifiers in the modifier registry (at tool install time)."""
     for m in modifiers:
-        id = m['id']
+        id = m["id"]
         if ids is not None and id not in ids:
             continue
         if id in portal_modifier.objectIds():
             continue
-        title = m['title']
-        modifier = m['modifier']()
-        wrapper = m['wrapper'](id, modifier, title)
-        enabled = m['enabled']
+        title = m["title"]
+        modifier = m["modifier"]()
+        wrapper = m["wrapper"](id, modifier, title)
+        enabled = m["enabled"]
         if IConditionalTalesModifier.providedBy(wrapper):
-            wrapper.edit(enabled, m['condition'])
+            wrapper.edit(enabled, m["condition"])
         else:
             wrapper.edit(enabled)
 
-        portal_modifier.register(m['id'], wrapper)
+        portal_modifier.register(m["id"], wrapper)
 
 
-manage_OMOutsideChildrensModifierAddForm = PageTemplateFile('www/OMOutsideChildrensModifierAddForm.pt',
-                                          globals(),
-                                          __name__='manage_OMOutsideChildrensModifierAddForm')
+manage_OMOutsideChildrensModifierAddForm = PageTemplateFile(
+    "www/OMOutsideChildrensModifierAddForm.pt",
+    globals(),
+    __name__="manage_OMOutsideChildrensModifierAddForm",
+)
+
 
 def manage_addOMOutsideChildrensModifier(self, id, title=None, REQUEST=None):
-    """Add an object manager modifier treating childrens as outside refs
-    """
+    """Add an object manager modifier treating childrens as outside refs"""
     modifier = OMOutsideChildrensModifier()
     self._setObject(id, ConditionalTalesModifier(id, modifier, title))
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
 
-manage_OMInsideChildrensModifierAddForm = PageTemplateFile('www/OMInsideChildrensModifierAddForm.pt',
-                                          globals(),
-                                          __name__='manage_OMInsideChildrensModifierAddForm')
+manage_OMInsideChildrensModifierAddForm = PageTemplateFile(
+    "www/OMInsideChildrensModifierAddForm.pt",
+    globals(),
+    __name__="manage_OMInsideChildrensModifierAddForm",
+)
 
-def manage_addOMInsideChildrensModifier(self, id, title=None,
-                                        REQUEST=None):
-    """Add an object manager modifier treating children as inside refs
-    """
+
+def manage_addOMInsideChildrensModifier(self, id, title=None, REQUEST=None):
+    """Add an object manager modifier treating children as inside refs"""
     modifier = OMInsideChildrensModifier()
     self._setObject(id, ConditionalTalesModifier(id, modifier, title))
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
 
-manage_RetainUIDsModifierAddForm =  \
-                         PageTemplateFile('www/RetainUIDsModifierAddForm.pt',
-                                          globals(),
-                                          __name__='manage_RetainUIDsModifierAddForm')
+manage_RetainUIDsModifierAddForm = PageTemplateFile(
+    "www/RetainUIDsModifierAddForm.pt",
+    globals(),
+    __name__="manage_RetainUIDsModifierAddForm",
+)
+
 
 def manage_addRetainUIDs(self, id, title=None, REQUEST=None):
-    """Add a modifier retaining UIDs upon retrieve.
-    """
+    """Add a modifier retaining UIDs upon retrieve."""
     modifier = RetainUIDs()
     self._setObject(id, ConditionalModifier(id, modifier, title))
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
 
-manage_RetainWorkflowStateAndHistoryModifierAddForm =  \
-                         PageTemplateFile('www/RetainWorkflowStateAndHistoryModifierAddForm.pt',
-                                          globals(),
-                                          __name__='manage_RetainWorkflowStateAndHistoryModifierAddForm')
+manage_RetainWorkflowStateAndHistoryModifierAddForm = PageTemplateFile(
+    "www/RetainWorkflowStateAndHistoryModifierAddForm.pt",
+    globals(),
+    __name__="manage_RetainWorkflowStateAndHistoryModifierAddForm",
+)
 
-def manage_addRetainWorkflowStateAndHistory(self, id, title=None,
-                                            REQUEST=None):
-    """Add a modifier retaining workflow state upon retrieve.
-    """
+
+def manage_addRetainWorkflowStateAndHistory(self, id, title=None, REQUEST=None):
+    """Add a modifier retaining workflow state upon retrieve."""
     modifier = RetainWorkflowStateAndHistory()
     self._setObject(id, ConditionalModifier(id, modifier, title))
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
 
-manage_RetainPermissionsSettingsAddForm =  \
-                         PageTemplateFile('www/RetainPermissionsSettingsModifierAddForm.pt',
-                                          globals(),
-                                          __name__='manage_RetainPermissionsSettingsModifierAddForm')
+manage_RetainPermissionsSettingsAddForm = PageTemplateFile(
+    "www/RetainPermissionsSettingsModifierAddForm.pt",
+    globals(),
+    __name__="manage_RetainPermissionsSettingsModifierAddForm",
+)
 
-def manage_addRetainPermissionsSettings(self, id, title=None,
-                                            REQUEST=None):
-    """Add a modifier retaining permissions upon retrieve.
-    """
+
+def manage_addRetainPermissionsSettings(self, id, title=None, REQUEST=None):
+    """Add a modifier retaining permissions upon retrieve."""
     modifier = RetainPermissionsSettings()
     self._setObject(id, ConditionalModifier(id, modifier, title))
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
 
-manage_SaveFileDataInFileTypeByReferenceModifierAddForm =  \
-                         PageTemplateFile('www/SaveFileDataInFileTypeByReferenceModifierAddForm.pt',
-                                          globals(),
-                                          __name__='manage_SaveFileDataInFileTypeByReferenceModifierAddForm')
+manage_SaveFileDataInFileTypeByReferenceModifierAddForm = PageTemplateFile(
+    "www/SaveFileDataInFileTypeByReferenceModifierAddForm.pt",
+    globals(),
+    __name__="manage_SaveFileDataInFileTypeByReferenceModifierAddForm",
+)
 
-def manage_addSaveFileDataInFileTypeByReference(self, id, title=None,
-                                                REQUEST=None):
-    """Add a modifier avoiding unnecessary cloning of file data.
-    """
+
+def manage_addSaveFileDataInFileTypeByReference(self, id, title=None, REQUEST=None):
+    """Add a modifier avoiding unnecessary cloning of file data."""
     modifier = SaveFileDataInFileTypeByReference()
     self._setObject(id, ConditionalTalesModifier(id, modifier, title))
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
+
 
 # silly modifier just for demos
-manage_SillyDemoRetrieveModifierAddForm =  \
-    PageTemplateFile('www/SillyDemoRetrieveModifierAddForm.pt', globals(),
-                     __name__='manage_SillyDemoRetrieveModifierAddForm')
+manage_SillyDemoRetrieveModifierAddForm = PageTemplateFile(
+    "www/SillyDemoRetrieveModifierAddForm.pt",
+    globals(),
+    __name__="manage_SillyDemoRetrieveModifierAddForm",
+)
 
-def manage_addSillyDemoRetrieveModifier(self, id, title=None,
-                                            REQUEST=None):
-    """Add a silly demo retrieve modifier
-    """
+
+def manage_addSillyDemoRetrieveModifier(self, id, title=None, REQUEST=None):
+    """Add a silly demo retrieve modifier"""
     modifier = SillyDemoRetrieveModifier()
     self._setObject(id, ConditionalTalesModifier(id, modifier, title))
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
 
-manage_AbortVersioningOfLargeFilesAndImagesAddForm =  \
-    PageTemplateFile('www/AbortVersioningOfLargeFilesAndImagesAddForm.pt',
-                  globals(),
-                  __name__='manage_AbortVersioningOfLargeFilesAndImagesAddForm')
+manage_AbortVersioningOfLargeFilesAndImagesAddForm = PageTemplateFile(
+    "www/AbortVersioningOfLargeFilesAndImagesAddForm.pt",
+    globals(),
+    __name__="manage_AbortVersioningOfLargeFilesAndImagesAddForm",
+)
 
-def manage_addAbortVersioningOfLargeFilesAndImages(self, id, title=None,
-                                            REQUEST=None):
-    """Add a silly demo retrieve modifier
-    """
+
+def manage_addAbortVersioningOfLargeFilesAndImages(self, id, title=None, REQUEST=None):
+    """Add a silly demo retrieve modifier"""
     modifier = AbortVersioningOfLargeFilesAndImages(id, title)
     self._setObject(id, modifier)
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
 
-manage_SkipVersioningOfLargeFilesAndImagesAddForm =  \
-    PageTemplateFile('www/SkipVersioningOfLargeFilesAndImagesAddForm.pt',
-                   globals(),
-                   __name__='manage_SkipVersioningOfLargeFilesAndImagesAddForm')
+manage_SkipVersioningOfLargeFilesAndImagesAddForm = PageTemplateFile(
+    "www/SkipVersioningOfLargeFilesAndImagesAddForm.pt",
+    globals(),
+    __name__="manage_SkipVersioningOfLargeFilesAndImagesAddForm",
+)
 
-def manage_addSkipVersioningOfLargeFilesAndImages(self, id, title=None,
-                                            REQUEST=None):
-    """Add a silly demo retrieve modifier
-    """
+
+def manage_addSkipVersioningOfLargeFilesAndImages(self, id, title=None, REQUEST=None):
+    """Add a silly demo retrieve modifier"""
     modifier = SkipVersioningOfLargeFilesAndImages(id, title)
     self._setObject(id, modifier)
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
-manage_SkipParentPointersAddForm =  \
-    PageTemplateFile('www/SkipParentPointersAddForm.pt',
-                   globals(),
-                   __name__='manage_SkipParentPointersAddForm')
+
+manage_SkipParentPointersAddForm = PageTemplateFile(
+    "www/SkipParentPointersAddForm.pt",
+    globals(),
+    __name__="manage_SkipParentPointersAddForm",
+)
+
 
 def manage_addSkipParentPointers(self, id, title=None, REQUEST=None):
-    """Add a skip parent pointers modifier
-    """
+    """Add a skip parent pointers modifier"""
     modifier = SkipParentPointers(id, title)
     self._setObject(id, modifier)
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
-manage_SkipRegistryBasesPointersAddForm =  \
-    PageTemplateFile('www/SkipRegistryBasesPointersAddForm.pt',
-                   globals(),
-                   __name__='manage_SkipRegistryBasesPointersAddForm')
+
+manage_SkipRegistryBasesPointersAddForm = PageTemplateFile(
+    "www/SkipRegistryBasesPointersAddForm.pt",
+    globals(),
+    __name__="manage_SkipRegistryBasesPointersAddForm",
+)
+
 
 def manage_addSkipRegistryBasesPointers(self, id, title=None, REQUEST=None):
-    """Add a skip component registry bases modifier
-    """
+    """Add a skip component registry bases modifier"""
     modifier = SkipRegistryBasesPointers(id, title)
     self._setObject(id, modifier)
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
-manage_Skip_z3c_blobfileAddForm =  \
-    PageTemplateFile('www/Skip_z3c_blobfile.pt',
-                   globals(),
-                   __name__='manage_Skip_z3c_blobfileAddForm')
+
+manage_Skip_z3c_blobfileAddForm = PageTemplateFile(
+    "www/Skip_z3c_blobfile.pt", globals(), __name__="manage_Skip_z3c_blobfileAddForm"
+)
+
 
 def manage_addSkip_z3c_blobfile(self, id, title=None, REQUEST=None):
-    """Add a skip z3c.blobfile modifier
-    """
+    """Add a skip z3c.blobfile modifier"""
     modifier = Skip_z3c_blobfile(id, title)
     self._setObject(id, modifier)
 
     if REQUEST is not None:
-        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+        REQUEST["RESPONSE"].redirect(self.absolute_url() + "/manage_main")
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Standard modifier implementation
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
 
 @implementer(ISaveRetrieveModifier)
 class RetainAttributeAnnotationItemsBase:
@@ -285,8 +295,8 @@ class RetainAttributeAnnotationItemsBase:
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         # replace specific annotation elements with those from the working copy
-        repo_annotations = getattr(repo_clone, '__annotations__', None)
-        obj_annotations = getattr(obj, '__annotations__', None)
+        repo_annotations = getattr(repo_clone, "__annotations__", None)
+        obj_annotations = getattr(obj, "__annotations__", None)
 
         # check if the modifier is called with a valid working copy
         # with annotations
@@ -305,16 +315,13 @@ class RetainAttributeAnnotationItemsBase:
 
 
 class OMBaseModifier(RetainAttributeAnnotationItemsBase):
-    """Base class for ObjectManager modifiers.
-    """
+    """Base class for ObjectManager modifiers."""
 
-    PRESERVE_ANNOTATION_KEYS = (DefaultOrdering.ORDER_KEY,
-                                DefaultOrdering.POS_KEY)
+    PRESERVE_ANNOTATION_KEYS = (DefaultOrdering.ORDER_KEY, DefaultOrdering.POS_KEY)
 
     def _getOnCloneModifiers(self, obj):
-        """Removes all childrens and returns them as references.
-        """
-        portal_archivist = getToolByName(obj, 'portal_archivist')
+        """Removes all childrens and returns them as references."""
+        portal_archivist = getToolByName(obj, "portal_archivist")
         VersionAwareReference = portal_archivist.classes.VersionAwareReference
 
         # do not pickle the object managers subobjects
@@ -340,9 +347,8 @@ class OMBaseModifier(RetainAttributeAnnotationItemsBase):
         return persistent_id, persistent_load, result_refs
 
     def _beforeSaveModifier(self, obj, clone):
-        """Returns all unititialized 'IVersionAwareReference' objects.
-        """
-        portal_archivist = getToolByName(obj, 'portal_archivist')
+        """Returns all unititialized 'IVersionAwareReference' objects."""
+        portal_archivist = getToolByName(obj, "portal_archivist")
         adapter = portal_archivist.classes.ObjectManagerStorageAdapter
 
         # just return adapters to the attributes that were replaced by
@@ -354,14 +360,15 @@ class OMBaseModifier(RetainAttributeAnnotationItemsBase):
         return result_refs
 
     def _getAttributeNamesHandlingSubObjects(self, obj, repo_clone):
-        attrs = list(set(tuple(repo_clone.objectIds())+tuple(obj.objectIds())))
+        attrs = list(set(tuple(repo_clone.objectIds()) + tuple(obj.objectIds())))
 
         if isinstance(obj, BTreeFolder2Base):
-            attrs.extend(['_tree', '_count', '_mt_index'])
+            attrs.extend(["_tree", "_count", "_mt_index"])
         elif isinstance(obj, ObjectManager):
-            attrs.extend(['_objects'])
+            attrs.extend(["_objects"])
 
         return attrs
+
 
 @implementer(ICloneModifier, ISaveRetrieveModifier)
 class OMOutsideChildrensModifier(OMBaseModifier):
@@ -372,10 +379,9 @@ class OMOutsideChildrensModifier(OMBaseModifier):
     """
 
     def getOnCloneModifiers(self, obj):
-        """Removes all childrens and returns them as references.
-        """
+        """Removes all childrens and returns them as references."""
         pers_id, pers_load, outside_refs = self._getOnCloneModifiers(obj)
-        return pers_id, pers_load, [], outside_refs, ''
+        return pers_id, pers_load, [], outside_refs, ""
 
     def beforeSaveModifier(self, obj, clone):
         """Returns all unititialized 'IVersionAwareReference' objects.
@@ -386,7 +392,7 @@ class OMOutsideChildrensModifier(OMBaseModifier):
         return {}, [], outside_refs
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
-        portal_archivist = getToolByName(obj, 'portal_archivist')
+        portal_archivist = getToolByName(obj, "portal_archivist")
         OMStorageAdapter = portal_archivist.classes.ObjectManagerStorageAdapter
 
         ref_names = self._getAttributeNamesHandlingSubObjects(obj, repo_clone)
@@ -415,11 +421,12 @@ class OMOutsideChildrensModifier(OMBaseModifier):
             if orig_objects is not _marker:
                 setattr(repo_clone, attr_name, orig_objects)
 
-        RetainAttributeAnnotationItemsBase.afterRetrieveModifier(self, obj,
-                                                                 repo_clone,
-                                                                 preserve)
+        RetainAttributeAnnotationItemsBase.afterRetrieveModifier(
+            self, obj, repo_clone, preserve
+        )
 
         return [], ref_names, {}
+
 
 InitializeClass(OMOutsideChildrensModifier)
 
@@ -433,10 +440,9 @@ class OMInsideChildrensModifier(OMBaseModifier):
     """
 
     def getOnCloneModifiers(self, obj):
-        """Removes all childrens and returns them as references.
-        """
+        """Removes all childrens and returns them as references."""
         pers_id, pers_load, inside_refs = self._getOnCloneModifiers(obj)
-        return pers_id, pers_load, inside_refs, [], ''
+        return pers_id, pers_load, inside_refs, [], ""
 
     def beforeSaveModifier(self, obj, clone):
         """Returns all unititialized 'IVersionAwareReference' objects.
@@ -451,7 +457,7 @@ class OMInsideChildrensModifier(OMBaseModifier):
         if obj is None:
             return [], [], {}
 
-        hidhandler = getToolByName(obj, 'portal_historyidhandler')
+        hidhandler = getToolByName(obj, "portal_historyidhandler")
         queryUid = hidhandler.queryUid
 
         # Inside refs from the original object that have no counterpart
@@ -473,7 +479,7 @@ class OMInsideChildrensModifier(OMBaseModifier):
             if histid is not None:
                 orig_histids[histid] = id
             else:
-                orig_histids['no_history'+id]=id
+                orig_histids["no_history" + id] = id
 
         # (2) evaluate the refs that get replaced anyway
         for varef in repo_clone.objectValues():
@@ -482,8 +488,9 @@ class OMInsideChildrensModifier(OMBaseModifier):
                 del orig_histids[histid]
 
         # (3) build the list of adapters to the references to be removed
-        refs_to_be_deleted = \
-            [OMSubObjectAdapter(obj, name) for name in orig_histids.values()]
+        refs_to_be_deleted = [
+            OMSubObjectAdapter(obj, name) for name in orig_histids.values()
+        ]
 
         # return all attribute names that have something to do with
         # referencing
@@ -492,32 +499,29 @@ class OMInsideChildrensModifier(OMBaseModifier):
         # We copy the ordering annotations from the working copy to
         # the repo clone, so that we don't have inconsistencies between the
         # objectValues and objectIds.
-        RetainAttributeAnnotationItemsBase.afterRetrieveModifier(self, obj,
-                                                                 repo_clone)
+        RetainAttributeAnnotationItemsBase.afterRetrieveModifier(self, obj, repo_clone)
 
         return refs_to_be_deleted, ref_names, {}
 
+
 InitializeClass(OMInsideChildrensModifier)
+
 
 @implementer(IReferenceAdapter)
 class OMSubObjectAdapter:
-    """Adapter to an object manager children.
-    """
+    """Adapter to an object manager children."""
 
     def __init__(self, obj, name):
-        """Initialize the adapter.
-        """
+        """Initialize the adapter."""
         self._obj = obj
         self._name = name
 
     def save(self, dict):
-        """See interface
-        """
+        """See interface"""
         dict[self._name] = self._obj._getOb(self._name)
 
     def remove(self, permanent=False):
-        """See interface
-        """
+        """See interface"""
         # XXX do we want there is the ``manage_afterDelete`` hook called?
         # The decision has to go into the interface documentation.
         # IM(alecm)O, we should update the catalog if the change is permanent
@@ -563,21 +567,21 @@ class RetainWorkflowStateAndHistory:
 
         # replace the workflow stuff of the repository clone by the
         # one of the working copy or delete it
-        if getattr(aq_base(obj), 'review_state', _marker) is not _marker:
+        if getattr(aq_base(obj), "review_state", _marker) is not _marker:
             repo_clone.review_state = obj.review_state
-        elif (getattr(aq_base(repo_clone), 'review_state', _marker)
-              is not _marker):
+        elif getattr(aq_base(repo_clone), "review_state", _marker) is not _marker:
             del repo_clone.review_state
 
-        if getattr(aq_base(obj), 'workflow_history', _marker) is not _marker:
+        if getattr(aq_base(obj), "workflow_history", _marker) is not _marker:
             repo_clone.workflow_history = obj.workflow_history
-        elif (getattr(aq_base(repo_clone), 'workflow_history', _marker)
-              is not _marker):
+        elif getattr(aq_base(repo_clone), "workflow_history", _marker) is not _marker:
             del repo_clone.workflow_history
 
         return [], [], {}
 
+
 InitializeClass(RetainWorkflowStateAndHistory)
+
 
 @implementer(ISaveRetrieveModifier)
 class RetainPermissionsSettings:
@@ -598,17 +602,19 @@ class RetainPermissionsSettings:
         # one of the working copy or delete it
         for key, val in obj.__dict__.items():
             # Find permission settings
-            if key.startswith('_') and key.endswith('_Permission'):
+            if key.startswith("_") and key.endswith("_Permission"):
                 setattr(repo_clone, key, val)
 
         return [], [], {}
 
+
 InitializeClass(RetainPermissionsSettings)
+
 
 @implementer(ISaveRetrieveModifier)
 class RetainUIDs:
     """Modifier which ensures uid consistency by retaining the uid from the working copy.  Ensuring
-       that newly created objects are assigned an appropriate uid is a job for the repository tool.
+    that newly created objects are assigned an appropriate uid is a job for the repository tool.
     """
 
     def beforeSaveModifier(self, obj, clone):
@@ -619,15 +625,16 @@ class RetainUIDs:
         if obj is None:
             return [], [], {}
 
-        #Preserve CMFUid
-        uid_tool = getToolByName(obj, 'portal_historyidhandler', None)
+        # Preserve CMFUid
+        uid_tool = getToolByName(obj, "portal_historyidhandler", None)
         if uid_tool is not None:
             working_uid = uid_tool.queryUid(obj)
-            anno_tool = getToolByName(obj, 'portal_uidannotation')
+            anno_tool = getToolByName(obj, "portal_uidannotation")
             annotation = anno_tool(repo_clone, uid_tool.UID_ATTRIBUTE_NAME)
             annotation.setUid(working_uid)
 
         return [], [], {}
+
 
 InitializeClass(RetainUIDs)
 
@@ -640,7 +647,7 @@ class SaveFileDataInFileTypeByReference:
     """
 
     def getReferencedAttributes(self, obj):
-        return {'data': getattr(aq_base(obj),'data', None)}
+        return {"data": getattr(aq_base(obj), "data", None)}
 
     def reattachReferencedAttributes(self, obj, attrs_dict):
 
@@ -651,6 +658,7 @@ class SaveFileDataInFileTypeByReference:
 
 InitializeClass(SaveFileDataInFileTypeByReference)
 
+
 @implementer(ICloneModifier, ISaveRetrieveModifier)
 class SkipParentPointers:
     """Standard modifier to avoid cloning of __parent__ pointers and
@@ -658,9 +666,8 @@ class SkipParentPointers:
     """
 
     def getOnCloneModifiers(self, obj):
-        """Removes parent pointers and stores a marker
-        """
-        parent = getattr(obj, '__parent__', _marker)
+        """Removes parent pointers and stores a marker"""
+        parent = getattr(obj, "__parent__", _marker)
         if parent is _marker:
             return None
 
@@ -683,10 +690,14 @@ class SkipParentPointers:
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         """Install the parent from the working copy"""
-        if (getattr(repo_clone, '__parent__', _marker) is None
-            and getattr(obj, '__parent__', _marker) is not _marker):
+        if (
+            getattr(repo_clone, "__parent__", _marker) is None
+            and getattr(obj, "__parent__", _marker) is not _marker
+        ):
             repo_clone.__parent__ = obj.__parent__
         return [], [], {}
+
+
 InitializeClass(SkipParentPointers)
 
 
@@ -706,29 +717,31 @@ class SkipRegistryBasesPointers:
         return registry
 
     def getOnCloneModifiers(self, obj):
-        """Removes component registry bases pointers and stores a marker
-        """
+        """Removes component registry bases pointers and stores a marker"""
         registry = self.querySiteManager(obj)
         if registry is None:
             return
 
         component_bases = dict(
-            registry=dict((id(aq_base(base)), aq_base(base))
-                          for base in registry.__bases__),
-            utilities=dict((id(aq_base(base)), aq_base(base))
-                           for base in registry.utilities.__bases__),
-            adapters=dict((id(aq_base(base)), aq_base(base))
-                           for base in registry.adapters.__bases__))
+            registry={id(aq_base(base)): aq_base(base) for base in registry.__bases__},
+            utilities={
+                id(aq_base(base)): aq_base(base)
+                for base in registry.utilities.__bases__
+            },
+            adapters={
+                id(aq_base(base)): aq_base(base) for base in registry.adapters.__bases__
+            },
+        )
 
         def persistent_id(obj):
             obj_id = id(aq_base(obj))
-            for key, bases in six.iteritems(component_bases):
+            for key, bases in component_bases.items():
                 if obj_id in bases:
-                    return '%s:%s' % (key, obj_id)
+                    return f"{key}:{obj_id}"
             return None
 
         def persistent_load(obj):
-            key, base_id = obj.split(':')
+            key, base_id = obj.split(":")
             return component_bases[key][int(base_id)]
 
         return persistent_id, persistent_load, [], []
@@ -747,6 +760,8 @@ class SkipRegistryBasesPointers:
             obj_sm = obj.getSiteManager()
             sm.__bases__ = obj_sm.__bases__
         return [], [], {}
+
+
 InitializeClass(SkipRegistryBasesPointers)
 
 
@@ -765,6 +780,7 @@ class SillyDemoRetrieveModifier:
 
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         from AccessControl import getSecurityManager
+
         if getSecurityManager().getUser().getUserName() != "gregweb":
             return [], [], {}
 
@@ -781,6 +797,7 @@ class SillyDemoRetrieveModifier:
 
         return [], [], {}
 
+
 InitializeClass(SillyDemoRetrieveModifier)
 
 
@@ -789,40 +806,47 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
     """Raises an error if a file or image attribute stored on the
     object in a specified field is larger than a fixed default"""
 
-    field_names = ('file', 'image')
-    max_size = 26214400 # This represents a 400 element long Pdata list
+    field_names = ("file", "image")
+    max_size = 26214400  # This represents a 400 element long Pdata list
 
-    modifierEditForm = PageTemplateFile('www/fieldModifierEditForm.pt',
-                                        globals(),
-                                        __name__='modifierEditForm')
+    modifierEditForm = PageTemplateFile(
+        "www/fieldModifierEditForm.pt", globals(), __name__="modifierEditForm"
+    )
 
     _condition = Expression("python: portal_type in ('Image', 'File')")
 
-    def __init__(self, id='AbortVersioningOfLargeFilesAndImages', modifier=None,
-                 title=''):
+    def __init__(
+        self, id="AbortVersioningOfLargeFilesAndImages", modifier=None, title=""
+    ):
         self.id = str(id)
         self.title = str(title)
-        self.meta_type = 'edmod_%s' % id
+        self.meta_type = "edmod_%s" % id
         self._enabled = False
 
-    def edit(self, enabled=None, condition=None, title='', field_names=None,
-             max_size=None, REQUEST=None):
-        """See IConditionalTalesModifier.
-        """
+    def edit(
+        self,
+        enabled=None,
+        condition=None,
+        title="",
+        field_names=None,
+        max_size=None,
+        REQUEST=None,
+    ):
+        """See IConditionalTalesModifier."""
         if max_size is not None:
             self.max_size = int(max_size)
         if field_names is not None:
-            field_names = tuple(s.strip() for s in field_names.split('\n') if s)
+            field_names = tuple(s.strip() for s in field_names.split("\n") if s)
             if field_names != self.field_names:
                 self.field_names = field_names
         return ConditionalTalesModifier.edit(self, enabled, condition, title)
 
     def getFieldNames(self):
         """For the edit form"""
-        return '\n'.join(self.field_names)
+        return "\n".join(self.field_names)
 
     def getModifier(self):
-        """We are the modifier, not some silly wrapper. """
+        """We are the modifier, not some silly wrapper."""
         return self
 
     def _getFieldValues(self, obj):
@@ -835,44 +859,46 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
         We used to also have 'annotation', but that was only for
         fields stored via Archetypes AnnotationStorage.
         """
-        max_size  = self.max_size
+        max_size = self.max_size
 
         # Search for fields stored via AttributeStorage
         for name in self.field_names:
             val = getattr(obj, name, None)
             # Skip linked Pdata chains too long for the pickler
-            if hasattr(aq_base(val), 'getSize') and callable(val.getSize):
+            if hasattr(aq_base(val), "getSize") and callable(val.getSize):
                 size = val.getSize()
-                if isinstance(size, six.integer_types) and size >= max_size:
-                    yield 'attribute', name, val
+                if isinstance(size, int) and size >= max_size:
+                    yield "attribute", name, val
 
     def getOnCloneModifiers(self, obj):
-        """Detects large file objects and raises an error
-        """
+        """Detects large file objects and raises an error"""
         for storage, name, val in self._getFieldValues(obj):
             # if we find a file that's too big, abort
             raise FileTooLargeToVersionError
-        return None # no effect otherwise
+        return None  # no effect otherwise
+
 
 InitializeClass(AbortVersioningOfLargeFilesAndImages)
 
-_empty_marker =[]
-class LargeFilePlaceHolder(object):
+_empty_marker = []
+
+
+class LargeFilePlaceHolder:
     """PlaceHolder for a large object"""
+
     @staticmethod
     def getSize():
         return sys.maxsize
 
-@implementer(IConditionalTalesModifier, ICloneModifier,
-                      ISaveRetrieveModifier)
+
+@implementer(IConditionalTalesModifier, ICloneModifier, ISaveRetrieveModifier)
 class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
     """Replaces any excessively large file and images stored as
     annotations or attributes on the object with a marker.  On
     retrieve, the marker will be replaced with the current value.."""
 
     def getOnCloneModifiers(self, obj):
-        """Removes large file objects and returns them as references
-        """
+        """Removes large file objects and returns them as references"""
         refs = {}
         ref_list = []
         for storage, name, val in self._getFieldValues(obj):
@@ -880,7 +906,7 @@ class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
             refs[id(val)] = True
 
         if not refs:
-            return None # don't do anything
+            return None  # don't do anything
 
         def persistent_id(obj):
             return refs.get(id(obj), None)
@@ -907,6 +933,7 @@ class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
                 else:
                     delattr(repo_clone, name)
         return [], [], {}
+
 
 InitializeClass(SkipVersioningOfLargeFilesAndImages)
 
@@ -935,14 +962,14 @@ class Skip_z3c_blobfile:
         return tuple(blob_file_classes)
 
     def getOnCloneModifiers(self, obj):
-        """Removes z3c.blobfile fields
-        """
+        """Removes z3c.blobfile fields"""
         blob_file_classes = self._blob_file_classes()
         if not blob_file_classes:
             return
 
-        blob_refs = set(id(v) for v in six.itervalues(obj.__dict__)
-                        if isinstance(v, blob_file_classes))
+        blob_refs = {
+            id(v) for v in obj.__dict__.values() if isinstance(v, blob_file_classes)
+        }
 
         def persistent_id(obj):
             if id(aq_base(obj)) in blob_refs:
@@ -965,148 +992,150 @@ class Skip_z3c_blobfile:
         if obj is None:
             return [], [], {}
 
-        blob_fields = ((k, v) for k, v in six.iteritems(obj.__dict__)
-                        if isinstance(v, blob_file_classes))
+        blob_fields = (
+            (k, v) for k, v in obj.__dict__.items() if isinstance(v, blob_file_classes)
+        )
 
         for k, v in blob_fields:
             setattr(repo_clone, k, v)
 
         return [], [], {}
 
+
 InitializeClass(Skip_z3c_blobfile)
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Standard modifier configuration
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 modifiers = (
     {
-        'id': 'OMInsideChildrensModifier',
-        'title': "Modifier for object managers treating children as inside objects.",
-        'enabled': True,
-        'condition': 'python: object and path("object/isPrincipiaFolderish|nothing") and not path("object/@@plone/isStructuralFolder|nothing")',
-        'wrapper': ConditionalTalesModifier,
-        'modifier': OMInsideChildrensModifier,
-        'form': manage_OMInsideChildrensModifierAddForm,
-        'factory': manage_addOMInsideChildrensModifier,
-        'icon': 'www/modifier.gif',
+        "id": "OMInsideChildrensModifier",
+        "title": "Modifier for object managers treating children as inside objects.",
+        "enabled": True,
+        "condition": 'python: object and path("object/isPrincipiaFolderish|nothing") and not path("object/@@plone/isStructuralFolder|nothing")',
+        "wrapper": ConditionalTalesModifier,
+        "modifier": OMInsideChildrensModifier,
+        "form": manage_OMInsideChildrensModifierAddForm,
+        "factory": manage_addOMInsideChildrensModifier,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'OMOutsideChildrensModifier',
-        'title': "Modifier for object managers (like standard folders) treating children as outside objects.",
-        'enabled': True,
-        'condition': "python:path('object/@@plone/isStructuralFolder|nothing') or portal_type == 'Folder'",
-        'wrapper': ConditionalTalesModifier,
-        'modifier': OMOutsideChildrensModifier,
-        'form': manage_OMOutsideChildrensModifierAddForm,
-        'factory': manage_addOMOutsideChildrensModifier,
-        'icon': 'www/modifier.gif',
+        "id": "OMOutsideChildrensModifier",
+        "title": "Modifier for object managers (like standard folders) treating children as outside objects.",
+        "enabled": True,
+        "condition": "python:path('object/@@plone/isStructuralFolder|nothing') or portal_type == 'Folder'",
+        "wrapper": ConditionalTalesModifier,
+        "modifier": OMOutsideChildrensModifier,
+        "form": manage_OMOutsideChildrensModifierAddForm,
+        "factory": manage_addOMOutsideChildrensModifier,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'RetainUIDs',
-        'title': "Retains the CMF UIDs from the working copy",
-        'enabled': True,
-        'wrapper': ConditionalModifier,
-        'modifier': RetainUIDs,
-        'form': manage_RetainUIDsModifierAddForm,
-        'factory': manage_addRetainUIDs,
-        'icon': 'www/modifier.gif',
+        "id": "RetainUIDs",
+        "title": "Retains the CMF UIDs from the working copy",
+        "enabled": True,
+        "wrapper": ConditionalModifier,
+        "modifier": RetainUIDs,
+        "form": manage_RetainUIDsModifierAddForm,
+        "factory": manage_addRetainUIDs,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'RetainWorkflowStateAndHistory',
-        'title': "Retains the working copies workflow state upon retrieval/revertion.",
-        'enabled': True,
-        'wrapper': ConditionalModifier,
-        'modifier': RetainWorkflowStateAndHistory,
-        'form': manage_RetainWorkflowStateAndHistoryModifierAddForm,
-        'factory': manage_addRetainWorkflowStateAndHistory,
-        'icon': 'www/modifier.gif',
+        "id": "RetainWorkflowStateAndHistory",
+        "title": "Retains the working copies workflow state upon retrieval/revertion.",
+        "enabled": True,
+        "wrapper": ConditionalModifier,
+        "modifier": RetainWorkflowStateAndHistory,
+        "form": manage_RetainWorkflowStateAndHistoryModifierAddForm,
+        "factory": manage_addRetainWorkflowStateAndHistory,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'RetainPermissionsSettings',
-        'title': "Retains the permission settings upon retrieval/revertion.",
-        'enabled': True,
-        'wrapper': ConditionalModifier,
-        'modifier': RetainPermissionsSettings,
-        'form': manage_RetainPermissionsSettingsAddForm ,
-        'factory': manage_addRetainPermissionsSettings,
-        'icon': 'www/modifier.gif',
+        "id": "RetainPermissionsSettings",
+        "title": "Retains the permission settings upon retrieval/revertion.",
+        "enabled": True,
+        "wrapper": ConditionalModifier,
+        "modifier": RetainPermissionsSettings,
+        "form": manage_RetainPermissionsSettingsAddForm,
+        "factory": manage_addRetainPermissionsSettings,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'SaveFileDataInFileTypeByReference',
-        'title': "Let's the storage optimize cloning of file data.",
-        'enabled': False,
-        'condition': "python: meta_type=='Portal File'",
-        'wrapper': ConditionalTalesModifier,
-        'modifier': SaveFileDataInFileTypeByReference,
-        'form': manage_SaveFileDataInFileTypeByReferenceModifierAddForm,
-        'factory': manage_addSaveFileDataInFileTypeByReference,
-        'icon': 'www/modifier.gif',
+        "id": "SaveFileDataInFileTypeByReference",
+        "title": "Let's the storage optimize cloning of file data.",
+        "enabled": False,
+        "condition": "python: meta_type=='Portal File'",
+        "wrapper": ConditionalTalesModifier,
+        "modifier": SaveFileDataInFileTypeByReference,
+        "form": manage_SaveFileDataInFileTypeByReferenceModifierAddForm,
+        "factory": manage_addSaveFileDataInFileTypeByReference,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'SillyDemoRetrieveModifier',
-        'title': "Silly retrive modifier for demos only.",
-        'enabled': False,
-        'condition': "python: True",
-        'wrapper': ConditionalTalesModifier,
-        'modifier': SillyDemoRetrieveModifier,
-        'form': manage_SillyDemoRetrieveModifierAddForm,
-        'factory': manage_addSillyDemoRetrieveModifier,
-        'icon': 'www/modifier.gif',
+        "id": "SillyDemoRetrieveModifier",
+        "title": "Silly retrive modifier for demos only.",
+        "enabled": False,
+        "condition": "python: True",
+        "wrapper": ConditionalTalesModifier,
+        "modifier": SillyDemoRetrieveModifier,
+        "form": manage_SillyDemoRetrieveModifierAddForm,
+        "factory": manage_addSillyDemoRetrieveModifier,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'SkipParentPointers',
-        'title': "Skip Saving of Parent Pointers",
-        'enabled': True,
-        'condition': "python: True",
-        'wrapper': ConditionalTalesModifier,
-        'modifier': SkipParentPointers,
-        'form': manage_SkipParentPointersAddForm,
-        'factory': manage_addSkipParentPointers,
-        'icon': 'www/modifier.gif',
+        "id": "SkipParentPointers",
+        "title": "Skip Saving of Parent Pointers",
+        "enabled": True,
+        "condition": "python: True",
+        "wrapper": ConditionalTalesModifier,
+        "modifier": SkipParentPointers,
+        "form": manage_SkipParentPointersAddForm,
+        "factory": manage_addSkipParentPointers,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'SkipRegistryBasesPointers',
-        'title': "Skip Saving of Component Registry Bases",
-        'enabled': True,
-        'condition': "python: True",
-        'wrapper': ConditionalTalesModifier,
-        'modifier': SkipRegistryBasesPointers,
-        'form': manage_SkipRegistryBasesPointersAddForm,
-        'factory': manage_addSkipRegistryBasesPointers,
-        'icon': 'www/modifier.gif',
+        "id": "SkipRegistryBasesPointers",
+        "title": "Skip Saving of Component Registry Bases",
+        "enabled": True,
+        "condition": "python: True",
+        "wrapper": ConditionalTalesModifier,
+        "modifier": SkipRegistryBasesPointers,
+        "form": manage_SkipRegistryBasesPointersAddForm,
+        "factory": manage_addSkipRegistryBasesPointers,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'AbortVersioningOfLargeFilesAndImages',
-        'title': "Abort versioning of objects if file data if it's too large",
-        'enabled': True,
-        'condition': "python: portal_type in ('Image', 'File')",
-        'wrapper': AbortVersioningOfLargeFilesAndImages,
-        'modifier': AbortVersioningOfLargeFilesAndImages,
-        'form': manage_AbortVersioningOfLargeFilesAndImagesAddForm,
-        'factory': manage_addAbortVersioningOfLargeFilesAndImages,
-        'icon': 'www/modifier.gif',
+        "id": "AbortVersioningOfLargeFilesAndImages",
+        "title": "Abort versioning of objects if file data if it's too large",
+        "enabled": True,
+        "condition": "python: portal_type in ('Image', 'File')",
+        "wrapper": AbortVersioningOfLargeFilesAndImages,
+        "modifier": AbortVersioningOfLargeFilesAndImages,
+        "form": manage_AbortVersioningOfLargeFilesAndImagesAddForm,
+        "factory": manage_addAbortVersioningOfLargeFilesAndImages,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'SkipVersioningOfLargeFilesAndImages',
-        'title': "Skip versioning of objects if file data if it's too large",
-        'enabled': False,
-        'condition': "python: portal_type in ('Image', 'File')",
-        'wrapper': SkipVersioningOfLargeFilesAndImages,
-        'modifier': SkipVersioningOfLargeFilesAndImages,
-        'form': manage_SkipVersioningOfLargeFilesAndImagesAddForm,
-        'factory': manage_addSkipVersioningOfLargeFilesAndImages,
-        'icon': 'www/modifier.gif',
+        "id": "SkipVersioningOfLargeFilesAndImages",
+        "title": "Skip versioning of objects if file data if it's too large",
+        "enabled": False,
+        "condition": "python: portal_type in ('Image', 'File')",
+        "wrapper": SkipVersioningOfLargeFilesAndImages,
+        "modifier": SkipVersioningOfLargeFilesAndImages,
+        "form": manage_SkipVersioningOfLargeFilesAndImagesAddForm,
+        "factory": manage_addSkipVersioningOfLargeFilesAndImages,
+        "icon": "www/modifier.gif",
     },
     {
-        'id': 'Skip_z3c_blobfile',
-        'title': "Skip storing z3c.blobfile.file.File fields on objects",
-        'enabled': True,
-        'condition': "python:True",
-        'wrapper': ConditionalTalesModifier,
-        'modifier': Skip_z3c_blobfile,
-        'form': manage_Skip_z3c_blobfileAddForm,
-        'factory': manage_addSkip_z3c_blobfile,
-        'icon': 'www/modifier.gif',
+        "id": "Skip_z3c_blobfile",
+        "title": "Skip storing z3c.blobfile.file.File fields on objects",
+        "enabled": True,
+        "condition": "python:True",
+        "wrapper": ConditionalTalesModifier,
+        "modifier": Skip_z3c_blobfile,
+        "form": manage_Skip_z3c_blobfileAddForm,
+        "factory": manage_addSkip_z3c_blobfile,
+        "icon": "www/modifier.gif",
     },
 )

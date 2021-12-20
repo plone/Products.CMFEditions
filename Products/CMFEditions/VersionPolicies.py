@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2004, 2005 Alec Mitchell
 # All Rights Reserved.
@@ -39,7 +38,8 @@ class VersionPolicy(SimpleItem):
         self.id = obj_id
         self.title = title
 
-    security.declarePublic('Title')
+    security.declarePublic("Title")
+
     def Title(self):
         return self.title
 
@@ -61,4 +61,5 @@ class ATVersionOnEditPolicy(VersionPolicy):
     Most importantly: if a policy with this id is enabled for a portal_type,
     no matter which class is behind it, a new version is stored on edit.
     """
+
     pass

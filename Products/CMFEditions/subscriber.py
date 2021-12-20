@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 # Copyright (c) 2008 Alberto Berti, Gregoire Weber.
 # All Rights Reserved.
@@ -28,14 +27,14 @@ from Products.CMFEditions.utilities import dereference
 
 
 def object_removed(obj, event):
-    """ an object is being deleted -
+    """an object is being deleted -
     also delete it's history
     """
     if not IContentish.providedBy(obj):
         return
     try:
-        histories_storage = getToolByName(obj, 'portal_historiesstorage')
-        repo_tool = getToolByName(obj, 'portal_repository')
+        histories_storage = getToolByName(obj, "portal_historiesstorage")
+        repo_tool = getToolByName(obj, "portal_repository")
     except AttributeError:
         # XXX If tools are missing, there is nothing we can do.
         # This occurs in some Products.CMFDiffTool and
@@ -54,12 +53,10 @@ def object_removed(obj, event):
         # do nothing
         return
     current = metadata.retrieve(num_versions - 1)
-    sys_metadata = current['metadata']['sys_metadata']
-    if ('parent' in sys_metadata) and \
-            (sys_metadata['parent']['history_id'] != histid):
+    sys_metadata = current["metadata"]["sys_metadata"]
+    if ("parent" in sys_metadata) and (sys_metadata["parent"]["history_id"] != histid):
         try:
-            histories_storage.retrieve(
-                history_id=sys_metadata['parent']['history_id'])
+            histories_storage.retrieve(history_id=sys_metadata["parent"]["history_id"])
             return
         except StorageRetrieveError:
             pass
@@ -68,5 +65,6 @@ def object_removed(obj, event):
         histories_storage.purge(
             histid,
             0,
-            metadata={'sys_metadata': {'comment': 'purged'}},
-            countPurged=False)
+            metadata={"sys_metadata": {"comment": "purged"}},
+            countPurged=False,
+        )
