@@ -1,9 +1,0 @@
-<tal:comment replace="nothing">
-  This template is deprecated. Use the @@history view instead.
-</tal:comment>
-<tal:block define="one python:request.set('one', request.get('version_id1'));
-                   two python:request.set('two', request.get('version_id2'));">
-
-  <tal:block replace="structure context/@@history" />
-
-</tal:block>
