@@ -85,5 +85,17 @@
         permission="zope2.View"
         />
 
+    <!-- Note: this is roughly the same as @@historyview in plone.app.layout
+         which is a small wrapper around @@contenthistory in plone.app.layout,
+         which is a viewlet turned into a view.  Their version looks nicer.
+         But our versions_history_form has a preview (which contenthistory points to)
+         and a form to add a new version, if the policy is manual. -->
+    <browser:page
+        for="*"
+        name="versions_history_form"
+        template="templates/versions_history_form.pt"
+        permission="zope2.View"
+        />
+
 </configure>
 
