@@ -69,5 +69,12 @@
         permission="zope2.View"
         />
 
+    <browser:page
+        for="*"
+        name="revertversion"
+        class=".policies.RevertVersion"
+        permission="zope2.View"
+        />
+
 </configure>
 
