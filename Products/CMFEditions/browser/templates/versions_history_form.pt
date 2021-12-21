@@ -11,8 +11,7 @@
                    revisions python:history and history.getLength(countPurged=False) or 0;
                    histrange python:range(revisions-1, -1, -1);
                    here_url context/absolute_url;
-                   can_diff_view nocall:context/@@candiff;
-                   can_diff can_diff_view/can_diff;
+                   can_diff view/can_diff;
                    checkPermission nocall:context/portal_membership/checkPermission;
                    canRevertToPrevious python:checkPermission('CMFEditions: Revert to previous versions', context);"
                    tal:condition="python: pr.isVersionable(context)">

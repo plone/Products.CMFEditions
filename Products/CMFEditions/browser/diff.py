@@ -58,14 +58,3 @@ class DiffView(BrowserView):
         ]
 
         return self.index()
-
-
-class CanDiff(BrowserView):
-    def can_diff(self):
-        """Return True if content is diffable"""
-        context = self.context
-        portal_diff = getToolByName(context, "portal_diff", None)
-        return (
-            portal_diff
-            and len(portal_diff.getDiffForPortalType(context.portal_type)) > 0
-        )
