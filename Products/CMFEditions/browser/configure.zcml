@@ -93,6 +93,7 @@
     <browser:page
         for="*"
         name="versions_history_form"
+        class=".views.VersionsHistoryForm"
         template="templates/versions_history_form.pt"
         permission="zope2.View"
         />

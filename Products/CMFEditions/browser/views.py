@@ -93,3 +93,39 @@ class VersionImageTagView(BrowserView):
 class VersionView(BrowserView):
     def human_readable_size(self):
         return human_readable_size
+
+
+class VersionsHistoryForm(BrowserView):
+    def checkUpToDate(self, history):
+        """Check if Up To Date.
+
+        This used to be a Script (Python): checkUpToDate
+        """
+        repo = getToolByName(self.context, "portal_repository", None)
+
+        isModified = None
+        reverted_vid = None
+        isReverted = None
+
+        version_id = getattr(self.context, "version_id", None)
+        if repo is not None:
+            if version_id is None:
+                isModified = True
+                isReverted = False
+            else:
+                isModified = not repo.isUpToDate(self.context, version_id)
+                historyLength = len(history)
+                reverted_vid = version_id
+                if historyLength == version_id + 1:
+                    isReverted = False
+                else:
+                    isReverted = True
+                if isModified:
+                    version_id = historyLength
+
+        return {
+            "isModified": isModified,
+            "version_id": version_id,
+            "isReverted": isReverted,
+            "reverted_vid": reverted_vid,
+        }
