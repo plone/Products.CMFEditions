@@ -76,5 +76,13 @@
         permission="zope2.View"
         />
 
+    <!-- Note: this is also used by plone.app.iterate -->
+    <browser:page
+        for="*"
+        name="diff_legend"
+        template="templates/diff_legend.pt"
+        permission="zope2.View"
+        />
+
 </configure>
 
