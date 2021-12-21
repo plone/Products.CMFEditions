@@ -148,7 +148,7 @@
                         <li tal:condition="python: (not current_version) and canRevertToPrevious">
 
                             <form action="" method="post"
-                                  tal:attributes="action string:$here_url/revertversion">
+                                  tal:attributes="action string:$here_url/@@revertversion">
                               <input type="hidden" name="version_id" value="" tal:attributes="value id" />
                               <input class="standalone" type="submit"
                                      i18n:attributes="value label_revert"
@@ -164,7 +164,7 @@
     <form action="#"
         method="post"
         tal:define="here_url context/absolute_url"
-        tal:attributes="action string:${here_url}/saveasnewversion"
+        tal:attributes="action string:${here_url}/@@saveasnewversion"
         tal:condition="not: python:pr.supportsPolicy(context, 'at_edit_autoversion')">
 
         <fieldset>
