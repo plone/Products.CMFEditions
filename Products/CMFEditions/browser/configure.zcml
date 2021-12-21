@@ -6,6 +6,7 @@
         for="*"
         name="history"
         class=".diff.DiffView"
+        template="templates/diff.pt"
         permission="CMFEditions.AccessPreviousVersions"
         />
 
