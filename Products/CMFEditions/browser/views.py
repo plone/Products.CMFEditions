@@ -9,6 +9,8 @@ from Products.CMFPlone.utils import human_readable_size
 from Products.Five import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 
+import os
+
 
 class UpdateVersionOnEditView(BrowserView):
     def success(self):
@@ -138,3 +140,19 @@ class VersionsHistoryForm(BrowserView):
             portal_diff
             and len(portal_diff.getDiffForPortalType(context.portal_type)) > 0
         )
+
+
+css_path = os.path.join(os.path.dirname(__file__), "compare.css")
+with open(css_path) as myfile:
+    COMPARE_CSS = myfile.read()
+
+
+class CompareCSS(BrowserView):
+    """Formerly skins/CMFEditions/compare.css.dtml
+
+    Should be a browser resource, but I don't want to change plone.app.iterate just now.
+    That will further complicate an already complex PR.
+    """
+
+    def __call__(self):
+        return COMPARE_CSS

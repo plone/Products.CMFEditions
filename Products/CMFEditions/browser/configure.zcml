@@ -90,5 +90,14 @@
         permission="zope2.View"
         />
 
+    <!-- We could make this a resource, but then we need to change plone.app.iterate as well.
+         So for now make it a browser view. -->
+    <browser:page
+        for="*"
+        name="compare.css"
+        class=".views.CompareCSS"
+        permission="zope2.View"
+        />
+
 </configure>
 
