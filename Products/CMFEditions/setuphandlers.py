@@ -55,3 +55,21 @@ def removeBrokenModifiers(context):
             continue
         tool._delObject(modifier_id)
         logger.info("Removed broken %s from portal_modifier.", modifier_id)
+
+
+def removeSkinLayer(context):
+    """Remove our skin layer."""
+    skins = getToolByName(context, "portal_skins")
+    # Remove directory views for directories missing on the filesystem
+    our_skin = "CMFEditions"
+    if our_skin in skins.keys():
+        skins._delObject(our_skin)
+        logger.info("Removed %s from skin layers.", our_skin)
+
+    for layer, paths in skins.selections.items():
+        paths = paths.split(",")
+        if our_skin not in paths:
+            continue
+        paths.remove(our_skin)
+        skins.selections[layer] = ",".join(paths)
+        logger.info("Removed %s from skin selection %s.", our_skin, layer)
