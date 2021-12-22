@@ -41,4 +41,13 @@
            handler=".setuphandlers.removeBrokenModifiers" />
     </genericsetup:upgradeSteps>
 
+    <genericsetup:upgradeSteps
+        source="10"
+        destination="11"
+        profile="Products.CMFEditions:CMFEditions">
+        <genericsetup:upgradeStep
+           title="Remove CMFEditions skin layer"
+           handler=".setuphandlers.removeSkinLayer" />
+    </genericsetup:upgradeSteps>
+
 </configure>

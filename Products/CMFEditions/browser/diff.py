@@ -2,12 +2,10 @@ from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.i18n import translate
 
 
 class DiffView(BrowserView):
-    template = ViewPageTemplateFile("diff.pt")
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -59,15 +57,4 @@ class DiffView(BrowserView):
             change for change in self.changeset.getDiffs() if not change.same
         ]
 
-        return self.template()
-
-
-class CanDiff(BrowserView):
-    def can_diff(self):
-        """Return True if content is diffable"""
-        context = self.context
-        portal_diff = getToolByName(context, "portal_diff", None)
-        return (
-            portal_diff
-            and len(portal_diff.getDiffForPortalType(context.portal_type)) > 0
-        )
+        return self.index()
