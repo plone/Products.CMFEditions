@@ -8,6 +8,47 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.0a2 (2021-12-29)
+--------------------
+
+Breaking changes:
+
+
+- Removed versioning_config.py and versioning_config_form.pt from skin.
+  Instead, you can change the versioning config in the ``@@content-controlpanel``.
+  [maurits] (#72)
+- Removed migration code from version 1.0alpha3 to 1.0beta1 from 2006.
+  Removed Storage Migration Support.
+  This had code for creating a test hierarchy for migration tests.
+  [maurits] (#72)
+- Removed unused versions_history.pt which defines a versions_history macro.
+  We do still have versions_history_form.
+  [maurits] (#72)
+
+
+New features:
+
+
+- Merged skin script ``checkUpToDate`` into ``versions_history_form`` view.
+  Merged ``can_diff`` view into ``versions_history_form`` view.
+  [maurits] (#71)
+- Remove now empty CMFEditions skin layer in an upgrade step.
+  [maurits] (#71)
+- Moved various items from from skin to a browser view:
+  ``saveasnewversion``, ``revertversion``, ``diff_legend``, ``versions_history_form``, ``compare.css``.
+  [maurits] (#71)
+
+
+Bug fixes:
+
+
+- Removed version_diff.pt.
+  This template is deprecated. Use the @@history view instead.
+  [maurits] (#71)
+- QA: black, isort, flake8, fix deprecation warnings, remove use of six, upgrade to Python 3.7-only syntax.
+  [maurits] (#80)
+
+
 4.0.0a1 (2021-04-26)
 --------------------
 
