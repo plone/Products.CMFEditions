@@ -1,0 +1,2 @@
+The VersionView class is deprecated because it contained just one method that is now part of the @@plone view
+[ale-rt]

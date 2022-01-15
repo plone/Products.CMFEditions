@@ -35,7 +35,6 @@
     <browser:page
         for="*"
         name="version_file_view"
-        class=".views.VersionView"
         template="templates/version_file_view.pt"
         permission="zope2.View"
         />
@@ -43,7 +42,6 @@
     <browser:page
         for="*"
         name="version_image_view"
-        class=".views.VersionView"
         template="templates/version_image_view.pt"
         permission="zope2.View"
         />
@@ -100,4 +98,3 @@
         />
 
 </configure>
-

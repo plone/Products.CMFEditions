@@ -10,6 +10,14 @@ from Products.Five import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 
 import os
+import zope.deferredimport
+
+
+zope.deferredimport.deprecated(
+    "This class is deprecated since Plone 6",
+    VersionView="Products.CMFPlone.browser.ploneview:Plone",
+)
+
 
 
 class UpdateVersionOnEditView(BrowserView):
@@ -90,11 +98,6 @@ class VersionImageTagView(BrowserView):
             working_copy_tag[altPos:],
         )
         return tag
-
-
-class VersionView(BrowserView):
-    def human_readable_size(self):
-        return human_readable_size
 
 
 class VersionsHistoryForm(BrowserView):
