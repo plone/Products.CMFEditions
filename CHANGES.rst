@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.0a3 (2022-01-19)
+--------------------
+
+Breaking changes:
+
+
+- The VersionView class is deprecated because it contained just one method that is now part of the @@plone view
+  [ale-rt] (#84)
+
+
 4.0.0a2 (2021-12-29)
 --------------------
 
