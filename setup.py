@@ -50,15 +50,12 @@ setup(
         "zope.copy",
         "zope.dottedname",
         "zope.i18nmessageid",
-        "zope.interface",
         "Products.CMFCore >=2.1",
         "Products.CMFDiffTool",  # dependency in diff template
         "Products.CMFUid",
         "Products.GenericSetup >=1.4.0",
         "Products.ZopeVersionControl",
         "Acquisition",
-        "DateTime",
-        "transaction",
         "Zope>=5",
     ],
     entry_points="""
