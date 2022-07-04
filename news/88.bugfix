@@ -1,0 +1,3 @@
+Fix deprecated imports and not depend on CMFPlone.
+Removes also circular dependency.
+[jensens]

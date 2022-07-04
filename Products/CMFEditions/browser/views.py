@@ -1,11 +1,11 @@
 from Acquisition import aq_inner
+from plone.base.utils import human_readable_size
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.utilities import isObjectChanged
 from Products.CMFEditions.utilities import isObjectVersioned
 from Products.CMFEditions.utilities import maybeSaveVersion
-from Products.CMFPlone.utils import human_readable_size
 from Products.Five import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 
