@@ -40,7 +40,6 @@ setup(
         test=[
             "plone.app.testing",
             "plone.app.textfield",
-            "Products.CMFPlone",
             "Products.CMFDynamicViewFTI",
             "zope.testing",
         ]
@@ -51,6 +50,7 @@ setup(
         "zope.dottedname",
         "zope.i18nmessageid",
         "zope.interface",
+        "plone.base",
         "Products.CMFCore >=2.1",
         "Products.CMFDiffTool",  # dependency in diff template
         "Products.CMFUid",
