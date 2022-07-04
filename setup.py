@@ -59,7 +59,7 @@ setup(
         "Acquisition",
         "DateTime",
         "transaction",
-        "Zope2",
+        "Zope>=5",
     ],
     entry_points="""
     [z3c.autoinclude.plugin]
