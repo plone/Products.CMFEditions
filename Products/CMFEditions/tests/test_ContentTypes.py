@@ -3,7 +3,7 @@ from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from Products.CMFEditions import PACKAGE_HOME
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
-from Products.CMFPlone.utils import _createObjectByType
+from plone.base.utils import unrestricted_construct_instance
 
 import os
 
@@ -22,7 +22,7 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         self.workflow = self.portal.portal_workflow
         self.portal_repository = self.portal.portal_repository
         self.portal_archivist = self.portal.portal_archivist
-        _createObjectByType("Folder", self.portal, id="folder")
+        unrestricted_construct_instance("Folder", self.portal, id="folder")
         self.folder = self.portal.folder
 
     def getPermissionsOfRole(self, role):
