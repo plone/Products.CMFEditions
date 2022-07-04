@@ -49,7 +49,6 @@ setup(
         "zope.copy",
         "zope.dottedname",
         "zope.i18nmessageid",
-        "zope.interface",
         "plone.base",
         "Products.CMFCore >=2.1",
         "Products.CMFDiffTool",  # dependency in diff template
@@ -57,9 +56,7 @@ setup(
         "Products.GenericSetup >=1.4.0",
         "Products.ZopeVersionControl",
         "Acquisition",
-        "DateTime",
-        "transaction",
-        "Zope2",
+        "Zope>=5",
     ],
     entry_points="""
     [z3c.autoinclude.plugin]
