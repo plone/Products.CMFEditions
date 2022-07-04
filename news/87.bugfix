@@ -1,0 +1,2 @@
+Do not depend on Zope2 but Zope and remove transitional dependencies.
+[jensens]
