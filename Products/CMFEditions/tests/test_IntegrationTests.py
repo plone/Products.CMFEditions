@@ -394,6 +394,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
         doc.text = RichTextValue("Plain text", "text/plain", "text/plain")
         portal_repo.applyVersionControl(doc)
         doc.text = RichTextValue("blahblah", "text/plain", "text/plain")
+        doc.reindexObject(idxs=["SearchableText"])
         portal_repo.save(doc)
         # Test that catalog has current value
         results = cat(SearchableText="Plain Text")
