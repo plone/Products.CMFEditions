@@ -8,6 +8,22 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.0b1 (2022-07-21)
+--------------------
+
+Bug fixes:
+
+
+- Replaced label 'Working Copy' with 'Current revision' [rristow] (#55)
+- Do not depend on Zope2 but Zope and remove transitional dependencies.
+  [jensens] (#87)
+- Fix deprecated imports and not depend on CMFPlone.
+  Removes also circular dependency.
+  [jensens] (#88)
+- Fix test to work with updated CMFUid.
+  [davisagli] (#89)
+
+
 4.0.0a3 (2022-01-19)
 --------------------
 
