@@ -1,0 +1,1 @@
+- Only fire ObjectModifiedEvent once when an item is reverted to an old version. [davisagli]

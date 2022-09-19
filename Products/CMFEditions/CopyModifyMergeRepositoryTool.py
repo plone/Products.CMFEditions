@@ -54,9 +54,7 @@ from Products.CMFEditions.utilities import STUB_OBJECT_PREFIX
 from Products.CMFEditions.utilities import wrap
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from ZODB.broken import Broken
-from zope.event import notify
 from zope.interface import implementer
-from zope.lifecycleevent import ObjectModifiedEvent
 
 import logging
 import time
@@ -670,8 +668,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         """Reindex the object, otherwise the catalog will certainly
         be out of sync."""
         portal_catalog = getToolByName(self, "portal_catalog")
+        # Note: this notifies an ObjectModifiedEvent as a side effect.
         portal_catalog.indexObject(obj)
-        notify(ObjectModifiedEvent(obj))
         # XXX: In theory we should probably be emitting IObjectMoved event
         # here as it is a possible consequence of a revert.
         # Perhaps in our current meager z2 existence we should do
