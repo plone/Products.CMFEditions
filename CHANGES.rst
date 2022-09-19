@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.0b2 (2022-09-19)
+--------------------
+
+Bug fixes:
+
+
+- - Only fire ObjectModifiedEvent once when an item is reverted to an old version. [davisagli] (#90)
+
+
 4.0.0b1 (2022-07-21)
 --------------------
 
