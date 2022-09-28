@@ -33,6 +33,9 @@ from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from zope.interface.verify import verifyObject
+from zope.interface import alsoProvides
+from plone.locking.interfaces import ILockable
+from plone.locking.interfaces import ITTWLockable
 
 import transaction
 
@@ -291,6 +294,20 @@ class TestCopyModifyMergeRepositoryTool(TestCopyModifyMergeRepositoryToolBase):
             history.retrieve(1)["metadata"]["sys_metadata"]["comment"],
             "save number 2",  # noqa: E501
         )
+
+    def test10_unlockedAfterRevert(self):
+        portal_repository = self.portal.portal_repository
+        doc = self.portal.doc
+        doc.text = "text v1"
+        # Lock the object before saving
+        alsoProvides(doc, ITTWLockable)
+        ILockable(doc).lock()
+        portal_repository.applyVersionControl(doc, comment="save number 1")
+        doc.text = "text v2"
+        portal_repository.save(doc, comment="save number 2")
+        # Revert to previous version
+        portal_repository.revert(doc, 0)
+        self.assertFalse(ILockable(self.portal.doc).locked())
 
 
 class TestRepositoryWithDummyArchivist(TestCopyModifyMergeRepositoryToolBase):

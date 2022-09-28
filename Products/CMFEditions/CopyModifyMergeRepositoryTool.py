@@ -55,6 +55,7 @@ from Products.CMFEditions.utilities import wrap
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from ZODB.broken import Broken
 from zope.interface import implementer
+from plone.locking.interfaces import ILockable
 
 import logging
 import time
@@ -663,6 +664,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
             if inplace:
                 self._fixIds(obj)
                 self._fixupCatalogData(obj)
+                self._unlock(obj)
 
     def _fixupCatalogData(self, obj):
         """Reindex the object, otherwise the catalog will certainly
@@ -714,6 +716,13 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
                     obj._setObject(temp_id, child)
                     all_ids.append(temp_id)
 
+    def _unlock(self, obj):
+        try:
+            lockable = ILockable(obj)
+        except TypeError:
+            lockable = None
+        if lockable:
+            lockable.unlock()
 
 @implementer(IVersionData)
 class VersionData:
