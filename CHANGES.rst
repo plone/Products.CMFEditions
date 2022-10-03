@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.0b3 (2022-10-03)
+--------------------
+
+Bug fixes:
+
+
+- Fix object remains locked after version retrieved (#93)
+
+
 4.0.0b2 (2022-09-19)
 --------------------
 
