@@ -14,7 +14,7 @@ Changelog
 Bug fixes:
 
 
-- - Only fire ObjectModifiedEvent once when an item is reverted to an old version. [davisagli] (#90)
+- Only fire ObjectModifiedEvent once when an item is reverted to an old version. [davisagli] (#90)
 
 4.0.0b1 (2022-07-21)
 --------------------
