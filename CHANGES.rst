@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+3.3.5 (2022-10-31)
+------------------
+
+Bug fixes:
+
+
+- Fix test to work with updated CMFUid.
+  [davisagli] (#89)
+
+
 3.3.4 (2020-04-23)
 ------------------
 
