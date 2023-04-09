@@ -36,7 +36,7 @@ class RevertVersion(BrowserView):
             "url"
         ]
         if obj_type_view_url != "/":
-            view_url = "%s/%s" % (self.context.absolute_url(), obj_type_view_url)
+            view_url = f"{self.context.absolute_url()}/{obj_type_view_url}"
         else:
             view_url = self.context.absolute_url()
 
@@ -44,7 +44,7 @@ class RevertVersion(BrowserView):
             try:
                 commit_msg = translate(
                     _(
-                        u"Reverted to revision ${version}",
+                        "Reverted to revision ${version}",
                         mapping={"version": version_id},
                     ),
                     context=self.request,
