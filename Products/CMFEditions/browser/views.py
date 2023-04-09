@@ -19,7 +19,6 @@ zope.deferredimport.deprecated(
 )
 
 
-
 class UpdateVersionOnEditView(BrowserView):
     def success(self):
         self.request.response.redirect("view")

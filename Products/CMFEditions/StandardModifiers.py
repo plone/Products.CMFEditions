@@ -650,7 +650,6 @@ class SaveFileDataInFileTypeByReference:
         return {"data": getattr(aq_base(obj), "data", None)}
 
     def reattachReferencedAttributes(self, obj, attrs_dict):
-
         obj = aq_base(obj)
         for name, attr_value in attrs_dict.items():
             setattr(obj, name, attr_value)

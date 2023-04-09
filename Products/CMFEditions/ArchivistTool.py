@@ -445,7 +445,6 @@ class PreparedObject:
         is_registered,
         approxSize,
     ):
-
         # parent reference (register the parent with the unique id handler)
         # register with sys_metadata as there is no other possibility
         obj = original.object

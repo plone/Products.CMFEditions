@@ -724,6 +724,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         if lockable:
             lockable.unlock()
 
+
 @implementer(IVersionData)
 class VersionData:
     """ """
