@@ -60,6 +60,7 @@ Zope = [
   'Products.CMFDynamicViewFTI', 'zope.deprecation',
 ]
 python-dateutil = ['dateutil']
+ignore-packages = ['plone.namedfile', 'z3c.blobfile', 'Products.CMFDiffTool']
 
 [tool.codespell]
 ignore-words-list = "discreet,alog,ist"
