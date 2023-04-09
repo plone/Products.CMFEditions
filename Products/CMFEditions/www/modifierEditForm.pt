@@ -1,10 +1,16 @@
-<p tal:replace="structure here/manage_page_header" omit-tag="">Header</p>
-<p tal:replace="structure here/manage_tabs" omit-tag="">tabs</p>
+<p tal:replace="structure here/manage_page_header"
+   omit-tag=""
+>Header</p>
+<p tal:replace="structure here/manage_tabs"
+   omit-tag=""
+>tabs</p>
 
 
 <h2>Edit Modifier</h2>
 
-<form action="edit" method="post">
+<form action="edit"
+      method="post"
+>
 
   <table border="0">
 
@@ -13,7 +19,14 @@
         Title
       </th>
       <td>
-        <input type="text" name="title" value="" size="40" tal:attributes="value here/title"/>
+        <input name="title"
+               size="40"
+               type="text"
+               value=""
+               tal:attributes="
+                 value here/title;
+               "
+        />
       </td>
     </tr>
 
@@ -22,13 +35,22 @@
         Enabled
       </th>
       <td>
-        <input type="checkbox" name="enabled" value="True" tal:attributes="checked here/isEnabled"/>
+        <input name="enabled"
+               type="checkbox"
+               value="True"
+               tal:attributes="
+                 checked here/isEnabled;
+               "
+        />
       </td>
     </tr>
 
     <tr>
       <td colspan="2">
-        <input type="submit" name="submit" value="Save"/>
+        <input name="submit"
+               type="submit"
+               value="Save"
+        />
       </td>
     </tr>
 
@@ -36,4 +58,6 @@
 
 </form>
 
-<p tal:replace="structure here/manage_page_footer" omit-tag="">Footer</p>
+<p tal:replace="structure here/manage_page_footer"
+   omit-tag=""
+>Footer</p>

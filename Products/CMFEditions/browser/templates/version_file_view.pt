@@ -1,71 +1,93 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+<html xmlns="http://www.w3.org/1999/xhtml"
       lang="en"
       metal:use-macro="here/main_template/macros/master"
-      i18n:domain="cmfeditions">
+      xml:lang="en"
+      i18n:domain="cmfeditions"
+>
 
-<body>
+  <body>
 
-<metal:main fill-slot="main">
-    <tal:main-macro metal:define-macro="main"
-           tal:define="size_value context/get_size;
-                       size_label python:size_value and view.human_readable_size(size_value) or None;
-                       content_type context/get_content_type|context/Format;
-                      ">
+    <metal:main fill-slot="main">
+      <tal:main-macro metal:define-macro="main"
+                      tal:define="
+                        size_value context/get_size;
+                        size_label python:size_value and view.human_readable_size(size_value) or None;
+                        content_type context/get_content_type|context/Format;
+                      "
+      >
 
         <div id="content-core">
-            <p tal:condition="size_value">
-                <a href=""
-                   tal:define="here_url context/absolute_url"
-                   tal:attributes="href string:$here_url/file_download_version?version_id=${version_id}">
-                    <img src="" tal:attributes="src string:${portal_url}/file_icon.gif" alt="" />
-                    <tal:block i18n:translate="label_click_to_get_file">
+          <p tal:condition="size_value">
+            <a href=""
+               tal:define="
+                 here_url context/absolute_url;
+               "
+               tal:attributes="
+                 href string:$here_url/file_download_version?version_id=${version_id};
+               "
+            >
+              <img alt=""
+                   src=""
+                   tal:attributes="
+                     src string:${portal_url}/file_icon.gif;
+                   "
+              />
+              <tal:block i18n:translate="label_click_to_get_file">
                     Click here to get the file
-                    </tal:block>
-                </a>
-            </p>
+              </tal:block>
+            </a>
+          </p>
 
-            <small class="discreet">
+          <small class="discreet">
 
-              <span tal:condition="not:size_value" i18n:translate="no_file_uploaded">
+            <span tal:condition="not:size_value"
+                  i18n:translate="no_file_uploaded"
+            >
                   (No file has been uploaded yet)
+            </span>
+
+            <tal:fileinfo condition="size_value">
+              <span i18n:domain="plone"
+                    i18n:translate="label_size"
+              >
+                Size
               </span>
 
-              <tal:fileinfo condition="size_value">
-                <span i18n:translate="label_size" i18n:domain="plone">
-                Size
-                </span>
-
-                <span tal:condition="size_value"
-                    tal:content="size_label">
+              <span tal:condition="size_value"
+                    tal:content="size_label"
+              >
                 257 KB
-                </span>
+              </span>
 
                 -
 
-                <span i18n:translate="label_file_type">
+              <span i18n:translate="label_file_type">
                 File type
-                </span>
+              </span>
 
-                <span tal:content="content_type">
+              <span tal:content="content_type">
                 Content type
-                </span>
-              </tal:fileinfo>
-            </small>
+              </span>
+            </tal:fileinfo>
+          </small>
 
-            <div class="row"
-                 tal:condition="python:test(size_value and content_type.find('text')>-1, 1,0)">
+          <div class="row"
+               tal:condition="python:test(size_value and content_type.find('text')&gt;-1, 1,0)"
+          >
 
-                    <h2 i18n:translate="heading_file_contents" i18n:domain="plone">File contents</h2>
+            <h2 i18n:domain="plone"
+                i18n:translate="heading_file_contents"
+            >File contents</h2>
 
-                    <pre tal:content="context/get_data|context/data|nothing">
+            <pre tal:content="context/get_data|context/data|nothing">
                     </pre>
 
-            </div>
+          </div>
         </div>
 
-    </tal:main-macro>
-</metal:main>
+      </tal:main-macro>
+    </metal:main>
 
-</body>
+  </body>
 
 </html>
