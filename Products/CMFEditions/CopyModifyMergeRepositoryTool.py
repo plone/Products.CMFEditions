@@ -31,6 +31,7 @@ from Acquisition import aq_parent
 from Acquisition import ImplicitAcquisitionWrapper
 from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem
+from plone.locking.interfaces import ILockable
 from Products.CMFCore.utils import _checkPermission
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import UniqueObject
@@ -55,7 +56,6 @@ from Products.CMFEditions.utilities import wrap
 from Products.CMFEditions.VersionPolicies import VersionPolicy
 from ZODB.broken import Broken
 from zope.interface import implementer
-from plone.locking.interfaces import ILockable
 
 import logging
 import time
