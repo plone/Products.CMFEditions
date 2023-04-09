@@ -40,25 +40,30 @@ setup(
     python_requires=">=3.8",
     extras_require=dict(
         test=[
+            "plone.app.contenttypes",
+            "plone.app.robotframework",
             "plone.app.testing",
             "plone.app.textfield",
-            "Products.CMFDynamicViewFTI",
-            "zope.testing",
+            "plone.base",
+            "plone.testing",
         ]
     ),
     install_requires=[
-        "setuptools",
-        "zope.copy",
-        "zope.dottedname",
-        "zope.i18nmessageid",
-        "plone.base",
+        "BTrees",
+        "Missing",
+        "Persistence",
         "Products.CMFCore >=2.1",
         "Products.CMFDiffTool",  # dependency in diff template
         "Products.CMFUid",
         "Products.GenericSetup >=1.4.0",
         "Products.ZopeVersionControl",
-        "Acquisition",
+        "Products.statusmessages",
         "Zope>=5",
+        "plone.folder",
+        "plone.locking",
+        "setuptools",
+        "zope.copy",
+        "zope.dottedname",
     ],
     entry_points="""
     [z3c.autoinclude.plugin]
