@@ -320,7 +320,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
         # Trying to avoid mess with purged versions which we don't offer
         # support yet when passed to the repository layer due to a missing
-        # purge policy. The problem would occure on revert and retrieve.
+        # purge policy. The problem would occur on revert and retrieve.
         pp = getToolByName(self, "portal_purgepolicy", None)
         if pp is None:
             raise RepositoryPurgeError(
@@ -432,7 +432,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
 
     def _assertAuthorized(self, obj, permission, name=None):
         # We need to provide access to the repository upon the object
-        # permissions istead of repositories method permissions.
+        # permissions instead of repositories method permissions.
         # So the repository method access is set to public and the
         # access is check on the object when needed.
         if not _checkPermission(permission, obj):
@@ -550,7 +550,7 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
         # revert) this has to be reversed after having recursed into the
         # tree.
         if hasBeenDeleted:
-            # if the object to retreive doesn't have a counterpart in the tree
+            # if the object to retrieve doesn't have a counterpart in the tree
             # build a new one before retrieving an old state
             vdata = portal_archivist.retrieve(
                 obj, history_id, selector, preserve, countPurged

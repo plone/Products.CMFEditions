@@ -97,7 +97,7 @@ manage_OMOutsideChildrensModifierAddForm = PageTemplateFile(
 
 
 def manage_addOMOutsideChildrensModifier(self, id, title=None, REQUEST=None):
-    """Add an object manager modifier treating childrens as outside refs"""
+    """Add an object manager modifier treating children as outside refs"""
     modifier = OMOutsideChildrensModifier()
     self._setObject(id, ConditionalTalesModifier(id, modifier, title))
 
@@ -320,7 +320,7 @@ class OMBaseModifier(RetainAttributeAnnotationItemsBase):
     PRESERVE_ANNOTATION_KEYS = (DefaultOrdering.ORDER_KEY, DefaultOrdering.POS_KEY)
 
     def _getOnCloneModifiers(self, obj):
-        """Removes all childrens and returns them as references."""
+        """Removes all children and returns them as references."""
         portal_archivist = getToolByName(obj, "portal_archivist")
         VersionAwareReference = portal_archivist.classes.VersionAwareReference
 
@@ -347,12 +347,12 @@ class OMBaseModifier(RetainAttributeAnnotationItemsBase):
         return persistent_id, persistent_load, result_refs
 
     def _beforeSaveModifier(self, obj, clone):
-        """Returns all unititialized 'IVersionAwareReference' objects."""
+        """Returns all uninitialized 'IVersionAwareReference' objects."""
         portal_archivist = getToolByName(obj, "portal_archivist")
         adapter = portal_archivist.classes.ObjectManagerStorageAdapter
 
         # just return adapters to the attributes that were replaced by
-        # a uninitialzed 'IVersionAwareReference' object
+        # a uninitialized 'IVersionAwareReference' object
         result_refs = []
         for name in clone.objectIds():
             result_refs.append(adapter(clone, name, type="Folder"))
@@ -372,21 +372,21 @@ class OMBaseModifier(RetainAttributeAnnotationItemsBase):
 
 @implementer(ICloneModifier, ISaveRetrieveModifier)
 class OMOutsideChildrensModifier(OMBaseModifier):
-    """ObjectManager modifier treating all childrens as outside refs
+    """ObjectManager modifier treating all children as outside refs
 
-    Treats all childrens as outside references (the repository layer
+    Treats all children as outside references (the repository layer
     knows what to do with that fact).
     """
 
     def getOnCloneModifiers(self, obj):
-        """Removes all childrens and returns them as references."""
+        """Removes all children and returns them as references."""
         pers_id, pers_load, outside_refs = self._getOnCloneModifiers(obj)
         return pers_id, pers_load, [], outside_refs, ""
 
     def beforeSaveModifier(self, obj, clone):
-        """Returns all unititialized 'IVersionAwareReference' objects.
+        """Returns all uninitialized 'IVersionAwareReference' objects.
 
-        This allways goes in conjunction with 'getOnCloneModifiers'.
+        This always goes in conjunction with 'getOnCloneModifiers'.
         """
         outside_refs = self._beforeSaveModifier(obj, clone)
         return {}, [], outside_refs
@@ -433,21 +433,21 @@ InitializeClass(OMOutsideChildrensModifier)
 
 @implementer(ICloneModifier, ISaveRetrieveModifier)
 class OMInsideChildrensModifier(OMBaseModifier):
-    """ObjectManager modifier treating all childrens as inside refs
+    """ObjectManager modifier treating all children as inside refs
 
-    Treats all childrens as inside references (the repository layer
+    Treats all children as inside references (the repository layer
     knows what to do with that fact).
     """
 
     def getOnCloneModifiers(self, obj):
-        """Removes all childrens and returns them as references."""
+        """Removes all children and returns them as references."""
         pers_id, pers_load, inside_refs = self._getOnCloneModifiers(obj)
         return pers_id, pers_load, inside_refs, [], ""
 
     def beforeSaveModifier(self, obj, clone):
-        """Returns all unititialized 'IVersionAwareReference' objects.
+        """Returns all uninitialized 'IVersionAwareReference' objects.
 
-        This allways goes in conjunction with 'getOnCloneModifiers'.
+        This always goes in conjunction with 'getOnCloneModifiers'.
         """
         inside_refs = self._beforeSaveModifier(obj, clone)
         return {}, inside_refs, []
@@ -527,7 +527,7 @@ class OMSubObjectAdapter:
         # IM(alecm)O, we should update the catalog if the change is permanent
         # and not if otherwise, this forces this Adapter to know a bit about
         # implementation details, but it's an optional arg to a specific
-        # implemetnation of this interface, so I think this is acceptable.
+        # implementation of this interface, so I think this is acceptable.
         # The only other option I see is to do the deletion in the
         # CopyModifyMerge tool which is aware of the distinction between
         # retrieve and revert.
@@ -541,11 +541,11 @@ class OMSubObjectAdapter:
 class RetainWorkflowStateAndHistory:
     """Standard modifier retaining the working copies workflow state
 
-    Avoids the objects workflow state from beeing retrieved also.
+    Avoids the objects workflow state from being retrieved also.
     """
 
     def beforeSaveModifier(self, obj, clone):
-        # Saving the ``review_state`` as this is hard to achieve at retreive
+        # Saving the ``review_state`` as this is hard to achieve at retrieve
         # (or because I'm dumb). What happened is that ``getInfoFor`` always
         # returned the state of the working copy although the retrieved
         # temporary object was passed to it.
@@ -789,7 +789,7 @@ class SillyDemoRetrieveModifier:
         # sorry: hack
         clone = repo_clone.__of__(obj.aq_inner.aq_parent)
 
-        # replace all occurences of DeMo with Demo and deMo with demo
+        # replace all occurrences of DeMo with Demo and deMo with demo
         text = clone.EditableBody()
         text = text.replace("DeMo", "Demo").replace("deMo", "demo")
         clone.setText(text)
@@ -940,7 +940,7 @@ InitializeClass(SkipVersioningOfLargeFilesAndImages)
 @implementer(ICloneModifier, ISaveRetrieveModifier)
 class Skip_z3c_blobfile:
     """Standard avoid storing blob data, may be useful for extremely
-    large files where versioing the non-file metadata is important but
+    large files where versioning the non-file metadata is important but
     the cost of versioning the file data is too high.
     """
 
@@ -1073,7 +1073,7 @@ modifiers = (
     },
     {
         "id": "SillyDemoRetrieveModifier",
-        "title": "Silly retrive modifier for demos only.",
+        "title": "Silly retrieve modifier for demos only.",
         "enabled": False,
         "condition": "python: True",
         "wrapper": ConditionalTalesModifier,

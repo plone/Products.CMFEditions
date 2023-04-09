@@ -93,7 +93,7 @@ class IArchivist(Interface):
         Modifiers may overwrite some aspects of the retrieved version by
         the equivalent aspects of the working copy. Sometimes the
         overwritten information is from interest. Attributes (and
-        subattributes) beeing from interest can be passed with the
+        subattributes) being from interest can be passed with the
         'preserve' argument.
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
@@ -113,7 +113,7 @@ class IArchivist(Interface):
         Modifiers may overwrite some aspects of the retrieved version by
         the equivalent aspects of the working copy. Sometimes the
         overwritten information is from interest. Attributes (and
-        subattributes) beeing from interest can be passed with the
+        subattributes) being from interest can be passed with the
         'preserve' argument.
         E.g. preserve=('family_name', 'nick_name', 'real_name')
         """
@@ -173,7 +173,7 @@ class IPurgeSupport(Interface):
         for an object if no history_id is provided the history_id will be
         obtained from the working copy object.
 
-        The comment and metadata passed may be used to store informations
+        The comment and metadata passed may be used to store information
         about the reasons of the purging.
 
         Also counts purged versions if ``True`` is passed to ``countPurged``
@@ -211,7 +211,7 @@ class IPurgeSupport(Interface):
         Modifiers may overwrite some aspects of the retrieved version by
         the equivalent aspects of the working copy. Sometimes the
         overwritten information is from interest. Attributes (and
-        subattributes) beeing from interest can be passed with the
+        subattributes) being from interest can be passed with the
         'preserve' argument.
         E.g. preserve=('family_name', 'nick_name', 'real_name')
 
@@ -234,7 +234,7 @@ class IPurgeSupport(Interface):
         Modifiers may overwrite some aspects of the retrieved version by
         the equivalent aspects of the working copy. Sometimes the
         overwritten information is from interest. Attributes (and
-        subattributes) beeing from interest can be passed with the
+        subattributes) being from interest can be passed with the
         'preserve' argument.
         E.g. preserve=('family_name', 'nick_name', 'real_name')
 
@@ -283,7 +283,7 @@ class IPreparedObject(Interface):
         """Data that is passed to the storage by reference.
 
         These is an optimization for the case where a big blob (e.g. a Word
-        file) has to be saved but you want to avoid costy cloning beeing done
+        file) has to be saved but you want to avoid costy cloning being done
         by the archivist.
 
         Returns a dictionary of the following format:
@@ -316,7 +316,7 @@ class IVersionData(Interface):
     refs_to_be_deleted = Attribute(
         """List of references to be deleted on revert.
 
-        The items (containing the reference informations) are of
+        The items (containing the reference information) are of
         ``IReferenceAdapter``.
         """
     )
@@ -327,7 +327,7 @@ class IVersionData(Interface):
     )
 
     preserved_data = Attribute(
-        """Returns data beeing preserved from beeing overwritten by modifiers.
+        """Returns data being preserved from being overwritten by modifiers.
 
         The preserved data is a flat dictionary. With the example from above:
         nick_name = obj.preserved_data['nick_name']
@@ -372,14 +372,14 @@ class IHistory(Interface):
         """
 
     def __iter__():
-        """Returns an ordered set of versions for beeing looped over.
+        """Returns an ordered set of versions for being looped over.
 
         The objects returned are of 'IVersionData'.
         """
 
 
 class IObjectData(Interface):
-    """The object including informations about outgoing references."""
+    """The object including information about outgoing references."""
 
     object = Attribute(
         """The object with some of the python references replaced by

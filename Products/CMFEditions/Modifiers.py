@@ -168,10 +168,10 @@ def createExpressionContext(obj, portal=None, **more_symbols):
     """
 
     def findNextFolderishParent(obj):
-        """Try to find the folder of the given object by aquisition.
+        """Try to find the folder of the given object by acquisition.
 
         XXX what's the correct strategy in Zope2 land to check for a folder?
-            what's most relyable?
+            what's most reliable?
             a) check if isPrincipiaFolderish is True?
             b) check if the object is an ObjectManager?
             c) other?

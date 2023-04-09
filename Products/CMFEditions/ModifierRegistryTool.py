@@ -167,7 +167,7 @@ class ModifierRegistryTool(UniqueObject, OrderedFolder):
     def getOnCloneModifiers(self, obj):
         """See IModifier"""
         # First check if there is at least one ICloneModifier to loop over.
-        # The clone operation is much fater if there are no 'persistent_id'
+        # The clone operation is much faster if there are no 'persistent_id'
         # hooks to call.
         modifiers = self._collectModifiers(obj, ICloneModifier)
         if not modifiers:

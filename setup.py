@@ -29,7 +29,7 @@ setup(
         "Programming Language :: Python :: 3.11",
     ],
     keywords="Versioning Plone",
-    author="CMFEditions contributers",
+    author="CMFEditions contributors",
     author_email="collective-versioning@lists.sourceforge.net",
     url="https://pypi.org/project/Products.CMFEditions",
     license="GPL",

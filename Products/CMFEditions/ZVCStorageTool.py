@@ -77,7 +77,7 @@ def deepCopy(obj):
 def getSize(obj):
     """Calculate the size as cheap as possible"""
     # Try the cheap variants first.
-    # Actually the checks ensure the code never fails but beeing sure
+    # Actually the checks ensure the code never fails but being sure
     # is better.
     try:
         # check if to return zero (length is zero)
@@ -146,7 +146,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
     - When iterating over the history the removed versions (usually)
       aren't of interest. Thus the next valid version may be accessed
       by incrementing the selector and vice versa.
-    - When retrieving a version beeing able to access removed version
+    - When retrieving a version being able to access removed version
       or correctly spoken a substitute (pretending to be the removed
       version) is important when reconstructing relations between
       objects.
@@ -164,7 +164,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         {"label": "Statistics (may take time)", "action": "storageStatistics"},
     ) + SimpleItem.manage_options[:]
 
-    # make exceptions available trough the tool
+    # make exceptions available through the tool
     StorageError = StorageError
     StorageRetrieveError = StorageRetrieveError
 
@@ -387,7 +387,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         approxSize = getSize(object) + getSize(referenced_data)
         metadata["sys_metadata"]["approxSize"] = approxSize
 
-        # prepare the object for beeing saved with ZVC
+        # prepare the object for being saved with ZVC
         #
         # - Recall the ``__vc_info__`` from the most current version
         #   (selector=None).
@@ -469,7 +469,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         return zvc_hid, zvc_vid
 
     def _getVcInfo(self, obj, shadowInfo, set_checked_in=False):
-        """Recalls ZVC Related Informations and Attaches them to the Object"""
+        """Recalls ZVC Related Information and Attaches them to the Object"""
         vc_info = deepCopy(shadowInfo["vc_info"])
         if vc_info is None:
             return None
@@ -551,7 +551,7 @@ class ZVCStorageTool(UniqueObject, SimpleItem):
         hidhandler = getToolByName(self, "portal_historyidhandler")
         portal_paths_len = len(getToolByName(self, "portal_url")())
 
-        # collect interesting informations
+        # collect interesting information
         histories = []
         for hid in historyIds.keys():
             history = self.getHistory(hid)
@@ -840,7 +840,7 @@ class ShadowHistory(Persistent):
 
         # Lets search from the end of the available list as it is more
         # likely that a younger versions position has to be returned.
-        # Let's work on a copy to not trigger an unecessary ZODB store
+        # Let's work on a copy to not trigger an unnecessary ZODB store
         # operations.
         history = self._available[:]
         history.reverse()

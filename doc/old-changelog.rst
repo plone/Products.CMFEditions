@@ -117,7 +117,7 @@ Fixes:
 - Ported tests to plone.app.testing
   [tomgross]
 
-- Removed old FAQ testing code. Should go in a seperate product, if needed.
+- Removed old FAQ testing code. Should go in a separate product, if needed.
   [tomgross]
 
 - Frosted cleanups
@@ -959,7 +959,7 @@ Bugs fixed
   avoiding wrong information is attached to a working copy when
   previewing a version. Fix for ToDo.txt item #48. [gregweb]
 
-- Replaced all occurences of ``rollback`` with ``revert``. Brought into
+- Replaced all occurrences of ``rollback`` with ``revert``. Brought into
   sync internal names with UI. Rollback may suggest a transaction
   rollback which is something different. Including i18n label
   ``label_rollback`` which is now ``label_revert``. Added backwards
@@ -987,7 +987,7 @@ Features Added
 - Added Polish translations provided by Piotr Furman [Piotr Furman, gregweb]
 
 - ``RetainWorkflowStateAndHistory`` now adds the ``review_state`` to the
-  ``sys_metadata`` at save time because at retreive time the workflow tool
+  ``sys_metadata`` at save time because at retrieve time the workflow tool
   picks the working copies state. I didn't find any other way to do it
   without digging into workflows internals (which would have been a bad
   idea anyway). Had to extend the ``IModifier.ISaveRetrieveModifier``
@@ -1003,7 +1003,7 @@ Features Added
     will avoid a lot of future tracker items caused by people having
     removed the purge policy but nevertheless providing purge support
     to users. The reason is that the archivist and repo layer can't
-    handle yet the empty placeholder object beeing returned by the
+    handle yet the empty placeholder object being returned by the
     storage for the purged version. This rule may be relaxed in future
     versions if the archivist and repo layer support handling of those
     empty placeholder objects.
@@ -1019,8 +1019,8 @@ Features Added
     schematas exist. Numbering counting purged versions and not
     counting purged versions (passing True or False to ``countPurged``).
     The default numbering schema is ``countPurged=True``. The UI
-    history onyl shows unpurged versions (``countPurged=False``).
-  - If the storage is asked to retreive a removed version it may be
+    history only shows unpurged versions (``countPurged=False``).
+  - If the storage is asked to retrieve a removed version it may be
     instructed to return a substitute for the removed version. The
     substitution policy itself is implemented in the new purge policy
     tool. This strategy allows to keep most purge implementation
@@ -1033,7 +1033,7 @@ Features Added
     next older version. If no other version is available the next
     newer is used as substitute. If none is available ... well this
     isn't yet tested :-)
-  - The archivist and storage may be asked to also retreive the empty
+  - The archivist and storage may be asked to also retrieve the empty
     placeholder of a purged version. This functionality is yet exposed
     to the repo layer. This may change in a future release.
   - Added ``isValid`` method on the vdata object that allows to ask if
@@ -1042,7 +1042,7 @@ Features Added
 
 - At save time a version aware reference to the parent node is saved
   also. Without it would be very ineffective or even impossible to
-  find out the parents which potentially would prevent adding usefull
+  find out the parents which potentially would prevent adding useful
   features like retrieving the a whole site from one object in the
   tree. [gregweb]
 
@@ -1156,7 +1156,7 @@ Bugs fixed
   obj.getModificationDate() because it's more fine graned. [gregweb]
 
 - Added ReferenceFactoriesTool.py which in essence knows how to
-  instatiate a reference. The current implementation is inflexible and
+  instantiate a reference. The current implementation is inflexible and
   knows only how to instantiate object into an ObjectManager. This
   is the first step in preparation for AT reference handling. [gregweb]
 
@@ -1186,7 +1186,7 @@ Bugs fixed
 
 - Corrected bugs in ``RetainWorkflowStateAndHistory`` modifier and the
   modifier registry avoiding the review state and the workflow history
-  from beeing retained on retrieve and revert.
+  from being retained on retrieve and revert.
 
 
 Features added

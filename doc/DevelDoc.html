@@ -64,7 +64,7 @@
       </table>
       <div class="abstract topic">
         <p class="topic-title first">Abstract</p>
-        <p>The CMFEditions architecture looks like beeing overly complex.
+        <p>The CMFEditions architecture looks like being overly complex.
 The complexity has it's reasons in Python itself but also in the goal
 of CMFEditions not to rely on specific behaviour of content objects.
 This document shall help developers to grok the architecture and ideas
@@ -109,16 +109,16 @@ I (gregweb) couldn't hold because of a flu.</p>
             >The Copy Mechanism</a><ul>
               <li><a class="reference"
                    id="id13"
-                   href="#modifers"
+                   href="#modifiers"
                    name="id13"
-                >Modifers</a></li>
+                >Modifiers</a></li>
             </ul>
           </li>
           <li><a class="reference"
                id="id14"
                href="#overwiew-over-the-architecture"
                name="id14"
-            >Overwiew over the Architecture</a></li>
+            >Overview over the Architecture</a></li>
           <li><a class="reference"
                id="id15"
                href="#further-reading"
@@ -145,7 +145,7 @@ to date, etc.</li>
         </blockquote>
         <p>In this document we concentrate on the first two points (<em>save</em>
            and
-          <em>retreive</em>
+          <em>retrieve</em>
           the state of something). But what does save
           <em>save the current
 state</em>
@@ -177,7 +177,7 @@ later.</p>
 &gt;&gt;&gt; a.__dict__
 {}
 </pre>
-        <p>The data the object carries need not be soley set by code of the class
+        <p>The data the object carries need not be solely set by code of the class
 implementation:</p>
         <pre class="literal-block">
 &gt;&gt;&gt; a.x=5
@@ -226,7 +226,7 @@ the object carries is found in the objects
     'time': DateTime('2005/02/14 20:03:37.250 GMT+1')},)}
 }
 </pre>
-        <p>Looks quite meaningfull! To store a version just make a (deep) copy of
+        <p>Looks quite meaningful! To store a version just make a (deep) copy of
           <tt class="docutils literal"><span class="pre">doc</span></tt>
           and store the copy away for later retrieval.</p>
       </div>
@@ -397,13 +397,13 @@ sites, it's just done by defining that the
           of a document are the question part and the
           <tt class="docutils literal"><span class="pre">body</span></tt>
            is
-the answer part. Additionaly a template
+the answer part. Additionally a template
           <tt class="docutils literal"><span class="pre">faq_view</span></tt>
            showing all
 questions at once has to be added).</p>
         <p>In step 2. above we assumed the subobjects don't get saved on a save
 operation of the folder. This assumption is now wrong for the F.A.Q.-Page.
-We wan't the subobjects be saved in case we save the whole F.A.Q.-Page.
+We want the subobjects be saved in case we save the whole F.A.Q.-Page.
 But how to distinguish the F.A.Q.-Page form a normal folder? The
 F.A.Q.-Page uses the same underlying code as the
           <tt class="docutils literal"><span class="pre">Folder</span></tt>. Ok, the
@@ -447,11 +447,11 @@ above the document subobjects in a folder are of such type.</li>
                src="img/areas.gif"
                width="138"
           /></div>
-        <p>We didn't talk about the criterias that decide to what onionskin an
+        <p>We didn't talk about the criteria that decide to what onionskin an
 attribute belongs. See
           <a class="reference"
-             href="#modifers"
-          >Modifers</a>
+             href="#modifiers"
+          >Modifiers</a>
           for this.</p>
       </div>
       <div class="section"
@@ -470,7 +470,7 @@ change the original.</blockquote>
         <p>So we need to intercept the copy mechanism!</p>
         <p>This can be done by using one of Pythons serializer:
           <tt class="docutils literal"><span class="pre">pickle</span></tt></p>
-        <p>Before continueing please read the
+        <p>Before continuing please read the
           <a class="reference"
              href="http://python.org/doc/2.4/lib/module-pickle.html"
           >chapter about pickling</a>
@@ -486,13 +486,13 @@ documentation. For those who like to have a look at the &quot;real code&quot; se
         <ul class="simple">
           <li>There is a hook called
             <tt class="docutils literal"><span class="pre">persistent_id</span></tt>
-             that get's called upon every
+             that gets called upon every
 object during the serialization process.</li>
           <li>In this hook you can decide if the object just has to be serialized as
 usual or you may return your own serialization of it.</li>
           <li>There is another hook
             <tt class="docutils literal"><span class="pre">persistent_load</span></tt>
-             that get's called upon every
+             that gets called upon every
 custom serialized object during the deserialization process.</li>
         </ul>
         <p>In case of a folder we know which of the attributes are the subobjects.
@@ -509,11 +509,11 @@ the currently passed objects
           <tt class="docutils literal"><span class="pre">id</span></tt>
            get checked if it is one of the
 memorized
-          <tt class="docutils literal"><span class="pre">id</span></tt>s. In that case just nothing get's serialized and all the
+          <tt class="docutils literal"><span class="pre">id</span></tt>s. In that case just nothing gets serialized and all the
 subobjects information will be lost (which is by intention).</p>
         <p>During the deserializing process the
           <tt class="docutils literal"><span class="pre">persistent_load</span></tt>
-           hook get's called
+           hook gets called
 upon every subobject. We just return an empty version aware weak reference
 that will be initialized correctly later
           <a class="footnote-reference"
@@ -576,12 +576,12 @@ importance here.</td></tr>
 }
 </pre>
         <div class="section"
-             id="modifers"
+             id="modifiers"
         >
           <h2><a class="toc-backref"
                href="#id13"
-               name="modifers"
-            >Modifers</a></h2>
+               name="modifiers"
+            >Modifiers</a></h2>
           <p>The above job about deciding what attributes belong to the
             <em>core</em>
              and what
@@ -603,7 +603,7 @@ versioning framework.</p>
         <h1><a class="toc-backref"
              href="#id14"
              name="overwiew-over-the-architecture"
-          >Overwiew over the Architecture</a></h1>
+          >Overview over the Architecture</a></h1>
         <p>CMFEditions make heavily usage of the CMF(-Framework). The functionality
 is split into four tools to allow easy future replacement of the individual
 tools:</p>

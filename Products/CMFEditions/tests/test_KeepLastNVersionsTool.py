@@ -62,15 +62,15 @@ class TestKeepLastNVersionsTool(CMFEditionsBaseTestCase):
         storage = self.portal.portal_historiesstorage
         purgepolicy.maxNumberOfVersionsToKeep = 2
 
-        # call hook explicitely before save (dummy tool doesn't call it,
-        # we wan't to do it explicitely)
+        # call hook explicitly before save (dummy tool doesn't call it,
+        # we want to do it explicitly)
         res = purgepolicy.beforeSaveHook(history_id=1, obj=2, metadata={})
         self.assertTrue(res)
         storage.save(history_id=1, obj=DummyData(0))
         self.assertEqual(len(storage.getHistory(history_id=1)), 1)
 
-        # call hook explicitely before save (dummy tool doesn't call it,
-        # we wan't to do it explicitely)
+        # call hook explicitly before save (dummy tool doesn't call it,
+        # we want to do it explicitly)
         res = purgepolicy.beforeSaveHook(history_id=1, obj=2, metadata={})
         self.assertTrue(res)
         storage.save(history_id=1, obj=DummyData(1))

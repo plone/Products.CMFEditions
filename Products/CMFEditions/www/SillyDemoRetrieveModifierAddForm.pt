@@ -6,7 +6,7 @@
 >tabs</p>
 
 
-<h2>Add Silly Retrive Modifier For Demos</h2>
+<h2>Add Silly Retrieve Modifier For Demos</h2>
 
 <form action="manage_addSillyDemoRetrieveModifier"
       method="post"

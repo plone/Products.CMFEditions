@@ -285,8 +285,8 @@ class TestIntegration(CMFEditionsBaseTestCase):
         doc1 = fol.doc1
         doc2 = fol.doc2
 
-        # just configure the standard folder to treat the childrens as
-        # inside refrences. For this we reconfigure the standard modifiers.
+        # just configure the standard folder to treat the children as
+        # inside references. For this we reconfigure the standard modifiers.
         portal_modifier = self.portal.portal_modifier
         portal_modifier.edit(
             "OMOutsideChildrensModifier", enabled=False, condition="python: False"
@@ -578,8 +578,8 @@ class TestIntegration(CMFEditionsBaseTestCase):
         fol = self.portal.fol
         doc = fol.doc1
 
-        # just configure the standard folder to treat the childrens as
-        # inside refrences. For this we reconfigure the standard modifiers.
+        # just configure the standard folder to treat the children as
+        # inside references. For this we reconfigure the standard modifiers.
         portal_modifier = self.portal.portal_modifier
         portal_modifier.edit(
             "OMOutsideChildrensModifier", enabled=False, condition="python: False"
@@ -646,8 +646,8 @@ class TestIntegration(CMFEditionsBaseTestCase):
         fol = self.portal.fol
         doc1 = fol.doc1
 
-        # just configure the standard folder to treat the childrens as
-        # inside refrences. For this we reconfigure the standard modifiers.
+        # just configure the standard folder to treat the children as
+        # inside references. For this we reconfigure the standard modifiers.
         portal_modifier = self.portal.portal_modifier
         portal_modifier.edit(
             "OMOutsideChildrensModifier", enabled=False, condition="python: False"
@@ -733,7 +733,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
     ):  # noqa
         # disabled by gregweb/21-10-2006
         # reason: Needs concentrated and deeper look.
-        # --> Ideas exist, pleas contact us on the list if you like to work
+        # --> Ideas exist, please contact us on the list if you like to work
         #     on that.
         # I know one should not do that! But solving this would bring more
         # risks into the 1.0final than leaving the bug to be solved afterwards.
@@ -795,7 +795,7 @@ class TestIntegration(CMFEditionsBaseTestCase):
     ):  # noqa
         # disabled by gregweb/21-10-2006
         # reason: Needs concentrated and deeper look.
-        # --> Ideas exist, pleas contact us on the list if you like to work
+        # --> Ideas exist, please contact us on the list if you like to work
         #     on that.
         # I know one should not do that! But solving this would bring more
         # risks into the 1.0final than leaving the bug to be solved afterwards.

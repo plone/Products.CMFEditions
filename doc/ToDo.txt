@@ -43,7 +43,7 @@ Deferred to a Future Version
                  resource == all versions at every location
 
 20. Make the autoapply of the CopyModifyMergerepository a Zope property
-    beeing editable through the ZMI.
+    being editable through the ZMI.
 
 39. Revert, View and Save have different permissions. This must be
     reflected by the version_history_form only showing actions that
@@ -58,11 +58,11 @@ Deferred to a Future Version
 21. No unit tests yet for the "preserve" feature. Write some.
 
 25. Write a new much simpler history storage replacing the ZVCStorage.
-    (eventually defered to CMFEditions 1.1, depends on resources, see
+    (eventually deferred to CMFEditions 1.1, depends on resources, see
     also 32.)
 
 32. Make storage unit tests subclassable to allow people writing
-    new storages to subclass a buch of unit tests (see also 25.).
+    new storages to subclass a bunch of unit tests (see also 25.).
 
 16. principal: save the name or kind of unique id?
 
@@ -88,13 +88,13 @@ Done
 
 10. archivist: move applying the context to the repository layer
 
-13. modifier: The modifier API is not powerfull enough to handle:
+13. modifier: The modifier API is not powerful enough to handle:
     - subobjects that should not be cloned by pickling (e.g. because
       they're to big) and be passed to the storage by reference.
     - enable beforeSaveModifier/afterRetrieveModifier to be able to
       return nested/related objects to be versioned separately.
 
-17. The archivists getHistory shall return [] for objects not beeing under
+17. The archivists getHistory shall return [] for objects not being under
     version control
 
 3. terminology: rename selector --> version_id --> NO!
@@ -125,7 +125,7 @@ Done
     (--> gregweb/everybody, done: gregweb)
 
 24. Remove autoregister feature from ZVCStorage.py. This is YAGNI on that
-    level as teh archivist doesn't use it.
+    level as the archivist doesn't use it.
 
 15. UI: refactoring and move to new API
     (--> reflab, done: gregweb)
@@ -154,7 +154,7 @@ Done
 48. ``ZVCStorageTool.py`` stores the current ``__vc_info__`` in a mapping
     even if the operation was a retrieve. But this is correct only in the
     case of a revert. This may end in odd behaviour if a user is just looking
-    at an old version but continueing working on teh current one.
+    at an old version but continuing working on the current one.
     --> ``ZVCStorageTool.py`` should not strip the ``__vc_info__`` away.
     Argghhh: We really should replace the ``ZVCStorageTool`` by a simpler
     ZODB based one. In the short term we have to write a test showing the
@@ -165,7 +165,7 @@ Done
     116                     % history_id)
     117
     118         def _saveZVCInfo(self, obj, history_id):
-    119             """Saves ZVC related informations and deletes them from the object.
+    119             """Saves ZVC related information and deletes them from the object.
     120             """
     121             vc_info = deepCopy(obj.__vc_info__)
     122  ->         self._getHistoryIdMapping()[history_id] = vc_info
@@ -174,7 +174,7 @@ Done
     Also add tests for a mixed behaviour.
 
 51. ``_recursiveRetrieve``: There is currently a problem with inside_references
-    beeing moved to outside: What do on revert when reverting an inside_reference
+    being moved to outside: What do on revert when reverting an inside_reference
     that has previously been moved to outside (no control over it anymore)? We
     may end in two object having the same ``history_id`` which is **REALLY** bad.
     The reverted inside_reference should be attached a new history!!!
@@ -197,7 +197,7 @@ Done
     CMFEditions 0.6.x currently offers.
 
 56. packaging: for the release we need an updated CMF 1.5 CMFUid package
-    (collective). --> No support for Plone 2.0.x planed anymore.
+    (collective). --> No support for Plone 2.0.x planned anymore.
 
 28. CopyModifyMergeRepositoryTool.py currently implements one possible
     policy how to handle references. Build a framework for pluggable
@@ -211,7 +211,7 @@ Done
     time the names of the parents may have changed. But there is a
     need to store a version aware reference to the parent.
 
-29. Solve all XXX or replace them by TODO's where apropriate.
+29. Solve all XXX or replace them by TODO's where appropriate.
 
 46. Discuss naming: ``revert`` <--> ``rollback``
 
@@ -223,9 +223,9 @@ Done
 
 - check responses for tracker issues for alpha3
 - package and publish 1.0alpha3
-- check answers about rollback versus revert and take a decission
+- check answers about rollback versus revert and take a decision
   --> rename to revert
-- check name change opinions and take a decission
+- check name change opinions and take a decision
   --> no name change (lack of time, too risky)
 - storage migration from alpha3 (purge support)
 - Check what the problem is with retrieve in the version view (not purge
