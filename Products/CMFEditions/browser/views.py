@@ -1,5 +1,4 @@
 from Acquisition import aq_inner
-from plone.base.utils import human_readable_size
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
