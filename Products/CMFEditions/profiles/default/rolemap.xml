@@ -1,47 +1,52 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <rolemap>
   <permissions>
-    <permission name="CMFEditions: Access previous versions"
-                acquire="True">
-      <role name="Manager"/>
-      <role name="Site Administrator"/>
-      <role name="Owner"/>
-      <role name="Editor"/>
-      <role name="Reviewer"/>
+    <permission acquire="True"
+                name="CMFEditions: Access previous versions"
+    >
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Owner" />
+      <role name="Editor" />
+      <role name="Reviewer" />
       <role name="Contributor" />
     </permission>
-    <permission name="CMFEditions: Apply version control"
-                acquire="True">
-      <role name="Manager"/>
-      <role name="Site Administrator"/>
-      <role name="Owner"/>
-      <role name="Editor"/>
-      <role name="Reviewer"/>
+    <permission acquire="True"
+                name="CMFEditions: Apply version control"
+    >
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Owner" />
+      <role name="Editor" />
+      <role name="Reviewer" />
       <role name="Contributor" />
     </permission>
-    <permission name="CMFEditions: Checkout to location"
-                acquire="True">
-      <role name="Manager"/>
-      <role name="Site Administrator"/>
-      <role name="Owner"/>
-      <role name="Editor"/>
-      <role name="Reviewer"/>
+    <permission acquire="True"
+                name="CMFEditions: Checkout to location"
+    >
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Owner" />
+      <role name="Editor" />
+      <role name="Reviewer" />
     </permission>
-    <permission name="CMFEditions: Revert to previous versions"
-                acquire="True">
-      <role name="Manager"/>
-      <role name="Site Administrator"/>
-      <role name="Owner"/>
-      <role name="Editor"/>
-      <role name="Reviewer"/>
+    <permission acquire="True"
+                name="CMFEditions: Revert to previous versions"
+    >
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Owner" />
+      <role name="Editor" />
+      <role name="Reviewer" />
     </permission>
-    <permission name="CMFEditions: Save new version"
-                acquire="True">
-      <role name="Manager"/>
-      <role name="Site Administrator"/>
-      <role name="Owner"/>
-      <role name="Editor"/>
-      <role name="Reviewer"/>
+    <permission acquire="True"
+                name="CMFEditions: Save new version"
+    >
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Owner" />
+      <role name="Editor" />
+      <role name="Reviewer" />
       <role name="Contributor" />
     </permission>
   </permissions>

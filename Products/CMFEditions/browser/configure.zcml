@@ -1,100 +1,101 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser">
+    xmlns:browser="http://namespaces.zope.org/browser"
+    >
 
-    <browser:page
-        for="*"
-        name="history"
-        class=".diff.DiffView"
-        template="templates/diff.pt"
-        permission="CMFEditions.AccessPreviousVersions"
-        />
+  <browser:page
+      name="history"
+      for="*"
+      class=".diff.DiffView"
+      template="templates/diff.pt"
+      permission="CMFEditions.AccessPreviousVersions"
+      />
 
-    <browser:page
-        for="*"
-        name="get_macros"
-        class=".utils.GetMacros"
-        attribute="get_macros"
-        permission="zope2.View"
-        />
+  <browser:page
+      name="get_macros"
+      for="*"
+      class=".utils.GetMacros"
+      attribute="get_macros"
+      permission="zope2.View"
+      />
 
-    <browser:page
-        for="*"
-        name="update_version_on_edit"
-        class=".views.UpdateVersionOnEditView"
-        permission="zope2.View"
-        />
+  <browser:page
+      name="update_version_on_edit"
+      for="*"
+      class=".views.UpdateVersionOnEditView"
+      permission="zope2.View"
+      />
 
-    <browser:page
-        for="*"
-        name="update_version_before_edit"
-        class=".views.UpdateVersionBeforeEditView"
-        permission="zope2.View"
-        />
+  <browser:page
+      name="update_version_before_edit"
+      for="*"
+      class=".views.UpdateVersionBeforeEditView"
+      permission="zope2.View"
+      />
 
-    <browser:page
-        for="*"
-        name="version_file_view"
-        template="templates/version_file_view.pt"
-        permission="zope2.View"
-        />
+  <browser:page
+      name="version_file_view"
+      for="*"
+      template="templates/version_file_view.pt"
+      permission="zope2.View"
+      />
 
-    <browser:page
-        for="*"
-        name="version_image_view"
-        template="templates/version_image_view.pt"
-        permission="zope2.View"
-        />
+  <browser:page
+      name="version_image_view"
+      for="*"
+      template="templates/version_image_view.pt"
+      permission="zope2.View"
+      />
 
-    <browser:page
-        for="*"
-        name="version_metadata_view"
-        template="templates/version_metadata_view.pt"
-        permission="zope2.View"
-        />
+  <browser:page
+      name="version_metadata_view"
+      for="*"
+      template="templates/version_metadata_view.pt"
+      permission="zope2.View"
+      />
 
-    <browser:page
-        for="*"
-        name="saveasnewversion"
-        class=".policies.SaveAsNewVersion"
-        permission="zope2.View"
-        />
+  <browser:page
+      name="saveasnewversion"
+      for="*"
+      class=".policies.SaveAsNewVersion"
+      permission="zope2.View"
+      />
 
-    <browser:page
-        for="*"
-        name="revertversion"
-        class=".policies.RevertVersion"
-        permission="zope2.View"
-        />
+  <browser:page
+      name="revertversion"
+      for="*"
+      class=".policies.RevertVersion"
+      permission="zope2.View"
+      />
 
-    <!-- Note: this is also used by plone.app.iterate -->
-    <browser:page
-        for="*"
-        name="diff_legend"
-        template="templates/diff_legend.pt"
-        permission="zope2.View"
-        />
+  <!-- Note: this is also used by plone.app.iterate -->
+  <browser:page
+      name="diff_legend"
+      for="*"
+      template="templates/diff_legend.pt"
+      permission="zope2.View"
+      />
 
-    <!-- Note: this is roughly the same as @@historyview in plone.app.layout
+  <!-- Note: this is roughly the same as @@historyview in plone.app.layout
          which is a small wrapper around @@contenthistory in plone.app.layout,
          which is a viewlet turned into a view.  Their version looks nicer.
          But our versions_history_form has a preview (which contenthistory points to)
          and a form to add a new version, if the policy is manual. -->
-    <browser:page
-        for="*"
-        name="versions_history_form"
-        class=".views.VersionsHistoryForm"
-        template="templates/versions_history_form.pt"
-        permission="zope2.View"
-        />
+  <browser:page
+      name="versions_history_form"
+      for="*"
+      class=".views.VersionsHistoryForm"
+      template="templates/versions_history_form.pt"
+      permission="zope2.View"
+      />
 
-    <!-- We could make this a resource, but then we need to change plone.app.iterate as well.
+  <!-- We could make this a resource, but then we need to change plone.app.iterate as well.
          So for now make it a browser view. -->
-    <browser:page
-        for="*"
-        name="compare.css"
-        class=".views.CompareCSS"
-        permission="zope2.View"
-        />
+  <browser:page
+      name="compare.css"
+      for="*"
+      class=".views.CompareCSS"
+      permission="zope2.View"
+      />
 
 </configure>

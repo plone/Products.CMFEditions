@@ -1,23 +1,33 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <tool-setup>
- <required tool_id="portal_archivist"
-           class="Products.CMFEditions.ArchivistTool.ArchivistTool"/>
- <required tool_id="portal_repository"
-           class="Products.CMFEditions.CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool"/>
- <required tool_id="portal_historyidhandler"
-           class="Products.CMFEditions.historyidhandlertool.HistoryIdHandlerTool"/>
- <required tool_id="portal_purgepolicy"
-           class="Products.CMFEditions.KeepLastNVersionsTool.KeepLastNVersionsTool"/>
- <required tool_id="portal_modifier"
-           class="Products.CMFEditions.ModifierRegistryTool.ModifierRegistryTool"/>
- <required tool_id="portal_referencefactories"
-           class="Products.CMFEditions.ReferenceFactoriesTool.ReferenceFactoriesTool"/>
- <required tool_id="portal_historiesstorage"
-           class="Products.CMFEditions.ZVCStorageTool.ZVCStorageTool"/>
- <required tool_id="portal_uidannotation"
-           class="Products.CMFUid.UniqueIdAnnotationTool.UniqueIdAnnotationTool"/>
- <required tool_id="portal_uidgenerator"
-           class="Products.CMFUid.UniqueIdGeneratorTool.UniqueIdGeneratorTool"/>
- <required tool_id="portal_uidhandler"
-           class="Products.CMFUid.UniqueIdHandlerTool.UniqueIdHandlerTool"/>
+  <required class="Products.CMFEditions.ArchivistTool.ArchivistTool"
+            tool_id="portal_archivist"
+  />
+  <required class="Products.CMFEditions.CopyModifyMergeRepositoryTool.CopyModifyMergeRepositoryTool"
+            tool_id="portal_repository"
+  />
+  <required class="Products.CMFEditions.historyidhandlertool.HistoryIdHandlerTool"
+            tool_id="portal_historyidhandler"
+  />
+  <required class="Products.CMFEditions.KeepLastNVersionsTool.KeepLastNVersionsTool"
+            tool_id="portal_purgepolicy"
+  />
+  <required class="Products.CMFEditions.ModifierRegistryTool.ModifierRegistryTool"
+            tool_id="portal_modifier"
+  />
+  <required class="Products.CMFEditions.ReferenceFactoriesTool.ReferenceFactoriesTool"
+            tool_id="portal_referencefactories"
+  />
+  <required class="Products.CMFEditions.ZVCStorageTool.ZVCStorageTool"
+            tool_id="portal_historiesstorage"
+  />
+  <required class="Products.CMFUid.UniqueIdAnnotationTool.UniqueIdAnnotationTool"
+            tool_id="portal_uidannotation"
+  />
+  <required class="Products.CMFUid.UniqueIdGeneratorTool.UniqueIdGeneratorTool"
+            tool_id="portal_uidgenerator"
+  />
+  <required class="Products.CMFUid.UniqueIdHandlerTool.UniqueIdHandlerTool"
+            tool_id="portal_uidhandler"
+  />
 </tool-setup>
