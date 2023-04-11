@@ -56,7 +56,7 @@ class ICopyModifyMergeRepository(Interface):
         """Sets the autoapply mode.
 
         Before a repository can host a version of a content it has to be
-        registred.
+        registered.
         If True the first 'save' operation will register the content
         automatically and applies version control.
         The default value is True.
@@ -101,7 +101,7 @@ class ICopyModifyMergeRepository(Interface):
 
         Usage Hint:
 
-        May be used to restore a deleted object (delted from the tree).
+        May be used to restore a deleted object (deleted from the tree).
         A version having been purged from the storage may never be restored.
         A new id may be chosen.
         """
@@ -180,7 +180,7 @@ class IPurgeSupport(Interface):
             selector: 0, 1, 2, 3,  4,  5, 6, 7, 8, 9 (countPurged==True)
             selector: 0, 1, 2, -,  -,  3, 4, 5, 6, 7 (countPurged==False)
 
-        The comment and metadata passed may be used to store informations
+        The comment and metadata passed may be used to store information
         about the reasons of the purging.
         """
 
@@ -211,7 +211,7 @@ class IPurgeSupport(Interface):
 
         Usage Hint:
 
-        May be used to restore a deleted object (delted from the tree).
+        May be used to restore a deleted object (deleted from the tree).
         A version having been purged from the storage may never be restored.
         A new id may be chosen.
 
@@ -312,7 +312,7 @@ class IVersionData(Interface):
 
     preserved_data = Attribute(
         """It is the data preserved from overwriting during the
-        retrive process.
+        retrieve process.
 
         The preserved data is a flat dictionary.
         With the example from above:

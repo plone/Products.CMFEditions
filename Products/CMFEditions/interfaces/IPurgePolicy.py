@@ -46,7 +46,7 @@ class IPurgePolicy(Interface):
         ``save`` method.
 
         Return True if ``obj`` has to be saved by the ``IStorage``
-        implementation. Return ``False`` if the object has to be discared.
+        implementation. Return ``False`` if the object has to be discarded.
         """
 
     def retrieveSubstitute(history_id, selector, default=None):

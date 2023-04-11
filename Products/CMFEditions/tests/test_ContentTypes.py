@@ -1,9 +1,9 @@
 from plone.app.textfield.value import RichTextValue
+from plone.base.utils import unrestricted_construct_instance
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from Products.CMFEditions import PACKAGE_HOME
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
-from plone.base.utils import unrestricted_construct_instance
 
 import os
 

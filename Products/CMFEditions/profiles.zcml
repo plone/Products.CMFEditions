@@ -1,53 +1,61 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-    i18n_domain="cmfeditions">
+    i18n_domain="cmfeditions"
+    >
 
   <genericsetup:registerProfile
       name="CMFEditions"
       title="CMFEditions"
-      directory="profiles/default"
       description="Extension profile for default CMFEditions setup."
       provides="Products.GenericSetup.interfaces.EXTENSION"
+      directory="profiles/default"
       />
 
-    <genericsetup:upgradeSteps
-        source="2.0"
-        destination="3"
-        profile="Products.CMFEditions:CMFEditions">
+  <genericsetup:upgradeSteps
+      profile="Products.CMFEditions:CMFEditions"
+      source="2.0"
+      destination="3"
+      >
 
-        <genericsetup:upgradeDepends
-           title="Fix portal_historyidhandler"
-           import_steps="toolset"
-          />
+    <genericsetup:upgradeDepends
+        title="Fix portal_historyidhandler"
+        import_steps="toolset"
+        />
 
-    </genericsetup:upgradeSteps>
+  </genericsetup:upgradeSteps>
 
-    <genericsetup:upgradeSteps
-        source="3"
-        destination="4"
-        profile="Products.CMFEditions:CMFEditions">
-        <genericsetup:upgradeStep
-           title="Install the component registry bases modifier."
-           handler=".setuphandlers.installSkipRegistryBasesPointersModifier" />
-    </genericsetup:upgradeSteps>
+  <genericsetup:upgradeSteps
+      profile="Products.CMFEditions:CMFEditions"
+      source="3"
+      destination="4"
+      >
+    <genericsetup:upgradeStep
+        title="Install the component registry bases modifier."
+        handler=".setuphandlers.installSkipRegistryBasesPointersModifier"
+        />
+  </genericsetup:upgradeSteps>
 
-    <genericsetup:upgradeSteps
-        source="4"
-        destination="10"
-        profile="Products.CMFEditions:CMFEditions">
-        <genericsetup:upgradeStep
-           title="Remove old broken Archetypes modifiers."
-           handler=".setuphandlers.removeBrokenModifiers" />
-    </genericsetup:upgradeSteps>
+  <genericsetup:upgradeSteps
+      profile="Products.CMFEditions:CMFEditions"
+      source="4"
+      destination="10"
+      >
+    <genericsetup:upgradeStep
+        title="Remove old broken Archetypes modifiers."
+        handler=".setuphandlers.removeBrokenModifiers"
+        />
+  </genericsetup:upgradeSteps>
 
-    <genericsetup:upgradeSteps
-        source="10"
-        destination="11"
-        profile="Products.CMFEditions:CMFEditions">
-        <genericsetup:upgradeStep
-           title="Remove CMFEditions skin layer"
-           handler=".setuphandlers.removeSkinLayer" />
-    </genericsetup:upgradeSteps>
+  <genericsetup:upgradeSteps
+      profile="Products.CMFEditions:CMFEditions"
+      source="10"
+      destination="11"
+      >
+    <genericsetup:upgradeStep
+        title="Remove CMFEditions skin layer"
+        handler=".setuphandlers.removeSkinLayer"
+        />
+  </genericsetup:upgradeSteps>
 
 </configure>

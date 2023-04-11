@@ -6,7 +6,6 @@ from zope.i18n import translate
 
 
 class DiffView(BrowserView):
-
     def __init__(self, *args):
         super().__init__(*args)
         self.repo_tool = getToolByName(self.context, "portal_repository")

@@ -95,7 +95,7 @@ class DummyArchivist(SimpleItem):
         obj, history_id = dereference(obj)
         if history_id is None:
             # object isn't under version control yet
-            # An working copy beeing under version control needs to have
+            # An working copy being under version control needs to have
             # a history_id, version_id (starts with 0) and a location_id
             # (the current implementation isn't able yet to handle multiple
             # locations. Nevertheless lets set the location id to a well
@@ -338,16 +338,16 @@ class FolderishContentObjectModifier(DummyBaseTool):
     id = "portal_modifier"
 
     def getReferencedAttributes(self, obj):
-        # we declare the title beeing a big blob we don't want to be
+        # we declare the title being a big blob we don't want to be
         # pickled and unpickled by the archivist
         return {"title": obj.title}
 
     def getOnCloneModifiers(self, obj):
-        """Removes childrens ending with '_inside' or '_outside'.
+        """Removes children ending with '_inside' or '_outside'.
 
         Just replaces object manager sub objects ending '_inside' or
-        '_outside' by a uninitialzed 'IVersionAwareReference'.
-        All other childrens get versioned with the parent.
+        '_outside' by a uninitialized 'IVersionAwareReference'.
+        All other children get versioned with the parent.
         """
         portal_archivist = getToolByName(obj, "portal_archivist")
         VersionAwareReference = portal_archivist.classes.VersionAwareReference
@@ -394,15 +394,15 @@ class FolderishContentObjectModifier(DummyBaseTool):
         return persistent_id, persistent_load, inside_refs, outside_refs, ""
 
     def beforeSaveModifier(self, obj, clone):
-        """Returns all unititialized 'IVersionAwareReference' objects.
+        """Returns all uninitialized 'IVersionAwareReference' objects.
 
-        This allways goes in conjunction with 'getOnCloneModifiers'.
+        This always goes in conjunction with 'getOnCloneModifiers'.
         """
         portal_archivist = getToolByName(obj, "portal_archivist")
         AttributeAdapter = portal_archivist.classes.AttributeAdapter
 
         # just return adapters to the attributes that were replaced by
-        # a uninitialzed 'IVersionAwareReference' object
+        # a uninitialized 'IVersionAwareReference' object
         outside_refs = []
         inside_refs = []
         for name in clone.objectIds():
@@ -505,7 +505,7 @@ class MemoryStorage(DummyBaseTool):
             return self._save(history_id, object, referenced_data, metadata)
 
     def save(self, history_id, object, referenced_data={}, metadata=None):
-        # delegate the decission what to purge to the purge policy tool
+        # delegate the decision what to purge to the purge policy tool
         # if it exists. If the call returns ``True`` do not save the current
         # version.
         policy = getToolByName(self, "portal_purgepolicy", None)
@@ -681,7 +681,7 @@ class DummyPurgePolicy(DummyBaseTool):
         return True
 
     def retrieveSubstitute(self, history_id, selector, default=None):
-        """Retrives the next older version"""
+        """Retrieves the next older version"""
         storage = getToolByName(self, "portal_historiesstorage")
         while selector:
             selector -= 1
@@ -693,7 +693,7 @@ class DummyPurgePolicy(DummyBaseTool):
 
 @implementer(IStorage, IPurgeSupport)
 class PurgePolicyTestDummyStorage(DummyBaseTool):
-    """Partial Storage used for PurgePolicy Tetss"""
+    """Partial Storage used for PurgePolicy Tests"""
 
     id = "portal_historiesstorage"
 

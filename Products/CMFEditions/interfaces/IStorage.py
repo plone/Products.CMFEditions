@@ -20,9 +20,9 @@
 #########################################################################
 """Manages Storing and Retrieving Version to and from the Storage
 
-``IStorage`` defines the fundamental storage operations wheras
+``IStorage`` defines the fundamental storage operations whereas
 ``IPurgePolicy`` defines support for purging versions from the
-storage. The other interface definitions are defintions for types
+storage. The other interface definitions are definitions for types
 returned by storage methods.
 
 """
@@ -50,7 +50,7 @@ class IStorage(Interface):
         data to be added to the history.
 
         'object' is already a clone and needn't be cloned anymore before
-        beeing added to the history. Data in 'referenced_data' are direct
+        being added to the history. Data in 'referenced_data' are direct
         references to the original object and must be cloned before being
         added to the history.
 
@@ -60,7 +60,7 @@ class IStorage(Interface):
         'metadata' must be a (nested) dictionary. If a 'comment' key exists
         the implementation may assume it is a human readable string.
 
-        May veto the registering proces by raising a 'StorageError'
+        May veto the registering process by raising a 'StorageError'
         exception. No action is performed on repeated registering.
 
         Returns the value of the newest version(selector).
@@ -73,7 +73,7 @@ class IStorage(Interface):
         data to be added to the history.
 
         'object' is already a clone and needn't be cloned anymore before
-        beeing added to the history. Data in 'referenced_data' are direct
+        being added to the history. Data in 'referenced_data' are direct
         references to the original object and must be cloned before being
         added to the history.
 
@@ -154,7 +154,7 @@ class IPurgeSupport(Interface):
         account.
 
         Purge the given version from the given history. The metadata
-        passed may be used to store informations about the reasons of
+        passed may be used to store information about the reasons of
         the purging.
         """
 
@@ -230,7 +230,7 @@ class IVersionData(Interface):
     )
 
     referenced_data = Attribute(
-        """Data beeing passed by reference at save time.
+        """Data being passed by reference at save time.
 
         Needs not be cloned before allowing write access. Cloning was
         already done by the storage layer.

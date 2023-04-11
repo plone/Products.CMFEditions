@@ -14,7 +14,7 @@ Developer Documentation
 :License: GNU Free Documentation License
 :Status: Draft
 :Audience: Developers
-:Abstract: The CMFEditions architecture looks like beeing overly complex.
+:Abstract: The CMFEditions architecture looks like being overly complex.
   The complexity has it's reasons in Python itself but also in the goal
   of CMFEditions not to rely on specific behaviour of content objects.
   This document shall help developers to grok the architecture and ideas
@@ -39,7 +39,7 @@ Just some words about what we talk about when we're saying "versioning".
     to date, etc.
 
 In this document we concentrate on the first two points (*save* and
-*retreive* the state of something). But what does save *save the current
+*retrieve* the state of something). But what does save *save the current
 state* mean?
 
 Imagine you don't have access to a CVS or SVN repository but you're writing
@@ -66,7 +66,7 @@ A python object is a dictionary::
   >>> a.__dict__
   {}
 
-The data the object carries need not be soley set by code of the class
+The data the object carries need not be solely set by code of the class
 implementation::
 
   >>> a.x=5
@@ -114,7 +114,7 @@ the object carries is found in the objects ``__dict__``::
       'time': DateTime('2005/02/14 20:03:37.250 GMT+1')},)}
   }
 
-Looks quite meaningfull! To store a version just make a (deep) copy of
+Looks quite meaningful! To store a version just make a (deep) copy of
 ``doc`` and store the copy away for later retrieval.
 
 
@@ -243,12 +243,12 @@ Now let's assume we customized the ``Folder`` content type in a way we
 can use it for F.A.Q.-Page (this is a commonly used pattern in CMF/Plone
 sites, it's just done by defining that the ``title`` and the
 ``description`` of a document are the question part and the ``body`` is
-the answer part. Additionaly a template ``faq_view`` showing all
+the answer part. Additionally a template ``faq_view`` showing all
 questions at once has to be added).
 
 In step 2. above we assumed the subobjects don't get saved on a save
 operation of the folder. This assumption is now wrong for the F.A.Q.-Page.
-We wan't the subobjects be saved in case we save the whole F.A.Q.-Page.
+We want the subobjects be saved in case we save the whole F.A.Q.-Page.
 But how to distinguish the F.A.Q.-Page form a normal folder? The
 F.A.Q.-Page uses the same underlying code as the ``Folder``. Ok, the
 ``portal_type`` attribute has a different value (e.g. ``FAQPage``), so
@@ -278,7 +278,7 @@ c) outside of the core of the object and *loosely related* to the object.
    :scale: 100
    :alt: The different areas where information can live.
 
-We didn't talk about the criterias that decide to what onionskin an
+We didn't talk about the criteria that decide to what onionskin an
 attribute belongs. See `Modifers`_ for this.
 
 
@@ -296,7 +296,7 @@ So we need to intercept the copy mechanism!
 
 This can be done by using one of Pythons serializer: ``pickle``
 
-Before continueing please read the `chapter about pickling`_ in the python
+Before continuing please read the `chapter about pickling`_ in the python
 documentation. For those who like to have a look at the "real code" see
 ``class OMBaseModifier`` in `StandardModifier.py`_.
 
@@ -305,20 +305,20 @@ documentation. For those who like to have a look at the "real code" see
 
 Just a short resume about pickling:
 
-- There is a hook called ``persistent_id`` that get's called upon every
+- There is a hook called ``persistent_id`` that gets called upon every
   object during the serialization process.
 - In this hook you can decide if the object just has to be serialized as
   usual or you may return your own serialization of it.
-- There is another hook ``persistent_load`` that get's called upon every
+- There is another hook ``persistent_load`` that gets called upon every
   custom serialized object during the deserialization process.
 
 In case of a folder we know which of the attributes are the subobjects.
 We just keep their python id [1]_ in "mind". In the ``persistent_id`` hook
 the currently passed objects ``id`` get checked if it is one of the
-memorized ``id``\ s. In that case just nothing get's serialized and all the
+memorized ``id``\ s. In that case just nothing gets serialized and all the
 subobjects information will be lost (which is by intention).
 
-During the deserializing process the ``persistent_load`` hook get's called
+During the deserializing process the ``persistent_load`` hook gets called
 upon every subobject. We just return an empty version aware weak reference
 that will be initialized correctly later [2]_.
 
@@ -351,8 +351,8 @@ As a result the original object and the clone object look the following
   }
 
 
-Modifers
---------
+Modifiers
+---------
 
 The above job about deciding what attributes belong to the *core* and what
 attributes are *inside* or *outside references* is done by the so called
@@ -361,7 +361,7 @@ everything application/use case specific can be hold outside of the core
 versioning framework.
 
 
-Overwiew over the Architecture
+Overview over the Architecture
 ==============================
 
 CMFEditions make heavily usage of the CMF(-Framework). The functionality

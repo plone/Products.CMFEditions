@@ -66,7 +66,7 @@ Skip Versioning of Large File Attributes
 
 Now let's test the alternate modifier, which tells the pickler to
 replace large file attributes with a marker to avoid pickling them.
-We'll make our modifer and set some defaults as above, and then add to
+We'll make our modifier and set some defaults as above, and then add to
 it file and image attributes::
 
     >>> modifier = SkipVersioningOfLargeFilesAndImages()

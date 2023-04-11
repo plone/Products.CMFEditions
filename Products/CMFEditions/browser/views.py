@@ -1,5 +1,4 @@
 from Acquisition import aq_inner
-from plone.base.utils import human_readable_size
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions import CMFEditionsMessageFactory as _
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
@@ -17,7 +16,6 @@ zope.deferredimport.deprecated(
     "This class is deprecated since Plone 6",
     VersionView="Products.CMFPlone.browser.ploneview:Plone",
 )
-
 
 
 class UpdateVersionOnEditView(BrowserView):

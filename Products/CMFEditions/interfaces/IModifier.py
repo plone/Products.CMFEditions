@@ -114,7 +114,7 @@ class ISaveRetrieveModifier(Interface):
         Usually this hook is used to do one or more of the following
         tasks:
 
-            - readd data that was removed by the 'beforeSaveHook'
+            - re-add data that was removed by the 'beforeSaveHook'
             - manipulate data before it get restored
             - return data that gets overwritte in this process
 
@@ -126,10 +126,10 @@ class ISaveRetrieveModifier(Interface):
 
         - a list of references to be deleted on revert (providing
           ``IReferenceAdapter``)
-        - a list of attribute names beeing in charge of holding reference
+        - a list of attribute names being in charge of holding reference
           information (e.g. an ObjectManager with ``doc1`` and ``doc2``
-          as childrens: ['_objects', 'doc1', 'doc2'])
-        - a dictionary of the data having been preserved from beeing
+          as children: ['_objects', 'doc1', 'doc2'])
+        - a dictionary of the data having been preserved from being
           overwritten.
         """
 
@@ -142,11 +142,11 @@ class IReferenceAdapter(Interface):
     """
 
     def remove():
-        """Removes the refrence adapted to."""
+        """Removes the reference adapted to."""
 
 
 class IModifierRegistrySet(Interface):
-    """Registring and editing a modifier registry."""
+    """Registering and editing a modifier registry."""
 
     def register(id, modifier, pos=-1):
         """Registers a before save and after retrieve modifier.

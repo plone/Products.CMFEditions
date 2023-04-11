@@ -1,8 +1,10 @@
-<configure xmlns="http://namespaces.zope.org/zope"
+<configure
+    xmlns="http://namespaces.zope.org/zope"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="cmfeditions">
+    i18n_domain="cmfeditions"
+    >
 
-  <include file="permissions.zcml"/>
+  <include file="permissions.zcml" />
 
   <include package="Products.CMFUid" />
   <!-- provides hooks for zope.copy -->
@@ -10,15 +12,19 @@
   <include package=".browser" />
   <include package=".exportimport" />
 
-  <include file="profiles.zcml"/>
+  <include file="profiles.zcml" />
 
 
-  <subscriber for=".interfaces.IVersioned
-                   zope.lifecycleevent.interfaces.IObjectCopiedEvent"
-              handler=".ArchivistTool.object_copied" />
+  <subscriber
+      for=".interfaces.IVersioned
+           zope.lifecycleevent.interfaces.IObjectCopiedEvent"
+      handler=".ArchivistTool.object_copied"
+      />
 
-  <subscriber for="*
-                   zope.lifecycleevent.interfaces.IObjectRemovedEvent"
-              handler=".subscriber.object_removed" />
+  <subscriber
+      for="*
+           zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+      handler=".subscriber.object_removed"
+      />
 
 </configure>

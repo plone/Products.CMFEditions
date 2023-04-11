@@ -89,7 +89,7 @@ class KeepLastNVersionsTool(UniqueObject, SimpleItem, PropertyManager):
         return True
 
     def retrieveSubstitute(self, history_id, selector, default=None):
-        """Retrives the next older version
+        """Retrieves the next older version
 
         If there isn't a next older one returns the next newer one.
         """

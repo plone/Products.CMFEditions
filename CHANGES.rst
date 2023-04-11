@@ -193,7 +193,7 @@ Bug fixes:
 - Fix Unauthorized error due to importing six inside Restricted Python
   `Plone issue 2463 <https://github.com/plone/Products.CMFPlone/issues/2463>`_
   [davilima6]
-- Migrate Tests away fro  PloneTestCase
+- Migrate Tests away from PloneTestCase
   [pbauer]
 
 - Do not run webdav_history.txt in py3 since it breaks tests (no webdav support in py3).

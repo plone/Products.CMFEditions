@@ -226,7 +226,7 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         )
 
         # storage never gets the same object twice, because the archivist always generates another copy on save,
-        # which then have a diffrent python id.
+        # which then have a different python id.
 
         # simulate object copy
         notifyModified(obj)

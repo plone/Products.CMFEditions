@@ -25,6 +25,8 @@
 
 from .DummyTools import DummyArchivist
 from .DummyTools import notifyModified
+from plone.locking.interfaces import ILockable
+from plone.locking.interfaces import ITTWLockable
 from Products.CMFEditions.interfaces.IRepository import IContentTypeVersionPolicySupport
 from Products.CMFEditions.interfaces.IRepository import ICopyModifyMergeRepository
 from Products.CMFEditions.interfaces.IRepository import IPurgeSupport
@@ -32,10 +34,8 @@ from Products.CMFEditions.interfaces.IRepository import IVersionData
 from Products.CMFEditions.interfaces.IRepository import RepositoryPurgeError
 from Products.CMFEditions.tests.base import CMFEditionsBaseTestCase
 from Products.CMFEditions.VersionPolicies import VersionPolicy
-from zope.interface.verify import verifyObject
 from zope.interface import alsoProvides
-from plone.locking.interfaces import ILockable
-from plone.locking.interfaces import ITTWLockable
+from zope.interface.verify import verifyObject
 
 import transaction
 

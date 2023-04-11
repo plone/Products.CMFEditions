@@ -35,7 +35,7 @@ STUB_OBJECT_PREFIX = "_CMFEditionsTempId"
 class KwAsAttributes(Persistent):
     """Class attaching to itself passed keyword attributes."""
 
-    # Not web accessable
+    # Not web accessible
     __roles__ = ()
 
     def __init__(self, **kw):
@@ -80,7 +80,7 @@ def dereference(obj=None, history_id=None, zodb_hook=None):
 
 
 def generateId(parent, prefix="", volatile=False):
-    """Generate an unused id (optionaly a volatile one)."""
+    """Generate an unused id (optionally a volatile one)."""
     existingIds = parent.objectIds()
     idTemplate = "{}{}_%s".format(volatile * "__v_", prefix + STUB_OBJECT_PREFIX)
     while 1:
@@ -131,11 +131,11 @@ def wrap(obj, parent):
 
         getattr(wrapped.aq_parent, tempAttribute)
     """
-    # be sure the obj is unwraped before wrapping it (argh, having
+    # be sure the obj is unwrapped before wrapping it (argh, having
     # caused pulling my hair out until I realized it is wrapped)
     obj = aq_base(obj).__of__(parent)
 
-    # set containment temporarly
+    # set containment temporary
     tempAttribute = generateId(parent, volatile=True)
     changed = parent._p_changed
     setattr(parent, tempAttribute, obj)
