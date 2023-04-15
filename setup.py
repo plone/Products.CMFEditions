@@ -6,7 +6,7 @@ with open("README.rst") as myfile:
     long_description = myfile.read() + "\n"
 with open("CHANGES.rst") as myfile:
     long_description += myfile.read()
-version = "4.0.1"
+version = "4.0.2.dev0"
 
 setup(
     name="Products.CMFEditions",
