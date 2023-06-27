@@ -1,5 +1,15 @@
 # Generated from:
-# https://github.com/plone/meta/tree/master/config/default
+# https://github.com/plone/meta/tree/main/config/default
+# See the inline comments on how to expand/tweak this configuration file
 [meta]
 template = "default"
-commit-id = "3333c742"
+commit-id = "6a477508"
+
+[pyproject]
+codespell_ignores = "alog,ist,"
+dependencies_ignores = "['plone.namedfile', 'z3c.blobfile', 'Products.CMFDiffTool']"
+
+[pre_commit]
+extra_lines = """
+        exclude: www/.*.pt
+"""
