@@ -243,6 +243,7 @@
                       </pre>
                     <p class="fieldDiff"
                        tal:condition="not:has_ndiff"
+                       i18n:translate=""
                     >
                         This field has no code difference view.
                     </p>
@@ -261,7 +262,7 @@
                            condition="subdiffs"
               >
 
-                <h2>Changed files</h2>
+                <h2 i18n:translate="">Changed files</h2>
 
                 <ul tal:condition="subdiffs">
                   <li tal:repeat="cs subdiffs">
@@ -276,7 +277,7 @@
               </tal:changed>
 
               <tal:changed condition="view/changeset/getRemovedItems">
-                <h2>Removed files</h2>
+                <h2 i18n:translate="">Removed files</h2>
                 <ul>
                   <li tal:repeat="id view/changeset/getRemovedItems"
                       tal:content="id"
@@ -285,7 +286,7 @@
               </tal:changed>
 
               <tal:changed condition="view/changeset/getAddedItems">
-                <h2>Added files</h2>
+                <h2 i18n:translate="">Added files</h2>
                 <ul tal:condition="view/changeset/getAddedItems">
                   <li tal:repeat="id view/changeset/getAddedItems"><a tal:content="id"
                        tal:attributes="
