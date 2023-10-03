@@ -255,7 +255,7 @@ class IBulkEditableModifierRegistry(Interface):
         Returns a list of dictionaries with the following keys:
 
             id -- the id of the subscriber
-            pos -- the position of the subscriber in the hsitory
+            pos -- the position of the subscriber in the history
             before_save -- a string representation of the "before save
                            subscriber"
             after_retrieve -- a string representation of the "after

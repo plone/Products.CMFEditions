@@ -279,7 +279,7 @@ c) outside of the core of the object and *loosely related* to the object.
    :alt: The different areas where information can live.
 
 We didn't talk about the criteria that decide to what onionskin an
-attribute belongs. See `Modifers`_ for this.
+attribute belongs. See `Modifiers`_ for this.
 
 
 The Copy Mechanism
