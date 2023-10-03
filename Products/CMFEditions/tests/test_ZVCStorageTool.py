@@ -691,11 +691,11 @@ class TestZVCStorageTool(CMFEditionsBaseTestCase):
         self.assertEqual("Folder", foldertype)
         self.portal.manage_delObjects(ids=["doc", "link", "folder", "unversioned_doc"])
         removed_doc = portal_storage.retrieve(history_id=doc_histid)
-        self.assertTrue(type(removed_doc.object) == Removed)
+        self.assertTrue(isinstance(removed_doc.object, Removed))
         removed_link = portal_storage.retrieve(history_id=link_histid)
-        self.assertTrue(type(removed_link.object) == Removed)
+        self.assertTrue(isinstance(removed_link.object, Removed))
         removed_folder = portal_storage.retrieve(history_id=folder_histid)
-        self.assertTrue(type(removed_folder.object) == Removed)
+        self.assertTrue(isinstance(removed_folder.object, Removed))
 
 
 class TestMemoryStorage(TestZVCStorageTool):

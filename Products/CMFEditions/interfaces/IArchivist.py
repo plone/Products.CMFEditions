@@ -358,7 +358,7 @@ class IHistory(Interface):
     def __init__(archivist, obj):
         """Instantiates a lazy iterable history.
 
-        This is a multi adapter adpating the archivist, the object and
+        This is a multi adapter adapting the archivist, the object and
         optionally a context wrapper.
         """
 
