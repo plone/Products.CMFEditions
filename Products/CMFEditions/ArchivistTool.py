@@ -455,7 +455,7 @@ class PreparedObject:
         sys_metadata["comment"] = sys_metadata.get("comment", "")
         sys_metadata["timestamp"] = sys_metadata.get("timestamp", int(time.time()))
         sys_metadata["originator"] = sys_metadata.get("originator", None)
-        sys_metadata["principal"] = getUserId()
+        sys_metadata["principal"] = sys_metadata.get("principal", getUserId())
         sys_metadata["approxSize"] = approxSize
         sys_metadata["parent"] = {
             "history_id": portal_uidhandler.register(parent),
