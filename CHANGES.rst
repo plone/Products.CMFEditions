@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.2 (2023-10-07)
+------------------
+
+Bug fixes:
+
+
+- Allow principal in sys_metadata with ArchivistTool init (#101)
+
+
 4.0.1 (2023-04-15)
 ------------------
 
