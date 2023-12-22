@@ -38,8 +38,10 @@
 
           <span class="discreet visualNoPrint">
             &mdash;
-            <span i18n:translate="label_size">Size</span>:
-                ${size}
+            <span i18n:translate="label_size">Size</span><tal:ignore ignore="true"
+                        i18n:ignore="true"
+            >:
+              ${size}</tal:ignore>
             <span tal:condition="python:test(size, 0, 1)"
                   i18n:translate="no_image_uploaded"
             >

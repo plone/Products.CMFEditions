@@ -12,7 +12,9 @@
 
         <metal:metadata define-macro="metadata">
 
-          <h1 class="documentFirstHeading">
+          <h1 class="documentFirstHeading"
+              i18n:translate=""
+          >
                 Metadata
           </h1>
           <div id="content-core">
