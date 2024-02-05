@@ -81,7 +81,6 @@ HOOKS = {
     IRepositoryTool,
 )
 class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
-
     """See ICopyModifyMergeRepository"""
 
     id = "portal_repository"
