@@ -3,10 +3,10 @@
 # See the inline comments on how to expand/tweak this configuration file
 [meta]
 template = "default"
-commit-id = "6a477508"
+commit-id = "a89af8f2"
 
 [pyproject]
-codespell_ignores = "alog,ist,"
+codespell_ignores = "alog,ist,checkin"
 dependencies_ignores = "['plone.namedfile', 'z3c.blobfile', 'Products.CMFDiffTool']"
 
 [pre_commit]
