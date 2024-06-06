@@ -116,7 +116,7 @@ class ISaveRetrieveModifier(Interface):
 
             - re-add data that was removed by the 'beforeSaveHook'
             - manipulate data before it get restored
-            - return data that gets overwritte in this process
+            - return data that gets overwrite in this process
 
         It does kind of the inverse of the method ``beforeSaveModifier``.
 
