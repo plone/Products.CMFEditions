@@ -1,2 +1,0 @@
-Fix "Can't pickle objects in acquisition wrappers." error in
-`OMOutsideChildrensModifier` and `OMInsideChildrensModifier`. @davisagli

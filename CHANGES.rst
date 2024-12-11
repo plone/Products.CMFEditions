@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.4 (2024-12-11)
+------------------
+
+Bug fixes:
+
+
+- Fix "Can't pickle objects in acquisition wrappers." error in
+  `OMOutsideChildrensModifier` and `OMInsideChildrensModifier`. @davisagli (#26)
+
+
 4.0.3 (2024-01-18)
 ------------------
 
