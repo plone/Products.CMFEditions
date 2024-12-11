@@ -335,7 +335,7 @@ class OMBaseModifier(RetainAttributeAnnotationItemsBase):
             try:
                 # return a non None value if it is one of the object
                 # managers subobjects or raise an KeyError exception
-                return refs[id(obj)]
+                return refs[id(aq_base(obj))]
             except KeyError:
                 # signalize the pickler to just pickle the 'obj' as
                 # usual
