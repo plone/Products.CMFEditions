@@ -26,6 +26,7 @@
 
 from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base
+from Acquisition import ImplicitAcquisitionWrapper
 from OFS.ObjectManager import ObjectManager
 from plone.folder.default import DefaultOrdering
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
@@ -673,6 +674,15 @@ class SkipParentPointers:
         parent_id = id(aq_base(parent))
 
         def persistent_id(obj):
+            # Avoid: TypeError: Can't pickle objects in acquisition wrappers.
+            if isinstance(obj, ImplicitAcquisitionWrapper):
+                return True
+            # Allows Plone Site to be serialized with pickle.
+            if (
+                hasattr(aq_base(obj), "portal_type")
+                and aq_base(obj).portal_type == "Plone Site"
+            ):
+                return
             if id(aq_base(obj)) == parent_id:
                 return True
             return None

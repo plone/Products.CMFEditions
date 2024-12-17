@@ -105,6 +105,30 @@ class TestPloneContents(CMFEditionsBaseTestCase):
         self.assertEqual(content.text.raw, "text v1")
         self.metadata_test_one(content)
 
+    def test_plone_site(self):
+        portal_repository = self.portal_repository
+        content = self.portal
+        content.title = "content"
+        content.subject = ["content"]
+        content.description = "content"
+        content.contributors = ["content"]
+        content.language = "content"
+        content.rights = "content"
+        portal_repository.applyVersionControl(content, comment="save no 1")
+        content.title = "contentOK"
+        content.subject = ["contentOK"]
+        content.description = "contentOK"
+        content.contributors = ["contentOK"]
+        content.language = "contentOK"
+        content.rights = "contentOK"
+        portal_repository.save(content, comment="save no 2")
+        obj = portal_repository.retrieve(content, 0).object
+        self.metadata_test_one(obj)
+        obj = portal_repository.retrieve(content, 1).object
+        self.metadata_test_two(obj)
+        portal_repository.revert(content, 0)
+        self.metadata_test_one(content)
+
     def testImage(self):
         self.folder.invokeFactory("Image", id="image")
         portal_repository = self.portal_repository
