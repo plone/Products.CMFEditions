@@ -18,9 +18,7 @@
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
-"""Manages Reference Factories.
-
-"""
+"""Manages Reference Factories."""
 
 from zope.interface import Interface
 
