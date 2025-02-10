@@ -784,7 +784,7 @@ Fixes:
   destroyed.  Fixes http://dev.plone.org/plone/ticket/7334.
   [alecm]
 
-- Reflect changes in base_edit.cpt asnd edit_macros.pt in r8683 of
+- Reflect changes in base_edit.cpt and edit_macros.pt in r8683 of
   Archetypes: Skip the 'metadata' schema in base_edit, like we used to
   do it pre-1.5.  Also, do not render fieldset and legend elements
   when we're only displaying one fieldset, i.e. the 'default' one.

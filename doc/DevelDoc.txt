@@ -185,7 +185,7 @@ the folder. So let's write down what has to be done:
 
 - deep copy all the stuff except the ``doc1`` and the ``doc2`` attribute.
 - recurse into the subobjects and version them separately.
-  **Stop!** The same problem as before arrises. We just version the whole
+  **Stop!** The same problem as before arises. We just version the whole
   subtree!
 - And we forgot to think about how to track the subobjects from the
   viewpoint of the folder.
