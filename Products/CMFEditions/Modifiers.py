@@ -18,9 +18,7 @@
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
-"""Modifier wrappers
-
-"""
+"""Modifier wrappers"""
 
 from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base

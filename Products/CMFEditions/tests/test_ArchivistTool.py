@@ -19,9 +19,7 @@
 # along with CMFEditions; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
-"""Test the standard archivist
-
-"""
+"""Test the standard archivist"""
 
 from .DummyTools import DummyHistoryIdHandler
 from .DummyTools import DummyModifier
