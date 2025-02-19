@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.5 (2025-02-19)
+------------------
+
+Bug fixes:
+
+
+- Avoid registering the parent in the current ZODB transaction while retrieving an old
+  version. This helps avoid CSRF errors from plone.protect. @nileshgulia1 (#120)
+
+
 4.0.4 (2024-12-11)
 ------------------
 

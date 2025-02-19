@@ -1,2 +1,0 @@
-Avoid registering the parent in the current ZODB transaction while retrieving an old
-version. This helps avoid CSRF errors from plone.protect. @nileshgulia1
