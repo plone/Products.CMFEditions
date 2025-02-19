@@ -514,8 +514,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
             inplace=False,
             countPurged=countPurged,
         )
-        saved.rollback()
         wrapped = wrap(vd.data.object, aq_parent(aq_inner(obj)))
+        saved.rollback()
         return VersionData(wrapped, vd.preserved_data, vd.sys_metadata, vd.app_metadata)
 
     def _recursiveRetrieve(
