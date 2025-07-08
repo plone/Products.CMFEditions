@@ -680,9 +680,8 @@ class TestIntegration(CMFEditionsBaseTestCase):
 
         # revert to original state, ensure that subobject changes are
         # reverted and that uid is changed
-        portal_repo.revert(fol, 0)
-        fol = self.portal.fol
-        reverted_doc = fol.doc1
+        portal_repo.revert(self.portal.fol, 0)
+        reverted_doc = self.portal.fol.doc1
 
         # check if reversion worked correctly
         self.assertFalse(
