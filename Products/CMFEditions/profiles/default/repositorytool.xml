@@ -26,5 +26,9 @@
       <policy name="at_edit_autoversion" />
       <policy name="version_on_revert" />
     </type>
+    <type name="Plone Site">
+      <policy name="at_edit_autoversion" />
+      <policy name="version_on_revert" />
+    </type>
   </policymap>
 </repositorytool>
