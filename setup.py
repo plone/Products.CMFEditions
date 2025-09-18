@@ -45,12 +45,10 @@ setup(
     python_requires=">=3.8",
     extras_require=dict(
         test=[
-            "plone.app.contenttypes",
-            "plone.app.robotframework",
+            "plone.app.contenttypes[test]",
             "plone.app.testing",
             "plone.app.textfield",
             "plone.base",
-            "plone.testing",
             "plone.namedfile",
         ]
     ),
