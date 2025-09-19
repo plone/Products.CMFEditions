@@ -37,19 +37,18 @@ setup(
     author_email="collective-versioning@lists.sourceforge.net",
     url="https://pypi.org/project/Products.CMFEditions",
     license="GPL",
-    packages=find_packages(),
+    packages=find_packages("src"),
     namespace_packages=["Products"],
+    package_dir={"": "src"},
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.8",
     extras_require=dict(
         test=[
-            "plone.app.contenttypes",
-            "plone.app.robotframework",
+            "plone.app.contenttypes[test]",
             "plone.app.testing",
             "plone.app.textfield",
             "plone.base",
-            "plone.testing",
             "plone.namedfile",
         ]
     ),

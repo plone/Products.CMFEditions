@@ -663,10 +663,12 @@ class TestIntegration(CMFEditionsBaseTestCase):
         portal_repo.applyVersionControl(fol, comment="first save")
         orig_uid = portal_historyidhandler.queryUid(doc1)
 
+        processQueue()
         transaction.savepoint(optimistic=True)
         self.portal.manage_pasteObjects(fol.manage_cutObjects(ids=["doc1"]))
         moved_doc = self.portal.doc1
         self.assertEqual(portal_historyidhandler.queryUid(moved_doc), orig_uid)
+        processQueue()
         transaction.savepoint(optimistic=True)
 
         # retrieve should change the uid if it already exists
