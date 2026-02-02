@@ -35,7 +35,6 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from ZODB.broken import Broken
 from zope.interface import implementer
 
-
 manage_addModifierForm = PageTemplateFile(
     "www/modifierAddForm.pt", globals(), __name__="manage_addModifierForm"
 )

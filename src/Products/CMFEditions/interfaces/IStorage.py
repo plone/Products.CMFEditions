@@ -221,29 +221,23 @@ class IHistory(Interface):
 class IVersionData(Interface):
     """ """
 
-    object = Attribute(
-        """The objects state at save time.
+    object = Attribute("""The objects state at save time.
 
         To avoid temporal problems (by changing the history) this
         object has to be cloned before any change.
-        """
-    )
+        """)
 
-    referenced_data = Attribute(
-        """Data being passed by reference at save time.
+    referenced_data = Attribute("""Data being passed by reference at save time.
 
         Needs not be cloned before allowing write access. Cloning was
         already done by the storage layer.
-        """
-    )
+        """)
 
-    metadata = Attribute(
-        """Metadata stored alongside when the objects state was saved.
+    metadata = Attribute("""Metadata stored alongside when the objects state was saved.
 
         Metadata has to be cloned before any write change to avoid
         temporal problems (by changing the history).
-        """
-    )
+        """)
 
 
 class IStreamableReference(Interface):

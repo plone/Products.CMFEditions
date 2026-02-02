@@ -20,7 +20,6 @@ from Products.CMFEditions.interfaces.IStorage import StorageUnregisteredError
 from Products.CMFEditions.utilities import dereference
 from zope.interface import implementer
 
-
 # Make alog module level so that it survives transaction rollbacks
 alog = []
 

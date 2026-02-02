@@ -56,7 +56,6 @@ from zope.interface import implementer
 
 import time
 
-
 RETRIEVING_UNREGISTERED_FAILED = (
     "Retrieving a version of an unregistered object is not possible. "
     "Register the object '%r' first. "
