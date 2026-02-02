@@ -22,7 +22,6 @@
 
 from AccessControl.Permission import addPermission
 
-
 ApplyVersionControl = "CMFEditions: Apply version control"
 addPermission(ApplyVersionControl, ("Manager", "Site Administrator"))
 

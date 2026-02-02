@@ -28,7 +28,6 @@ from zope.component import provideAdapter
 from zope.interface import Interface
 from zope.publisher.interfaces.browser import IBrowserView
 
-
 _TEXT_INITIAL = "Initial text."
 _TEXT_NEW = "New text."
 

@@ -11,7 +11,6 @@ from Products.statusmessages.interfaces import IStatusMessage
 import os
 import zope.deferredimport
 
-
 zope.deferredimport.deprecated(
     "This class is deprecated since Plone 6",
     VersionView="Products.CMFPlone.browser.ploneview:Plone",

@@ -27,7 +27,6 @@ from Products.CMFEditions.interfaces.IArchivist import ArchivistUnregisteredErro
 
 import random
 
-
 STUB_OBJECT_PREFIX = "_CMFEditionsTempId"
 
 
