@@ -20,7 +20,6 @@
 #########################################################################
 """CMFEditions Globals"""
 
-
 from AccessControl import ModuleSecurityInfo
 from App.Common import package_home
 from Products.CMFCore import utils
