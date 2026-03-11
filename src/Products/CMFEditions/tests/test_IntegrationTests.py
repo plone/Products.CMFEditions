@@ -20,6 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """Top level integration tests (without UI)"""
+
 from AccessControl.rolemanager import _string_hash
 from Acquisition import aq_base
 from plone.app.textfield.value import RichTextValue

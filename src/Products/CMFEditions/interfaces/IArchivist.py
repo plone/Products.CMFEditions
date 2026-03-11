@@ -256,10 +256,8 @@ class IPurgeSupport(Interface):
 class IPreparedObject(Interface):
     """Contains data prepared for save or register."""
 
-    history_id = Attribute(
-        """The id of the objects history.
-        """
-    )
+    history_id = Attribute("""The id of the objects history.
+        """)
 
     original = Attribute(
         """The unaltered original object before the modifiers were applied.
@@ -270,15 +268,12 @@ class IPreparedObject(Interface):
         """
     )
 
-    clone = Attribute(
-        """The cloned object and version aware reference info.
+    clone = Attribute("""The cloned object and version aware reference info.
 
         This is a 'IObjectData' object.
-        """
-    )
+        """)
 
-    referenced_data = Attribute(
-        """Data that is passed to the storage by reference.
+    referenced_data = Attribute("""Data that is passed to the storage by reference.
 
         These is an optimization for the case where a big blob (e.g. a Word
         file) has to be saved but you want to avoid costy cloning being done
@@ -287,37 +282,28 @@ class IPreparedObject(Interface):
         Returns a dictionary of the following format:
 
             {'name': pyref_to_object, ...}
-        """
-    )
+        """)
 
-    metadata = Attribute(
-        """Metadata to be passed to history storage.
-        """
-    )
+    metadata = Attribute("""Metadata to be passed to history storage.
+        """)
 
-    is_registered = Attribute(
-        """True if already registered by the Archivist.
-        """
-    )
+    is_registered = Attribute("""True if already registered by the Archivist.
+        """)
 
 
 class IVersionData(Interface):
     """ """
 
-    data = Attribute(
-        """The previously saved object.
+    data = Attribute("""The previously saved object.
 
         This is a 'IObjectData' object.
-        """
-    )
+        """)
 
-    refs_to_be_deleted = Attribute(
-        """List of references to be deleted on revert.
+    refs_to_be_deleted = Attribute("""List of references to be deleted on revert.
 
         The items (containing the reference information) are of
         ``IReferenceAdapter``.
-        """
-    )
+        """)
 
     attr_handling_references = Attribute(
         """List of names of attributes handling references.
@@ -332,8 +318,7 @@ class IVersionData(Interface):
         """
     )
 
-    sys_metadata = Attribute(
-        """System related metadata.
+    sys_metadata = Attribute("""System related metadata.
 
         A Dictionary with the following keys:
 
@@ -341,8 +326,7 @@ class IVersionData(Interface):
         - principal: the actor that did the save
         - parent: Dictionary with ``history_id``, ``version_id`` and
           ``location_id``
-        """
-    )
+        """)
 
     app_metadata = Attribute(
         """Metadata stored alongside when the objects state was saved.
@@ -379,11 +363,9 @@ class IHistory(Interface):
 class IObjectData(Interface):
     """The object including information about outgoing references."""
 
-    object = Attribute(
-        """The object with some of the python references replaced by
+    object = Attribute("""The object with some of the python references replaced by
            version aware references.
-        """
-    )
+        """)
 
     inside_refs = Attribute(
         """List of 'IAttributeAdapter' objects adapting "object inside"
@@ -455,22 +437,18 @@ class IVersionAwareReference(Interface):
     def setReference(target_obj, remove_info=True):
         """Set a reference to the given target object."""
 
-    history_id = Attribute(
-        """The history id of the referenced resource.
+    history_id = Attribute("""The history id of the referenced resource.
 
         Histories usually contain more than one version of a resource.
 
         May be None. In this case the reference isn't set yet or the
         target object isn't referenceable.
-        """
-    )
+        """)
 
-    version_id = Attribute(
-        """The version id of the referenced resource.
+    version_id = Attribute("""The version id of the referenced resource.
 
         May be None. For the interpretation see above.
-        """
-    )
+        """)
 
     location_id = Attribute(
         """The location id of the working copy of the referenced resource.
@@ -479,12 +457,10 @@ class IVersionAwareReference(Interface):
         """
     )
 
-    info = Attribute(
-        """The info stored alongside on instantiation time.
+    info = Attribute("""The info stored alongside on instantiation time.
 
         May not exist.
-        """
-    )
+        """)
 
 
 class ArchivistError(Exception):
