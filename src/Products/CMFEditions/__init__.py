@@ -36,7 +36,6 @@ from Products.CMFEditions import ZVCStorageTool
 # Set up a MessageFactory for the cmfeditions domain
 from zope.i18nmessageid import MessageFactory
 
-
 GLOBALS = globals()
 PACKAGE_HOME = package_home(GLOBALS)
 

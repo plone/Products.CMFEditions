@@ -59,7 +59,6 @@ import logging
 import time
 import types
 
-
 logger = logging.getLogger("CMFEditions")
 
 
