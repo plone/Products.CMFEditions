@@ -143,8 +143,8 @@ class VersionsHistoryForm(BrowserView):
         )
 
 
-css_path = os.path.join(os.path.dirname(__file__), "compare.css")
-with open(css_path) as myfile:
+css_path = os.path.join(os.path.dirname(__file__), "resources", "compare.css")
+with open(css_path, encoding="utf-8") as myfile:
     COMPARE_CSS = myfile.read()
 
 
@@ -153,7 +153,14 @@ class CompareCSS(BrowserView):
 
     Should be a browser resource, but I don't want to change plone.app.iterate just now.
     That will further complicate an already complex PR.
+
+    Content-type have to be text/css, instead it could be interpret as text/plain
+    and then the browser won't apply it as CSS.
     """
 
     def __call__(self):
+        RESPONSE = self.request.RESPONSE
+        RESPONSE.setHeader("Content-Type", "text/css")
+        RESPONSE.setHeader("Content-Length", len(COMPARE_CSS))
+        RESPONSE.setHeader("Content-Disposition", 'attachment;filename="compare.css"')
         return COMPARE_CSS
