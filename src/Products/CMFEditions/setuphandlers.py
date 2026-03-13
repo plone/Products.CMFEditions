@@ -7,7 +7,6 @@ from Products.CMFEditions import StandardModifiers
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

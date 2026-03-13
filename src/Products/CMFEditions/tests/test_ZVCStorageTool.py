@@ -20,6 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #########################################################################
 """Test the standard archivist"""
+
 from .DummyTools import Dummy as Dummy
 from .DummyTools import DummyPurgePolicy
 from .DummyTools import MemoryStorage

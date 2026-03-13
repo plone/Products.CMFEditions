@@ -305,44 +305,32 @@ class IContentTypeVersionPolicySupport(IContentTypeVersionSupport):
 class IVersionData(Interface):
     """Used to store the versioned content plus additional data."""
 
-    object = Attribute(
-        """The retrieved version of the content.
-        """
-    )
+    object = Attribute("""The retrieved version of the content.
+        """)
 
-    preserved_data = Attribute(
-        """It is the data preserved from overwriting during the
+    preserved_data = Attribute("""It is the data preserved from overwriting during the
         retrieve process.
 
         The preserved data is a flat dictionary.
         With the example from above:
                 nick_name = vdata.preserved_data['nick_name']
-        """
-    )
+        """)
 
-    comment = Attribute(
-        """The comment stored when the working copies version was saved.
-        """
-    )
+    comment = Attribute("""The comment stored when the working copies version was saved.
+        """)
 
-    metadata = Attribute(
-        """Metadata stored when the working copies version was saved.
-        """
-    )
+    metadata = Attribute("""Metadata stored when the working copies version was saved.
+        """)
 
-    sys_metadata = Attribute(
-        """System related metadata.
+    sys_metadata = Attribute("""System related metadata.
 
         A Dictionary with the following keys:
         - timestamp: save time
         - principal: the actor that did the save
-        """
-    )
+        """)
 
-    version_id = Attribute(
-        """The version_id of the object.
-        """
-    )
+    version_id = Attribute("""The version_id of the object.
+        """)
 
 
 class IHistory(Interface):

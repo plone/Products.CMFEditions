@@ -374,7 +374,5 @@ class TestModifierRegistryTool(CMFEditionsBaseTestCase):
 %(class)s_C.afterRetrieveModifier
 %(class)s_B.afterRetrieveModifier
 %(class)s_A.afterRetrieveModifier
-<end>""" % {
-            "class": "LoggingModifier"
-        }
+<end>""" % {"class": "LoggingModifier"}
         self.assertEqual(mlog_str, expected_result)

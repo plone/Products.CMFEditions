@@ -47,7 +47,6 @@ from zope.interface.interfaces import ComponentLookupError
 
 import sys
 
-
 _marker = []
 
 

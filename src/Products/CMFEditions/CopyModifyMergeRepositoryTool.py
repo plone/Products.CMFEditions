@@ -60,7 +60,6 @@ import logging
 import time
 import transaction
 
-
 logger = logging.getLogger(__name__)
 VERSIONABLE_CONTENT_TYPES = []
 VERSION_POLICY_MAPPING = {}
