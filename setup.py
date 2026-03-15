@@ -43,7 +43,6 @@ setup(
             "plone.app.textfield",
             "plone.base",
             "plone.namedfile",
-            "plone.resource",
         ]
     ),
     install_requires=[
@@ -55,6 +54,7 @@ setup(
         "Products.CMFUid",
         "Products.GenericSetup >=1.4.0",
         "Products.ZopeVersionControl",
+        "plone.resource",
         "Products.statusmessages",
         "Zope>=5",
         "plone.folder",
