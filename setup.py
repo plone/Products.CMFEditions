@@ -43,6 +43,7 @@ setup(
             "plone.app.textfield",
             "plone.base",
             "plone.namedfile",
+            "plone.resource",
         ]
     ),
     install_requires=[
