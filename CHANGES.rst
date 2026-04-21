@@ -8,6 +8,23 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.0a2 (2026-04-21)
+--------------------
+
+Bug fixes:
+
+
+- Remove invalid attribute
+  [pbauer] (#139)
+
+
+Internal:
+
+
+- Update configuration files.
+  [plone devs]
+
+
 5.0.0a1 (2025-11-20)
 --------------------
 
