@@ -1,0 +1,1 @@
+Add `Content-Type: text/css` header to the compare.css response. Serve `compare.css` via a resource directory at `${portal_url}/++theme++Products.CMFEditions/compare.css`.
