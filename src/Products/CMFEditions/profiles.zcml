@@ -58,4 +58,15 @@
         />
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+      profile="Products.CMFEditions:CMFEditions"
+      source="11"
+      destination="12"
+      >
+    <genericsetup:upgradeStep
+        title="Fix deprecated conditions in modifiers"
+        handler=".setuphandlers.fixDeprecatedConditions"
+        />
+  </genericsetup:upgradeSteps>
+
 </configure>
