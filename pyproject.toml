@@ -4,7 +4,76 @@
 [build-system]
 requires = ["setuptools>=68.2,<83", "wheel"]
 
+# START-MARKER-MANUAL-CONFIG
+# Anything from here until END-MARKER-MANUAL-CONFIG
+# will be kept by plone.meta
 
+[project]
+name = "Products.CMFEditions"
+version = "5.0.1.dev0"
+description = "Versioning for Plone"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Plone",
+    "Framework :: Plone :: 6.2",
+    "Framework :: Plone :: Core",
+    "Framework :: Zope :: 5",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+license = "GPL-2.0-only"
+dynamic = ["readme"]
+requires-python = ">=3.10"
+authors = [
+    {name = "CMFEditions contributors",email = "collective-versioning@lists.sourceforge.net"},
+]
+maintainers = [
+    {name = "Plone Foundation and contributors",email = "plone-developers@lists.sourceforge.net"},
+]
+dependencies = [
+    "BTrees",
+    "Missing",
+    "Persistence",
+    "Products.CMFCore >=2.1",
+    "Products.CMFDiffTool",
+    "Products.CMFUid",
+    "Products.GenericSetup >=1.4.0",
+    "Products.ZopeVersionControl",
+    "Products.statusmessages",
+    "Zope>=5",
+    "plone.folder",
+    "plone.locking",
+    "zope.copy",
+    "zope.dottedname",
+]
+keywords = ["Versioning", "Plone"]
+
+[project.entry-points."plone.autoinclude.plugin"]
+target = "plone"
+
+[project.optional-dependencies]
+test = [
+    "plone.app.contenttypes[test]",
+    "plone.app.testing",
+    "plone.app.textfield",
+    "plone.base",
+    "plone.namedfile",
+]
+
+[project.urls]
+Source = "https://github.com/plone/Products.CMFEditions"
+Issues = "https://github.com/plone/Products.CMFPlone/issues"
+Changelog = "https://github.com/plone/Products.CMFEditions/blob/master/CHANGES.rst"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "CHANGES.rst"]}
+# END-MARKER-MANUAL-CONFIG
 
 [tool.towncrier]
 directory = "news/"
