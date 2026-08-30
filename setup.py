@@ -57,6 +57,7 @@ setup(
         "Products.CMFUid",
         "Products.GenericSetup >=1.4.0",
         "Products.ZopeVersionControl",
+        "plone.resource",
         "Products.statusmessages",
         "Zope>=5",
         "plone.folder",
