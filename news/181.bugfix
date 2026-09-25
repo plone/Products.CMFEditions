@@ -1,0 +1,3 @@
+Flush the indexing queue before saving or reverting versions.
+Prevents catalog inconsistency when the queue holds stale references from deferred processing (Products.CMFCore 3.9+).
+@jensens

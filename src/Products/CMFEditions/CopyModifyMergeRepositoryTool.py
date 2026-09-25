@@ -31,6 +31,7 @@ from Acquisition import ImplicitAcquisitionWrapper
 from BTrees.OOBTree import OOBTree
 from OFS.SimpleItem import SimpleItem
 from plone.locking.interfaces import ILockable
+from Products.CMFCore.indexing import processQueue
 from Products.CMFCore.utils import _checkPermission
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import UniqueObject
@@ -276,6 +277,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
     def applyVersionControl(self, obj, comment="", metadata={}):
         """See ICopyModifyMergeRepository."""
         self._assertAuthorized(obj, ApplyVersionControl, "applyVersionControl")
+        # Ensure the catalog is up to date before saving a version snapshot.
+        processQueue()
         sp = transaction.savepoint(optimistic=True)
         try:
             self._recursiveSave(
@@ -293,6 +296,8 @@ class CopyModifyMergeRepositoryTool(UniqueObject, SimpleItem):
     def save(self, obj, comment="", metadata={}):
         """See ICopyModifyMergeRepository."""
         self._assertAuthorized(obj, SaveNewVersion, "save")
+        # Ensure the catalog is up to date before saving a version snapshot.
+        processQueue()
         sp = transaction.savepoint(optimistic=True)
         try:
             self._recursiveSave(
