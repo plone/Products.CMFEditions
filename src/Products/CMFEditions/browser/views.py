@@ -96,10 +96,71 @@ class VersionImageTagView(BrowserView):
         return tag
 
 
-zope.deferredimport.deprecated(
-    "VersionsHistoryForm has moved to plone.app.layout since Plone 6.3",
-    VersionsHistoryForm="plone.app.layout.cmfeditions.views:VersionsHistoryForm",
-)
+class VersionsHistoryForm(BrowserView):
+    """List the versions of an object.
+
+    This base view holds the API-level logic only, without a template, so
+    it stays available to API consumers (plone.restapi, plone.api) that do
+    not have plone.app.layout installed. plone.app.layout registers an
+    override on IPloneAppLayoutLayer that renders the actual HTML.
+    """
+
+    template = None
+
+    def checkUpToDate(self, history):
+        """Check if Up To Date.
+
+        This used to be a Script (Python): checkUpToDate
+        """
+        repo = getToolByName(self.context, "portal_repository", None)
+
+        isModified = None
+        reverted_vid = None
+        isReverted = None
+
+        version_id = getattr(self.context, "version_id", None)
+        if repo is not None:
+            if version_id is None:
+                isModified = True
+                isReverted = False
+            else:
+                isModified = not repo.isUpToDate(self.context, version_id)
+                historyLength = len(history)
+                reverted_vid = version_id
+                if historyLength == version_id + 1:
+                    isReverted = False
+                else:
+                    isReverted = True
+                if isModified:
+                    version_id = historyLength
+
+        return {
+            "isModified": isModified,
+            "version_id": version_id,
+            "isReverted": isReverted,
+            "reverted_vid": reverted_vid,
+        }
+
+    def can_diff(self):
+        """Return True if content is diffable"""
+        context = self.context
+        portal_diff = getToolByName(context, "portal_diff", None)
+        return (
+            portal_diff
+            and len(portal_diff.getDiffForPortalType(context.portal_type)) > 0
+        )
+
+    def __call__(self):
+        if self.template is None:
+            raise ValueError(
+                "You are using the base VersionsHistoryForm view in"
+                " Products.CMFEditions, for classic UI, override the"
+                " VersionsHistoryForm from plone.app.layout by registering"
+                " it for your BrowserLayer of"
+                " plone.app.layout.interfaces.IPloneAppLayoutLayer."
+            )
+        return self.template()
+
 
 zope.deferredimport.deprecated(
     "CompareCSS has moved to plone.app.layout since Plone 6.3",

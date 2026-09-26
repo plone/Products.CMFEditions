@@ -3,10 +3,29 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     >
 
-  <!-- Note: the "history", "get_macros", "version_file_view",
-       "version_image_view", "version_metadata_view", "diff_legend",
-       "versions_history_form" and "compare.css" views have moved to
-       plone.app.layout, since they are Classic UI only. -->
+  <!-- Note: "history" and "versions_history_form" have no template here:
+       they hold the API-level logic only, so they stay available to API
+       consumers (plone.restapi, plone.api) without plone.app.layout
+       installed. plone.app.layout registers overrides on
+       IPloneAppLayoutLayer that render the actual Classic UI HTML.
+       "version_file_view", "version_image_view", "version_metadata_view",
+       "diff_legend" and "compare.css" are pure Classic UI rendering
+       fragments and have moved to plone.app.layout entirely. -->
+
+  <browser:page
+      name="history"
+      for="*"
+      class=".diff.DiffView"
+      permission="CMFEditions.AccessPreviousVersions"
+      />
+
+  <browser:page
+      name="get_macros"
+      for="*"
+      class=".utils.GetMacros"
+      attribute="get_macros"
+      permission="zope2.View"
+      />
 
   <browser:page
       name="update_version_on_edit"
@@ -33,6 +52,13 @@
       name="revertversion"
       for="*"
       class=".policies.RevertVersion"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="versions_history_form"
+      for="*"
+      class=".views.VersionsHistoryForm"
       permission="zope2.View"
       />
 
