@@ -10,7 +10,7 @@ test_matrix = {"6.2" = ["*"]}
 
 [pyproject]
 codespell_ignores = "alog,ist,checkin"
-dependencies_ignores = "['plone.namedfile', 'z3c.blobfile', 'Products.CMFDiffTool']"
+dependencies_ignores = "['plone.namedfile', 'z3c.blobfile', 'Products.CMFDiffTool', 'z3c.jbot']"
 
 [pre_commit]
 extra_lines = """
