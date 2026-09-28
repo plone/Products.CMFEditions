@@ -8,7 +8,6 @@ from Products.CMFEditions.utilities import maybeSaveVersion
 from Products.Five import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 
-import os
 import zope.deferredimport
 
 zope.deferredimport.deprecated(
@@ -98,6 +97,16 @@ class VersionImageTagView(BrowserView):
 
 
 class VersionsHistoryForm(BrowserView):
+    """List the versions of an object.
+
+    This base view holds the API-level logic only, without a template, so
+    it stays available to API consumers (plone.restapi, plone.api) that do
+    not have plone.app.layout installed. plone.app.layout registers an
+    override on IPloneAppLayoutLayer that renders the actual HTML.
+    """
+
+    template = None
+
     def checkUpToDate(self, history):
         """Check if Up To Date.
 
@@ -141,18 +150,19 @@ class VersionsHistoryForm(BrowserView):
             and len(portal_diff.getDiffForPortalType(context.portal_type)) > 0
         )
 
-
-css_path = os.path.join(os.path.dirname(__file__), "compare.css")
-with open(css_path) as myfile:
-    COMPARE_CSS = myfile.read()
-
-
-class CompareCSS(BrowserView):
-    """Formerly skins/CMFEditions/compare.css.dtml
-
-    Should be a browser resource, but I don't want to change plone.app.iterate just now.
-    That will further complicate an already complex PR.
-    """
-
     def __call__(self):
-        return COMPARE_CSS
+        if self.template is None:
+            raise ValueError(
+                "You are using the base VersionsHistoryForm view in"
+                " Products.CMFEditions, for classic UI, override the"
+                " VersionsHistoryForm from plone.app.layout by registering"
+                " it for your BrowserLayer of"
+                " plone.app.layout.interfaces.IPloneAppLayoutLayer."
+            )
+        return self.template()
+
+
+zope.deferredimport.deprecated(
+    "CompareCSS has moved to plone.app.layout since Plone 6.3",
+    CompareCSS="plone.app.layout.cmfeditions.views:CompareCSS",
+)

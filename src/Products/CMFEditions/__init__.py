@@ -63,6 +63,16 @@ ModuleSecurityInfo("Products.CMFEditions.utilities").declarePublic("isObjectVers
 ModuleSecurityInfo("Products.CMFEditions.utilities").declarePublic("maybeSaveVersion")
 
 
+jbot_deprecations = {
+    "Products.CMFEditions.browser.templates.diff.pt": "plone.app.layout.cmfeditions.templates.diff.pt",  # noqa: E501
+    "Products.CMFEditions.browser.templates.diff_legend.pt": "plone.app.layout.cmfeditions.templates.diff_legend.pt",  # noqa: E501
+    "Products.CMFEditions.browser.templates.version_file_view.pt": "plone.app.layout.cmfeditions.templates.version_file_view.pt",  # noqa: E501
+    "Products.CMFEditions.browser.templates.version_image_view.pt": "plone.app.layout.cmfeditions.templates.version_image_view.pt",  # noqa: E501
+    "Products.CMFEditions.browser.templates.version_metadata_view.pt": "plone.app.layout.cmfeditions.templates.version_metadata_view.pt",  # noqa: E501
+    "Products.CMFEditions.browser.templates.versions_history_form.pt": "plone.app.layout.cmfeditions.templates.versions_history_form.pt",  # noqa: E501
+}
+
+
 def initialize(context):
     utils.ToolInit(
         meta_type="CMF Editions Tool", tools=tools, icon="tool.gif"

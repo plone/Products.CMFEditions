@@ -6,6 +6,16 @@ from zope.i18n import translate
 
 
 class DiffView(BrowserView):
+    """Compute the diff between two versions of an object.
+
+    This base view holds the API-level logic only, without a template, so
+    it stays available to API consumers (plone.restapi, plone.api) that do
+    not have plone.app.layout installed. plone.app.layout registers an
+    override on IPloneAppLayoutLayer that renders the actual HTML.
+    """
+
+    template = None
+
     def __init__(self, *args):
         super().__init__(*args)
         self.repo_tool = getToolByName(self.context, "portal_repository")
@@ -56,4 +66,11 @@ class DiffView(BrowserView):
             change for change in self.changeset.getDiffs() if not change.same
         ]
 
-        return self.index()
+        if self.template is None:
+            raise ValueError(
+                "You are using the base DiffView view in Products.CMFEditions,"
+                " for classic UI, override the DiffView from plone.app.layout"
+                " by registering it for your BrowserLayer of"
+                " plone.app.layout.interfaces.IPloneAppLayoutLayer."
+            )
+        return self.template()
