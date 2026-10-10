@@ -191,7 +191,7 @@ Zope = [
 ]
 python-dateutil = ['dateutil']
 pytest-plone = ['pytest', 'zope.pytestlayer', 'plone.testing', 'plone.app.testing']
-ignore-packages = ['plone.namedfile', 'z3c.blobfile', 'Products.CMFDiffTool']
+ignore-packages = ['plone.namedfile', 'z3c.blobfile', 'Products.CMFDiffTool', 'z3c.jbot']
 
 ##
 # Add extra configuration options in .meta.toml:
