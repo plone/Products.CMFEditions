@@ -1,0 +1,3 @@
+Add missing security declarations to ``ConditionalModifier``, ``ConditionalTalesModifier`` and the two standard size guard modifiers.
+``edit`` now requires the ``Manage portal`` permission, the accessors require ``View management screens``, and the modifier hooks of the size guards are private.
+[plone devs]
