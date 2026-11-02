@@ -72,3 +72,32 @@ def removeSkinLayer(context):
         paths.remove(our_skin)
         skins.selections[layer] = ",".join(paths)
         logger.info("Removed %s from skin selection %s.", our_skin, layer)
+
+
+def fixDeprecatedConditions(context):
+    """Fix deprecated conditions in modifiers.
+
+    Two of our standard modifiers were calling deprecated code in their
+    condition.  The condition was updated, but we should change the stored
+    condition as well.
+    """
+    from Products.CMFCore.Expression import Expression
+    from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
+
+    old_code = "object/@@plone/isStructuralFolder"
+    new_code = "object/@@plone_context_state/is_structural_folder"
+    tool = getToolByName(context, "portal_modifier", None)
+    for modifier_id in ("OMInsideChildrensModifier", "OMOutsideChildrensModifier"):
+        if modifier_id not in tool:
+            continue
+        modifier = tool[modifier_id]
+        if not IConditionalTalesModifier.providedBy(modifier):
+            continue
+        condition_text = modifier.getTalesCondition()
+        if old_code not in condition_text:
+            continue
+        new_condition_text = condition_text.replace(old_code, new_code)
+        modifier._condition = Expression(new_condition_text)
+        logger.info(
+            "Fixed deprecated condition in %s from portal_modifier.", modifier_id
+        )
