@@ -95,7 +95,7 @@ mlog = []
 
 def dictToString(dict):
     dict_list = []
-    keys = [key for key in dict.keys()]
+    keys = [*dict.keys()]
     keys.sort()
     for k in keys:
         dict_list.append(f"{k} = {dict[k]}")
