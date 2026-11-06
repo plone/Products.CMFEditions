@@ -98,4 +98,11 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="check-modifier-conditions"
+      for="Products.CMFCore.interfaces.ISiteRoot"
+      class=".modifiers.CheckModifierConditions"
+      permission="cmf.ManagePortal"
+      />
+
 </configure>
