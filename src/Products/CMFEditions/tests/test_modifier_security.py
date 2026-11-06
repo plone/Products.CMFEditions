@@ -4,15 +4,10 @@ from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.permissions import ViewManagementScreens
 from Products.CMFEditions.Modifiers import ConditionalModifier
 from Products.CMFEditions.Modifiers import ConditionalTalesModifier
-from Products.CMFEditions.StandardModifiers import (
-    AbortVersioningOfLargeFilesAndImages,
-)
-from Products.CMFEditions.StandardModifiers import (
-    SkipVersioningOfLargeFilesAndImages,
-)
+from Products.CMFEditions.StandardModifiers import AbortVersioningOfLargeFilesAndImages
+from Products.CMFEditions.StandardModifiers import SkipVersioningOfLargeFilesAndImages
 
 import unittest
-
 
 CLASSES = (
     ConditionalModifier,
@@ -62,9 +57,10 @@ class TestModifierSecurity(unittest.TestCase):
                 "afterRetrieveModifier",
             ):
                 role = getattr(cls, f"{name}__roles__", None)
-                if name == "beforeSaveModifier" and cls is AbortVersioningOfLargeFilesAndImages:
+                if (
+                    name == "beforeSaveModifier"
+                    and cls is AbortVersioningOfLargeFilesAndImages
+                ):
                     continue  # not defined on this class
-                self.assertFalse(
-                    isinstance(role, PermissionRole), (cls, name)
-                )
+                self.assertFalse(isinstance(role, PermissionRole), (cls, name))
                 self.assertEqual(tuple(role or ()), (), (cls, name))
