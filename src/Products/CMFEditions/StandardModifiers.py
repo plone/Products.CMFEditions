@@ -842,7 +842,9 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
             field_names = tuple(s.strip() for s in field_names.split("\n") if s)
             if field_names != self.field_names:
                 self.field_names = field_names
-        return ConditionalTalesModifier.edit(self, enabled, condition, title)
+        return ConditionalTalesModifier.edit(
+            self, enabled, condition, title, REQUEST=REQUEST
+        )
 
     @security.protected(ViewManagementScreens)
     def getFieldNames(self):
