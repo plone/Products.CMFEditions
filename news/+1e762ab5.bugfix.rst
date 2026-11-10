@@ -1,1 +1,0 @@
-`AbortVersioningOfLargeFilesAndImages` and `SkipVersioningOfLargeFilesAndImages`: pass `REQUEST` parameter, so the edit form renders on submit.  [maurits]
