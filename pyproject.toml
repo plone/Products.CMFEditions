@@ -10,7 +10,7 @@ requires = ["setuptools>=68.2,<83", "wheel"]
 
 [project]
 name = "Products.CMFEditions"
-version = "5.0.2"
+version = "5.0.3.dev0"
 description = "Versioning for Plone"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
