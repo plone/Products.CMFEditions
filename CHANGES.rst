@@ -8,6 +8,26 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.7 (2026-11-10)
+------------------
+
+New features:
+
+
+- Add ``@@check-modifier-conditions`` view on the site root for Managers.
+  It lists the modifiers in ``portal_modifier``, shows which ones have a TALES condition that differs from the default, and lets you revert them, one by one or all at once.
+  [maurits]
+
+
+Bug fixes:
+
+
+- Add missing security declarations to ``ConditionalModifier``, ``ConditionalTalesModifier`` and the two standard size guard modifiers.
+  ``edit`` now requires the ``Manage portal`` permission, the accessors require ``View management screens``, and the modifier hooks of the size guards are private.
+  [plone devs]
+- `AbortVersioningOfLargeFilesAndImages` and `SkipVersioningOfLargeFilesAndImages`: pass `REQUEST` parameter, so the edit form renders on submit.  [maurits]
+
+
 4.0.6 (2025-09-24)
 ------------------
 
