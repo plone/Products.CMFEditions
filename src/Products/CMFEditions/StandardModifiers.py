@@ -23,6 +23,7 @@
 #########################################################################
 """Standard modifiers"""
 
+from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base
 from OFS.ObjectManager import ObjectManager
@@ -30,6 +31,7 @@ from plone.folder.default import DefaultOrdering
 from Products.BTreeFolder2.BTreeFolder2 import BTreeFolder2Base
 from Products.CMFCore.Expression import Expression
 from Products.CMFCore.permissions import ManagePortal
+from Products.CMFCore.permissions import ViewManagementScreens
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IModifier import FileTooLargeToVersionError
 from Products.CMFEditions.interfaces.IModifier import IAttributeModifier
@@ -803,6 +805,8 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
     """Raises an error if a file or image attribute stored on the
     object in a specified field is larger than a fixed default"""
 
+    security = ClassSecurityInfo()
+
     field_names = ("file", "image")
     max_size = 26214400  # This represents a 400 element long Pdata list
 
@@ -820,6 +824,7 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
         self.meta_type = "edmod_%s" % id
         self._enabled = False
 
+    @security.protected(ManagePortal)
     def edit(
         self,
         enabled=None,
@@ -836,12 +841,16 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
             field_names = tuple(s.strip() for s in field_names.split("\n") if s)
             if field_names != self.field_names:
                 self.field_names = field_names
-        return ConditionalTalesModifier.edit(self, enabled, condition, title)
+        return ConditionalTalesModifier.edit(
+            self, enabled, condition, title, REQUEST=REQUEST
+        )
 
+    @security.protected(ViewManagementScreens)
     def getFieldNames(self):
         """For the edit form"""
         return "\n".join(self.field_names)
 
+    @security.protected(ViewManagementScreens)
     def getModifier(self):
         """We are the modifier, not some silly wrapper."""
         return self
@@ -867,6 +876,7 @@ class AbortVersioningOfLargeFilesAndImages(ConditionalTalesModifier):
                 if isinstance(size, int) and size >= max_size:
                     yield "attribute", name, val
 
+    @security.private
     def getOnCloneModifiers(self, obj):
         """Detects large file objects and raises an error"""
         for storage, name, val in self._getFieldValues(obj):
@@ -894,6 +904,9 @@ class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
     annotations or attributes on the object with a marker.  On
     retrieve, the marker will be replaced with the current value.."""
 
+    security = ClassSecurityInfo()
+
+    @security.private
     def getOnCloneModifiers(self, obj):
         """Removes large file objects and returns them as references"""
         refs = {}
@@ -913,10 +926,12 @@ class SkipVersioningOfLargeFilesAndImages(AbortVersioningOfLargeFilesAndImages):
 
         return persistent_id, persistent_load, [], []
 
+    @security.private
     def beforeSaveModifier(self, obj, clone):
         """Does nothing, the pickler does the work"""
         return {}, [], []
 
+    @security.private
     def afterRetrieveModifier(self, obj, repo_clone, preserve=()):
         """If we find any LargeFilePlaceHolders, replace them with the
         values from the current working copy.  If the values are missing

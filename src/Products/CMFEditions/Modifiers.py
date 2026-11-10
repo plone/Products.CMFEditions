@@ -20,12 +20,15 @@
 #########################################################################
 """Modifier wrappers"""
 
+from AccessControl import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from OFS.SimpleItem import SimpleItem
 from Products.CMFCore.Expression import Expression
+from Products.CMFCore.permissions import ManagePortal
+from Products.CMFCore.permissions import ViewManagementScreens
 from Products.CMFCore.utils import getToolByName
 from Products.CMFEditions.interfaces.IModifier import IConditionalModifier
 from Products.CMFEditions.interfaces.IModifier import IConditionalTalesModifier
@@ -46,6 +49,8 @@ manage_addModifierForm = PageTemplateFile(
 class ConditionalModifier(SimpleItem):
     """This is a wrapper for a modifier."""
 
+    security = ClassSecurityInfo()
+
     modifierEditForm = PageTemplateFile(
         "www/modifierEditForm.pt", globals(), __name__="modifierEditForm"
     )
@@ -63,6 +68,7 @@ class ConditionalModifier(SimpleItem):
         self._modifier = modifier
         self._enabled = False
 
+    @security.protected(ManagePortal)
     def edit(self, enabled=None, title="", REQUEST=None):
         """See IConditionalModifier."""
         self.title = title
@@ -78,6 +84,7 @@ class ConditionalModifier(SimpleItem):
             REQUEST.set("manage_tabs_message", "Changed")
             return self.modifierEditForm(self, REQUEST)
 
+    @security.protected(ViewManagementScreens)
     def isBroken(self):
         """Is the modifier broken?
 
@@ -85,16 +92,19 @@ class ConditionalModifier(SimpleItem):
         """
         return isinstance(self.getModifier(), Broken)
 
+    @security.protected(ViewManagementScreens)
     def isApplicable(self, obj, portal=None):
         """See IConditionalModifier."""
         # check if disabled or an empty condition and not broken
         if self._enabled and not self.isBroken():
             return True
 
+    @security.protected(ViewManagementScreens)
     def isEnabled(self):
         """See IConditionalModifier."""
         return self._enabled
 
+    @security.protected(ViewManagementScreens)
     def getModifier(self):
         """See IConditionalModifier."""
         return self._modifier
@@ -114,6 +124,8 @@ manage_addTalesModifierForm = PageTemplateFile(
 class ConditionalTalesModifier(ConditionalModifier):
     """This is a wrapper with a tales condition for a modifier."""
 
+    security = ClassSecurityInfo()
+
     modifierEditForm = PageTemplateFile(
         "www/talesModifierEditForm.pt", globals(), __name__="modifierEditForm"
     )
@@ -126,6 +138,7 @@ class ConditionalTalesModifier(ConditionalModifier):
         ConditionalModifier.__init__(self, id, modifier, title)
         self._condition = None
 
+    @security.protected(ManagePortal)
     def edit(self, enabled=None, condition=None, title="", REQUEST=None):
         """See IConditionalTalesModifier."""
         ConditionalModifier.edit(self, enabled, title)
@@ -136,6 +149,7 @@ class ConditionalTalesModifier(ConditionalModifier):
             REQUEST.set("manage_tabs_message", "Changed")
             return self.modifierEditForm(self, REQUEST)
 
+    @security.protected(ViewManagementScreens)
     def isApplicable(self, obj, portal=None):
         """See IConditionalTalesModifier."""
         # check if disabled or an empty condition or broken
@@ -146,6 +160,7 @@ class ConditionalTalesModifier(ConditionalModifier):
         context = createExpressionContext(obj, portal)
         return self._condition(context)
 
+    @security.protected(ViewManagementScreens)
     def getTalesCondition(self):
         """See IConditionalTalesModifier."""
         return getattr(self._condition, "text", "")

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      i18n:ignore=""
+>
+  <head>
+    <meta charset="utf-8" />
+    <title>Check modifier conditions</title>
+  </head>
+  <body tal:define="
+          modifiers view/get_modifiers;
+          url string:${context/absolute_url}/@@check-modifier-conditions;
+        ">
+    <h1>Check modifier conditions</h1>
+    <p>
+      Background: see the security advisory
+      <a href="https://github.com/plone/Products.CMFEditions/security/advisories/GHSA-67qm-q795-jh7h">GHSA-67qm-q795-jh7h</a>.
+    </p>
+    <ul class="messages"
+        tal:condition="view/messages"
+    >
+      <li tal:repeat="message view/messages"
+          tal:content="message"
+      >Message</li>
+    </ul>
+    <dl>
+      <tal:modifier repeat="info modifiers">
+        <dt>
+          <strong tal:content="info/id">id</strong>
+          <span tal:condition="info/title"
+                tal:content="string:(${info/title})"
+          >(title)</span>
+        </dt>
+        <dd tal:condition="not:info/conditional">no condition</dd>
+        <dd tal:condition="python:info['conditional'] and not info['has_default']">
+          <span>no default condition known, current condition:</span>
+          <code tal:content="info/condition">condition</code>
+        </dd>
+        <dd tal:condition="python:info['has_default'] and not info['changed']">using default condition</dd>
+        <dd tal:condition="info/changed">
+          <div>
+            <span>Default condition:</span>
+            <code tal:content="info/default">default</code>
+          </div>
+          <div>
+            <span>Current condition:</span>
+            <code tal:content="info/condition">condition</code>
+          </div>
+          <form method="post"
+                tal:attributes="
+                  action url;
+                "
+          >
+            <input name="modifier_id"
+                   type="hidden"
+                   tal:attributes="
+                     value info/id;
+                   "
+            />
+            <input tal:replace="structure view/authenticator" />
+            <button name="revert"
+                    type="submit"
+                    value="1"
+            >Revert to default condition</button>
+          </form>
+        </dd>
+      </tal:modifier>
+    </dl>
+    <form method="post"
+          tal:condition="python:any(info['changed'] for info in modifiers)"
+          tal:attributes="
+            action url;
+          "
+    >
+      <input tal:replace="structure view/authenticator" />
+      <button name="revert_all"
+              type="submit"
+              value="1"
+      >Revert all to default conditions</button>
+    </form>
+  </body>
+</html>
